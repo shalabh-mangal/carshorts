@@ -32,10 +32,13 @@ SECTIONS (use these roles, in this order):
 - "hook"  (~5s, ~13 words): the boldest, funniest opening line. Must grab in 3s.
 - "spec"  (repeat 3-4 times, ~25s / ~70 words total): each states ONE real spec
           from the sheet, delivered with a funny spin.
-- "value" (~12s, ~28 words) — ONLY if a PRICE and VALUE PICK are given below:
-          state the price range (say it is an estimate, on-road varies by city)
-          and recommend the best-value variant. The recommendation is YOUR
-          opinion — phrase it as a pick, not a hard fact.
+- "value" (~14s, ~34 words) — ONLY if a PRICE and VALUE PICK are given below:
+          state the price range (say it is an estimate, on-road varies by city),
+          recommend the best-value variant, and NAME 2-4 of the concrete
+          features it gives you (e.g. "360-degree camera, cruise control, auto
+          climate") — specific features are what hook viewers, so do not be
+          vague. The variant recommendation is YOUR opinion; the features are
+          facts from the sheet.
 - "peak"  (~10s, ~28 words): the biggest laugh — a cheeky hot-take or roast.
 - "cta"   (~10s, ~20 words): a question to the viewer + "follow for more".
 

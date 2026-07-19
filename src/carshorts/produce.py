@@ -70,9 +70,26 @@ def _apply_extras(sheet: SpecSheet) -> str:
         source_url=source,
         source_sentence=f"Estimated price {price} ({note}; source CarDekho/CarWale).",
     ))
+
     guidance = [f"PRICE (estimate, say so): {price} — {note}."]
-    if extras.get("value_variant"):
-        guidance.append(f"VALUE PICK (state as YOUR opinion): {extras['value_variant']}.")
+    variant = extras.get("value_variant")
+    features = extras.get("value_features")
+    if variant:
+        # Make the value variant's features a SOURCED spec so the fact-checker
+        # passes them, then tell the writer to NAME them (concrete features sell).
+        if features:
+            sheet.specs.append(Spec(
+                name="value_features",
+                value=features,
+                source_url=extras.get("value_source", source),
+                source_sentence=(f"The {variant} variant includes {features} "
+                                 f"(source CarDekho)."),
+            ))
+        vp = extras.get("value_price", "")
+        guidance.append(
+            f"VALUE PICK (your opinion): the {variant} variant {vp} is the sweet "
+            f"spot. NAME these concrete features it gives you: {features or 'key features'}."
+        )
     return " ".join(guidance)
 
 VOICE_BY_LANG = {
