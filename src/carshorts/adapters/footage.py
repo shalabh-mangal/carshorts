@@ -52,32 +52,59 @@ def _looks_free(license_short: str) -> bool:
 
 class WikimediaImageSource(FootageSource):
     API = "https://en.wikipedia.org/w/api.php"
+    COMMONS_API = "https://commons.wikimedia.org/w/api.php"
 
-    def _get(self, params: dict) -> dict:
-        url = f"{self.API}?{urllib.parse.urlencode(params)}"
+    def _get(self, api: str, params: dict) -> dict:
+        url = f"{api}?{urllib.parse.urlencode(params)}"
         req = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT})
         with urllib.request.urlopen(req, timeout=20, context=_SSL_CONTEXT) as resp:
             return json.load(resp)
 
-    def _candidates(self, subject: str) -> list[dict]:
-        """Return imageinfo dicts for images used on the subject's article."""
-        data = self._get({
-            "action": "query",
-            "titles": subject,
-            "generator": "images",
-            "gimlimit": "40",
-            "prop": "imageinfo",
-            "iiprop": "url|mime|size|extmetadata",
-            "redirects": "1",
-            "format": "json",
+    def _article_images(self, subject: str) -> list[dict]:
+        """imageinfo dicts for images used on the subject's Wikipedia article."""
+        data = self._get(self.API, {
+            "action": "query", "titles": subject, "generator": "images",
+            "gimlimit": "40", "prop": "imageinfo",
+            "iiprop": "url|mime|size|extmetadata", "redirects": "1", "format": "json",
         })
-        pages = data.get("query", {}).get("pages", {})
+        return self._extract_infos(data)
+
+    def _commons_search(self, query: str) -> list[dict]:
+        """imageinfo dicts for a File-namespace search on Wikimedia Commons.
+        Used to find shots the article omits — notably interiors/dashboards."""
+        data = self._get(self.COMMONS_API, {
+            "action": "query", "generator": "search", "gsrsearch": query,
+            "gsrnamespace": "6", "gsrlimit": "20", "prop": "imageinfo",
+            "iiprop": "url|mime|size|extmetadata", "format": "json",
+        })
+        return self._extract_infos(data)
+
+    @staticmethod
+    def _extract_infos(data: dict) -> list[dict]:
         out = []
-        for page in pages.values():
+        for page in data.get("query", {}).get("pages", {}).values():
             info = (page.get("imageinfo") or [{}])[0]
             info["_title"] = page.get("title", "")
             out.append(info)
         return out
+
+    def _candidates(self, subject: str) -> list[dict]:
+        """Combine article images + Commons searches (incl. interior shots),
+        deduped by URL. Exteriors mostly come from the article/general search;
+        interiors from the explicit interior/dashboard search."""
+        combined = (
+            self._article_images(subject)
+            + self._commons_search(f"{subject} interior")
+            + self._commons_search(f"{subject} dashboard")
+            + self._commons_search(subject)
+        )
+        seen, unique = set(), []
+        for info in combined:
+            url = info.get("url", "")
+            if url and url not in seen:
+                seen.add(url)
+                unique.append(info)
+        return unique
 
     def fetch(self, subject: str, out_dir: str, limit: int = 5) -> list[str]:
         out = Path(out_dir)

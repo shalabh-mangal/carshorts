@@ -93,13 +93,16 @@ def _draw_caption(draw, text: str, font, width: int, height: int):
 
 
 class Section:
-    """One scene of the video: an audio clip and the caption shown while it plays.
-    background_image is optional per-section (the footage station fills this later)."""
+    """One scene: an audio clip plus its visual. The visual is either a stock
+    video clip (background_video) or a still photo (background_image); video wins
+    if both are set. caption is drawn only when the renderer is told to."""
 
-    def __init__(self, audio_path: str, caption: str, background_image: str | None = None):
+    def __init__(self, audio_path: str, caption: str, background_image: str | None = None,
+                 background_video: str | None = None):
         self.audio_path = audio_path
         self.caption = caption
         self.background_image = background_image
+        self.background_video = background_video
 
 
 class VideoRenderer(ABC):
@@ -146,34 +149,59 @@ class MoviePyRenderer(VideoRenderer):
                              audio_codec="aac", logger=None)
         return out_path
 
+    def _video_scene(self, path: str, dur: float, VideoFileClip, concatenate_videoclips):
+        """A stock clip, cover-cropped to the vertical frame, silenced, and
+        looped or trimmed to exactly `dur` (so it matches its section's voice)."""
+        width, height = self.size
+        clip = VideoFileClip(path).without_audio()
+        scale = max(width / clip.w, height / clip.h)
+        clip = clip.resized(scale)
+        clip = clip.cropped(width=width, height=height,
+                            x_center=clip.w / 2, y_center=clip.h / 2)
+        if clip.duration >= dur:
+            return clip.subclipped(0, dur)
+        reps = int(dur / clip.duration) + 1
+        return concatenate_videoclips([clip] * reps).subclipped(0, dur)
+
     def render_sections(self, sections: list[Section], out_path: str,
-                        music_path: str | None = None, ken_burns: bool = True) -> str:
+                        music_path: str | None = None, ken_burns: bool = True,
+                        draw_captions: bool = True, fps: int = 30) -> str:
         """Multi-scene render: each Section becomes a clip whose length equals its
-        own audio, with its caption on screen — so visuals/captions stay in sync
-        with the spoken script, section by section. Still photos get a slow zoom
-        (Ken Burns) so they feel like video; optional background music is mixed
-        low under the voice."""
+        own audio — so visuals stay in sync with the spoken script, section by
+        section. Still photos get motion (alternating slow zoom-in / zoom-out) so
+        they feel like video; captions are optional; optional music is mixed low
+        under the voice."""
         from moviepy import (AudioFileClip, CompositeVideoClip, ImageClip,
-                             concatenate_videoclips)
+                             VideoFileClip, concatenate_videoclips)
 
         clips = []
-        for section in sections:
+        for idx, section in enumerate(sections):
             audio = AudioFileClip(section.audio_path)
             dur = audio.duration
-            bg_path = self._prepare_background(section.background_image, section.caption)
-            base = ImageClip(bg_path).with_duration(dur)
-            if ken_burns and section.background_image:
-                # Slow 6% zoom-in. Clip starts filling the frame, so zooming in
-                # never exposes an edge; CompositeVideoClip crops back to size.
-                zoom = base.resized(lambda t, d=dur: 1.0 + 0.06 * (t / d)).with_position("center")
-                scene = CompositeVideoClip([zoom], size=self.size).with_duration(dur)
+            if section.background_video:
+                scene = self._video_scene(section.background_video, dur,
+                                          VideoFileClip, concatenate_videoclips)
             else:
-                scene = base
+                caption = section.caption if draw_captions else None
+                bg_path = self._prepare_background(section.background_image, caption)
+                base = ImageClip(bg_path).with_duration(dur)
+                if ken_burns and section.background_image:
+                    # Alternate zoom-in / zoom-out per scene for variety. Clip
+                    # always fills the frame (scale >= 1), so motion never shows
+                    # an edge; CompositeVideoClip crops back to size.
+                    if idx % 2 == 0:
+                        motion = lambda t, d=dur: 1.0 + 0.09 * (t / d)
+                    else:
+                        motion = lambda t, d=dur: 1.09 - 0.09 * (t / d)
+                    zoom = base.resized(motion).with_position("center")
+                    scene = CompositeVideoClip([zoom], size=self.size).with_duration(dur)
+                else:
+                    scene = base
             clips.append(scene.with_audio(audio))
 
         video = concatenate_videoclips(clips, method="chain")
         video = self._add_music(video, music_path)
-        video.write_videofile(out_path, fps=24, codec="libx264",
+        video.write_videofile(out_path, fps=fps, codec="libx264",
                               audio_codec="aac", logger=None)
         return out_path
 
