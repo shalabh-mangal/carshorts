@@ -73,10 +73,13 @@ def rank_stories(items: list[NewsItem], llm: LLMClient) -> list[NewsItem]:
 # ---------------------------------------------------------------------------
 # Stage 3: draft script (constrained to the spec sheet)
 # ---------------------------------------------------------------------------
-def draft_script(spec_sheet: SpecSheet, llm: LLMClient, language: str = "english") -> Script:
+def draft_script(spec_sheet: SpecSheet, llm: LLMClient, language: str = "english",
+                 guidance: str = "") -> Script:
     language_line = LANGUAGE_INSTRUCTIONS.get(language.lower(), LANGUAGE_INSTRUCTIONS["english"])
+    guidance_block = f"\n\n{guidance}" if guidance else ""
     user = (
-        f"{render_spec_sheet(spec_sheet)}\n\n"
+        f"{render_spec_sheet(spec_sheet)}"
+        f"{guidance_block}\n\n"
         f"{language_line}\n\n"
         "Write the Short script now, using ONLY the specs above."
     )

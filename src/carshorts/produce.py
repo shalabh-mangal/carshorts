@@ -20,6 +20,7 @@ Sections are voiced independently so each caption stays in sync with the audio.
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import tempfile
@@ -32,7 +33,7 @@ from .adapters.renderer import MoviePyRenderer, Section
 from .adapters.stock import PexelsVideoSource
 from .adapters.tts import EdgeTTSProvider
 from .gate1 import render_gate1_report
-from .models import Script, SpecSheet
+from .models import Script, Spec, SpecSheet
 from .stages.pipeline import (
     draft_script,
     fact_check,
@@ -43,6 +44,36 @@ from .stages.pipeline import (
 
 def _slug(name: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+
+
+def _apply_extras(sheet: SpecSheet) -> str:
+    """Merge a human-curated extras file (price estimate + best-value variant)
+    into the sheet as a SOURCED spec, and return writer guidance text.
+
+    Price/variant data isn't on Wikipedia and has no free API, so a human looks
+    it up (CarDekho/CarWale/official) and drops it in specs_extras/<slug>.json.
+    It becomes a real sourced spec (so the number-guard allows the figure); the
+    value-variant pick is passed as guidance and phrased as opinion in the video.
+    """
+    path = Path("specs_extras") / f"{_slug(sheet.subject)}.json"
+    if not path.exists():
+        return ""
+    extras = json.loads(path.read_text())
+    price = extras.get("price_estimate")
+    if not price:
+        return ""
+    note = extras.get("price_note", "estimate; varies by city")
+    source = extras.get("price_source", "https://www.cardekho.com")
+    sheet.specs.append(Spec(
+        name="price_estimate",
+        value=price,
+        source_url=source,
+        source_sentence=f"Estimated price {price} ({note}; source CarDekho/CarWale).",
+    ))
+    guidance = [f"PRICE (estimate, say so): {price} — {note}."]
+    if extras.get("value_variant"):
+        guidance.append(f"VALUE PICK (state as YOUR opinion): {extras['value_variant']}.")
+    return " ".join(guidance)
 
 VOICE_BY_LANG = {
     "english": "en-US-GuyNeural",
@@ -74,9 +105,11 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
             raise SystemExit("Provide --spec (to write a script) or --script-file (to render one).")
 
         sheet = SpecSheet.model_validate_json(Path(spec_path).read_text())
+        guidance = _apply_extras(sheet)   # merges sourced price + value-pick guidance
         llm = make_llm(provider)
-        print(f"1/4  writing {language} script ({len(sheet.specs)} specs)...")
-        script = draft_script(sheet, llm, language=language)
+        print(f"1/4  writing {language} script ({len(sheet.specs)} specs"
+              + (", +price/variant" if guidance else "") + ")...")
+        script = draft_script(sheet, llm, language=language, guidance=guidance)
         script_out = out.with_suffix(".script.json")
         script_out.write_text(script.model_dump_json(indent=2))
         print(f"     saved script -> {script_out}  (re-render free with --script-file)")

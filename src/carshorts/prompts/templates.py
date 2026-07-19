@@ -30,10 +30,16 @@ joke block.
 
 SECTIONS (use these roles, in this order):
 - "hook"  (~5s, ~13 words): the boldest, funniest opening line. Must grab in 3s.
-- "spec"  (repeat 3-4 times, ~30s / ~80 words total): each states ONE real spec
+- "spec"  (repeat 3-4 times, ~25s / ~70 words total): each states ONE real spec
           from the sheet, delivered with a funny spin.
-- "peak"  (~13s, ~35 words): the biggest laugh — a cheeky hot-take or roast.
-- "cta"   (~12s, ~22 words): a question to the viewer + "follow for more".
+- "value" (~12s, ~28 words) — ONLY if a PRICE and VALUE PICK are given below:
+          state the price range (say it is an estimate, on-road varies by city)
+          and recommend the best-value variant. The recommendation is YOUR
+          opinion — phrase it as a pick, not a hard fact.
+- "peak"  (~10s, ~28 words): the biggest laugh — a cheeky hot-take or roast.
+- "cta"   (~10s, ~20 words): a question to the viewer + "follow for more".
+
+If no PRICE/VALUE PICK is provided, omit the "value" section entirely.
 
 HARD RULES — violating any makes the script unusable:
 1. State a number, price, date, or spec ONLY if it appears in the provided SPEC
@@ -45,13 +51,14 @@ HARD RULES — violating any makes the script unusable:
    Do NOT state unmeasured performance or efficiency as if it were fact (e.g.
    avoid "responsive acceleration" or "super efficient" unless a spec backs it).
 
-Output ONLY this JSON:
+Output ONLY this JSON (include a "value" segment only if a price is given):
 {"subject": "...", "segments": [
-  {"role": "hook", "text": "...", "cited_spec_names": ["..."]},
-  {"role": "spec", "text": "...", "cited_spec_names": ["..."]},
-  {"role": "spec", "text": "...", "cited_spec_names": ["..."]},
-  {"role": "peak", "text": "...", "cited_spec_names": []},
-  {"role": "cta",  "text": "...", "cited_spec_names": []}
+  {"role": "hook",  "text": "...", "cited_spec_names": ["..."]},
+  {"role": "spec",  "text": "...", "cited_spec_names": ["..."]},
+  {"role": "spec",  "text": "...", "cited_spec_names": ["..."]},
+  {"role": "value", "text": "...", "cited_spec_names": ["price_estimate"]},
+  {"role": "peak",  "text": "...", "cited_spec_names": []},
+  {"role": "cta",   "text": "...", "cited_spec_names": []}
 ]}"""
 
 # Language instructions appended to the writer's user prompt. Kept here so tone

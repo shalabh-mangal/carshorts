@@ -26,8 +26,13 @@ except ImportError:
     _SSL_CONTEXT = None
 
 _UA = "carshorts/0.1"
+# Brand-NEUTRAL detail / POV shots only. Full-car or badge/logo shots (steering
+# wheel horns, exterior driving) would show a RIVAL brand — the exact car's
+# identity must come from the stills, never from generic stock. These detail
+# shots (gauges, vents, road POV) rarely reveal a badge.
 _DEFAULT_QUERIES = (
-    "car interior", "car dashboard", "driving car", "suv driving", "steering wheel",
+    "car speedometer closeup", "car gear shifter", "driving pov road",
+    "car dashboard vents", "car seats interior", "tachometer closeup",
 )
 
 
