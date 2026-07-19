@@ -1,0 +1,40 @@
+{
+  "subject": "Maruti Suzuki Brezza",
+  "specs": [
+    {
+      "name": "power",
+      "value": "66 kW",
+      "source_url": "https://en.wikipedia.org/wiki/Suzuki_Brezza",
+      "source_sentence": "Initially, the Vitara Brezza was solely powered by a 1.3-litre Fiat-sourced D13A DDiS four-cylinder turbo-diesel engine which produced 66 kW (89 hp; 90 PS) and 200 N⋅m (150 lb⋅ft) of torque.",
+      "confidence": 1.0
+    },
+    {
+      "name": "torque",
+      "value": "200 N⋅m",
+      "source_url": "https://en.wikipedia.org/wiki/Suzuki_Brezza",
+      "source_sentence": "Initially, the Vitara Brezza was solely powered by a 1.3-litre Fiat-sourced D13A DDiS four-cylinder turbo-diesel engine which produced 66 kW (89 hp; 90 PS) and 200 N⋅m (150 lb⋅ft) of torque.",
+      "confidence": 1.0
+    },
+    {
+      "name": "engine_cc",
+      "value": "1,200 cc",
+      "source_url": "https://en.wikipedia.org/wiki/Suzuki_Brezza",
+      "source_sentence": "The newer engine made the Vitara Brezza lose its GST advantage as the engine displacement exceeded the 1,200 cc limit for petrol engines.",
+      "confidence": 1.0
+    },
+    {
+      "name": "engine_litre",
+      "value": "1.3-litre",
+      "source_url": "https://en.wikipedia.org/wiki/Suzuki_Brezza",
+      "source_sentence": "Initially, the Vitara Brezza was solely powered by a 1.3-litre Fiat-sourced D13A DDiS four-cylinder turbo-diesel engine which produced 66 kW (89 hp; 90 PS) and 200 N⋅m (150 lb⋅ft) of torque.",
+      "confidence": 1.0
+    },
+    {
+      "name": "mileage",
+      "value": "24.29 km/L",
+      "source_url": "https://en.wikipedia.org/wiki/Suzuki_Brezza",
+      "source_sentence": "The fuel economy is stated at 24.29 km/L (68.6 mpg‑imp; 57.1 mpg‑US).",
+      "confidence": 1.0
+    }
+  ]
+}

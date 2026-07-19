@@ -1,0 +1,33 @@
+{
+  "subject": "Hyundai Venue",
+  "specs": [
+    {
+      "name": "power",
+      "value": "83 PS",
+      "source_url": "https://en.wikipedia.org/wiki/Hyundai_Venue",
+      "source_sentence": "The Venue is powered by a 1.2-litre 4-cylinder naturally aspirated petrol engine that produces 83 PS (61 kW; 82 hp) and 115 N⋅m (11.7 kg⋅m; 84.8 lb⋅ft) of torque, paired with a 5-speed manual transmission, and a 1.0-litre 3-cylinder turbocharged GDI petrol engine that offers 120 PS (88 kW; 118 hp) and 172 N⋅m (17.5 kg⋅m; 127 lb⋅ft) of torque.",
+      "confidence": 1.0
+    },
+    {
+      "name": "torque",
+      "value": "115 N⋅m",
+      "source_url": "https://en.wikipedia.org/wiki/Hyundai_Venue",
+      "source_sentence": "The Venue is powered by a 1.2-litre 4-cylinder naturally aspirated petrol engine that produces 83 PS (61 kW; 82 hp) and 115 N⋅m (11.7 kg⋅m; 84.8 lb⋅ft) of torque, paired with a 5-speed manual transmission, and a 1.0-litre 3-cylinder turbocharged GDI petrol engine that offers 120 PS (88 kW; 118 hp) and 172 N⋅m (17.5 kg⋅m; 127 lb⋅ft) of torque.",
+      "confidence": 1.0
+    },
+    {
+      "name": "engine_litre",
+      "value": "1.2-litre",
+      "source_url": "https://en.wikipedia.org/wiki/Hyundai_Venue",
+      "source_sentence": "The Venue is powered by a 1.2-litre 4-cylinder naturally aspirated petrol engine that produces 83 PS (61 kW; 82 hp) and 115 N⋅m (11.7 kg⋅m; 84.8 lb⋅ft) of torque, paired with a 5-speed manual transmission, and a 1.0-litre 3-cylinder turbocharged GDI petrol engine that offers 120 PS (88 kW; 118 hp) and 172 N⋅m (17.5 kg⋅m; 127 lb⋅ft) of torque.",
+      "confidence": 1.0
+    },
+    {
+      "name": "price",
+      "value": "rs 120",
+      "source_url": "https://en.wikipedia.org/wiki/Hyundai_Venue",
+      "source_sentence": "The Venue is powered by a 1.2-litre 4-cylinder naturally aspirated petrol engine that produces 83 PS (61 kW; 82 hp) and 115 N⋅m (11.7 kg⋅m; 84.8 lb⋅ft) of torque, paired with a 5-speed manual transmission, and a 1.0-litre 3-cylinder turbocharged GDI petrol engine that offers 120 PS (88 kW; 118 hp) and 172 N⋅m (17.5 kg⋅m; 127 lb⋅ft) of torque.",
+      "confidence": 1.0
+    }
+  ]
+}

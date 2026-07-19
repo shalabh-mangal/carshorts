@@ -1,0 +1,25 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+
+# Secrets — never commit API keys
+.env
+*.key
+
+# Generated media + downloaded footage (regenerable, large)
+out/
+assets/
+*.mp3
+*.mp4
+
+# Harness output
+harness_report.json
+
+# Editor
+.idea/
+.vscode/
+.DS_Store

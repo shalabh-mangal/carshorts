@@ -1,0 +1,33 @@
+{
+  "subject": "Toyota Fortuner",
+  "specs": [
+    {
+      "name": "power",
+      "value": "75 kW",
+      "source_url": "https://en.wikipedia.org/wiki/Toyota_Fortuner",
+      "source_sentence": "The 2.5 G model was later added to the market in 2007, powered by a 2.5-litre diesel engine rated at 75 kW (102 PS; 101 hp).",
+      "confidence": 1.0
+    },
+    {
+      "name": "torque",
+      "value": "500 N⋅m",
+      "source_url": "https://en.wikipedia.org/wiki/Toyota_Fortuner",
+      "source_sentence": "The 2.8-litre 1GD-FTV diesel engine received an upgrade, producing 204 PS (201 hp; 150 kW) and 500 N⋅m (51.0 kg⋅m; 369 lb⋅ft) of torque.",
+      "confidence": 1.0
+    },
+    {
+      "name": "engine_litre",
+      "value": "2.5-litre",
+      "source_url": "https://en.wikipedia.org/wiki/Toyota_Fortuner",
+      "source_sentence": "In August 2012, the 2.5-litre common-rail turbodiesel 2KD-FTV engine was upgraded to a variable nozzle turbocharger (VNT) which was already equipped in the 3.0-litre common-rail turbo diesel 1KD-FTV since its introduction in 2005 to increase power and torque about 60%, also reducing fuel consumption up to 30%.",
+      "confidence": 1.0
+    },
+    {
+      "name": "acceleration",
+      "value": "11 seconds",
+      "source_url": "https://en.wikipedia.org/wiki/Toyota_Fortuner",
+      "source_sentence": "With this VNT equipment, the Fortuner could now accelerate from 0–100 km/h (0–62 mph) in about 11 seconds (less than 10 seconds for 3.0-litre engine).",
+      "confidence": 1.0
+    }
+  ]
+}

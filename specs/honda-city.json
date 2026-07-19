@@ -1,0 +1,61 @@
+{
+  "subject": "Honda City",
+  "specs": [
+    {
+      "name": "power",
+      "value": "2.5 PS",
+      "source_url": "https://en.wikipedia.org/wiki/Honda_City",
+      "source_sentence": "Produced as a 3-door hatchback in a variety of trim levels, the City was also available together with the Motocompo, a special 50 cc 'foldaway' scooter with 2.5 PS (1.8 kW) designed to fit in the City's small luggage area (\"trunk\"); called a \"trunk bike\", Honda invented the compound word \"trabai\" for this scooter.",
+      "confidence": 1.0
+    },
+    {
+      "name": "torque",
+      "value": "146 Nm",
+      "source_url": "https://en.wikipedia.org/wiki/Honda_City",
+      "source_sentence": "All variants were powered by the same 1.5-litre i-VTEC petrol engine which delivers 118 PS (87 kW; 116 hp) of power with 146 Nm of maximum torque.",
+      "confidence": 1.0
+    },
+    {
+      "name": "engine_cc",
+      "value": "50 cc",
+      "source_url": "https://en.wikipedia.org/wiki/Honda_City",
+      "source_sentence": "Produced as a 3-door hatchback in a variety of trim levels, the City was also available together with the Motocompo, a special 50 cc 'foldaway' scooter with 2.5 PS (1.8 kW) designed to fit in the City's small luggage area (\"trunk\"); called a \"trunk bike\", Honda invented the compound word \"trabai\" for this scooter.",
+      "confidence": 1.0
+    },
+    {
+      "name": "engine_litre",
+      "value": "1.3-litre",
+      "source_url": "https://en.wikipedia.org/wiki/Honda_City",
+      "source_sentence": "The 1.2 L \"BE\" was the base model and had a single carburetor, as did the 1.3-litre \"CE\" and \"CG\" variants.",
+      "confidence": 1.0
+    },
+    {
+      "name": "mileage",
+      "value": "23.25 km/L",
+      "source_url": "https://en.wikipedia.org/wiki/Honda_City",
+      "source_sentence": "Among the conditions of the tax incentive are Euro 5 compliance, CO2 emissions below 100 g/km (5.7 oz/mi), and a fuel consumption not exceeding 23.25 km/L (4.3 L/100 km; 66 mpg‑imp; 55 mpg‑US).",
+      "confidence": 1.0
+    },
+    {
+      "name": "top_speed",
+      "value": "171 km/h",
+      "source_url": "https://en.wikipedia.org/wiki/Honda_City",
+      "source_sentence": "The original 1.3 L (1,343 cc) D13B produced 95 PS (70 kW) at 6,400 rpm for a claimed top speed of 171 km/h and 0–100 km/h in 11.3 seconds.",
+      "confidence": 1.0
+    },
+    {
+      "name": "price",
+      "value": "rs 118",
+      "source_url": "https://en.wikipedia.org/wiki/Honda_City",
+      "source_sentence": "All variants were powered by the same 1.5-litre i-VTEC petrol engine which delivers 118 PS (87 kW; 116 hp) of power with 146 Nm of maximum torque.",
+      "confidence": 1.0
+    },
+    {
+      "name": "acceleration",
+      "value": "11.3 seconds",
+      "source_url": "https://en.wikipedia.org/wiki/Honda_City",
+      "source_sentence": "The original 1.3 L (1,343 cc) D13B produced 95 PS (70 kW) at 6,400 rpm for a claimed top speed of 171 km/h and 0–100 km/h in 11.3 seconds.",
+      "confidence": 1.0
+    }
+  ]
+}

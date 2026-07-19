@@ -1,0 +1,169 @@
+"""Produce a full video from a spec sheet: specs -> script -> fact-check -> video.
+
+  python -m carshorts.produce --spec specs_top5/tata-nexon.json --language hinglish
+  python -m carshorts.produce --script-file out/nexon.script.json --out out/nexon.mp4
+  python -m carshorts.produce --spec ... --skip-factcheck        # render without the skeptic
+
+Two halves, deliberately decoupled:
+  - GENERATION (draft + fact-check) needs GEMINI_API_KEY and spends daily quota.
+  - RENDERING (voice + assemble) is all local and free.
+
+So the drafted script is SAVED the moment it is written, fact-check failure is
+non-fatal (the video is marked UNVERIFIED, never silently "passed"), and you can
+re-render any saved script with zero model calls via --script-file. This means a
+quota limit can never waste a script you already paid for, and you can iterate on
+the video freely without spending quota.
+
+The printed Gate 1 report is your human checkpoint — read it before publishing.
+Sections are voiced independently so each caption stays in sync with the audio.
+"""
+from __future__ import annotations
+
+import argparse
+import re
+import tempfile
+from pathlib import Path
+
+from .adapters.footage import WikimediaImageSource, attribution_lines
+from .adapters.llm import make_llm
+from .adapters.renderer import MoviePyRenderer, Section
+from .adapters.tts import EdgeTTSProvider
+from .gate1 import render_gate1_report
+from .models import Script, SpecSheet
+from .stages.pipeline import (
+    draft_script,
+    fact_check,
+    structural_citation_check,
+    unsourced_numbers_check,
+)
+
+
+def _slug(name: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+
+VOICE_BY_LANG = {
+    "english": "en-US-GuyNeural",
+    "hinglish": "en-IN-PrabhatNeural",
+    "hindi": "hi-IN-MadhurNeural",
+}
+
+
+def _is_quota_error(exc: Exception) -> bool:
+    text = str(exc).lower()
+    return "429" in text or "quota" in text or "resourceexhausted" in text
+
+
+def produce(spec_path: str | None, out_path: str, language: str = "hinglish",
+            voice: str | None = None, script_file: str | None = None,
+            skip_factcheck: bool = False, provider: str | None = None,
+            footage: bool = True, music: str | None = None) -> str:
+    out = Path(out_path)
+    out.parent.mkdir(parents=True, exist_ok=True)
+
+    # --- Get a script: either load a saved one (free) or draft one (uses a model).
+    if script_file:
+        script = Script.model_validate_json(Path(script_file).read_text())
+        sheet = SpecSheet.model_validate_json(Path(spec_path).read_text()) if spec_path else None
+        print(f"loaded script from {script_file} ({len(script.segments)} sections)")
+    else:
+        if not spec_path:
+            raise SystemExit("Provide --spec (to write a script) or --script-file (to render one).")
+
+        sheet = SpecSheet.model_validate_json(Path(spec_path).read_text())
+        llm = make_llm(provider)
+        print(f"1/4  writing {language} script ({len(sheet.specs)} specs)...")
+        script = draft_script(sheet, llm, language=language)
+        script_out = out.with_suffix(".script.json")
+        script_out.write_text(script.model_dump_json(indent=2))
+        print(f"     saved script -> {script_out}  (re-render free with --script-file)")
+
+    # --- Safety gates. The number-guard is deterministic and always runs when we
+    # have a sheet (free, model-independent). The LLM fact-check is best-effort
+    # and non-fatal on quota — a failure marks the video UNVERIFIED.
+    if sheet is not None:
+        structural = structural_citation_check(script, sheet)
+        number_problems = unsourced_numbers_check(script, sheet)
+        if number_problems:
+            print("\n🔴 NUMBER-GUARD — figures NOT found in the spec sheet (do NOT publish):")
+            for problem in number_problems:
+                print(f"     - {problem}")
+            print()
+
+        if not skip_factcheck:
+            try:
+                llm = make_llm(provider)
+                print("2/4  fact-checking (separate skeptic pass)...")
+                report = fact_check(script, sheet, llm)
+                print("\n" + render_gate1_report(
+                    script, sheet, report, structural + number_problems) + "\n")
+            except Exception as exc:  # noqa: BLE001
+                if _is_quota_error(exc):
+                    print("\n⚠️  LLM FACT-CHECK SKIPPED — model quota exhausted. Video renders "
+                          "UNVERIFIED (number-guard above still applied). Re-run the "
+                          "fact-check before publishing.\n")
+                else:
+                    raise
+        else:
+            print("2/4  LLM fact-check skipped (--skip-factcheck) — number-guard above still applied.")
+    else:
+        print("2/4  no spec sheet given — both gates skipped, video is UNVERIFIED.")
+
+    # --- Fetch legal CC car photos (the "stills" visuals), attributed.
+    images: list[str] = []
+    if footage:
+        img_dir = f"assets/images/{_slug(script.subject)}"
+        print(f"3/5  fetching CC car photos -> {img_dir} ...")
+        try:
+            images = WikimediaImageSource().fetch(script.subject, img_dir, limit=6)
+            print(f"     {len(images)} images (credits in {img_dir}/attributions.json)")
+        except Exception as exc:  # noqa: BLE001 — no photos just means plain cards
+            print(f"     footage fetch failed ({exc}); using plain caption cards.")
+
+    # --- Render (always local, always free). Voice each section separately so
+    # captions/visuals stay in sync; cycle photos across the sections.
+    voice = voice or VOICE_BY_LANG.get(language, "en-US-GuyNeural")
+    print(f"4/5  voicing {len(script.segments)} sections (voice={voice})...")
+    tts = EdgeTTSProvider(voice=voice)
+    tmpdir = Path(tempfile.mkdtemp(prefix="carshorts_"))
+    sections = []
+    for i, seg in enumerate(script.segments):
+        audio_path = str(tmpdir / f"seg_{i}.mp3")
+        tts.synthesize(seg.text, audio_path)
+        bg = images[i % len(images)] if images else None
+        sections.append(Section(audio_path=audio_path, caption=seg.text, background_image=bg))
+
+    print(f"5/5  rendering synced video -> {out_path}")
+    MoviePyRenderer().render_sections(sections, str(out), music_path=music)
+
+    credits = attribution_lines(f"assets/images/{_slug(script.subject)}") if images else []
+    if credits:
+        print("\nImage credits (put these in the YouTube description):")
+        for line in credits:
+            print(f"  {line}")
+    return str(out)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Spec sheet -> fact-checked, synced video.")
+    parser.add_argument("--spec", help="Path to a spec-sheet JSON (to write + fact-check).")
+    parser.add_argument("--script-file", help="Render a previously saved script JSON (no model calls).")
+    parser.add_argument("--out", default="out/produced.mp4", help="Output MP4 path.")
+    parser.add_argument("--language", default="hinglish",
+                        choices=["english", "hinglish", "hindi"], help="Script + voice language.")
+    parser.add_argument("--voice", help="Override the edge-tts voice.")
+    parser.add_argument("--skip-factcheck", action="store_true",
+                        help="Skip the skeptic pass (renders UNVERIFIED).")
+    parser.add_argument("--provider", choices=["gemini", "groq", "cerebras", "openrouter", "ollama"],
+                        help="LLM backend (or set CARSHORTS_LLM). Default gemini.")
+    parser.add_argument("--no-footage", action="store_true", help="Skip CC photo fetch (plain cards).")
+    parser.add_argument("--music", help="Path to a background music file (mixed low under the voice).")
+    args = parser.parse_args()
+
+    path = produce(args.spec, args.out, language=args.language, voice=args.voice,
+                   script_file=args.script_file, skip_factcheck=args.skip_factcheck,
+                   provider=args.provider, footage=not args.no_footage, music=args.music)
+    print(f"\nDone -> {path}")
+
+
+if __name__ == "__main__":
+    main()

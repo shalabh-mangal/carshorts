@@ -1,0 +1,33 @@
+{
+  "subject": "Mahindra XUV300",
+  "specs": [
+    {
+      "name": "power",
+      "value": "110 hp",
+      "source_url": "https://en.wikipedia.org/wiki/Mahindra_XUV300",
+      "source_sentence": "The new petrol engine co-developed by Ssangyong delivers 110 hp (82 kW; 112 PS) of power and 200 N⋅m (148 lb⋅ft; 20 kg⋅m) of torque.",
+      "confidence": 1.0
+    },
+    {
+      "name": "torque",
+      "value": "200 N⋅m",
+      "source_url": "https://en.wikipedia.org/wiki/Mahindra_XUV300",
+      "source_sentence": "The new petrol engine co-developed by Ssangyong delivers 110 hp (82 kW; 112 PS) of power and 200 N⋅m (148 lb⋅ft; 20 kg⋅m) of torque.",
+      "confidence": 1.0
+    },
+    {
+      "name": "engine_litre",
+      "value": "1.2-litre",
+      "source_url": "https://en.wikipedia.org/wiki/Mahindra_XUV300",
+      "source_sentence": "The XUV300 is powered by a 1.2-litre 3-cylinder petrol engine and a 1.5-litre 4-cylinder diesel engine with 6-speed manual transmission.",
+      "confidence": 1.0
+    },
+    {
+      "name": "price",
+      "value": "rs 110",
+      "source_url": "https://en.wikipedia.org/wiki/Mahindra_XUV300",
+      "source_sentence": "The new petrol engine co-developed by Ssangyong delivers 110 hp (82 kW; 112 PS) of power and 200 N⋅m (148 lb⋅ft; 20 kg⋅m) of torque.",
+      "confidence": 1.0
+    }
+  ]
+}

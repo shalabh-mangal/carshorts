@@ -1,0 +1,33 @@
+{
+  "subject": "Kia Seltos",
+  "specs": [
+    {
+      "name": "power",
+      "value": "149 PS",
+      "source_url": "https://en.wikipedia.org/wiki/Kia_Seltos",
+      "source_sentence": "The North American Kia Seltos offers a naturally aspirated 2.0-liter with 149 PS (110 kW; 147 hp) and 18.3 kg⋅m (179 N⋅m; 132 lb⋅ft) of torque, standard on LX, S, and EX trims with a CVT gearbox marketed as \"Intelligent Variable Transmission\" (IVT).",
+      "confidence": 1.0
+    },
+    {
+      "name": "torque",
+      "value": "179 N⋅m",
+      "source_url": "https://en.wikipedia.org/wiki/Kia_Seltos",
+      "source_sentence": "The North American Kia Seltos offers a naturally aspirated 2.0-liter with 149 PS (110 kW; 147 hp) and 18.3 kg⋅m (179 N⋅m; 132 lb⋅ft) of torque, standard on LX, S, and EX trims with a CVT gearbox marketed as \"Intelligent Variable Transmission\" (IVT).",
+      "confidence": 1.0
+    },
+    {
+      "name": "engine_litre",
+      "value": "2.0-liter",
+      "source_url": "https://en.wikipedia.org/wiki/Kia_Seltos",
+      "source_sentence": "The North American Kia Seltos offers a naturally aspirated 2.0-liter with 149 PS (110 kW; 147 hp) and 18.3 kg⋅m (179 N⋅m; 132 lb⋅ft) of torque, standard on LX, S, and EX trims with a CVT gearbox marketed as \"Intelligent Variable Transmission\" (IVT).",
+      "confidence": 1.0
+    },
+    {
+      "name": "price",
+      "value": "$45,000",
+      "source_url": "https://en.wikipedia.org/wiki/Kia_Seltos",
+      "source_sentence": "For 2023, the vehicle was the fifth highest selling SUV in its class of SUVs under $45,000.",
+      "confidence": 1.0
+    }
+  ]
+}

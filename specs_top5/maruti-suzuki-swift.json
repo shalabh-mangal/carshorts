@@ -1,0 +1,40 @@
+{
+  "subject": "Maruti Suzuki Swift",
+  "specs": [
+    {
+      "name": "power",
+      "value": "85 kW",
+      "source_url": "https://en.wikipedia.org/wiki/Suzuki_Swift",
+      "source_sentence": "Introduced in 2003, it featured redesigned bumpers and was fitted with a higher-output version of the 1.5-liter engine, producing 85 kW; 113 hp (115 PS).",
+      "confidence": 1.0
+    },
+    {
+      "name": "torque",
+      "value": "160 N⋅m",
+      "source_url": "https://en.wikipedia.org/wiki/Suzuki_Swift",
+      "source_sentence": "The production model of Swift Sport is powered by a revised 1.6-liter four-cylinder (M16A) from previous generation Swift Sport's engine and producing 100 kW; 134 bhp (136 PS) and 160 N⋅m (118 lb⋅ft).",
+      "confidence": 1.0
+    },
+    {
+      "name": "engine_litre",
+      "value": "1.3-liter",
+      "source_url": "https://en.wikipedia.org/wiki/Suzuki_Swift",
+      "source_sentence": "Vehicles fitted with the 1.3-liter engine were designated HT51S, with the 1.5-liter version assigned HT81S.",
+      "confidence": 1.0
+    },
+    {
+      "name": "mileage",
+      "value": "26.4 km/L",
+      "source_url": "https://en.wikipedia.org/wiki/Suzuki_Swift",
+      "source_sentence": "With the Dualjet technology and the ENE-CHARGE, fuel economy is now up to 26.4 km/L, calculated based on JC08 mode.",
+      "confidence": 1.0
+    },
+    {
+      "name": "price",
+      "value": "RS413",
+      "source_url": "https://en.wikipedia.org/wiki/Suzuki_Swift",
+      "source_sentence": "=== RS413/413D/415 ===",
+      "confidence": 1.0
+    }
+  ]
+}

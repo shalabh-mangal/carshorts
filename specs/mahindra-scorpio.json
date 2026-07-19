@@ -1,0 +1,40 @@
+{
+  "subject": "Mahindra Scorpio",
+  "specs": [
+    {
+      "name": "power",
+      "value": "109 hp",
+      "source_url": "https://en.wikipedia.org/wiki/Mahindra_Scorpio",
+      "source_sentence": "The direct injection turbo-diesel engine was all new; the NEF (New Engine Family) is square, with a 94.0 mm (3.70 in) bore and stroke, displaces 2,609 cc (2.6 L), and produces 109 hp (81 kW) at 3,800 rpm.",
+      "confidence": 1.0
+    },
+    {
+      "name": "torque",
+      "value": "370 N⋅m",
+      "source_url": "https://en.wikipedia.org/wiki/Mahindra_Scorpio",
+      "source_sentence": "The petrol powertrain is 2.0-liter turbocharged, churning out 203 PS (200 hp; 149 kW) power and 370 N⋅m (273 lb⋅ft; 38 kg⋅m) torque.",
+      "confidence": 1.0
+    },
+    {
+      "name": "engine_cc",
+      "value": "2,609 cc",
+      "source_url": "https://en.wikipedia.org/wiki/Mahindra_Scorpio",
+      "source_sentence": "The direct injection turbo-diesel engine was all new; the NEF (New Engine Family) is square, with a 94.0 mm (3.70 in) bore and stroke, displaces 2,609 cc (2.6 L), and produces 109 hp (81 kW) at 3,800 rpm.",
+      "confidence": 1.0
+    },
+    {
+      "name": "engine_litre",
+      "value": "2-liter",
+      "source_url": "https://en.wikipedia.org/wiki/Mahindra_Scorpio",
+      "source_sentence": "In addition to the in-house diesel engine, the Scorpio (and Goa) was also offered with Renault's 2-liter F4R petrol engine, producing 116 hp (87 kW) at 5,500 rpm.",
+      "confidence": 1.0
+    },
+    {
+      "name": "price",
+      "value": "Rs 600 crore",
+      "source_url": "https://en.wikipedia.org/wiki/Mahindra_Scorpio",
+      "source_sentence": "Using this method, the company was able to build from scratch a new vehicle with virtually 100 percent supplier involvement from concept to reality, at a cost of Rs 600 crore ($120 million), including improvements to the plant.",
+      "confidence": 1.0
+    }
+  ]
+}

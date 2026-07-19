@@ -1,0 +1,40 @@
+{
+  "subject": "Tata Tiago",
+  "specs": [
+    {
+      "name": "power",
+      "value": "86 BHP",
+      "source_url": "https://en.wikipedia.org/wiki/Tata_Tiago",
+      "source_sentence": "The Tiago is powered by a 1.2-litre Revotron three-cylinder 12V petrol that produces 86 BHP (64;kW) power and 114 N⋅m (84 lb⋅ft; 12 kg⋅m) of maximum torque combined with a 5-speed manual transmission or 5-speed AMT, or a 1.1-litre Revotorq three-cylinder diesel engine producing 69 BHP (51 kW) of power and 140 N⋅m (103 lb⋅ft; 14 kg⋅m) of maximum torque, combined with a 5-speed manual transmission.",
+      "confidence": 1.0
+    },
+    {
+      "name": "torque",
+      "value": "114 N⋅m",
+      "source_url": "https://en.wikipedia.org/wiki/Tata_Tiago",
+      "source_sentence": "The Tiago is powered by a 1.2-litre Revotron three-cylinder 12V petrol that produces 86 BHP (64;kW) power and 114 N⋅m (84 lb⋅ft; 12 kg⋅m) of maximum torque combined with a 5-speed manual transmission or 5-speed AMT, or a 1.1-litre Revotorq three-cylinder diesel engine producing 69 BHP (51 kW) of power and 140 N⋅m (103 lb⋅ft; 14 kg⋅m) of maximum torque, combined with a 5-speed manual transmission.",
+      "confidence": 1.0
+    },
+    {
+      "name": "engine_litre",
+      "value": "1.2-litre",
+      "source_url": "https://en.wikipedia.org/wiki/Tata_Tiago",
+      "source_sentence": "The Tiago is powered by a 1.2-litre Revotron three-cylinder 12V petrol that produces 86 BHP (64;kW) power and 114 N⋅m (84 lb⋅ft; 12 kg⋅m) of maximum torque combined with a 5-speed manual transmission or 5-speed AMT, or a 1.1-litre Revotorq three-cylinder diesel engine producing 69 BHP (51 kW) of power and 140 N⋅m (103 lb⋅ft; 14 kg⋅m) of maximum torque, combined with a 5-speed manual transmission.",
+      "confidence": 1.0
+    },
+    {
+      "name": "price",
+      "value": "₹4.7 Lakh",
+      "source_url": "https://en.wikipedia.org/wiki/Tata_Tiago",
+      "source_sentence": "A very heavy facelift of the Tiago and Tiago.ev was launched on 28 May 2026 with prices starting from ₹4.7 Lakh for ICE  and ₹7.0 Lakh for the EV variants.",
+      "confidence": 1.0
+    },
+    {
+      "name": "acceleration",
+      "value": "10 seconds",
+      "source_url": "https://en.wikipedia.org/wiki/Tata_Tiago",
+      "source_sentence": "According to Tata, the car can accelerate from 0–100 kilometres per hour (0–62 mph) in under 10 seconds.",
+      "confidence": 1.0
+    }
+  ]
+}

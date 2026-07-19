@@ -1,0 +1,26 @@
+{
+  "subject": "Tata Harrier",
+  "specs": [
+    {
+      "name": "power",
+      "value": "104 kW",
+      "source_url": "https://en.wikipedia.org/wiki/Tata_Harrier",
+      "source_sentence": "Multijet 16-valve four-cylinder turbo diesel with common rail direct injection, variable-geometry turbocharger, delivering 140 horsepower (104 kW; 142 PS) and 350 N⋅m (258 lb⋅ft; 36 kg⋅m) of torque, produced by Fiat (FCA India) in Pune.",
+      "confidence": 1.0
+    },
+    {
+      "name": "torque",
+      "value": "350 N⋅m",
+      "source_url": "https://en.wikipedia.org/wiki/Tata_Harrier",
+      "source_sentence": "Multijet 16-valve four-cylinder turbo diesel with common rail direct injection, variable-geometry turbocharger, delivering 140 horsepower (104 kW; 142 PS) and 350 N⋅m (258 lb⋅ft; 36 kg⋅m) of torque, produced by Fiat (FCA India) in Pune.",
+      "confidence": 1.0
+    },
+    {
+      "name": "engine_litre",
+      "value": "2.0 litre",
+      "source_url": "https://en.wikipedia.org/wiki/Tata_Harrier",
+      "source_sentence": "The engine is the 2.0 litre.",
+      "confidence": 1.0
+    }
+  ]
+}

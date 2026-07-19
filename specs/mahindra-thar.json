@@ -1,0 +1,40 @@
+{
+  "subject": "Mahindra Thar",
+  "specs": [
+    {
+      "name": "power",
+      "value": "63 hp",
+      "source_url": "https://en.wikipedia.org/wiki/Mahindra_Thar",
+      "source_sentence": "It was powered by a 2.5-liter turbocharged diesel engine that produced 63 hp (47 kW; 64 PS) and 182 N⋅m (134 lb⋅ft) of torque.",
+      "confidence": 1.0
+    },
+    {
+      "name": "torque",
+      "value": "182 N⋅m",
+      "source_url": "https://en.wikipedia.org/wiki/Mahindra_Thar",
+      "source_sentence": "It was powered by a 2.5-liter turbocharged diesel engine that produced 63 hp (47 kW; 64 PS) and 182 N⋅m (134 lb⋅ft) of torque.",
+      "confidence": 1.0
+    },
+    {
+      "name": "engine_litre",
+      "value": "2.5-liter",
+      "source_url": "https://en.wikipedia.org/wiki/Mahindra_Thar",
+      "source_sentence": "It was powered by a 2.5-liter turbocharged diesel engine that produced 63 hp (47 kW; 64 PS) and 182 N⋅m (134 lb⋅ft) of torque.",
+      "confidence": 1.0
+    },
+    {
+      "name": "top_speed",
+      "value": "45 mph",
+      "source_url": "https://en.wikipedia.org/wiki/Mahindra_Thar",
+      "source_sentence": "Unlike the Thar, the Roxor is not street legal, and is positioned as a side-by-side off-road vehicle with a top speed of 45 mph.",
+      "confidence": 1.0
+    },
+    {
+      "name": "price",
+      "value": "₹9.99 lakh",
+      "source_url": "https://en.wikipedia.org/wiki/Mahindra_Thar",
+      "source_sentence": "At launch, prices ranged from ₹9.99 lakh to ₹16.99 lakh (ex-showroom, India).",
+      "confidence": 1.0
+    }
+  ]
+}
