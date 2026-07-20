@@ -221,7 +221,12 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         bg_image = bg_video = None
         kind = plan[i]["type"] if (plan and i < len(plan)) else None
 
-        if kind == "concept":
+        # A real clip placed at assets/ai/<car>/seg_<i>.mp4 wins for ANY beat
+        # (own footage / AI clip) — real footage beats stills or stock.
+        placed_clip = ai_dir / f"seg_{i}.mp4"
+        if placed_clip.exists():
+            bg_video = str(placed_clip)
+        elif kind == "concept":
             # Prefer the generated AI clip for this beat; else brand-neutral stock.
             ai_clip = ai_dir / f"seg_{i}.mp4"
             if ai_clip.exists():
