@@ -26,6 +26,10 @@ _SPEECH_SUBS = [
     (re.compile(r"\bPS\b"), "P-S"),                  # metric horsepower
     (re.compile(r"\bbhp\b", re.I), "B-H-P"),
     (re.compile(r"\bkW\b"), "k-W"),
+    # Indian trim codes (ZXi, VXi, LXi, ZXi+ ...) — spell the letters so TTS
+    # doesn't mangle them ("ZXi" -> "Z-X-i").
+    (re.compile(r"\b([A-Z])(X)(i)(\+?)\b"),
+     lambda m: f"{m.group(1)}-{m.group(2)}-{m.group(3)}{' plus' if m.group(4) else ''}"),
 ]
 
 
