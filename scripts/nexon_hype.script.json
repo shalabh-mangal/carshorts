@@ -3,10 +3,8 @@
   "segments": [
     {
       "role": "hook",
-      "text": "Warning: 245 N⋅m of torque ahead! What's your excuse for not handling that kind of power?",
-      "cited_spec_names": [
-        "torque"
-      ]
+      "text": "Everyone sleeps on the Nexon — until they see what it does to cars twice its price.",
+      "cited_spec_names": []
     },
     {
       "role": "spec",
