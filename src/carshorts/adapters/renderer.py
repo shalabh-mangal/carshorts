@@ -93,16 +93,21 @@ def _draw_caption(draw, text: str, font, width: int, height: int):
 
 
 class Section:
-    """One scene: an audio clip plus its visual. The visual is either a stock
-    video clip (background_video) or a still photo (background_image); video wins
-    if both are set. caption is drawn only when the renderer is told to."""
+    """One scene: an audio clip plus its visual(s).
+
+    background_pool (preferred): a LIST of visuals (video paths or image paths)
+    — the section is cut into fast sub-scenes (~2-3s each), one per visual, so
+    pacing stays energetic and no asset lingers. Falls back to the single
+    background_video / background_image when no pool is given."""
 
     def __init__(self, audio_path: str, caption: str, background_image: str | None = None,
-                 background_video: str | None = None):
+                 background_video: str | None = None,
+                 background_pool: list[str] | None = None):
         self.audio_path = audio_path
         self.caption = caption
         self.background_image = background_image
         self.background_video = background_video
+        self.background_pool = background_pool or []
 
 
 class VideoRenderer(ABC):
@@ -149,6 +154,28 @@ class MoviePyRenderer(VideoRenderer):
                              audio_codec="aac", logger=None)
         return out_path
 
+    _VIDEO_EXT = (".mp4", ".mov", ".m4v", ".webm")
+
+    def _pooled_scene(self, visuals: list[str], dur: float,
+                      VideoFileClip, ImageClip, CompositeVideoClip, concatenate_videoclips):
+        """Fast-paced scene: split `dur` across the given visuals (videos play,
+        stills get alternating zoom), cut back-to-back. One visual = one sub-scene."""
+        chunk = dur / len(visuals)
+        subs = []
+        for j, path in enumerate(visuals):
+            if path.lower().endswith(self._VIDEO_EXT):
+                subs.append(self._video_scene(path, chunk, VideoFileClip, concatenate_videoclips))
+            else:
+                bg_path = self._prepare_background(path, None)
+                base = ImageClip(bg_path).with_duration(chunk)
+                if j % 2 == 0:
+                    motion = lambda t, d=chunk: 1.0 + 0.10 * (t / d)
+                else:
+                    motion = lambda t, d=chunk: 1.10 - 0.10 * (t / d)
+                zoom = base.resized(motion).with_position("center")
+                subs.append(CompositeVideoClip([zoom], size=self.size).with_duration(chunk))
+        return concatenate_videoclips(subs, method="chain")
+
     def _video_scene(self, path: str, dur: float, VideoFileClip, concatenate_videoclips):
         """A stock clip, cover-cropped to the vertical frame, silenced, and
         looped or trimmed to exactly `dur` (so it matches its section's voice)."""
@@ -178,7 +205,11 @@ class MoviePyRenderer(VideoRenderer):
         for idx, section in enumerate(sections):
             audio = AudioFileClip(section.audio_path)
             dur = audio.duration
-            if section.background_video:
+            if section.background_pool:
+                scene = self._pooled_scene(section.background_pool, dur,
+                                           VideoFileClip, ImageClip,
+                                           CompositeVideoClip, concatenate_videoclips)
+            elif section.background_video:
                 scene = self._video_scene(section.background_video, dur,
                                           VideoFileClip, concatenate_videoclips)
             else:
@@ -202,7 +233,7 @@ class MoviePyRenderer(VideoRenderer):
         video = concatenate_videoclips(clips, method="chain")
         video = self._add_music(video, music_path)
         video.write_videofile(out_path, fps=fps, codec="libx264",
-                              audio_codec="aac", logger=None)
+                              audio_codec="aac", bitrate="10M", logger=None)
         return out_path
 
     def _add_music(self, video, music_path: str | None):

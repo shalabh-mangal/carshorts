@@ -190,16 +190,21 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         except Exception as exc:  # noqa: BLE001 — no photos just means plain cards
             print(f"     footage fetch failed ({exc}); using plain caption cards.")
 
-    # --- Fetch generic stock video b-roll (real motion) if a Pexels key exists.
+    # --- Stock b-roll: prefer the VETTED local folder (curated by hand); only
+    # fetch fresh clips when the folder is empty and a Pexels key exists.
     stock_videos: list[str] = []
-    use_stock = stock if stock is not None else bool(os.environ.get("PEXELS_API_KEY"))
+    use_stock = stock if stock is not None else True
     if use_stock:
-        print("     fetching stock car b-roll (Pexels) for motion...")
-        try:
-            stock_videos = PexelsVideoSource().fetch("assets/stock", limit=4)
-            print(f"     {len(stock_videos)} stock clips")
-        except Exception as exc:  # noqa: BLE001 — fall back to stills
-            print(f"     stock fetch failed ({exc}); stills only.")
+        stock_videos = sorted(str(p) for p in Path("assets/stock").glob("*.mp4"))
+        if stock_videos:
+            print(f"     using {len(stock_videos)} vetted local stock clips")
+        elif os.environ.get("PEXELS_API_KEY"):
+            print("     fetching stock car b-roll (Pexels) for motion...")
+            try:
+                stock_videos = PexelsVideoSource().fetch("assets/stock", limit=4)
+                print(f"     {len(stock_videos)} stock clips (VET THESE — check each)")
+            except Exception as exc:  # noqa: BLE001 — fall back to stills
+                print(f"     stock fetch failed ({exc}); stills only.")
 
     # --- Render (always local, always free). Voice each section separately so
     # visuals stay in sync. Interleave: exact-car stills for identity, stock
@@ -209,47 +214,75 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     tts = make_tts(engine=voice_engine, persona=persona, voice=voice)
     print(f"4/5  voicing {len(script.segments)} sections "
           f"(engine={voice_engine}, persona={persona or 'default'})...")
-    # Shot plan (optional): routes each beat to AI concept clip vs real car footage.
-    plan = json.loads(Path(shots_file).read_text()) if shots_file else None
     ai_dir = Path("assets/ai") / _slug(script.subject)
 
+    # --- Voice all sections first so we know each duration, then distribute a
+    # visual POOL across fast sub-scenes (~2.8s cuts). Every asset is used at
+    # most once across the whole video (repeats read as cheap), interleaving
+    # the user's real clips with stock motion and stills for variety.
     tmpdir = Path(tempfile.mkdtemp(prefix="carshorts_"))
-    sections = []
+    from moviepy import AudioFileClip as _Audio
+
+    audio_paths, durations = [], []
     for i, seg in enumerate(script.segments):
         audio_path = str(tmpdir / f"seg_{i}.mp3")
         tts.synthesize(seg.text, audio_path)
-        bg_image = bg_video = None
-        kind = plan[i]["type"] if (plan and i < len(plan)) else None
+        audio_paths.append(audio_path)
+        durations.append(_Audio(audio_path).duration)
 
-        # A real clip placed at assets/ai/<car>/seg_<i>.mp4 wins for ANY beat
-        # (own footage / AI clip) — real footage beats stills or stock.
-        placed_clip = ai_dir / f"seg_{i}.mp4"
-        if placed_clip.exists():
-            bg_video = str(placed_clip)
-        elif kind == "concept":
-            # Prefer the generated AI clip for this beat; else brand-neutral stock.
-            ai_clip = ai_dir / f"seg_{i}.mp4"
-            if ai_clip.exists():
-                bg_video = str(ai_clip)
-            elif stock_videos:
-                bg_video = stock_videos[i % len(stock_videos)]
-            elif images:
-                bg_image = images[i % len(images)]
-        elif kind == "car":
-            # The car's identity must be real — prefer the exact-car still.
-            if images:
-                bg_image = images[i % len(images)]
-            elif stock_videos:
-                bg_video = stock_videos[i % len(stock_videos)]
-        else:
-            # No shot plan — old behaviour: motion open, then alternate.
-            if stock_videos and (i == 0 or i % 2 == 1):
-                bg_video = stock_videos[i % len(stock_videos)]
-            elif images:
-                bg_image = images[i % len(images)]
+    user_clips = sorted(str(p) for p in ai_dir.glob("pool_*.mp4"))
+    pool: list[str] = []
+    lists = [lst for lst in (user_clips, stock_videos, list(images)) if lst]
+    idxs = [0] * len(lists)
+    while any(idxs[k] < len(lists[k]) for k in range(len(lists))):
+        for k in range(len(lists)):
+            if idxs[k] < len(lists[k]):
+                pool.append(lists[k][idxs[k]])
+                idxs[k] += 1
+    print(f"     visual pool: {len(user_clips)} own clips + {len(stock_videos)} stock "
+          f"+ {len(images)} stills = {len(pool)}")
 
-        sections.append(Section(audio_path=audio_path, caption=seg.text,
-                                background_image=bg_image, background_video=bg_video))
+    # Adapt cut length to the pool so no asset repeats: aim ~2.8s cuts, but
+    # stretch (up to 3.8s) when the pool is small.
+    total = sum(durations)
+    target = 2.8
+    if pool and total / target > len(pool):
+        target = min(3.8, total / len(pool))
+
+    # Topic hints: route an asset to the beat that talks about it (AC clip on
+    # the AC line, petrol station on mileage, engine shot on the engine beat).
+    topic_hints = [
+        (re.compile(r"vent|\bAC\b|climate", re.I), re.compile(r"vent|air_conditioning", re.I)),
+        (re.compile(r"kmpl|mileage|fuel|wallet", re.I), re.compile(r"fuel|petrol", re.I)),
+        (re.compile(r"engine|litre|\bPS\b|torque", re.I), re.compile(r"engine|cluster", re.I)),
+        (re.compile(r"touchscreen|ZXi|alloys|projector", re.I), re.compile(r"console|side", re.I)),
+    ]
+    used: set = set()
+
+    def _grab(matcher, want: int) -> list[str]:
+        picked = []
+        for asset in pool:
+            if len(picked) >= want:
+                break
+            if asset not in used and matcher(asset):
+                picked.append(asset)
+                used.add(asset)
+        return picked
+
+    sections = []
+    for i, seg in enumerate(script.segments):
+        chunks = max(1, round(durations[i] / target))
+        visuals: list[str] = []
+        for text_pat, file_pat in topic_hints:
+            if text_pat.search(seg.text):
+                visuals += _grab(lambda a, p=file_pat: bool(p.search(Path(a).name)),
+                                 chunks - len(visuals))
+                break
+        visuals += _grab(lambda a: True, chunks - len(visuals))   # fill: any unused
+        if len(visuals) < chunks and pool:                        # pool exhausted
+            visuals += [pool[j % len(pool)] for j in range(chunks - len(visuals))]
+        sections.append(Section(audio_path=audio_paths[i], caption=seg.text,
+                                background_pool=visuals))
 
     # Background music: auto-generate a royalty-free beat unless disabled/overridden.
     music_path: str | None = None

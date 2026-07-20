@@ -2,50 +2,43 @@
   {
     "index": 0,
     "role": "hook",
-    "text": "Think power is everything in a car? Think again! The Maruti Suzuki Swift is the ultimate proof that you don't need a beast of an engine to leave the competition in the dust . ",
+    "text": "Think power is everything? Think again \u2014 the Swift leaves rivals in the dust without the big engine.",
     "type": "concept",
-    "prompt": "a person trying to keep up with a speeding car, exhausted and sweating, warm sunlight, fast-paced tracking shot, comedic"
+    "prompt": "a sprinter crossing the finish line, leaving others behind, dramatic stadium light, slow-motion, wide shot"
   },
   {
     "index": 1,
     "role": "spec",
-    "text": "With its efficient 1.2-litre engine, the Swift prioritizes smarts over brute force . ",
+    "text": "Just a 1.2-litre engine, but 82 PS and 111.7 Nm. Smart, not brute force.",
     "type": "car",
     "prompt": ""
   },
   {
     "index": 2,
     "role": "spec",
-    "text": "Don't get it twisted though - it still packs a punch with 82 P-S and 111.7 N-m of torque, making it perfect for city drives and beyond . ",
+    "text": "And 25.75 kmpl mileage. Your wallet says thanks.",
     "type": "car",
     "prompt": ""
   },
   {
     "index": 3,
-    "role": "spec",
-    "text": "And when it comes to stretching your fuel, the Swift's got you covered with an impressive mileage of 25.75 kmpl - because who doesn't love saving money on fuel ? ",
+    "role": "value",
+    "text": "Priced \u20b95.79 to \u20b98.80 lakh, the ZXi is the sweet spot \u2014 LED projectors, 15-inch alloys, a 9-inch touchscreen. Most bang for your buck.",
     "type": "car",
     "prompt": ""
   },
   {
     "index": 4,
-    "role": "value",
-    "text": "The Swift's estimated price range is 5.79 lakh to 8.80 lakh, but the real showstopper is the Z-X-i variant, loaded with goodies like LED projector headlamps, 15-inch alloy wheels, a 9-inch touchscreen, and more - giving you the most bang for your buck. ",
-    "type": "car",
-    "prompt": ""
+    "role": "peak",
+    "text": "But rear AC vents? If your car skips those, are you even living?",
+    "type": "concept",
+    "prompt": "a person sweating in a car without air conditioning, then relaxing in a car with rear AC vents, warm sunlight, comedic zoom-in, handheld shot"
   },
   {
     "index": 5,
-    "role": "peak",
-    "text": "Rear AC vents - the ultimate game-changer. If your car doesn't have them, are you really living your best life?",
-    "type": "concept",
-    "prompt": "a person stuck in a hot car, fanning themselves, then suddenly relaxed with a cool breeze from the rear AC vent, warm to cool color palette, quick cut to a satisfied expression, medium shot, humorous"
-  },
-  {
-    "index": 6,
     "role": "cta",
-    "text": "So, Swift or not so Swift? Let us know in the comments! Follow for more car reviews that'll keep you entertained and informed",
+    "text": "Swift, or not so Swift? Tell us below \u2014 and follow for more.",
     "type": "concept",
-    "prompt": "a person looking confused, then giving a thumbs up or down, with a cityscape or road in the background, natural light, slow-motion, neutral mood, medium shot, cinematic"
+    "prompt": "a person looking at their phone, then giving a thumbs up, neutral background, natural light, fast cutaway, point-of-view shot"
   }
 ]
