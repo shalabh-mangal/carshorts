@@ -1,0 +1,52 @@
+{
+  "subject": "Maruti Suzuki Swift",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Think the Swift is just a looker? Think again - this car's got brains and brawn!",
+      "cited_spec_names": []
+    },
+    {
+      "role": "spec",
+      "text": "With a whopping 85 kW of power under the hood, this Swift is less 'swift' and more 'rocket ship'!",
+      "cited_spec_names": [
+        "power"
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "And when you add 160 N⋅m of torque to the mix, you'd better hold on tight - it's a wild ride!",
+      "cited_spec_names": [
+        "torque"
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "The best part? All this power comes from a teeny 1.3-liter engine - who says size matters?",
+      "cited_spec_names": [
+        "engine_litre"
+      ]
+    },
+    {
+      "role": "value",
+      "text": "With an estimated price range of ₹5.79 lakh to ₹8.80 lakh, the ZXi variant is the real showstopper - 9-inch touchscreen, cruise control, 6 airbags, LED headlamps, and alloys, because you deserve it all!",
+      "cited_spec_names": [
+        "price_estimate",
+        "value_variant",
+        "value_features"
+      ]
+    },
+    {
+      "role": "peak",
+      "text": "Oh, and the cherry on top? The Swift sips fuel like a pro, delivering an incredible 26.4 km/L - your wallet and the planet will do the happy dance!",
+      "cited_spec_names": [
+        "mileage"
+      ]
+    },
+    {
+      "role": "cta",
+      "text": "Swift or not-so-swift - which team are you on? Spill the beans in the comments, and hit that follow button for more automotive awesomeness!",
+      "cited_spec_names": []
+    }
+  ]
+}

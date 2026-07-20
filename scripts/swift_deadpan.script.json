@@ -1,0 +1,51 @@
+{
+  "subject": "Maruti Suzuki Swift",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Warning: the Swift is still the hatchback king, and if you're not driving one, you're probably driving a mess",
+      "cited_spec_names": []
+    },
+    {
+      "role": "spec",
+      "text": "Packing 85 kW of power, this car isn't slow, but let's be real, it's not trying to win any drag races",
+      "cited_spec_names": [
+        "power"
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "The real hero here is the 160 N⋅m of torque - it's like having a get-out-of-jail-free card for all your driving mishaps",
+      "cited_spec_names": [
+        "torque"
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "Under the hood, you'll find a humble 1.3-liter engine, which is probably why it still manages to squeeze out 26.4 km/L - because who doesn't love saving money on fuel?",
+      "cited_spec_names": [
+        "engine_litre",
+        "mileage"
+      ]
+    },
+    {
+      "role": "value",
+      "text": "For a steal, you can get the ZXi variant, loaded with goodies like a 9-inch touchscreen with wireless Android Auto, cruise control, 6 airbags, LED headlamps, and alloy wheels - all for an estimated price that's harder to resist than a pizza",
+      "cited_spec_names": [
+        "price_estimate",
+        "value_variant",
+        "value_features"
+      ]
+    },
+    {
+      "role": "peak",
+      "text": "But let's get real, if you're still cruising around in a Swift from the ancient times, it's time to level up - your friends are low-key judging you, and honestly, so are we",
+      "cited_spec_names": []
+    },
+    {
+      "role": "cta",
+      "text": "So, are you still team Swift, or have you joined the dark side? Let us know in the comments, and don't forget to follow for more juicy car content!",
+      "cited_spec_names": []
+    }
+  ]
+}

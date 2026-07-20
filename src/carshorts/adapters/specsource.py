@@ -69,7 +69,12 @@ _PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ("engine_litre", re.compile(r"(?P<val>(?<!\d)\d(?:\.\d+)?[\s-]?(?:litre|liter))\b")),
     ("mileage", re.compile(r"(?P<val>\d[\d,]*(?:\.\d+)?\s?(?:kmpl|km/l|mpg))", re.I)),
     ("top_speed", re.compile(r"top speed[^.\d]{0,25}(?P<val>\d[\d,]*(?:\.\d+)?\s?(?:km/h|mph))", re.I)),
-    ("price", re.compile(r"(?P<val>(?:₹|Rs\.?|US\$|\$|€|£)\s?\d[\d,]*(?:\.\d+)?(?:\s?(?:lakh|crore|million|billion))?)", re.I)),
+    # Require a real magnitude (lakh/crore/...) OR a comma-grouped amount, so a
+    # model code like "RS413" is NOT read as a price.
+    ("price", re.compile(
+        r"(?P<val>(?:₹|Rs\.?|US\$|\$|€|£)\s?"
+        r"(?:\d[\d,]*(?:\.\d+)?\s?(?:lakh|crore|million|billion)|\d{1,3}(?:,\d{2,3})+(?:\.\d+)?))",
+        re.I)),
     # Acceleration is captured only when the sentence is genuinely a 0-to-X
     # sprint claim (guarded in extract_specs), to avoid grabbing stray seconds.
     ("acceleration", re.compile(r"(?P<val>\d+(?:\.\d+)?\s?seconds?)", re.I)),
@@ -124,6 +129,8 @@ def extract_specs(text: str, source_url: str) -> list[Spec]:
             if value not in sentence or sentence not in text:
                 continue
             if len(sentence) < 10 or len(sentence) > 400:
+                continue
+            if "==" in sentence:   # a Wikipedia section header, not a real sentence
                 continue
             specs.append(
                 Spec(

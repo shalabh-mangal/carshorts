@@ -60,6 +60,26 @@ def test_boot_volume_is_not_read_as_engine_size():
     assert "engine_litre" not in specs
 
 
+def test_model_code_is_not_read_as_price():
+    # Regression: "RS413" (a Swift engine/model code) must NOT become a price.
+    text = "The Swift is offered in RS413 and RS415 trims for the market."
+    specs = _by_name(extract_specs(text, URL))
+    assert "price" not in specs
+
+
+def test_section_header_not_used_as_source():
+    # A "=== ... ===" header is not a real sentence; nothing should extract from it.
+    text = "=== RS413/413D/415 ===\nSome later prose with 100 bhp of power."
+    specs = _by_name(extract_specs(text, URL))
+    assert all("==" not in s.source_sentence for s in specs.values())
+
+
+def test_real_price_still_extracted():
+    text = "Prices start at Rs 7.37 lakh ex-showroom."
+    specs = _by_name(extract_specs(text, URL))
+    assert "price" in specs and "7.37" in specs["price"].value
+
+
 def test_no_specs_from_prose_without_figures():
     text = "The Example Car is a stylish and comfortable vehicle for the family."
     assert extract_specs(text, URL) == []
