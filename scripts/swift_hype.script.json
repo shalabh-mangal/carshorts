@@ -3,33 +3,33 @@
   "segments": [
     {
       "role": "hook",
-      "text": "Think the Swift is just a looker? Think again - this car's got brains and brawn!",
+      "text": "Tata Tiago, are you watching? The Swift is back!",
       "cited_spec_names": []
     },
     {
       "role": "spec",
-      "text": "With a whopping 85 kW of power under the hood, this Swift is less 'swift' and more 'rocket ship'!",
+      "text": "Packing 82 PS of power under the hood, this Swift isn't just fast, it's furious!",
       "cited_spec_names": [
         "power"
       ]
     },
     {
       "role": "spec",
-      "text": "And when you add 160 N⋅m of torque to the mix, you'd better hold on tight - it's a wild ride!",
+      "text": "And with 111.7 Nm of torque, you'll be glued to your seat, trust me!",
       "cited_spec_names": [
         "torque"
       ]
     },
     {
       "role": "spec",
-      "text": "The best part? All this power comes from a teeny 1.3-liter engine - who says size matters?",
+      "text": "All this oomph from a humble 1.2-litre engine - talk about efficient!",
       "cited_spec_names": [
         "engine_litre"
       ]
     },
     {
       "role": "value",
-      "text": "With an estimated price range of ₹5.79 lakh to ₹8.80 lakh, the ZXi variant is the real showstopper - 9-inch touchscreen, cruise control, 6 airbags, LED headlamps, and alloys, because you deserve it all!",
+      "text": "For an estimated ₹5.79 lakh to ₹8.80 lakh, the ZXi variant around ₹7.53 lakh is the real MVP - you get LED projector headlamps, 15-inch alloy wheels, a 9-inch touchscreen, and more!",
       "cited_spec_names": [
         "price_estimate",
         "value_variant",
@@ -38,14 +38,14 @@
     },
     {
       "role": "peak",
-      "text": "Oh, and the cherry on top? The Swift sips fuel like a pro, delivering an incredible 26.4 km/L - your wallet and the planet will do the happy dance!",
+      "text": "But let's be real, the real question is: can your current ride give you 25.75 kmpl? Didn't think so!",
       "cited_spec_names": [
         "mileage"
       ]
     },
     {
       "role": "cta",
-      "text": "Swift or not-so-swift - which team are you on? Spill the beans in the comments, and hit that follow button for more automotive awesomeness!",
+      "text": "So, are you ready to level up your drive? Follow for more!",
       "cited_spec_names": []
     }
   ]

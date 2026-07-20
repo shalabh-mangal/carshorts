@@ -3,34 +3,34 @@
   "segments": [
     {
       "role": "hook",
-      "text": "Warning: the Swift is still the hatchback king, and if you're not driving one, you're probably driving a mess",
+      "text": "Think power is everything in a car? Think again! The Maruti Suzuki Swift is the ultimate proof that you don't need a beast of an engine to leave the competition in the dust",
       "cited_spec_names": []
     },
     {
       "role": "spec",
-      "text": "Packing 85 kW of power, this car isn't slow, but let's be real, it's not trying to win any drag races",
+      "text": "With its efficient 1.2-litre engine, the Swift prioritizes smarts over brute force",
       "cited_spec_names": [
-        "power"
+        "engine_litre"
       ]
     },
     {
       "role": "spec",
-      "text": "The real hero here is the 160 N⋅m of torque - it's like having a get-out-of-jail-free card for all your driving mishaps",
+      "text": "Don't get it twisted though - it still packs a punch with 82 PS and 111.7 Nm of torque, making it perfect for city drives and beyond",
       "cited_spec_names": [
+        "power",
         "torque"
       ]
     },
     {
       "role": "spec",
-      "text": "Under the hood, you'll find a humble 1.3-liter engine, which is probably why it still manages to squeeze out 26.4 km/L - because who doesn't love saving money on fuel?",
+      "text": "And when it comes to stretching your fuel, the Swift's got you covered with an impressive mileage of 25.75 kmpl - because who doesn't love saving money on gas?",
       "cited_spec_names": [
-        "engine_litre",
         "mileage"
       ]
     },
     {
       "role": "value",
-      "text": "For a steal, you can get the ZXi variant, loaded with goodies like a 9-inch touchscreen with wireless Android Auto, cruise control, 6 airbags, LED headlamps, and alloy wheels - all for an estimated price that's harder to resist than a pizza",
+      "text": "The Swift's estimated price range is ₹5.79 lakh to ₹8.80 lakh, but the real showstopper is the ZXi variant, loaded with goodies like LED projector headlamps, 15-inch alloy wheels, a 9-inch touchscreen, and more - giving you the most bang for your buck",
       "cited_spec_names": [
         "price_estimate",
         "value_variant",
@@ -39,12 +39,12 @@
     },
     {
       "role": "peak",
-      "text": "But let's get real, if you're still cruising around in a Swift from the ancient times, it's time to level up - your friends are low-key judging you, and honestly, so are we",
+      "text": "Rear AC vents - the ultimate game-changer. If your car doesn't have them, are you really living your best life?",
       "cited_spec_names": []
     },
     {
       "role": "cta",
-      "text": "So, are you still team Swift, or have you joined the dark side? Let us know in the comments, and don't forget to follow for more juicy car content!",
+      "text": "So, Swift or not so Swift? Let us know in the comments! Follow for more car reviews that'll keep you entertained and informed",
       "cited_spec_names": []
     }
   ]

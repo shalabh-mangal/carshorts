@@ -3,30 +3,30 @@
   "specs": [
     {
       "name": "power",
-      "value": "85 kW",
-      "source_url": "https://en.wikipedia.org/wiki/Suzuki_Swift",
-      "source_sentence": "Introduced in 2003, it featured redesigned bumpers and was fitted with a higher-output version of the 1.5-liter engine, producing 85 kW; 113 hp (115 PS).",
+      "value": "82 PS",
+      "source_url": "https://www.cardekho.com/maruti/swift",
+      "source_sentence": "The current Maruti Swift's 1.2-litre Z-series petrol engine produces up to 82 PS (80.46 bhp) of power and 111.7 Nm of torque (source CarDekho).",
       "confidence": 1.0
     },
     {
       "name": "torque",
-      "value": "160 N⋅m",
-      "source_url": "https://en.wikipedia.org/wiki/Suzuki_Swift",
-      "source_sentence": "The production model of Swift Sport is powered by a revised 1.6-liter four-cylinder (M16A) from previous generation Swift Sport's engine and producing 100 kW; 134 bhp (136 PS) and 160 N⋅m (118 lb⋅ft).",
+      "value": "111.7 Nm",
+      "source_url": "https://www.cardekho.com/maruti/swift",
+      "source_sentence": "The current Maruti Swift's 1.2-litre Z-series petrol engine produces up to 82 PS (80.46 bhp) of power and 111.7 Nm of torque (source CarDekho).",
       "confidence": 1.0
     },
     {
       "name": "engine_litre",
-      "value": "1.3-liter",
-      "source_url": "https://en.wikipedia.org/wiki/Suzuki_Swift",
-      "source_sentence": "Vehicles fitted with the 1.3-liter engine were designated HT51S, with the 1.5-liter version assigned HT81S.",
+      "value": "1.2-litre",
+      "source_url": "https://www.cardekho.com/maruti/swift",
+      "source_sentence": "The current Swift uses a 1197 cc, 1.2-litre three-cylinder naturally aspirated petrol engine (source CarDekho).",
       "confidence": 1.0
     },
     {
       "name": "mileage",
-      "value": "26.4 km/L",
-      "source_url": "https://en.wikipedia.org/wiki/Suzuki_Swift",
-      "source_sentence": "With the Dualjet technology and the ENE-CHARGE, fuel economy is now up to 26.4 km/L, calculated based on JC08 mode.",
+      "value": "25.75 kmpl",
+      "source_url": "https://www.cardekho.com/maruti/swift",
+      "source_sentence": "ARAI fuel economy is 24.8 to 25.75 kmpl on petrol, and 32.85 km/kg on the CNG variant (source CarDekho).",
       "confidence": 1.0
     }
   ]
