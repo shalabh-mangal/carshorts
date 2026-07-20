@@ -122,7 +122,8 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
             skip_factcheck: bool = False, provider: str | None = None,
             footage: bool = True, music: str | None = "auto",
             captions: bool = False, stock: bool | None = None,
-            voice_engine: str = "edge", persona: str = "") -> str:
+            voice_engine: str = "edge", persona: str = "",
+            shots_file: str | None = None) -> str:
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
 
@@ -208,18 +209,40 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     tts = make_tts(engine=voice_engine, persona=persona, voice=voice)
     print(f"4/5  voicing {len(script.segments)} sections "
           f"(engine={voice_engine}, persona={persona or 'default'})...")
+    # Shot plan (optional): routes each beat to AI concept clip vs real car footage.
+    plan = json.loads(Path(shots_file).read_text()) if shots_file else None
+    ai_dir = Path("assets/ai") / _slug(script.subject)
+
     tmpdir = Path(tempfile.mkdtemp(prefix="carshorts_"))
     sections = []
     for i, seg in enumerate(script.segments):
         audio_path = str(tmpdir / f"seg_{i}.mp3")
         tts.synthesize(seg.text, audio_path)
         bg_image = bg_video = None
-        # Open on MOTION (pattern-interrupt to stop the swipe), then alternate:
-        # stock video on the hook + odd scenes, exact-car stills on even scenes.
-        if stock_videos and (i == 0 or i % 2 == 1):
-            bg_video = stock_videos[i % len(stock_videos)]
-        elif images:
-            bg_image = images[i % len(images)]
+        kind = plan[i]["type"] if (plan and i < len(plan)) else None
+
+        if kind == "concept":
+            # Prefer the generated AI clip for this beat; else brand-neutral stock.
+            ai_clip = ai_dir / f"seg_{i}.mp4"
+            if ai_clip.exists():
+                bg_video = str(ai_clip)
+            elif stock_videos:
+                bg_video = stock_videos[i % len(stock_videos)]
+            elif images:
+                bg_image = images[i % len(images)]
+        elif kind == "car":
+            # The car's identity must be real — prefer the exact-car still.
+            if images:
+                bg_image = images[i % len(images)]
+            elif stock_videos:
+                bg_video = stock_videos[i % len(stock_videos)]
+        else:
+            # No shot plan — old behaviour: motion open, then alternate.
+            if stock_videos and (i == 0 or i % 2 == 1):
+                bg_video = stock_videos[i % len(stock_videos)]
+            elif images:
+                bg_image = images[i % len(images)]
+
         sections.append(Section(audio_path=audio_path, caption=seg.text,
                                 background_image=bg_image, background_video=bg_video))
 
@@ -267,6 +290,7 @@ def main() -> None:
                         help="edge (free) or elevenlabs (expressive, needs ELEVENLABS_API_KEY).")
     parser.add_argument("--persona", default="", choices=["", "bhai", "deadpan", "hype"],
                         help="Voice energy profile (edge rate/pitch).")
+    parser.add_argument("--shots", help="Shot-plan JSON (routes beats to AI clips vs car footage).")
     args = parser.parse_args()
 
     stock = True if args.stock else (False if args.no_stock else None)
@@ -274,7 +298,8 @@ def main() -> None:
                    script_file=args.script_file, skip_factcheck=args.skip_factcheck,
                    provider=args.provider, footage=not args.no_footage, music=args.music,
                    captions=args.captions, stock=stock,
-                   voice_engine=args.voice_engine, persona=args.persona)
+                   voice_engine=args.voice_engine, persona=args.persona,
+                   shots_file=args.shots)
     print(f"\nDone -> {path}")
 
 
