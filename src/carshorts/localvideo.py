@@ -18,21 +18,52 @@ from pathlib import Path
 MODEL = "Lightricks/LTX-Video"
 
 
-def generate(prompt: str, out_path: str, width: int = 480, height: int = 704,
-             num_frames: int = 49, steps: int = 25, fps: int = 24) -> str:
+def generate(prompt: str, out_path: str, width: int = 448, height: int = 640,
+             num_frames: int = 33, steps: int = 20, fps: int = 24,
+             low_mem: bool = True) -> str:
+    import gc
+
     import torch
     from diffusers import LTXPipeline
     from diffusers.utils import export_to_video
 
-    # bfloat16 is LTX's native dtype; fall back to float16 if MPS rejects it.
-    dtype = torch.bfloat16
+    dtype = torch.bfloat16  # halves memory vs float32; LTX's native dtype
     pipe = LTXPipeline.from_pretrained(MODEL, torch_dtype=dtype)
-    pipe.to("mps")
-    pipe.enable_attention_slicing()  # trade speed for lower peak memory (16GB)
+
+    if low_mem:
+        # Sequential offload streams one submodule at a time, so peak allocation
+        # is ~the largest single module, not the sum (T5-XXL never coexists with
+        # the transformer). Slow, but the only way to fit ~13GB of weights + the
+        # activations into 16GB. Fall back gracefully if MPS rejects a strategy.
+        placed = False
+        for strategy in ("sequential", "model"):
+            try:
+                if strategy == "sequential":
+                    pipe.enable_sequential_cpu_offload(device="mps")
+                else:
+                    pipe.enable_model_cpu_offload(device="mps")
+                placed = True
+                break
+            except Exception:  # noqa: BLE001
+                continue
+        if not placed:
+            pipe.to("mps")
+    else:
+        pipe.to("mps")
+
+    pipe.enable_attention_slicing()
+    try:
+        pipe.enable_vae_tiling()   # decode the video in tiles -> lower peak memory
+    except Exception:  # noqa: BLE001
+        pass
+
+    gc.collect()
+    if torch.backends.mps.is_available():
+        torch.mps.empty_cache()
 
     result = pipe(
         prompt=prompt,
-        negative_prompt="blurry, distorted, watermark, text, logo, brand",
+        negative_prompt="blurry, distorted, watermark, text, logo, brand name",
         width=width, height=height, num_frames=num_frames, num_inference_steps=steps,
     )
     Path(out_path).parent.mkdir(parents=True, exist_ok=True)
@@ -44,10 +75,12 @@ def main() -> None:
     p = argparse.ArgumentParser(description="Generate one clip locally via LTX-Video.")
     p.add_argument("--prompt", required=True)
     p.add_argument("--out", required=True)
-    p.add_argument("--frames", type=int, default=49)
-    p.add_argument("--steps", type=int, default=25)
+    p.add_argument("--frames", type=int, default=33)
+    p.add_argument("--steps", type=int, default=20)
+    p.add_argument("--no-lowmem", action="store_true", help="Disable offload (needs lots of RAM).")
     args = p.parse_args()
-    path = generate(args.prompt, args.out, num_frames=args.frames, steps=args.steps)
+    path = generate(args.prompt, args.out, num_frames=args.frames, steps=args.steps,
+                    low_mem=not args.no_lowmem)
     print(f"Done -> {path}")
 
 
