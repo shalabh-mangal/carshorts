@@ -1,0 +1,51 @@
+{
+  "subject": "Tata Nexon",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Warning: 245 N⋅m of torque ahead! What's your excuse for not handling that kind of power?",
+      "cited_spec_names": [
+        "torque"
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "Let's get down to business - this powerhouse boasts an 81 kW engine, and the best part? It's just getting started!",
+      "cited_spec_names": [
+        "power"
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "All that juice is packed into a sleek 1.5-litre engine - because who doesn't love a little efficiency with their speed?",
+      "cited_spec_names": [
+        "engine_litre"
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "And when you put the pedal to the metal, it'll take you from 0 to 100 in a mere 9.9 seconds - faster than you can say 'Tata Nexon' three times!",
+      "cited_spec_names": [
+        "acceleration"
+      ]
+    },
+    {
+      "role": "value",
+      "text": "Now, the price estimate is around ₹7.37 lakh to ₹14.22 lakh - but let's be real, the sweet spot is the Creative variant, where you get all the bells and whistles: 360-degree camera, automatic climate control, alloy wheels, and cruise control. Yes, it's worth every penny!",
+      "cited_spec_names": [
+        "price_estimate",
+        "value_features"
+      ]
+    },
+    {
+      "role": "peak",
+      "text": "Cruise control, 360-degree camera... who needs a significant other when you've got a Tata Nexon? Priorities, people!",
+      "cited_spec_names": []
+    },
+    {
+      "role": "cta",
+      "text": "Ready to level up your ride game? Follow us for more car content and let's get this automotive party started!",
+      "cited_spec_names": []
+    }
+  ]
+}

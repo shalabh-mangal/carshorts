@@ -23,8 +23,11 @@ from ..models import (
 )
 from ..prompts.templates import (
     DRAFT_SYSTEM,
+    EDITOR_SYSTEM,
     FACTCHECK_SYSTEM,
+    JUDGE_SYSTEM,
     LANGUAGE_INSTRUCTIONS,
+    PERSONAS,
     RANK_SYSTEM,
     render_spec_sheet,
 )
@@ -73,26 +76,56 @@ def rank_stories(items: list[NewsItem], llm: LLMClient) -> list[NewsItem]:
 # ---------------------------------------------------------------------------
 # Stage 3: draft script (constrained to the spec sheet)
 # ---------------------------------------------------------------------------
-def draft_script(spec_sheet: SpecSheet, llm: LLMClient, language: str = "english",
-                 guidance: str = "") -> Script:
-    language_line = LANGUAGE_INSTRUCTIONS.get(language.lower(), LANGUAGE_INSTRUCTIONS["english"])
-    guidance_block = f"\n\n{guidance}" if guidance else ""
-    user = (
-        f"{render_spec_sheet(spec_sheet)}"
-        f"{guidance_block}\n\n"
-        f"{language_line}\n\n"
-        "Write the Short script now, using ONLY the specs above."
-    )
-    data = llm.complete_json(DRAFT_SYSTEM, user)
+def _script_from_data(data: dict, default_subject: str) -> Script:
     segments = [
         ScriptSegment(
             role=seg["role"],
             text=seg["text"],
             cited_spec_names=seg.get("cited_spec_names", []),
         )
-        for seg in data["segments"]
+        for seg in data.get("segments", [])
     ]
-    return Script(subject=data.get("subject", spec_sheet.subject), segments=segments)
+    return Script(subject=data.get("subject", default_subject), segments=segments)
+
+
+def draft_script(spec_sheet: SpecSheet, llm: LLMClient, language: str = "english",
+                 guidance: str = "", persona: str = "", angle: str = "") -> Script:
+    language_line = LANGUAGE_INSTRUCTIONS.get(language.lower(), LANGUAGE_INSTRUCTIONS["english"])
+    persona_line = PERSONAS.get(persona.lower(), "") if persona else ""
+    blocks = [b for b in (guidance, persona_line, angle) if b]
+    extra = ("\n\n" + "\n".join(blocks)) if blocks else ""
+    user = (
+        f"{render_spec_sheet(spec_sheet)}"
+        f"{extra}\n\n"
+        f"{language_line}\n\n"
+        "Write the Short script now, using ONLY the specs above."
+    )
+    data = llm.complete_json(DRAFT_SYSTEM, user)
+    return _script_from_data(data, spec_sheet.subject)
+
+
+def judge_scripts(scripts: list[Script], llm: LLMClient) -> tuple[int, str]:
+    """Score candidate scripts and return (best_index, why). Falls back to 0."""
+    if len(scripts) == 1:
+        return 0, "only candidate"
+    numbered = "\n\n".join(f"### SCRIPT {i}\n{s.full_text}" for i, s in enumerate(scripts))
+    result = llm.complete_json(JUDGE_SYSTEM, numbered)
+    if isinstance(result, dict):
+        idx = int(result.get("best_index", 0))
+        if 0 <= idx < len(scripts):
+            return idx, str(result.get("why", ""))
+    return 0, "judge fallback"
+
+
+def punch_up_script(script: Script, spec_sheet: SpecSheet, llm: LLMClient) -> Script:
+    """Editor pass: sharpen the winning script without adding unsourced facts."""
+    user = (
+        f"{render_spec_sheet(spec_sheet)}\n\n"
+        f"SCRIPT:\n{script.model_dump_json()}\n\n"
+        "Punch up this script now."
+    )
+    data = llm.complete_json(EDITOR_SYSTEM, user)
+    return _script_from_data(data, script.subject)
 
 
 # ---------------------------------------------------------------------------

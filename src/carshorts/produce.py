@@ -75,6 +75,15 @@ def _apply_extras(sheet: SpecSheet) -> str:
     variant = extras.get("value_variant")
     features = extras.get("value_features")
     if variant:
+        # Back the variant NAME too, so "the Creative variant" reads as sourced
+        # (the recommendation itself stays opinion).
+        sheet.specs.append(Spec(
+            name="value_variant",
+            value=variant,
+            source_url=extras.get("value_source", source),
+            source_sentence=(f"The {variant} variant is widely considered the "
+                             f"value-for-money pick (source CarDekho)."),
+        ))
         # Make the value variant's features a SOURCED spec so the fact-checker
         # passes them, then tell the writer to NAME them (concrete features sell).
         if features:

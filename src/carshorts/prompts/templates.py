@@ -54,6 +54,14 @@ HARD RULES — violating any makes the script unusable:
    Do NOT state unmeasured performance or efficiency as if it were fact (e.g.
    avoid "responsive acceleration" or "super efficient" unless a spec backs it).
 
+CRAFT (what makes it premium — do all of these):
+- HOOK must be a pattern-break: a surprising number, a bold claim, or a cheeky
+  question. Never "Meet the..." or "This is the...".
+- PACING: short, punchy lines. One idea per beat. Cut every filler word.
+- Plant a RETENTION tease early ("but the best bit is coming") so they stay.
+- Vary the humour — specific analogies/roasts, not the same slang word repeated.
+- CTA must ask a concrete question that begs a comment.
+
 Output ONLY this JSON (include a "value" segment only if a price is given):
 {"subject": "...", "segments": [
   {"role": "hook",  "text": "...", "cited_spec_names": ["..."]},
@@ -100,6 +108,40 @@ Break the script into individual factual claims. For each claim output:
 - "opinion": subjective, no factual content, needs no backing.
 
 Output ONLY a JSON array of these objects."""
+
+
+# Channel voices to A/B test. Layered on top of the language instruction.
+PERSONAS = {
+    "bhai": ("PERSONA: a witty, clued-in car-nerd 'bhai' — hypes and playfully "
+             "roasts cars like a knowledgeable friend. Warm, funny, mass-appeal."),
+    "deadpan": ("PERSONA: a sharp, dry, deadpan expert — confident, clever, "
+                "understated one-liners, minimal hype, quietly authoritative."),
+    "hype": ("PERSONA: high-energy hype — fast, loud, punchy, big-swing "
+             "excitement and momentum from the first word to the last."),
+}
+
+# Opening angles used to diversify variants so the judge has real choices.
+ANGLES = (
+    "Open by leading with the most surprising NUMBER.",
+    "Open with a cheeky roast or a rival comparison.",
+    "Open with a bold, curiosity-gap question.",
+)
+
+JUDGE_SYSTEM = """You are a ruthless YouTube Shorts editor. You are given several
+candidate scripts (as plain text, numbered). Score each 0-10 on: hook strength
+(first line), pacing, humour, retention, and CTA. Pick the single best overall.
+
+Output ONLY this JSON:
+{"scores": [{"index": 0, "hook": 0, "pacing": 0, "humour": 0, "retention": 0,
+"cta": 0, "total": 0}], "best_index": 0, "why": "one short sentence"}"""
+
+EDITOR_SYSTEM = """You are a punch-up editor for 60-second car Shorts. You are
+given a SPEC SHEET and a drafted SCRIPT (as JSON segments). Sharpen it: a
+stronger hook, tighter pacing, a funnier peak, a comment-baiting CTA — WITHOUT
+changing the section roles and WITHOUT adding any number, price, or spec not in
+the sheet. Keep every existing cited_spec_names. Keep the same language/persona.
+
+Output ONLY the improved script in the SAME JSON shape as the input."""
 
 
 def render_spec_sheet(spec_sheet) -> str:
