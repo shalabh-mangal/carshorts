@@ -86,15 +86,19 @@ def _apply_extras(sheet: SpecSheet) -> str:
         ))
         # Make the value variant's features a SOURCED spec so the fact-checker
         # passes them, then tell the writer to NAME them (concrete features sell).
+        vp = extras.get("value_price", "")
         if features:
+            # Include the variant price in the sourced sentence so the writer may
+            # quote it (e.g. "ZXi around ₹7.53 lakh") without the number-guard
+            # flagging it as fabricated.
+            price_clause = f" ({vp})" if vp else ""
             sheet.specs.append(Spec(
                 name="value_features",
                 value=features,
                 source_url=extras.get("value_source", source),
-                source_sentence=(f"The {variant} variant includes {features} "
+                source_sentence=(f"The {variant} variant{price_clause} includes {features} "
                                  f"(source CarDekho)."),
             ))
-        vp = extras.get("value_price", "")
         guidance.append(
             f"VALUE PICK (your opinion): the {variant} variant {vp} is the sweet "
             f"spot. NAME these concrete features it gives you: {features or 'key features'}."
