@@ -1,15 +1,34 @@
 """The TTSProvider adapter — turns script text into spoken audio.
 
-Free tier now: edge-tts (Microsoft Edge's online voices, no API key, no cost).
-Paid natural voices (ElevenLabs, PlayHT) would be a second implementation of
-this same interface — a one-line swap in the composition root, never a change
-in the pipeline. Voice quality is the easiest thing to upgrade once the channel
-earns, so we deliberately start free and keep the seam clean.
+Two engines behind one interface:
+  - EdgeTTSProvider   : free, neural, decent but limited expression. Per-persona
+                        rate/pitch adds some life. Use while iterating.
+  - ElevenLabsTTSProvider : genuinely expressive/emotional + multilingual (handles
+                        Hinglish well). Free tier, then paid. Use for FINAL cuts.
+
+Swapping engines is a one-line change (make_tts) — the pipeline never knows which.
 """
 from __future__ import annotations
 
 import asyncio
+import os
+import ssl
 from abc import ABC, abstractmethod
+
+try:
+    import certifi
+
+    _SSL_CONTEXT: ssl.SSLContext | None = ssl.create_default_context(cafile=certifi.where())
+except ImportError:
+    _SSL_CONTEXT = None
+
+# Per-persona edge-tts settings — a cheap way to differentiate energy for free.
+PERSONA_VOICE = {
+    "bhai":    {"voice": "en-IN-PrabhatNeural", "rate": "+8%",  "pitch": "+2Hz"},
+    "deadpan": {"voice": "en-GB-RyanNeural",     "rate": "-4%",  "pitch": "-2Hz"},
+    "hype":    {"voice": "en-US-GuyNeural",       "rate": "+18%", "pitch": "+4Hz"},
+    "default": {"voice": "en-US-GuyNeural",       "rate": "+0%",  "pitch": "+0Hz"},
+}
 
 
 class TTSProvider(ABC):
@@ -20,22 +39,67 @@ class TTSProvider(ABC):
 
 class EdgeTTSProvider(TTSProvider):
     """Free online TTS via edge-tts. Needs network, no key, no cost.
+    rate/pitch give a little expression (edge-tts has no true emotion styles)."""
 
-    Voices: run `edge-tts --list-voices` for the full list. A few good English
-    ones: en-US-GuyNeural (default here), en-US-JennyNeural, en-IN-PrabhatNeural
-    / en-IN-NeerjaNeural for an Indian-English feel that fits a car channel.
-    """
-
-    def __init__(self, voice: str = "en-US-GuyNeural", rate: str = "+0%"):
+    def __init__(self, voice: str = "en-US-GuyNeural", rate: str = "+0%", pitch: str = "+0Hz"):
         self.voice = voice
         self.rate = rate
+        self.pitch = pitch
 
     def synthesize(self, text: str, out_path: str) -> str:
-        import edge_tts  # imported lazily so tests/core don't need it
+        import edge_tts
 
         async def _run() -> None:
-            communicate = edge_tts.Communicate(text, self.voice, rate=self.rate)
+            communicate = edge_tts.Communicate(text, self.voice, rate=self.rate, pitch=self.pitch)
             await communicate.save(out_path)
 
         asyncio.run(_run())
         return out_path
+
+
+class ElevenLabsTTSProvider(TTSProvider):
+    """Expressive, emotional, multilingual TTS. Needs ELEVENLABS_API_KEY.
+
+    Voice: set ELEVENLABS_VOICE_ID (browse voices at elevenlabs.io/voice-library).
+    Default is 'Adam' (a common male voice). Model eleven_multilingual_v2 speaks
+    English AND Hinglish with real expression.
+    """
+
+    def __init__(self, voice_id: str | None = None, api_key: str | None = None,
+                 model: str = "eleven_multilingual_v2"):
+        self.voice_id = voice_id or os.environ.get("ELEVENLABS_VOICE_ID", "pNInz6obpgDQGcFmaJgB")
+        self.api_key = api_key or os.environ.get("ELEVENLABS_API_KEY")
+        self.model = model
+
+    def synthesize(self, text: str, out_path: str) -> str:
+        import json
+        import urllib.request
+
+        if not self.api_key:
+            raise RuntimeError("ELEVENLABS_API_KEY not set — get a free key at elevenlabs.io")
+        url = f"https://api.elevenlabs.io/v1/text-to-speech/{self.voice_id}"
+        body = json.dumps({
+            "text": text,
+            "model_id": self.model,
+            # Lower stability + some style = more expressive, less flat delivery.
+            "voice_settings": {"stability": 0.4, "similarity_boost": 0.75, "style": 0.5},
+        }).encode()
+        req = urllib.request.Request(url, data=body, headers={
+            "xi-api-key": self.api_key,
+            "Content-Type": "application/json",
+            "Accept": "audio/mpeg",
+            "User-Agent": "carshorts/0.1",
+        })
+        with urllib.request.urlopen(req, timeout=120, context=_SSL_CONTEXT) as resp:
+            audio = resp.read()
+        with open(out_path, "wb") as fh:
+            fh.write(audio)
+        return out_path
+
+
+def make_tts(engine: str = "edge", persona: str = "", voice: str | None = None) -> TTSProvider:
+    """Build a TTS provider. engine='edge' (free) or 'elevenlabs' (expressive)."""
+    if engine == "elevenlabs":
+        return ElevenLabsTTSProvider()
+    cfg = PERSONA_VOICE.get(persona, PERSONA_VOICE["default"])
+    return EdgeTTSProvider(voice=voice or cfg["voice"], rate=cfg["rate"], pitch=cfg["pitch"])

@@ -31,7 +31,7 @@ from .adapters.llm import make_llm
 from .adapters.music import generate_beat
 from .adapters.renderer import MoviePyRenderer, Section
 from .adapters.stock import PexelsVideoSource
-from .adapters.tts import EdgeTTSProvider
+from .adapters.tts import make_tts
 from .gate1 import render_gate1_report
 from .models import Script, Spec, SpecSheet
 from .stages.pipeline import (
@@ -117,7 +117,8 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
             voice: str | None = None, script_file: str | None = None,
             skip_factcheck: bool = False, provider: str | None = None,
             footage: bool = True, music: str | None = "auto",
-            captions: bool = False, stock: bool | None = None) -> str:
+            captions: bool = False, stock: bool | None = None,
+            voice_engine: str = "edge", persona: str = "") -> str:
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
 
@@ -198,9 +199,11 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     # --- Render (always local, always free). Voice each section separately so
     # visuals stay in sync. Interleave: exact-car stills for identity, stock
     # video for motion.
-    voice = voice or VOICE_BY_LANG.get(language, "en-US-GuyNeural")
-    print(f"4/5  voicing {len(script.segments)} sections (voice={voice})...")
-    tts = EdgeTTSProvider(voice=voice)
+    # persona picks voice+energy for English; language picks the voice otherwise.
+    voice = voice or (None if persona else VOICE_BY_LANG.get(language, "en-US-GuyNeural"))
+    tts = make_tts(engine=voice_engine, persona=persona, voice=voice)
+    print(f"4/5  voicing {len(script.segments)} sections "
+          f"(engine={voice_engine}, persona={persona or 'default'})...")
     tmpdir = Path(tempfile.mkdtemp(prefix="carshorts_"))
     sections = []
     for i, seg in enumerate(script.segments):
@@ -256,13 +259,18 @@ def main() -> None:
                         help="'auto' (generate a beat, default), 'none', or a path to a track.")
     parser.add_argument("--stock", action="store_true", help="Force stock-video b-roll (needs PEXELS_API_KEY).")
     parser.add_argument("--no-stock", action="store_true", help="Disable stock video (stills only).")
+    parser.add_argument("--voice-engine", default="edge", choices=["edge", "elevenlabs"],
+                        help="edge (free) or elevenlabs (expressive, needs ELEVENLABS_API_KEY).")
+    parser.add_argument("--persona", default="", choices=["", "bhai", "deadpan", "hype"],
+                        help="Voice energy profile (edge rate/pitch).")
     args = parser.parse_args()
 
     stock = True if args.stock else (False if args.no_stock else None)
     path = produce(args.spec, args.out, language=args.language, voice=args.voice,
                    script_file=args.script_file, skip_factcheck=args.skip_factcheck,
                    provider=args.provider, footage=not args.no_footage, music=args.music,
-                   captions=args.captions, stock=stock)
+                   captions=args.captions, stock=stock,
+                   voice_engine=args.voice_engine, persona=args.persona)
     print(f"\nDone -> {path}")
 
 
