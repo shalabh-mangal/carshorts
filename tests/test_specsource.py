@@ -5,7 +5,7 @@ values bound to their VERBATIM source sentence. This is the honesty gate the
 whole harness depends on — if extraction ever paraphrases, the hallucination
 number it produces would be measuring against a fabricated answer key.
 """
-from carshorts.adapters.specsource import extract_specs
+from carshorts.adapters.specsource import extract_specs, scope_to_current_generation
 
 URL = "https://en.wikipedia.org/wiki/Example_Car"
 
@@ -78,6 +78,35 @@ def test_real_price_still_extracted():
     text = "Prices start at Rs 7.37 lakh ex-showroom."
     specs = _by_name(extract_specs(text, URL))
     assert "price" in specs and "7.37" in specs["price"].value
+
+
+_MULTI_GEN = (
+    "The Example Swift is a hatchback.\n"
+    "== First generation (2004–2010) ==\n"
+    "=== Engine ===\n"
+    "The first-gen used a 1.3-litre engine making 65 kW and 120 N⋅m.\n"
+    "== Fourth generation (2024–present) ==\n"
+    "=== Engine ===\n"
+    "The current model uses a 1.2-litre engine producing 82 PS and 111 N⋅m of torque.\n"
+)
+
+
+def test_scope_picks_current_generation_including_subsections():
+    scoped = scope_to_current_generation(_MULTI_GEN)
+    assert "1.2-litre" in scoped and "82 PS" in scoped   # current gen kept
+    assert "1.3-litre" not in scoped and "65 kW" not in scoped   # old gen dropped
+
+
+def test_scoped_extraction_uses_current_specs_only():
+    specs = _by_name(extract_specs(scope_to_current_generation(_MULTI_GEN), URL))
+    assert specs["engine_litre"].value == "1.2-litre"
+    assert specs["power"].value == "82 PS"
+
+
+def test_scope_falls_back_when_no_generation_sections():
+    # A single-generation article (no gen headers) is returned unchanged.
+    plain = "The car makes 100 kW. It is efficient."
+    assert scope_to_current_generation(plain) == plain
 
 
 def test_no_specs_from_prose_without_figures():

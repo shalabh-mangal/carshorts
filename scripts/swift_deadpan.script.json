@@ -15,7 +15,7 @@
     },
     {
       "role": "spec",
-      "text": "Don't get it twisted though - it still packs a punch with 82 PS and 111.7 Nm of torque, making it perfect for city drives and beyond",
+      "text": "Don't get it twisted though - it still packs a punch with 82 P-S and 111.7 N-m of torque, making it perfect for city drives and beyond",
       "cited_spec_names": [
         "power",
         "torque"
@@ -23,14 +23,14 @@
     },
     {
       "role": "spec",
-      "text": "And when it comes to stretching your fuel, the Swift's got you covered with an impressive mileage of 25.75 kmpl - because who doesn't love saving money on gas?",
+      "text": "And when it comes to stretching your fuel, the Swift's got you covered with an impressive mileage of 25.75 kmpl - because who doesn't love saving money on fuel?",
       "cited_spec_names": [
         "mileage"
       ]
     },
     {
       "role": "value",
-      "text": "The Swift's estimated price range is ₹5.79 lakh to ₹8.80 lakh, but the real showstopper is the ZXi variant, loaded with goodies like LED projector headlamps, 15-inch alloy wheels, a 9-inch touchscreen, and more - giving you the most bang for your buck",
+      "text": "The Swift's estimated price range is 5.79 lakh to 8.80 lakh, but the real showstopper is the ZXi variant, loaded with goodies like LED projector headlamps, 15-inch alloy wheels, a 9-inch touchscreen, and more - giving you the most bang for your buck",
       "cited_spec_names": [
         "price_estimate",
         "value_variant",

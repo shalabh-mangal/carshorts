@@ -146,6 +146,50 @@ def extract_specs(text: str, source_url: str) -> list[Spec]:
 
 
 # ---------------------------------------------------------------------------
+# Generation scoping — don't blend specs across model years
+# ---------------------------------------------------------------------------
+# Matches "== Heading ==", "=== Sub ===" etc. (exsectionformat=wiki gives these).
+_SECTION_HEADER = re.compile(r"^(={2,})\s*(.+?)\s*\1\s*$", re.M)
+
+
+def scope_to_current_generation(text: str) -> str:
+    """Return the lead + ONLY the current generation's section (with its
+    sub-sections), so extraction doesn't mix a 2003 model with a 2024 one.
+
+    A section spans until the next header of the same-or-higher level, so a
+    "== Fourth generation ==" keeps its "=== Engine ===" sub-section. The current
+    generation is the section whose title says 'present' (else the latest year).
+    Falls back to the whole text when there are no generation sections (a single-
+    generation article, where there's nothing to disambiguate).
+    """
+    headers = [(m.start(), m.end(), len(m.group(1)), m.group(2))
+               for m in _SECTION_HEADER.finditer(text)]
+    if not headers:
+        return text
+    lead = text[:headers[0][0]]
+
+    def body_of(idx: int) -> str:
+        start, level = headers[idx][1], headers[idx][2]
+        end = len(text)
+        for j in range(idx + 1, len(headers)):
+            if headers[j][2] <= level:   # next same-or-higher header ends this section
+                end = headers[j][0]
+                break
+        return text[start:end]
+
+    gens = []
+    for idx, (_s, _e, _level, title) in enumerate(headers):
+        low = title.lower()
+        years = [int(y) for y in re.findall(r"(?:19|20)\d{2}", title)]
+        if "generation" in low or "present" in low or years:
+            gens.append(("present" in low, max(years) if years else 0, idx))
+    if not gens:
+        return text
+    gens.sort(key=lambda g: (g[0], g[1]), reverse=True)   # 'present' first, then newest
+    return lead + "\n" + body_of(gens[0][2])
+
+
+# ---------------------------------------------------------------------------
 # Wikipedia implementation
 # ---------------------------------------------------------------------------
 class WikipediaSpecSource(SpecSource):
@@ -170,6 +214,7 @@ class WikipediaSpecSource(SpecSource):
             "action": "query",
             "prop": "extracts",
             "explaintext": "1",
+            "exsectionformat": "wiki",   # keep "== Heading ==" so we can find sections
             "redirects": "1",
             "format": "json",
             "titles": subject,
@@ -204,5 +249,8 @@ class WikipediaSpecSource(SpecSource):
 
     def fetch(self, subject: str) -> SpecSheet:
         text, article_url = self._fetch_extract(subject)
-        specs = extract_specs(text, article_url)
+        scoped = scope_to_current_generation(text)
+        specs = extract_specs(scoped, article_url)
+        if len(specs) < 2:   # scoped section too thin — fall back to the full article
+            specs = extract_specs(text, article_url)
         return SpecSheet(subject=subject, specs=specs)

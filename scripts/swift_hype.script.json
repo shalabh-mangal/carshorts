@@ -15,7 +15,7 @@
     },
     {
       "role": "spec",
-      "text": "And with 111.7 Nm of torque, you'll be glued to your seat, trust me!",
+      "text": "And with 111.7 N-m of torque, you'll be glued to your seat, trust me!",
       "cited_spec_names": [
         "torque"
       ]
@@ -29,7 +29,7 @@
     },
     {
       "role": "value",
-      "text": "For an estimated ₹5.79 lakh to ₹8.80 lakh, the ZXi variant around ₹7.53 lakh is the real MVP - you get LED projector headlamps, 15-inch alloy wheels, a 9-inch touchscreen, and more!",
+      "text": "For an estimated 5.79 lakh to 8.80 lakh, the ZXi variant around ₹7.53 lakh is the real MVP - you get LED projector headlamps, 15-inch alloy wheels, a 9-inch touchscreen, and more!",
       "cited_spec_names": [
         "price_estimate",
         "value_variant",
