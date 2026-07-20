@@ -12,8 +12,28 @@ from __future__ import annotations
 
 import asyncio
 import os
+import re
 import ssl
 from abc import ABC, abstractmethod
+
+# Speech normalization — scripts stay clean ("82 PS", "₹5.79 lakh") but TTS
+# mispronounces acronym units and the ₹ glyph. Fix at synthesis time so every
+# voiceover (edge AND ElevenLabs) sounds right without hand-editing scripts.
+_SPEECH_SUBS = [
+    (re.compile(r"₹\s?"), ""),                       # drop rupee glyph: "₹5.79 lakh" -> "5.79 lakh"
+    (re.compile(r"\bRs\.?\s?"), ""),                 # drop "Rs"
+    (re.compile(r"N[⋅·]?m\b", re.I), "N-m"),         # torque Nm / N⋅m / N·m -> spoken "N M"
+    (re.compile(r"\bPS\b"), "P-S"),                  # metric horsepower
+    (re.compile(r"\bbhp\b", re.I), "B-H-P"),
+    (re.compile(r"\bkW\b"), "k-W"),
+]
+
+
+def normalize_for_speech(text: str) -> str:
+    """Make text TTS-friendly (acronym units spelled out, ₹ dropped)."""
+    for pattern, repl in _SPEECH_SUBS:
+        text = pattern.sub(repl, text)
+    return text
 
 try:
     import certifi
@@ -49,6 +69,8 @@ class EdgeTTSProvider(TTSProvider):
     def synthesize(self, text: str, out_path: str) -> str:
         import edge_tts
 
+        text = normalize_for_speech(text)
+
         async def _run() -> None:
             communicate = edge_tts.Communicate(text, self.voice, rate=self.rate, pitch=self.pitch)
             await communicate.save(out_path)
@@ -77,6 +99,7 @@ class ElevenLabsTTSProvider(TTSProvider):
 
         if not self.api_key:
             raise RuntimeError("ELEVENLABS_API_KEY not set — get a free key at elevenlabs.io")
+        text = normalize_for_speech(text)
         url = f"https://api.elevenlabs.io/v1/text-to-speech/{self.voice_id}"
         body = json.dumps({
             "text": text,
