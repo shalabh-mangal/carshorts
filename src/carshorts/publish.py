@@ -28,34 +28,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-_SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
-_CLIENT_SECRET = "client_secret.json"
-_TOKEN = "youtube_token.json"
-
-
-def _get_service():
-    """Authorize (cached) and return a YouTube API client. Lazy imports so the
-    rest of the project doesn't need the Google libraries installed."""
-    from google.auth.transport.requests import Request
-    from google.oauth2.credentials import Credentials
-    from google_auth_oauthlib.flow import InstalledAppFlow
-    from googleapiclient.discovery import build
-
-    creds = None
-    if Path(_TOKEN).exists():
-        creds = Credentials.from_authorized_user_file(_TOKEN, _SCOPES)
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            if not Path(_CLIENT_SECRET).exists():
-                raise SystemExit(
-                    f"Missing {_CLIENT_SECRET}. Follow the one-time setup in "
-                    "publish.py (Google Cloud OAuth client, Desktop app).")
-            flow = InstalledAppFlow.from_client_secrets_file(_CLIENT_SECRET, _SCOPES)
-            creds = flow.run_local_server(port=0)
-        Path(_TOKEN).write_text(creds.to_json())
-    return build("youtube", "v3", credentials=creds)
+from .ytauth import service as _yt_service
 
 
 def upload(video_path: str, title: str, description: str = "", tags=None,
@@ -64,7 +37,7 @@ def upload(video_path: str, title: str, description: str = "", tags=None,
     """Upload a video; return the new video id. category 2 = Autos & Vehicles."""
     from googleapiclient.http import MediaFileUpload
 
-    service = _get_service()
+    service = _yt_service("youtube", "v3")
     body = {
         "snippet": {
             "title": title[:100],

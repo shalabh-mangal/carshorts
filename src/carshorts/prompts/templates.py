@@ -55,8 +55,12 @@ HARD RULES — violating any makes the script unusable:
    avoid "responsive acceleration" or "super efficient" unless a spec backs it).
 
 CRAFT (what makes it premium — do all of these):
-- HOOK must be a pattern-break: a surprising number, a bold claim, or a cheeky
-  question. Never "Meet the..." or "This is the...".
+- HOOK must open a CURIOSITY GAP or a direct COMPARISON that the video then
+  resolves — tension in the first 3 seconds (e.g. "Is the cheaper Nexon
+  actually smarter than the top-end?", or a sharp roast). BANNED: flat openers
+  ("Meet the...", "This is the...", "Get ready for..."), and do NOT open on raw
+  spec numbers alone (81 kW / 245 N⋅m mean nothing cold) — lead with intrigue,
+  reveal the specs after you've hooked them.
 - PACING: short, punchy lines. One idea per beat. Cut every filler word.
 - Plant a RETENTION tease early ("but the best bit is coming") so they stay.
 - Vary the humour — specific analogies/roasts, not the same slang word repeated.
@@ -120,11 +124,12 @@ PERSONAS = {
              "excitement and momentum from the first word to the last."),
 }
 
-# Opening angles used to diversify variants so the judge has real choices.
+# Opening angles used to diversify variants — all curiosity/tension driven
+# (data showed flat, spec-first hooks lose the swipe).
 ANGLES = (
-    "Open by leading with the most surprising NUMBER.",
-    "Open with a cheeky roast or a rival comparison.",
-    "Open with a bold, curiosity-gap question.",
+    "Open with a bold curiosity-gap question the video then answers.",
+    "Open with a cheeky roast or a direct rival comparison.",
+    "Open with value tension — is the cheaper variant the smarter buy than the top-end?",
 )
 
 JUDGE_SYSTEM = """You are a ruthless YouTube Shorts editor. You are given several

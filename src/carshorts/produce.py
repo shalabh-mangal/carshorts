@@ -125,6 +125,8 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     if script_file:
         script = Script.model_validate_json(Path(script_file).read_text())
         sheet = SpecSheet.model_validate_json(Path(spec_path).read_text()) if spec_path else None
+        if sheet is not None:
+            _apply_extras(sheet)   # merge sourced price/variant so the guard knows them
         print(f"loaded script from {script_file} ({len(script.segments)} sections)")
     else:
         if not spec_path:
@@ -205,10 +207,12 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         audio_path = str(tmpdir / f"seg_{i}.mp3")
         tts.synthesize(seg.text, audio_path)
         bg_image = bg_video = None
-        if stock_videos and i % 2 == 1:
-            bg_video = stock_videos[(i // 2) % len(stock_videos)]   # odd scenes: motion
+        # Open on MOTION (pattern-interrupt to stop the swipe), then alternate:
+        # stock video on the hook + odd scenes, exact-car stills on even scenes.
+        if stock_videos and (i == 0 or i % 2 == 1):
+            bg_video = stock_videos[i % len(stock_videos)]
         elif images:
-            bg_image = images[i % len(images)]                       # even scenes: the car
+            bg_image = images[i % len(images)]
         sections.append(Section(audio_path=audio_path, caption=seg.text,
                                 background_image=bg_image, background_video=bg_video))
 

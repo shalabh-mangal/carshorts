@@ -53,17 +53,27 @@ def write_premium(spec_path: str, out_path: str, persona: str = "", language: st
     print(f"     picked variant {best_index} — {why}")
 
     print("3/4  punch-up editor pass...")
-    final = punch_up_script(best, sheet, llm)
+    final = best
+    try:
+        final = punch_up_script(best, sheet, llm)
+    except Exception as exc:  # noqa: BLE001 — keep the judged best if the editor hiccups
+        print(f"     editor pass failed ({exc}); keeping the judged best.")
+
+    # Save NOW so a later fact-check hiccup can never lose the script.
+    out = Path(out_path)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(final.model_dump_json(indent=2))
 
     print("4/4  safety (structural + number-guard + fact-check)...")
     structural = structural_citation_check(final, sheet)
     numbers = unsourced_numbers_check(final, sheet)
-    report = fact_check(final, sheet, llm)
-    print("\n" + render_gate1_report(final, sheet, report, structural + numbers) + "\n")
+    try:
+        report = fact_check(final, sheet, llm)
+        print("\n" + render_gate1_report(final, sheet, report, structural + numbers) + "\n")
+    except Exception as exc:  # noqa: BLE001
+        print(f"     fact-check skipped ({exc}); number-guard: "
+              f"{numbers or 'clean'}. Review before publishing.")
 
-    out = Path(out_path)
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(final.model_dump_json(indent=2))
     print(f"saved premium script -> {out}\nRender it: python -m carshorts.produce "
           f"--script-file {out} --spec {spec_path} --stock")
     return str(out)

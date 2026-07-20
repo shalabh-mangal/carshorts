@@ -1,0 +1,52 @@
+{
+  "subject": "Tata Nexon",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Imagine leaving your friends in the dust - literally! The Tata Nexon is the ultimate game-changer. My Hyundai i20-owning friend can't even!",
+      "cited_spec_names": []
+    },
+    {
+      "role": "spec",
+      "text": "Unleash the beast with 81 kW of raw power! That's right, this compact car is packing some serious heat",
+      "cited_spec_names": [
+        "power"
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "And with a whopping 245 N⋅m of torque, you'll be glued to your seat. Buckle up, buttercup, it's about to get real!",
+      "cited_spec_names": [
+        "torque"
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "All this magic happens with a 1.5-litre engine - the giant among compact cars. Who needs a V8 when you can have a Nexon?",
+      "cited_spec_names": [
+        "engine_litre"
+      ]
+    },
+    {
+      "role": "value",
+      "text": "The price? Well, let's just say it's a steal. You can get the Creative variant, loaded with a 360-degree camera, automatic climate control, alloy wheels, and cruise control. Talk about a deal!",
+      "cited_spec_names": [
+        "price_estimate",
+        "value_variant",
+        "value_features"
+      ]
+    },
+    {
+      "role": "peak",
+      "text": "And when you hit the gas, get ready to leave all excuses behind - the Nexon goes from 0 to 100 in just 9.9 seconds! Your friend still owes you money, though",
+      "cited_spec_names": [
+        "acceleration"
+      ]
+    },
+    {
+      "role": "cta",
+      "text": "So, which Nexon variant would you choose? Spill the beans in the comments below! Don't forget to follow for more car content that'll fuel your passions",
+      "cited_spec_names": []
+    }
+  ]
+}
