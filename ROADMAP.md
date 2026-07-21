@@ -31,7 +31,7 @@ A. **Hardening sprint ✅** — golden-manifest integration tests (mock TTS +
 B. **Experiment scheduler ✅** — data/calendar.json of pre-assigned A/Bs
    (persona / hook-type / format / length / music rotations);
    `pipeline --next` pulls the top entry. Makes learnings causal.
-C. Comment mining → topics + reply drafts (needs audience)
+C. Comment mining ✅ (comments.py — topics to data/topic_ideas.json, draft replies; re-run as audience grows)
 D. Semantic asset index + cross-video freshness (as footage grows)
 E. Hinglish/Hindi re-issues of winners
 F. Cadence: aim daily once A+B land — the loop learns per upload
