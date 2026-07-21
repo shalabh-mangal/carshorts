@@ -115,6 +115,26 @@ def run_qa(video_path: str, manifest_path: str | None = None,
                 ov_ok, detail = False, f"callout past end in sec {sec['index']}"
         check("overlays inside their sections", ov_ok, detail)
 
+        # word-synced pops: sane count, ordered, non-overlapping, inside section
+        pop_ok = True
+        pop_detail = ""
+        total_pops = 0
+        for sec in sections:
+            dur = sec["duration"]
+            pops = sec.get("pops", [])
+            total_pops += len(pops)
+            if len(pops) > 2:
+                pop_ok, pop_detail = False, f"{len(pops)} pops crowd sec {sec['index']}"
+            prev_end = -1.0
+            for pop in pops:
+                if pop["start"] < prev_end + 0.4:
+                    pop_ok, pop_detail = False, f"pops overlap in sec {sec['index']}"
+                if pop["start"] + 0.5 > dur:
+                    pop_ok, pop_detail = False, f"pop past end of sec {sec['index']}"
+                prev_end = pop["start"] + pop["dur"]
+        check("text pops voice-synced & uncrowded", pop_ok,
+              pop_detail or f"{total_pops} pops total")
+
     print("     ── RENDER QA ──")
     for name, ok, det in checks:
         print(f"     {'✅' if ok else '🔴'} {name}" + (f"  ({det})" if det else ""))

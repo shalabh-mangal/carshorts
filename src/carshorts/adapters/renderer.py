@@ -103,6 +103,7 @@ class Section:
     def __init__(self, audio_path: str, caption: str, background_image: str | None = None,
                  background_video: str | None = None,
                  background_pool: list[str] | None = None,
+                 word_pops: list | None = None,
                  keyword: str = "", callout_lines: list[str] | None = None,
                  timed_cuts: list | None = None,
                  keyword_span: tuple | None = None,
@@ -112,6 +113,7 @@ class Section:
         self.background_image = background_image
         self.background_video = background_video
         self.background_pool = background_pool or []
+        self.word_pops = word_pops or []           # [(start_off, dur, text)] voice-synced
         self.keyword = keyword                     # short on-screen punch text
         self.callout_lines = callout_lines or []   # staggered feature card lines
         self.timed_cuts = timed_cuts or []         # [(offset_s, path)] phrase-synced
@@ -352,6 +354,21 @@ class MoviePyRenderer(VideoRenderer):
             dur = AudioFileClip(section.audio_path).duration
             if k:
                 boundaries.append(cursor)
+            for pi, (pop_start, pop_dur, pop_text) in enumerate(section.word_pops):
+                # voice-synced highlight pop: on screen exactly while spoken
+                png = _overlay_png(pop_text.upper(), 84,
+                                   (255, 214, 10, 255) if any(c.isdigit() for c in pop_text)
+                                   else (245, 245, 245, 255),
+                                   f"{tdir}/pop_{k}_{pi}.png", accent_bar=True)
+                clip = (ImageClip(png, transparent=True)
+                        .with_start(cursor + pop_start)
+                        .with_duration(min(pop_dur, dur - pop_start))
+                        .resized(lambda t: 1.12 - 0.12 * min(t, 0.18) / 0.18)
+                        .with_position(("center", int(height * 0.64))))
+                overlays.append(clip)
+            if section.word_pops:
+                cursor += dur
+                continue                 # pops replace all legacy text below
             if section.keyword and not section.timed_callouts:
                 # a keyword AND a callout card together crowd the frame — the
                 # card wins (owner feedback: on-screen text felt mismatched)

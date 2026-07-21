@@ -15,7 +15,7 @@
   "data_learnings": [
     "[high][owner-feedback] Peak-beat humor reads flat — jokes must be specific roasts/analogies, not generic; punch-up pass should rewrite any joke that could apply to any car.",
     "[medium][owner-feedback] Visual mismatch persists on news/value beats when the pool lacks true subject footage — prefer neutral scenery over near-miss car shots.",
-    "[high][owner-feedback] Owner ordered ALL on-screen text overlays OFF (asked 3 times). Render with --no-kwcaps until the owner explicitly asks to bring text back.",
-    "QA auto-fix works for true peak ≤ -1 dBTP via re-polish with extra headroom; keep gains conservative on punchy voices."
+    "QA auto-fix works for true peak ≤ -1 dBTP via re-polish with extra headroom; keep gains conservative on punchy voices.",
+    "[high][owner-feedback] On-screen text = word-synced highlight pops ONLY: each pop is a word-exact fragment of the narration and renders exactly while those words are spoken (TTS word marks). Max 2 per beat, never stacked. Writers should fill segment `pops` with the 1-2 strongest fragments per beat (figures, names, punchline objects)."
   ]
 }

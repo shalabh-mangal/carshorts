@@ -74,6 +74,9 @@ class ScriptSegment(BaseModel):
     # Names of the Specs (Spec.name) this segment relies on. Empty = no factual
     # claim (pure narration/opinion). The writer is prompted to fill this in.
     cited_spec_names: list[str] = Field(default_factory=list)
+    # Curated on-screen highlight fragments (word-exact substrings of `text`).
+    # Each renders ONLY while the voice speaks those words; no match, no text.
+    pops: list[str] = Field(default_factory=list)
 
 
 class Script(BaseModel):

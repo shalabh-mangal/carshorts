@@ -6,6 +6,9 @@
       "text": "Mahindra just got caught testing the new Thar — and it's wearing the Roxx's face.",
       "cited_spec_names": [
         "news_1"
+      ],
+      "pops": [
+        "Roxx's face"
       ]
     },
     {
@@ -15,6 +18,10 @@
         "news_1",
         "news_2",
         "news_3"
+      ],
+      "pops": [
+        "Level 2 ADAS",
+        "19-inch alloys"
       ]
     },
     {
@@ -25,6 +32,9 @@
         "power",
         "torque",
         "four_wheel_drive"
+      ],
+      "pops": [
+        "152 PS, 320 Nm"
       ]
     },
     {
@@ -34,18 +44,25 @@
         "price_estimate",
         "value_variant",
         "value_features"
-      ]
+      ],
+      "pops": []
     },
     {
       "role": "peak",
       "text": "Everyone buys the Thar for the mountains. The only summit most will ever see is the mall parking ramp — twice on Sundays.",
-      "cited_spec_names": []
+      "cited_spec_names": [],
+      "pops": [
+        "mall parking ramp"
+      ]
     },
     {
       "role": "cta",
       "text": "The facelift lands festive 2026. Grab today's deal, or wait for the Roxx face? Fight it out in the comments.",
       "cited_spec_names": [
         "news_4"
+      ],
+      "pops": [
+        "festive 2026"
       ]
     }
   ]

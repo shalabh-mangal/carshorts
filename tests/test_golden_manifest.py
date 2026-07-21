@@ -47,7 +47,7 @@ def fixture_tree(tmp_path, monkeypatch):
             {"role": "spec", "text": "It makes 100 PS of power, and 200 Nm of torque, which is plenty.",
              "cited_spec_names": ["power", "torque"]},
             {"role": "peak", "text": "Buying rivals instead? Bold move. Genuinely bold.",
-             "cited_spec_names": []},
+             "cited_spec_names": [], "pops": ["Bold move"]},
             {"role": "cta", "text": "Would you take one home? Say it in the comments, and follow.",
              "cited_spec_names": []},
         ],
@@ -65,6 +65,32 @@ def fixture_tree(tmp_path, monkeypatch):
     (tmp_path / "data").mkdir(exist_ok=True)
     (tmp_path / "out").mkdir(exist_ok=True)
     return tmp_path
+
+
+def test_pops_generated_for_spec_figures(fixture_tree, monkeypatch):
+    """The spec beat carries '100 PS' and '200 Nm'; the peak curates 'Bold
+    move' — with the mock voice timeline, pops must actually appear."""
+    for key in ("GROQ_API_KEY", "PEXELS_API_KEY", "GEMINI_API_KEY", "ELEVENLABS_API_KEY"):
+        monkeypatch.delenv(key, raising=False)
+    monkeypatch.setenv("CARSHORTS_LLM", "ollama")
+    from carshorts.produce import produce
+
+    manifest_path = produce(
+        spec_path="specs/test-car.json",
+        out_path="out/test_car_pops.mp4",
+        script_file="script.json",
+        skip_factcheck=True,
+        voice_engine="mock",
+        provider=None,
+        plan_only=True,
+        music="none",
+        stock=False,
+    )
+    sections = json.loads(Path(manifest_path).read_text())["sections"]
+    spec_pops = [p["text"] for p in sections[1]["pops"]]
+    assert "100 PS" in spec_pops, spec_pops
+    peak_pops = [p["text"] for p in sections[2]["pops"]]
+    assert "Bold move" in peak_pops, peak_pops
 
 
 def test_plan_manifest_invariants(fixture_tree, monkeypatch):
@@ -97,12 +123,19 @@ def test_plan_manifest_invariants(fixture_tree, monkeypatch):
         assert all(sp >= 1.0 for sp in spans), f"cut shorter than 1s in section {sec['index']}"
         all_assets += [c["asset"] for c in sec["cuts"]]
 
-        kw = sec["keyword"]
-        if kw["text"]:
-            assert 0 <= kw["start"] < sec["duration"]
-        for co in sec["callouts"]:
-            assert co["start"] < sec["duration"] - 0.3
-            assert co["end"] <= sec["duration"] + 0.01
+        # word-synced pops: <=2, ordered, non-overlapping, inside the section,
+        # and every pop's words must exist in the spoken line (word-exact source)
+        pops = sec["pops"]
+        assert len(pops) <= 2
+        section_words = {w.strip('.,?!—').lower() for w in sec["text"].split()}
+        prev_end = -1.0
+        for pop in pops:
+            assert pop["start"] >= prev_end + 0.4, f"pops crowd sec {sec['index']}"
+            assert 0 <= pop["start"] < sec["duration"] - 0.4
+            assert pop["start"] + pop["dur"] <= sec["duration"] + 0.6
+            for w in pop["text"].split():
+                assert w.strip('.,?!—').lower() in section_words
+            prev_end = pop["start"] + pop["dur"]
 
     repeats = len(all_assets) - len(set(all_assets))
     allowed = max(0, len(all_assets) - manifest["pool_size"])
@@ -135,8 +168,7 @@ def test_plan_manifest_no_kwcaps(fixture_tree, monkeypatch):
         kwcaps=False,
     )
     for sec in json.loads(Path(manifest_path).read_text())["sections"]:
-        assert sec["keyword"]["text"] == ""
-        assert sec["callouts"] == []
+        assert sec["pops"] == []
 
 
 def test_phrase_times_monotonic(fixture_tree):

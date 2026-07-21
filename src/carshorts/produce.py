@@ -232,7 +232,8 @@ def _exact_span(frag: str, marks_file: str | None, fallback: tuple) -> tuple | N
         return None
 
     def norm(word: str) -> str:
-        return re.sub(r"[^a-z0-9.]", "", word.lower())
+        # keep interior dots (decimals like 10.25) but drop sentence-final ones
+        return re.sub(r"\.+$", "", re.sub(r"[^a-z0-9.]", "", word.lower()))
 
     want = [norm(w) for w in frag.split() if norm(w)]
     have = [norm(m["w"]) for m in marks]
@@ -246,6 +247,44 @@ def _exact_span(frag: str, marks_file: str | None, fallback: tuple) -> tuple | N
                    else marks[last_i]["t"] + 0.8)
             return (start, max(1.2, end - start + 0.35))
     return None              # words not found -> perfectly timed or absent
+
+
+_POP_MAX_PER_SECTION = 2
+_POP_GAP = 0.6
+
+
+def _word_pops(seg, marks_file: str | None, dur: float) -> list[tuple[float, float, str]]:
+    """WORD-SYNCED HIGHLIGHT POPS — the single on-screen text engine.
+
+    Candidates (curated script `pops` first, then every spec figure found in
+    the line) are matched word-exactly against the TTS word timeline. A pop
+    renders from the moment its first word is spoken until just after its
+    last — no word-exact match, no text. Owner rule, stated three times:
+    text on screen ONLY while the voice speaks those exact words.
+    """
+    candidates = [c for c in (getattr(seg, "pops", None) or []) if len(c) <= 26]
+    for match in _KW_NUM.finditer(seg.text):
+        cand = match.group(0).strip().rstrip(".,")
+        if cand and len(cand) <= 26 and cand not in candidates:
+            candidates.append(cand)
+    pops: list[tuple[float, float, str]] = []
+    for cand in candidates:
+        if len(pops) >= _POP_MAX_PER_SECTION:
+            break
+        span = _exact_span(cand, marks_file, (0.0, 0.0))
+        if span is None:
+            continue
+        start, span_dur = span
+        span_dur = min(span_dur, 3.5, max(0.9, dur - start - 0.1))
+        if start >= dur - 0.5:
+            continue
+        crowded = any(start < prev_start + prev_dur + _POP_GAP
+                      and prev_start < start + span_dur + _POP_GAP
+                      for prev_start, prev_dur, _ in pops)
+        if crowded:
+            continue
+        pops.append((start, span_dur, cand))
+    return sorted(pops)
 
 
 def _time_callouts(lines: list[str], sec_phrases: list[tuple[float, str]],
@@ -696,19 +735,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                 timed_cuts.append((t_off, pick))
                 prev_asset = pick
         sec_phrases = phrase_map[i]
-        kw_end = sec_phrases[1][0] if len(sec_phrases) > 1 else min(2.8, durations[i])
-        kw_text = _keyword_for(seg) if kwcaps else ""
-        keyword_span = _exact_span(kw_text, marks_paths[i],
-                                   (0.12, max(1.4, kw_end - 0.12))) if kw_text else None
-        if keyword_span is None:
-            kw_text = ""     # owner rule: text renders ONLY when word-exact
-        callout_src = (
-            _callout_lines_for(sheet) if (kwcaps and seg.role == "value")
-            else _news_callouts_for(sheet)
-            if (kwcaps and seg.role != "cta"
-                and any(c.startswith("news") for c in seg.cited_spec_names))
-            else [])
-        timed_callouts = _time_callouts(callout_src, sec_phrases, durations[i]) if callout_src else []
+        word_pops = _word_pops(seg, marks_paths[i], durations[i]) if kwcaps else []
         # the very last thing on screen must be the subject car
         if i == len(script.segments) - 1 and timed_cuts:
             car_families = {"roxx", "red", "thar", "mahindra", "pool"}
@@ -738,20 +765,14 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                             break
         sections.append(Section(
             audio_path=audio_paths[i], caption=seg.text, background_pool=visuals,
-            timed_cuts=timed_cuts, keyword_span=keyword_span,
-            timed_callouts=timed_callouts,
-            keyword=kw_text,
-            callout_lines=callout_src))
+            timed_cuts=timed_cuts, word_pops=word_pops))
         manifest_sections.append({
             "index": i, "role": seg.role, "duration": round(durations[i], 3),
             "text": seg.text,
             "phrases": [{"t": round(t, 3), "text": txt} for t, txt in sec_phrases],
             "cuts": [{"t": round(t, 3), "asset": Path(a).name} for t, a in timed_cuts],
-            "keyword": {"text": _keyword_for(seg) if kwcaps else "",
-                        "start": round(keyword_span[0], 3) if keyword_span else 0.0,
-                        "dur": round(keyword_span[1], 3) if keyword_span else 0.0},
-            "callouts": [{"start": round(st, 3), "end": round(en, 3), "text": ln}
-                         for st, en, ln in timed_callouts],
+            "pops": [{"start": round(st, 3), "dur": round(d, 3), "text": txt}
+                     for st, d, txt in word_pops],
         })
 
     manifest_path = out.with_suffix(".manifest.json")

@@ -11,3 +11,4 @@
 {"at": "2026-07-22T01:08:44", "video": "out/thar_draft.mp4", "check": "loudness -14 LUFS \u00b12", "detail": "-21.2 LUFS", "resolved": false}
 {"at": "2026-07-22T01:32:56", "video": "out/thar_draft.mp4", "check": "runtime \u2264 63s (Shorts sweet spot)", "detail": "70.7s", "resolved": false}
 {"at": "2026-07-22T01:44:21", "video": "out/thar_draft.mp4", "check": "true peak \u2264 -1 dBTP", "detail": "auto-repolish", "resolved": true}
+{"at": "2026-07-22T01:58:33", "video": "out/thar_draft.mp4", "check": "true peak \u2264 -1 dBTP", "detail": "auto-repolish", "resolved": true}
