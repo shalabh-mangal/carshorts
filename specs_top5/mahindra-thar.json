@@ -1,0 +1,33 @@
+{
+  "subject": "Mahindra Thar",
+  "specs": [
+    {
+      "name": "power",
+      "value": "152 PS",
+      "source_url": "https://www.cardekho.com/mahindra/thar",
+      "source_sentence": "The Thar's 2.0-litre turbo-petrol makes 152 PS and 320 Nm; the 2.2-litre diesel makes 132 PS with 300 Nm (source CarDekho).",
+      "confidence": 1.0
+    },
+    {
+      "name": "torque",
+      "value": "320 Nm",
+      "source_url": "https://www.cardekho.com/mahindra/thar",
+      "source_sentence": "The Thar's 2.0-litre turbo-petrol makes 152 PS and 320 Nm; the 2.2-litre diesel makes 132 PS with 300 Nm (source CarDekho).",
+      "confidence": 1.0
+    },
+    {
+      "name": "engine_litre",
+      "value": "2.0-litre",
+      "source_url": "https://www.cardekho.com/mahindra/thar",
+      "source_sentence": "Engine options: a 2.0-litre turbo-petrol, a 1.5-litre diesel and a 2.2-litre diesel (source CarDekho).",
+      "confidence": 1.0
+    },
+    {
+      "name": "four_wheel_drive",
+      "value": "4x4",
+      "source_url": "https://www.cardekho.com/mahindra/thar",
+      "source_sentence": "4x4 (4WD) is available on the 2.2-litre diesel and 2.0-litre petrol variants; the base 1.5-litre diesel is rear-wheel drive (source CarDekho).",
+      "confidence": 1.0
+    }
+  ]
+}

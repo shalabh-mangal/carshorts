@@ -1,0 +1,49 @@
+{
+  "subject": "Mahindra Thar",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Warning: the Mahindra Thar may cause extreme off-roading cravings and spontaneous adventures",
+      "cited_spec_names": []
+    },
+    {
+      "role": "spec",
+      "text": "This beast is powered by a hearty 2.0-litre engine - because who needs a small heart in a big boy's toy?",
+      "cited_spec_names": [
+        "engine_litre"
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "With 152 PS of power, you'll have just enough juice to get into (and out of) all sorts of trouble",
+      "cited_spec_names": [
+        "power"
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "And when things get really messy, 320 Nm of torque will yank you out of sticky situations",
+      "cited_spec_names": [
+        "torque"
+      ]
+    },
+    {
+      "role": "value",
+      "text": "The price? Well, let's just say the LXT RWD Diesel is the ultimate value variant - you get a 10.25-inch infotainment screen, cruise control, keyless entry, and a rear camera, all without breaking the bank or paying for 4x4",
+      "cited_spec_names": [
+        "value_variant",
+        "value_features"
+      ]
+    },
+    {
+      "role": "peak",
+      "text": "Let's face it, if you're buying the Thar for on-road comfort, you're not just doing it wrong - you're doing it tragically wrong",
+      "cited_spec_names": []
+    },
+    {
+      "role": "cta",
+      "text": "So, where will the Thar take you on your next adventure? Share your wildest off-roading dreams with us and let's get this conversation started! Follow for more",
+      "cited_spec_names": []
+    }
+  ]
+}
