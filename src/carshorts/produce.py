@@ -217,6 +217,30 @@ def _phrases_with_times(text: str, marks_file: str | None) -> list[tuple[float, 
     return out
 
 
+
+def _time_callouts(lines: list[str], sec_phrases: list[tuple[float, str]],
+                   dur: float) -> list[tuple[float, float, str]]:
+    """Anchor each callout line to the phrase that SPEAKS it (token overlap),
+    so text appears with its words and leaves when the section's context ends."""
+    timed: list[tuple[float, float, str]] = []
+    last = 0.4
+    for line in lines:
+        tokens = {w.lower().strip('.,"“”()') for w in line.split() if len(w) > 3}
+        best_t, best_score = None, 0
+        for (t, txt) in sec_phrases:
+            ph = {w.lower().strip('.,"“”()') for w in txt.split() if len(w) > 3}
+            score = len(tokens & ph)
+            if score > best_score:
+                best_score, best_t = score, t
+        start = best_t if best_t is not None and best_score > 0 else last
+        start = max(start - 0.1, last, 0.2)      # keep list order monotonic
+        end = min(dur - 0.05, start + 6.0)       # hold while context lasts, no longer
+        if start < dur - 0.6:
+            timed.append((start, end, line))
+            last = start + 0.5
+    return timed
+
+
 def _llm_phrase_match(entries: list[tuple[int, int, str]], pool: list[str],
                       provider: str | None) -> dict[tuple[int, int], str]:
     """One call: best asset per PHRASE (or NONE). entries = (sec, ph, text)."""
@@ -529,11 +553,17 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     if llm_ranked:
         print(f"     shot-matcher aligned {len(llm_ranked)} beats to visuals")
     sections = []
+    manifest_sections: list[dict] = []
     prev_last_bucket = ""
     for i, seg in enumerate(script.segments):
         chunks = max(1, round(durations[i] / target))
         visuals: list[str] = []
         section_buckets: set = set()
+        if phrase_sync:
+            # phrase-synced cuts are the render path — beat-level assignment
+            # must not run, or it silently consumes pool assets that never
+            # appear on screen (forcing repeats in the real cuts)
+            chunks = 0
         for asset in llm_ranked.get(i, []):     # semantic matches first
             if len(visuals) >= chunks:
                 break
@@ -568,6 +598,10 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
             cuts_src = phrase_map[i]
             prev_asset = sections[-1].timed_cuts[-1][1] if (sections and sections[-1].timed_cuts) else None
             for j, (t_off, _txt) in enumerate(cuts_src):
+                # merge decision FIRST: a cut closer than 1.1s to the previous
+                # one never happens, so it must not consume an asset either
+                if timed_cuts and t_off - timed_cuts[-1][0] < 1.1:
+                    continue
                 pick = phrase_ranked.get((i, j))
                 if pick is not None and pick in used:
                     pick = None          # once-only: a used asset can't repeat
@@ -590,26 +624,53 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                             continue
                         pick = cand
                         break
-                if pick is None:         # pool exhausted: spread reuse
+                if pick is None:         # relax the family constraint first
+                    for cand in ordering:
+                        if cand not in used:
+                            pick = cand
+                            break
+                if pick is None:         # pool truly exhausted: spread reuse
                     pick = pool[reuse_cursor[0] % len(pool)]
                     reuse_cursor[0] += 1
                 used.add(pick)
-                # merge cuts closer than 1.1s into the previous visual
-                if timed_cuts and t_off - timed_cuts[-1][0] < 1.1:
-                    prev_asset = pick
-                    continue
                 timed_cuts.append((t_off, pick))
                 prev_asset = pick
+        sec_phrases = phrase_map[i]
+        kw_end = sec_phrases[1][0] if len(sec_phrases) > 1 else min(2.8, durations[i])
+        keyword_span = (0.12, max(1.4, kw_end - 0.12))
+        callout_src = (
+            _callout_lines_for(sheet) if (kwcaps and seg.role == "value")
+            else _news_callouts_for(sheet)
+            if (kwcaps and seg.role != "cta"
+                and any(c.startswith("news") for c in seg.cited_spec_names))
+            else [])
+        timed_callouts = _time_callouts(callout_src, sec_phrases, durations[i]) if callout_src else []
+        # the very last thing on screen must be the subject car
+        if i == len(script.segments) - 1 and timed_cuts:
+            car_families = {"roxx", "red", "thar", "mahindra", "pool"}
+            if _bucket(timed_cuts[-1][1]) not in car_families:
+                for j in range(len(timed_cuts) - 2, -1, -1):
+                    if _bucket(timed_cuts[j][1]) in car_families:
+                        timed_cuts[-1], timed_cuts[j] = (
+                            (timed_cuts[-1][0], timed_cuts[j][1]),
+                            (timed_cuts[j][0], timed_cuts[-1][1]))
+                        break
         sections.append(Section(
             audio_path=audio_paths[i], caption=seg.text, background_pool=visuals,
-            timed_cuts=timed_cuts,
+            timed_cuts=timed_cuts, keyword_span=keyword_span,
+            timed_callouts=timed_callouts,
             keyword=_keyword_for(seg) if kwcaps else "",
-            callout_lines=(
-                _callout_lines_for(sheet) if (kwcaps and seg.role == "value")
-                else _news_callouts_for(sheet)
-                if (kwcaps and seg.role != "cta"
-                    and any(c.startswith("news") for c in seg.cited_spec_names))
-                else [])))
+            callout_lines=callout_src))
+        manifest_sections.append({
+            "index": i, "role": seg.role, "duration": round(durations[i], 3),
+            "text": seg.text,
+            "phrases": [{"t": round(t, 3), "text": txt} for t, txt in sec_phrases],
+            "cuts": [{"t": round(t, 3), "asset": Path(a).name} for t, a in timed_cuts],
+            "keyword": {"text": _keyword_for(seg) if kwcaps else "",
+                        "start": round(keyword_span[0], 3), "dur": round(keyword_span[1], 3)},
+            "callouts": [{"start": round(st, 3), "end": round(en, 3), "text": ln}
+                         for st, en, ln in timed_callouts],
+        })
 
     # Background music: auto-generate a royalty-free beat unless disabled/overridden.
     music_path: str | None = None
@@ -654,6 +715,21 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     else:
         renderer.render_sections(sections, str(out), music_path=music_path,
                                  draw_captions=captions)
+
+    # Render manifest: the machine-checkable plan of what SHOULD be on screen
+    # when — the QA gate validates the rendered file against it.
+    manifest_path = out.with_suffix(".manifest.json")
+    manifest_path.write_text(json.dumps({
+        "out": str(out), "sections": manifest_sections,
+        "pool_size": len(pool),
+    }, indent=2, ensure_ascii=False))
+    try:
+        from .qa import run_qa
+        qa_ok = run_qa(str(out), str(manifest_path))
+        if not qa_ok:
+            print("     🔴 QA FAILED — inspect before publishing.")
+    except Exception as exc:  # noqa: BLE001
+        print(f"     QA skipped ({exc})")
 
     # Recipe card: log every creative choice so analytics can attribute results.
     try:

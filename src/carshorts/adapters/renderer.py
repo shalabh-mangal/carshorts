@@ -104,7 +104,9 @@ class Section:
                  background_video: str | None = None,
                  background_pool: list[str] | None = None,
                  keyword: str = "", callout_lines: list[str] | None = None,
-                 timed_cuts: list | None = None):
+                 timed_cuts: list | None = None,
+                 keyword_span: tuple | None = None,
+                 timed_callouts: list | None = None):
         self.audio_path = audio_path
         self.caption = caption
         self.background_image = background_image
@@ -113,6 +115,8 @@ class Section:
         self.keyword = keyword                     # short on-screen punch text
         self.callout_lines = callout_lines or []   # staggered feature card lines
         self.timed_cuts = timed_cuts or []         # [(offset_s, path)] phrase-synced
+        self.keyword_span = keyword_span           # (start_off, dur) or None
+        self.timed_callouts = timed_callouts or [] # [(start_off, end_off, text)]
 
 
 
@@ -351,22 +355,35 @@ class MoviePyRenderer(VideoRenderer):
                                    (255, 214, 10, 255) if any(c.isdigit() for c in section.keyword)
                                    else (245, 245, 245, 255),
                                    f"{tdir}/kw_{k}.png", accent_bar=True)
-                showing = min(2.4, dur * 0.85)
+                if section.keyword_span:   # speech-timed: exactly while its phrase runs
+                    kw_start, kw_dur = section.keyword_span
+                else:
+                    kw_start, kw_dur = 0.12, min(2.4, dur * 0.85)
                 clip = (ImageClip(png, transparent=True)
-                        .with_start(cursor + 0.12).with_duration(showing)
+                        .with_start(cursor + kw_start).with_duration(min(kw_dur, dur - kw_start))
                         .resized(lambda t: 1.16 - 0.16 * min(t, 0.22) / 0.22)
                         .with_position(("center", int(height * 0.14))))
                 overlays.append(clip)
-            for li, line in enumerate(section.callout_lines[:5]):
-                png = _overlay_png(line, 58, (245, 245, 245, 255),
-                                   f"{tdir}/co_{k}_{li}.png", pill=True)
-                start = cursor + 0.9 + li * min(1.1, max(0.6, (dur - 1.8) / max(1, len(section.callout_lines))))
-                if start >= cursor + dur - 0.6:
-                    break
-                clip = (ImageClip(png, transparent=True)
-                        .with_start(start).with_duration(max(0.8, cursor + dur - start))
-                        .with_position(("center", int(height * (0.52 + 0.085 * li)))))
-                overlays.append(clip)
+            if section.timed_callouts:     # speech-timed lines: appear with their words
+                for li, (st, en, line) in enumerate(section.timed_callouts[:5]):
+                    png = _overlay_png(line, 58, (245, 245, 245, 255),
+                                       f"{tdir}/co_{k}_{li}.png", pill=True)
+                    st = min(st, dur - 0.6)
+                    clip = (ImageClip(png, transparent=True)
+                            .with_start(cursor + st).with_duration(max(0.8, min(en, dur) - st))
+                            .with_position(("center", int(height * (0.52 + 0.085 * li)))))
+                    overlays.append(clip)
+            else:
+                for li, line in enumerate(section.callout_lines[:5]):
+                    png = _overlay_png(line, 58, (245, 245, 245, 255),
+                                       f"{tdir}/co_{k}_{li}.png", pill=True)
+                    start = cursor + 0.9 + li * min(1.1, max(0.6, (dur - 1.8) / max(1, len(section.callout_lines))))
+                    if start >= cursor + dur - 0.6:
+                        break
+                    clip = (ImageClip(png, transparent=True)
+                            .with_start(start).with_duration(max(0.8, cursor + dur - start))
+                            .with_position(("center", int(height * (0.52 + 0.085 * li)))))
+                    overlays.append(clip)
             cursor += dur
         # Loop-close: flash the opening visual for half a second at the very end
         # so the short loops seamlessly back into its own first frame (rewatches).
