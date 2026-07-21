@@ -57,7 +57,9 @@ HARD RULES — violating any makes the script unusable:
 CRAFT (what makes it premium — do all of these):
 - HOOK must open a CURIOSITY GAP or a direct COMPARISON that the video then
   resolves — tension in the first 3 seconds (e.g. "Is the cheaper Nexon
-  actually smarter than the top-end?", or a sharp roast). BANNED: flat openers
+  actually smarter than the top-end?", or a sharp roast). If FRESH NEWS is
+  provided below, LEAD WITH IT — a real recent event is the strongest possible
+  hook. BANNED: flat openers
   ("Meet the...", "This is the...", "Get ready for..."), and do NOT open on raw
   spec numbers alone (81 kW / 245 N⋅m mean nothing cold) — lead with intrigue,
   reveal the specs after you've hooked them.

@@ -72,6 +72,23 @@ def _apply_extras(sheet: SpecSheet) -> str:
     ))
 
     guidance = [f"PRICE (estimate, say so): {price} — {note}."]
+
+    # Fresh news items: each becomes a SOURCED fact (skeptic + number-guard
+    # cover it) plus guidance to lead the hook with the strongest one — news is
+    # a built-in curiosity gap ("X just happened" beats "X exists").
+    for n, item in enumerate(extras.get("news", []), start=1):
+        fact = item.get("fact", "").strip()
+        if not fact:
+            continue
+        sheet.specs.append(Spec(
+            name=f"news_{n}",
+            value=fact[:80],
+            source_url=item.get("source", source),
+            source_sentence=f"{fact} (as reported {item.get('date', 'recently')}).",
+        ))
+        guidance.append(f"FRESH NEWS #{n} (fact, cite as news_{n}): {fact}.")
+    if extras.get("news"):
+        guidance.append("Lead the HOOK with the strongest news item — timeliness is the hype.")
     variant = extras.get("value_variant")
     features = extras.get("value_features")
     if variant:
