@@ -223,31 +223,62 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     tmpdir = Path(tempfile.mkdtemp(prefix="carshorts_"))
     from moviepy import AudioFileClip as _Audio
 
+    # TTS cache: keyed by engine+voice+text, so re-renders (music/visual tweaks)
+    # never re-spend paid voice credits on unchanged lines.
+    import hashlib
+    cache_dir = Path("out/tts_cache") / voice_engine
+    cache_dir.mkdir(parents=True, exist_ok=True)
+
     audio_paths, durations = [], []
     for i, seg in enumerate(script.segments):
-        audio_path = str(tmpdir / f"seg_{i}.mp3")
-        tts.synthesize(seg.text, audio_path)
-        audio_paths.append(audio_path)
-        durations.append(_Audio(audio_path).duration)
+        key = hashlib.md5(f"{voice_engine}|{voice}|{persona}|{seg.text}".encode()).hexdigest()[:16]
+        cached = cache_dir / f"{key}.mp3"
+        if not cached.exists():
+            tts.synthesize(seg.text, str(cached))
+        audio_paths.append(str(cached))
+        durations.append(_Audio(str(cached)).duration)
 
     user_clips = sorted(str(p) for p in ai_dir.glob("pool_*.mp4"))
+
+    # Order the pool so visually-similar shots never sit adjacent: bucket by
+    # look (pool_NN_<category> prefix for own clips, query name for stock),
+    # then round-robin across buckets.
+    # Alias visually-similar categories into one family so all steering/gauge
+    # POVs (wheelpov / cluster / wheel2) count as the SAME look and get maximum
+    # spacing — three different files that look alike still read as repetition.
+    look_alias = {"wheelpov": "wheel", "wheel": "wheel", "cluster": "wheel",
+                  "windshield": "glass", "switches": "door"}
+
+    def _bucket(asset: str) -> str:
+        name = Path(asset).stem
+        if name.startswith("pool_"):
+            category = re.sub(r"\d+$", "", name.split("_", 2)[-1])
+            return look_alias.get(category, category)
+        return name.split("_")[0]
+
+    buckets: dict[str, list[str]] = {}
+    for asset in user_clips + stock_videos + list(images):
+        buckets.setdefault(_bucket(asset), []).append(asset)
     pool: list[str] = []
-    lists = [lst for lst in (user_clips, stock_videos, list(images)) if lst]
-    idxs = [0] * len(lists)
-    while any(idxs[k] < len(lists[k]) for k in range(len(lists))):
-        for k in range(len(lists)):
-            if idxs[k] < len(lists[k]):
-                pool.append(lists[k][idxs[k]])
+    bucket_lists = list(buckets.values())
+    idxs = [0] * len(bucket_lists)
+    while any(idxs[k] < len(bucket_lists[k]) for k in range(len(bucket_lists))):
+        for k in range(len(bucket_lists)):
+            if idxs[k] < len(bucket_lists[k]):
+                pool.append(bucket_lists[k][idxs[k]])
                 idxs[k] += 1
     print(f"     visual pool: {len(user_clips)} own clips + {len(stock_videos)} stock "
-          f"+ {len(images)} stills = {len(pool)}")
+          f"+ {len(images)} stills = {len(pool)} (similar shots spaced apart)")
 
     # Adapt cut length to the pool so no asset repeats: aim ~2.8s cuts, but
     # stretch (up to 3.8s) when the pool is small.
     total = sum(durations)
-    target = 2.8
-    if pool and total / target > len(pool):
-        target = min(3.8, total / len(pool))
+    target = 2.3   # snappy default; stretch until the pool covers every cut so
+    # nothing has to repeat (per-section rounding can overshoot, hence the loop)
+    if pool:
+        while target < 4.2 and sum(
+                max(1, round(d / target)) for d in durations) > len(pool):
+            target += 0.1
 
     # Topic hints: route an asset to the beat that talks about it (AC clip on
     # the AC line, petrol station on mileage, engine shot on the engine beat).
@@ -258,6 +289,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         (re.compile(r"touchscreen|ZXi|alloys|projector", re.I), re.compile(r"console|side", re.I)),
     ]
     used: set = set()
+    reuse_cursor = [len(pool) // 2]   # overflow reuse starts mid-pool, spreads out
 
     def _grab(matcher, want: int) -> list[str]:
         picked = []
@@ -279,8 +311,11 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                                  chunks - len(visuals))
                 break
         visuals += _grab(lambda a: True, chunks - len(visuals))   # fill: any unused
-        if len(visuals) < chunks and pool:                        # pool exhausted
-            visuals += [pool[j % len(pool)] for j in range(chunks - len(visuals))]
+        while len(visuals) < chunks and pool:                     # pool exhausted:
+            # continue round-robin from a moving cursor so reuse is spread
+            # across different assets, never hammering the same opening clip.
+            visuals.append(pool[reuse_cursor[0] % len(pool)])
+            reuse_cursor[0] += 1
         sections.append(Section(audio_path=audio_paths[i], caption=seg.text,
                                 background_pool=visuals))
 
