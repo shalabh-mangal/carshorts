@@ -196,16 +196,21 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     else:
         print("2/4  no spec sheet given — both gates skipped, video is UNVERIFIED.")
 
-    # --- Fetch legal CC car photos (exact-car identity), attributed.
+    # --- Car photos: prefer the hand-VETTED local folder; fetch CC photos only
+    # when it's empty (fetched images must then be vetted — old-gen/plates).
     images: list[str] = []
     if footage:
         img_dir = f"assets/images/{_slug(script.subject)}"
-        print(f"3/5  fetching CC car photos -> {img_dir} ...")
-        try:
-            images = WikimediaImageSource().fetch(script.subject, img_dir, limit=6)
-            print(f"     {len(images)} images (credits in {img_dir}/attributions.json)")
-        except Exception as exc:  # noqa: BLE001 — no photos just means plain cards
-            print(f"     footage fetch failed ({exc}); using plain caption cards.")
+        images = sorted(str(p) for p in Path(img_dir).glob("*.[jp][pn]g"))
+        if images:
+            print(f"3/5  using {len(images)} vetted local images from {img_dir}")
+        else:
+            print(f"3/5  fetching CC car photos -> {img_dir} ...")
+            try:
+                images = WikimediaImageSource().fetch(script.subject, img_dir, limit=6)
+                print(f"     {len(images)} images (VET THESE — generation + plates)")
+            except Exception as exc:  # noqa: BLE001 — no photos just means plain cards
+                print(f"     footage fetch failed ({exc}); using plain caption cards.")
 
     # --- Stock b-roll: prefer the VETTED local folder (curated by hand); only
     # fetch fresh clips when the folder is empty and a Pexels key exists.
@@ -300,6 +305,8 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     # Topic hints: route an asset to the beat that talks about it (AC clip on
     # the AC line, petrol station on mileage, engine shot on the engine beat).
     topic_hints = [
+        (re.compile(r"facelift|Roxx|2026", re.I), re.compile(r"roxx|press", re.I)),
+        (re.compile(r"4x4|off-?road", re.I), re.compile(r"offroad|mud|trail|mountain", re.I)),
         (re.compile(r"vent|\bAC\b|climate", re.I), re.compile(r"vent|air_conditioning", re.I)),
         (re.compile(r"kmpl|mileage|fuel|wallet", re.I), re.compile(r"fuel|petrol", re.I)),
         (re.compile(r"engine|litre|\bPS\b|torque", re.I), re.compile(r"engine|cluster", re.I)),
@@ -308,26 +315,44 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     used: set = set()
     reuse_cursor = [len(pool) // 2]   # overflow reuse starts mid-pool, spreads out
 
-    def _grab(matcher, want: int) -> list[str]:
+    def _grab(matcher, want: int, section_buckets: set) -> list[str]:
+        """Pick unused assets, at most ONE per look-family per section — two
+        same-family shots inside one beat read as a repeat even if distinct."""
         picked = []
         for asset in pool:
             if len(picked) >= want:
                 break
-            if asset not in used and matcher(asset):
-                picked.append(asset)
-                used.add(asset)
+            if asset in used or not matcher(asset):
+                continue
+            if _bucket(asset) in section_buckets:
+                continue
+            picked.append(asset)
+            used.add(asset)
+            section_buckets.add(_bucket(asset))
         return picked
 
     sections = []
+    prev_last_bucket = ""
     for i, seg in enumerate(script.segments):
         chunks = max(1, round(durations[i] / target))
         visuals: list[str] = []
+        section_buckets: set = set()
         for text_pat, file_pat in topic_hints:
             if text_pat.search(seg.text):
                 visuals += _grab(lambda a, p=file_pat: bool(p.search(Path(a).name)),
-                                 chunks - len(visuals))
+                                 chunks - len(visuals), section_buckets)
                 break
-        visuals += _grab(lambda a: True, chunks - len(visuals))   # fill: any unused
+        visuals += _grab(lambda a: True, chunks - len(visuals), section_buckets)
+        # Avoid a same-look seam across the section boundary: if this section
+        # opens with the family the previous one closed on, swap in a later
+        # visual from a different family.
+        if visuals and sections and prev_last_bucket == _bucket(visuals[0]):
+            for j in range(1, len(visuals)):
+                if _bucket(visuals[j]) != prev_last_bucket:
+                    visuals[0], visuals[j] = visuals[j], visuals[0]
+                    break
+        if visuals:
+            prev_last_bucket = _bucket(visuals[-1])
         while len(visuals) < chunks and pool:                     # pool exhausted:
             # continue round-robin from a moving cursor so reuse is spread
             # across different assets, never hammering the same opening clip.
