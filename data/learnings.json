@@ -21,6 +21,9 @@
     "[low] Given the low view count (24 views), it's premature to draw conclusions about the video's performance; however, the lack of engagement (1 like, 0 comments) might indicate a need to reassess the hook or content strategy in future videos",
     "[medium] Ensure that the assets used (e.g., 'thar_suv_india_16100214.mp4', 'mountain_dirt_trail_aerial_24796949.mp4') correctly match the narrative and vehicle being discussed to avoid visual inconsistencies",
     "[medium] Improve the rendering process to minimize the occurrence of visual QA issues, potentially by enhancing the asset selection process or the rendering engine's ability to accurately place and display vehicle types and license plates",
-    "[low] Monitor future videos for similar patterns of QA failures to determine if the issues are isolated or systemic, requiring broader changes to the production workflow"
+    "[low] Monitor future videos for similar patterns of QA failures to determine if the issues are isolated or systemic, requiring broader changes to the production workflow",
+    "[high][owner-feedback] Thar draft rated 2/5: text overlays still mismatch the voice at several beats — tighten keyword/callout anchoring; verify overlay text against the phrase actually spoken.",
+    "[high][owner-feedback] Peak-beat humor reads flat — jokes must be specific roasts/analogies, not generic; punch-up pass should rewrite any joke that could apply to any car.",
+    "[medium][owner-feedback] Visual mismatch persists on news/value beats when the pool lacks true subject footage — prefer neutral scenery over near-miss car shots."
   ]
 }
