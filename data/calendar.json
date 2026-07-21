@@ -1,0 +1,77 @@
+{
+  "built": "2026-07-21",
+  "entries": [
+    {
+      "slot": 1,
+      "car": "Hyundai Creta",
+      "persona": "deadpan",
+      "format": "spotlight",
+      "length_bucket": "45s",
+      "status": "pending",
+      "note": "pre-assigned A/B — keep unless a news event overrides"
+    },
+    {
+      "slot": 2,
+      "car": "Maruti Suzuki Brezza",
+      "persona": "hype",
+      "format": "five_things",
+      "length_bucket": "55s",
+      "status": "pending",
+      "note": "pre-assigned A/B — keep unless a news event overrides"
+    },
+    {
+      "slot": 3,
+      "car": "Tata Punch",
+      "persona": "deadpan",
+      "format": "vs",
+      "length_bucket": "45s",
+      "status": "pending",
+      "note": "pre-assigned A/B — keep unless a news event overrides"
+    },
+    {
+      "slot": 4,
+      "car": "Kia Sonet",
+      "persona": "hype",
+      "format": "mythbust",
+      "length_bucket": "55s",
+      "status": "pending",
+      "note": "pre-assigned A/B — keep unless a news event overrides"
+    },
+    {
+      "slot": 5,
+      "car": "Mahindra Scorpio",
+      "persona": "deadpan",
+      "format": "spotlight",
+      "length_bucket": "45s",
+      "status": "pending",
+      "note": "pre-assigned A/B — keep unless a news event overrides"
+    },
+    {
+      "slot": 6,
+      "car": "Toyota Fortuner",
+      "persona": "hype",
+      "format": "five_things",
+      "length_bucket": "55s",
+      "status": "pending",
+      "note": "pre-assigned A/B — keep unless a news event overrides"
+    },
+    {
+      "slot": 7,
+      "car": "Maruti Suzuki Fronx",
+      "persona": "deadpan",
+      "format": "vs",
+      "length_bucket": "45s",
+      "status": "pending",
+      "note": "pre-assigned A/B — keep unless a news event overrides"
+    },
+    {
+      "slot": 8,
+      "car": "Tata Tiago",
+      "persona": "hype",
+      "format": "mythbust",
+      "length_bucket": "55s",
+      "status": "pending",
+      "note": "pre-assigned A/B — keep unless a news event overrides"
+    }
+  ]
+}

@@ -329,7 +329,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
             captions: bool = False, stock: bool | None = None,
             voice_engine: str = "edge", persona: str = "",
             shots_file: str | None = None, kwcaps: bool = True,
-            polish_audio: bool = True) -> str:
+            polish_audio: bool = True, plan_only: bool = False) -> str:
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
 
@@ -467,8 +467,17 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                      "-af", "areverse,silenceremove=start_periods=1:start_silence=0.18:start_threshold=-42dB,areverse",
                      "-codec:a", "libmp3lame", "-q:a", "2", str(trimmed)],
                     capture_output=True)
-            if not trimmed.exists() or trimmed.stat().st_size == 0:
-                trimmed = cached   # trim failed -> use original
+            # validate: the trim must yield a real, probe-able audio stream
+            probe = _sp.run(["ffprobe", "-v", "error", "-show_entries", "format=duration",
+                             "-of", "default=noprint_wrappers=1:nokey=1", str(trimmed)],
+                            capture_output=True, text=True)
+            try:
+                ok = float(probe.stdout.strip()) > 0.3
+            except ValueError:
+                ok = False
+            if not ok:
+                trimmed.unlink(missing_ok=True)
+                trimmed = cached   # trim failed/empty -> use original
         audio_paths.append(str(trimmed))
         marks_paths.append(str(marks_file) if marks_file.exists() else None)
         durations.append(_Audio(str(audio_paths[-1])).duration)
@@ -684,6 +693,15 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                          for st, en, ln in timed_callouts],
         })
 
+    manifest_path = out.with_suffix(".manifest.json")
+    manifest_path.write_text(json.dumps({
+        "out": str(out), "sections": manifest_sections,
+        "pool_size": len(pool),
+    }, indent=2, ensure_ascii=False))
+    if plan_only:
+        print(f"     plan-only: manifest -> {manifest_path}")
+        return str(manifest_path)
+
     # Background music: auto-generate a royalty-free beat unless disabled/overridden.
     music_path: str | None = None
     if music == "auto":
@@ -741,11 +759,6 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
 
     # Render manifest: the machine-checkable plan of what SHOULD be on screen
     # when — the QA gate validates the rendered file against it.
-    manifest_path = out.with_suffix(".manifest.json")
-    manifest_path.write_text(json.dumps({
-        "out": str(out), "sections": manifest_sections,
-        "pool_size": len(pool),
-    }, indent=2, ensure_ascii=False))
     # --- Self-correcting QA loop: known failure classes map to fixes that are
     # applied automatically and re-verified; every failure is journaled and
     # becomes a learning the writer/pipeline sees next time.
@@ -855,6 +868,8 @@ def main() -> None:
     parser.add_argument("--shots", help="Shot-plan JSON (routes beats to AI clips vs car footage).")
     parser.add_argument("--no-kwcaps", action="store_true", help="Disable keyword pop captions.")
     parser.add_argument("--no-polish", action="store_true", help="Skip audio duck/SFX/loudnorm pass.")
+    parser.add_argument("--plan-only", action="store_true",
+                        help="Stop after writing the manifest (no render) — for tests/planning.")
     args = parser.parse_args()
 
     stock = True if args.stock else (False if args.no_stock else None)
@@ -864,7 +879,7 @@ def main() -> None:
                    captions=args.captions, stock=stock,
                    voice_engine=args.voice_engine, persona=args.persona,
                    shots_file=args.shots, kwcaps=not args.no_kwcaps,
-                   polish_audio=not args.no_polish)
+                   polish_audio=not args.no_polish, plan_only=args.plan_only)
     print(f"\nDone -> {path}")
 
 

@@ -165,8 +165,41 @@ class ElevenLabsTTSProvider(TTSProvider):
         return out_path
 
 
+class SilentTTSProvider(TTSProvider):
+    """Offline mock for tests/plan runs: writes silence sized by word count
+    (~2.6 words/sec) plus evenly-spaced word marks. No network, no cost."""
+
+    def synthesize(self, text: str, out_path: str, marks_path: str | None = None) -> str:
+        import json
+        import wave
+
+        words = normalize_for_speech(text).split()
+        duration = max(1.0, len(words) / 2.6)
+        sr = 22050
+        import math
+        n = int(sr * duration)
+        # a faint tone (not pure silence) so downstream silence-trimming
+        # behaves like it does on real speech
+        pcm = bytearray()
+        for i in range(n):
+            val = int(800 * math.sin(2 * math.pi * 220 * i / sr))
+            pcm += val.to_bytes(2, "little", signed=True)
+        with wave.open(out_path, "w") as wav:
+            wav.setnchannels(1)
+            wav.setsampwidth(2)
+            wav.setframerate(sr)
+            wav.writeframes(bytes(pcm))
+        if marks_path:
+            step = duration / max(1, len(words))
+            with open(marks_path, "w") as fh:
+                json.dump([{"w": w, "t": round(i * step, 3)} for i, w in enumerate(words)], fh)
+        return out_path
+
+
 def make_tts(engine: str = "edge", persona: str = "", voice: str | None = None) -> TTSProvider:
     """Build a TTS provider. engine='edge' (free) or 'elevenlabs' (expressive)."""
+    if engine == "mock":
+        return SilentTTSProvider()
     if engine == "elevenlabs":
         return ElevenLabsTTSProvider()
     cfg = PERSONA_VOICE.get(persona, PERSONA_VOICE["default"])

@@ -19,12 +19,19 @@ does taste (script approval, final watch, footage) and the system does the rest.
 2. **Orchestrator** — pipeline.py: one command per car through draft + QA, then
    an approval queue (Gate 1 human), `--approve` runs final + upload.
 
-## Next
-3. Retention-curve → beat mapping (learn WHICH second loses viewers)
-4. Inbox auto-ingest (vet, plate-blur, cut, name — automatically)
-5. Semantic asset index + cross-video freshness budget
-6. Experiment scheduler (deliberate A/B across the calendar)
-7. Comment mining → topics + reply drafts
-8. Provider fallback chains, .env secrets, structured logging
-9. CI: golden-manifest integration tests
-10. Hinglish/Hindi re-issues of winning videos
+## Done (cont.)
+3. Retention-curve → beat mapping ✅
+4. Inbox auto-ingest ✅
+8. .env secrets + provider fallback chains ✅
+
+## Next (agreed 2026-07-21, execute in order, auto-advance)
+A. **Hardening sprint ✅** — golden-manifest integration tests (mock TTS +
+   --plan-only), GitHub Actions CI. produce.py refactor: incremental, behind
+   the held tests, as modules get touched (not big-bang).
+B. **Experiment scheduler ✅** — data/calendar.json of pre-assigned A/Bs
+   (persona / hook-type / format / length / music rotations);
+   `pipeline --next` pulls the top entry. Makes learnings causal.
+C. Comment mining → topics + reply drafts (needs audience)
+D. Semantic asset index + cross-video freshness (as footage grows)
+E. Hinglish/Hindi re-issues of winners
+F. Cadence: aim daily once A+B land — the loop learns per upload

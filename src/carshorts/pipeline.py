@@ -132,8 +132,20 @@ def main() -> None:
     ap.add_argument("--approve", metavar="SLUG", help="Approve a queued draft -> final + upload.")
     ap.add_argument("--privacy", default="public", choices=["public", "unlisted", "private"])
     ap.add_argument("--queue", action="store_true", help="Show the approval queue.")
+    ap.add_argument("--next", action="store_true",
+                    help="Draft the next pending slot from the experiment calendar.")
     args = ap.parse_args()
 
+    if args.next:
+        from .calendar_plan import mark, next_pending
+        entry = next_pending()
+        if not entry:
+            sys.exit("calendar empty — python -m carshorts.calendar_plan --build")
+        print(f"calendar slot {entry['slot']}: {entry['car']} "
+              f"[{entry['persona']}/{entry['format']}/{entry['length_bucket']}]")
+        draft(entry["car"], persona=entry["persona"], video_format=entry["format"])
+        mark(entry["slot"], "drafted")
+        return
     if args.queue:
         show_queue()
     elif args.approve:
