@@ -1,0 +1,28 @@
+{
+  "slug": "mahindra-thar",
+  "verdict": "rework",
+  "rating": 4,
+  "beat_tags": {
+    "0": [
+      "text on screen"
+    ],
+    "1": [
+      "text on screen"
+    ],
+    "2": [
+      "text on screen"
+    ],
+    "3": [
+      "text on screen"
+    ],
+    "4": [
+      "joke flat",
+      "text on screen"
+    ],
+    "5": [
+      "text on screen"
+    ]
+  },
+  "beat_wins": {},
+  "notes": "remove text on screen as there has been no improvement.\nThen start stitching again"
+}

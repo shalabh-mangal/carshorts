@@ -748,7 +748,8 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
             "phrases": [{"t": round(t, 3), "text": txt} for t, txt in sec_phrases],
             "cuts": [{"t": round(t, 3), "asset": Path(a).name} for t, a in timed_cuts],
             "keyword": {"text": _keyword_for(seg) if kwcaps else "",
-                        "start": round(keyword_span[0], 3), "dur": round(keyword_span[1], 3)},
+                        "start": round(keyword_span[0], 3) if keyword_span else 0.0,
+                        "dur": round(keyword_span[1], 3) if keyword_span else 0.0},
             "callouts": [{"start": round(st, 3), "end": round(en, 3), "text": ln}
                          for st, en, ln in timed_callouts],
         })

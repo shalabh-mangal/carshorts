@@ -114,6 +114,31 @@ def test_plan_manifest_invariants(fixture_tree, monkeypatch):
     assert family(sections[-1]["cuts"][-1]["asset"]) in CAR_FAMILIES
 
 
+def test_plan_manifest_no_kwcaps(fixture_tree, monkeypatch):
+    """--no-kwcaps (owner ordered text overlays off) must render a manifest
+    with zero on-screen text — and must not crash on the None keyword span."""
+    for key in ("GROQ_API_KEY", "PEXELS_API_KEY", "GEMINI_API_KEY", "ELEVENLABS_API_KEY"):
+        monkeypatch.delenv(key, raising=False)
+    monkeypatch.setenv("CARSHORTS_LLM", "ollama")
+    from carshorts.produce import produce
+
+    manifest_path = produce(
+        spec_path="specs/test-car.json",
+        out_path="out/test_car_notext.mp4",
+        script_file="script.json",
+        skip_factcheck=True,
+        voice_engine="mock",
+        provider=None,
+        plan_only=True,
+        music="none",
+        stock=False,
+        kwcaps=False,
+    )
+    for sec in json.loads(Path(manifest_path).read_text())["sections"]:
+        assert sec["keyword"]["text"] == ""
+        assert sec["callouts"] == []
+
+
 def test_phrase_times_monotonic(fixture_tree):
     from carshorts.produce import _phrases_with_times
     from carshorts.adapters.tts import SilentTTSProvider

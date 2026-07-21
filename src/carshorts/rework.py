@@ -20,13 +20,28 @@ import sys
 from pathlib import Path
 
 from .adapters.llm import make_llm
-from .models import Script
-from .stages.pipeline import _rows
+from .models import Script, SpecSheet
+from .stages.pipeline import _rows, unsourced_numbers_check
 
 
 def _latest_feedback(slug: str) -> dict | None:
     files = sorted(Path("data/feedback").glob(f"{slug}-*.json"))
     return json.loads(files[-1].read_text()) if files else None
+
+
+def _render_directives(feedback: dict) -> list[str]:
+    """Translate owner tags/notes into produce flags. Tags must change THIS
+    render — folding them into learnings only teaches future scripts, which
+    reads as the system ignoring direct orders."""
+    tags = [t for ts in feedback.get("beat_tags", {}).values() for t in ts]
+    notes = (feedback.get("notes") or "").lower()
+    flags: list[str] = []
+    if (tags.count("text on screen") >= 2
+            or "remove text" in notes or "no text on screen" in notes):
+        flags.append("--no-kwcaps")
+    if tags.count("music") >= 2 or "remove music" in notes or "no music" in notes:
+        flags.append("--music=none")
+    return flags
 
 
 def _fold_learnings(feedback: dict, llm) -> list[str]:
@@ -58,6 +73,8 @@ def _punch_up_tagged(card: dict, feedback: dict, llm) -> bool:
         return False
     script_path = Path(card["script"])
     script = Script.model_validate_json(script_path.read_text())
+    sheet = SpecSheet.model_validate_json(Path(card["spec"]).read_text())
+    baseline_flags = set(unsourced_numbers_check(script, sheet))
     changed = False
     for idx in targets:
         if idx >= len(script.segments):
@@ -71,7 +88,12 @@ def _punch_up_tagged(card: dict, feedback: dict, llm) -> bool:
             f"Car: {script.subject}\nRole: {seg.role}\nLine: {seg.text}\n"
             f"Owner notes: {feedback.get('notes','')[:300]}"))
         if rows and rows[0].get("text"):
+            original_text = seg.text
             seg.text = rows[0]["text"].strip()
+            invented = set(unsourced_numbers_check(script, sheet)) - baseline_flags
+            if invented:
+                seg.text = original_text  # rewrite fabricated a figure — keep owner's line
+                continue
             changed = True
     if changed:
         script_path.write_text(script.model_dump_json(indent=2))
@@ -99,23 +121,36 @@ def run(slug: str) -> None:
     llm = make_llm(None)
     _progress(slug, "1/3 folding your feedback into learnings")
     lessons = _fold_learnings(feedback, llm)
+    for flag in _render_directives(feedback):
+        if flag not in card.setdefault("render_flags", []):
+            card["render_flags"].append(flag)
     _progress(slug, "2/3 rewriting tagged beats")
     rewrote = _punch_up_tagged(card, feedback, llm)
 
-    _progress(slug, "3/3 re-rendering the draft (~2 min)")
+    step3 = "3/3 re-rendering the draft (~2 min)"
+    if "--no-kwcaps" in card.get("render_flags", []):
+        step3 = "3/3 re-rendering WITHOUT text overlays (~2 min)"
+    _progress(slug, step3)
     result = subprocess.run(
         [sys.executable, "-m", "carshorts.produce", "--script-file", card["script"],
          "--spec", card["spec"], "--skip-factcheck", "--persona",
-         card.get("persona", "deadpan"), "--out", card["draft"]],
+         card.get("persona", "deadpan"), "--out", card["draft"],
+         *card.get("render_flags", [])],
         capture_output=True, text=True)
     ok = result.returncode == 0
     qa_green = "QA FAILED" not in (result.stdout or "")
 
     card["status"] = "awaiting_approval" if ok else "rework_failed"
+    applied = ""
+    if "--no-kwcaps" in card.get("render_flags", []):
+        applied += ", TEXT OVERLAYS REMOVED"
+    if "--music=none" in card.get("render_flags", []):
+        applied += ", MUSIC REMOVED"
     card["note"] = (f"AUTO-REWORK {datetime.date.today()}: "
                     f"{len(lessons)} lesson(s) folded"
                     + (", tagged jokes rewritten" if rewrote else "")
-                    + ", re-rendered with updated text engine"
+                    + applied
+                    + ", re-rendered"
                     + ("" if qa_green else " — ⚠ QA flagged, check before approving"))
     card_path.write_text(json.dumps(card, indent=2))
     _progress(slug, "", done=True)
