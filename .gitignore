@@ -23,3 +23,7 @@ harness_report.json
 .idea/
 .vscode/
 .DS_Store
+
+# Google OAuth secrets — never commit
+client_secret.json
+youtube_token.json
