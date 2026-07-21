@@ -1,0 +1,23 @@
+{
+  "slug": "mahindra-thar",
+  "verdict": "rework",
+  "rating": 4,
+  "beat_tags": {
+    "0": [
+      "text on screen"
+    ],
+    "1": [
+      "text on screen"
+    ],
+    "2": [
+      "text on screen"
+    ],
+    "3": [
+      "text on screen"
+    ],
+    "4": [
+      "text on screen"
+    ]
+  },
+  "notes": "Now most of the things have been improved still certain issues : \n1. Text overlay can be much better\n2. Text overlay is creating bad experience cuz of many factors below\n2.1 its font and placement on screen is not good\n2.2 its not able to sync with beats and appear before/after the script\n2.3 magic will happen if text appears with beats only when perfectly timed with voice \n\nTry to work on these, then lets see the improvement\n"
+}
