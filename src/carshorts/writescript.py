@@ -38,6 +38,10 @@ def write_premium(spec_path: str, out_path: str, persona: str = "", language: st
                   variants: int = 3, provider: str | None = None) -> str:
     sheet = SpecSheet.model_validate_json(Path(spec_path).read_text())
     guidance = _apply_extras(sheet)          # sourced price + value-pick, if any
+    from .learnings import load_learnings_guidance
+    craft = load_learnings_guidance()
+    if craft:
+        guidance = f"{guidance}\n\n{craft}" if guidance else craft
     llm = make_llm(provider)
 
     print(f"1/4  drafting {variants} variant(s) [persona={persona or 'default'}, {language}]...")

@@ -1,0 +1,23 @@
+{
+  "out": "out/thar_draft.mp4",
+  "subject": "Mahindra Thar",
+  "rendered_at": "2026-07-21T17:46:07",
+  "script_file": "scripts/thar_deadpan.script.json",
+  "persona": "deadpan",
+  "voice_engine": "edge",
+  "language": "english",
+  "music": "Above The Clouds - Jeremy Black.mp3",
+  "captions": false,
+  "word_count": 132,
+  "sections": 6,
+  "hook_text": "A facelift Thar lands in 2026 \u2014 Roxx looks, bigger screen. So: buy now, or wait?",
+  "hook_type": "news",
+  "pool": {
+    "own": 0,
+    "stock": 10,
+    "stills": 6
+  },
+  "cut_target_s": 4.1,
+  "video_id": null,
+  "metrics": null
+}

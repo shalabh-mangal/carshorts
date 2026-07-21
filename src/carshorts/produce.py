@@ -193,6 +193,10 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
 
         sheet = SpecSheet.model_validate_json(Path(spec_path).read_text())
         guidance = _apply_extras(sheet)   # merges sourced price + value-pick guidance
+        from .learnings import load_learnings_guidance
+        craft = load_learnings_guidance()
+        if craft:
+            guidance = f"{guidance}\n\n{craft}" if guidance else craft
         llm = make_llm(provider)
         print(f"1/4  writing {language} script ({len(sheet.specs)} specs"
               + (", +price/variant" if guidance else "") + ")...")
@@ -426,6 +430,32 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
           f"(captions={'on' if captions else 'off'}, music={'yes' if music_path else 'no'})")
     MoviePyRenderer().render_sections(sections, str(out), music_path=music_path,
                                       draw_captions=captions)
+
+    # Recipe card: log every creative choice so analytics can attribute results.
+    try:
+        import datetime as _dt
+        hook = script.segments[0]
+        recipe = {
+            "out": str(out), "subject": script.subject,
+            "rendered_at": _dt.datetime.now().isoformat(timespec="seconds"),
+            "script_file": script_file or str(out.with_suffix(".script.json")),
+            "persona": persona or "default", "voice_engine": voice_engine,
+            "language": language, "music": Path(music_path).name if music_path else "none",
+            "captions": captions, "word_count": script.approx_word_count(),
+            "sections": len(script.segments),
+            "hook_text": hook.text,
+            "hook_type": ("news" if any(c.startswith("news") for c in hook.cited_spec_names)
+                          else "question" if "?" in hook.text else "statement"),
+            "pool": {"own": len(user_clips), "stock": len(stock_videos), "stills": len(images)},
+            "cut_target_s": round(target, 2),
+            "video_id": None, "metrics": None
+        }
+        rp = Path("data/recipes") / (out.stem + ".json")
+        rp.parent.mkdir(parents=True, exist_ok=True)
+        rp.write_text(json.dumps(recipe, indent=2))
+        print(f"     recipe card -> {rp}")
+    except Exception as exc:  # noqa: BLE001 — logging must never break a render
+        print(f"     recipe card skipped ({exc})")
 
     credits = attribution_lines(f"assets/cars/{_slug(script.subject)}/images") if images else []
     if credits:

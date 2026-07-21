@@ -1,0 +1,19 @@
+{
+  "updated": "2026-07-21",
+  "craft_playbook": [
+    "Deliver the hook inside 2.5 seconds; viewers decide in under 2 on mobile.",
+    "Open with a pattern interrupt or curiosity gap; NEVER context/build-up or greetings.",
+    "Reverse structure: lead with the payoff (news, boldest number, verdict tease), explain after.",
+    "Include a concrete number in the hook when possible (price, 0-100, sales figure).",
+    "No dead air: trim silences; keep delivery slightly faster than conversational.",
+    "Bury nothing: the best moment goes first, not 15 seconds in.",
+    "One idea per beat; cut visuals every 2-3 seconds; open on motion or high-contrast frame.",
+    "End with a question that begs a comment + a loop-friendly closer (last line can feed the first).",
+    "Hook and content must match; clickbait mismatch kills retention and trust.",
+    "Front-load value beats: price/verdict by the midpoint, never last."
+  ],
+  "data_learnings": [
+    "carshorts video #1 (Nexon): only 25% swiped in from feed - flat descriptive hook underperforms; avg view 58% once in.",
+    "carshorts video #2 (Swift): fast cuts + no subtitles + real footage held attention better (qualitative)."
+  ]
+}
