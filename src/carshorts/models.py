@@ -74,9 +74,15 @@ class ScriptSegment(BaseModel):
     # Names of the Specs (Spec.name) this segment relies on. Empty = no factual
     # claim (pure narration/opinion). The writer is prompted to fill this in.
     cited_spec_names: list[str] = Field(default_factory=list)
-    # Curated on-screen highlight fragments (word-exact substrings of `text`).
-    # Each renders ONLY while the voice speaks those words; no match, no text.
-    pops: list[str] = Field(default_factory=list)
+    # Curated on-screen highlight pops. Two forms:
+    #   "152 PS"                          — transcript pop: shows the fragment,
+    #                                       timed word-exactly to when it's spoken
+    #   {"anchor": "twice on Sundays",
+    #    "show": "MALL-RATED 4x4"}        — reaction pop: timing still word-exact
+    #                                       to the anchor words, but the display
+    #                                       text is a written reaction/label
+    # Either way: no word-exact anchor in the voice timeline, no text. Ever.
+    pops: list[str | dict] = Field(default_factory=list)
 
 
 class Script(BaseModel):

@@ -67,15 +67,21 @@ CRAFT (what makes it premium — do all of these):
 - Plant a RETENTION tease early ("but the best bit is coming") so they stay.
 - Vary the humour — specific analogies/roasts, not the same slang word repeated.
 - CTA must ask a concrete question that begs a comment.
+- ON-SCREEN POPS: for each segment, fill "pops" with the 1-3 strongest short
+  fragments (max 26 chars) COPIED VERBATIM from that segment's text — figures,
+  variant names, feature names. They render on screen exactly while spoken,
+  so muted viewers still get the payoff. For a joke/punchline beat you may
+  instead use a reaction pop: {"anchor": "<verbatim words the punchline lands
+  on>", "show": "<short written reaction/label, not a transcript>"}.
 
 Output ONLY this JSON (include a "value" segment only if a price is given):
 {"subject": "...", "segments": [
-  {"role": "hook",  "text": "...", "cited_spec_names": ["..."]},
-  {"role": "spec",  "text": "...", "cited_spec_names": ["..."]},
-  {"role": "spec",  "text": "...", "cited_spec_names": ["..."]},
-  {"role": "value", "text": "...", "cited_spec_names": ["price_estimate"]},
-  {"role": "peak",  "text": "...", "cited_spec_names": []},
-  {"role": "cta",   "text": "...", "cited_spec_names": []}
+  {"role": "hook",  "text": "...", "cited_spec_names": ["..."], "pops": ["..."]},
+  {"role": "spec",  "text": "...", "cited_spec_names": ["..."], "pops": ["..."]},
+  {"role": "spec",  "text": "...", "cited_spec_names": ["..."], "pops": ["..."]},
+  {"role": "value", "text": "...", "cited_spec_names": ["price_estimate"], "pops": ["..."]},
+  {"role": "peak",  "text": "...", "cited_spec_names": [], "pops": [{"anchor": "...", "show": "..."}]},
+  {"role": "cta",   "text": "...", "cited_spec_names": [], "pops": ["..."]}
 ]}"""
 
 # Language instructions appended to the writer's user prompt. Kept here so tone

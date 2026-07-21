@@ -21,7 +21,8 @@
       ],
       "pops": [
         "Level 2 ADAS",
-        "19-inch alloys"
+        "19-inch alloys",
+        "10.25-inch screen"
       ]
     },
     {
@@ -34,7 +35,8 @@
         "four_wheel_drive"
       ],
       "pops": [
-        "152 PS, 320 Nm"
+        "152 PS",
+        "proper 4x4"
       ]
     },
     {
@@ -45,14 +47,25 @@
         "value_variant",
         "value_features"
       ],
-      "pops": []
+      "pops": [
+        {
+          "anchor": "₹12.99 lakh",
+          "show": "₹12.99 lakh",
+          "card": true,
+          "label": "smart money pick"
+        },
+        "LXT RWD Diesel"
+      ]
     },
     {
       "role": "peak",
       "text": "Everyone buys the Thar for the mountains. The only summit most will ever see is the mall parking ramp — twice on Sundays.",
       "cited_spec_names": [],
       "pops": [
-        "mall parking ramp"
+        {
+          "anchor": "twice on Sundays",
+          "show": "PEAK OFF-ROADING."
+        }
       ]
     },
     {

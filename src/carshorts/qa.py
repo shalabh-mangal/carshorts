@@ -123,13 +123,15 @@ def run_qa(video_path: str, manifest_path: str | None = None,
             dur = sec["duration"]
             pops = sec.get("pops", [])
             total_pops += len(pops)
-            if len(pops) > 2:
+            if len(pops) > 3:
                 pop_ok, pop_detail = False, f"{len(pops)} pops crowd sec {sec['index']}"
             prev_end = -1.0
             for pop in pops:
-                if pop["start"] < prev_end + 0.4:
+                gap_needed = -0.3 if pop.get("kind") == "reaction" else 0.4
+                if pop["start"] < prev_end + gap_needed:
                     pop_ok, pop_detail = False, f"pops overlap in sec {sec['index']}"
-                if pop["start"] + 0.5 > dur:
+                past_end_limit = dur - 0.35 if pop.get("kind") == "reaction" else dur - 0.5
+                if pop["start"] > past_end_limit:
                     pop_ok, pop_detail = False, f"pop past end of sec {sec['index']}"
                 prev_end = pop["start"] + pop["dur"]
         check("text pops voice-synced & uncrowded", pop_ok,

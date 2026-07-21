@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import tempfile
 from abc import ABC, abstractmethod
+from pathlib import Path
 
 VERTICAL = (1080, 1920)
 
@@ -123,10 +124,18 @@ class Section:
 
 
 _HEAVY_FONTS = [
-    "/System/Library/Fonts/SFCompactRounded.ttf",            # modern, premium
+    str(Path(__file__).resolve().parents[3] / "assets" / "fonts" / "Montserrat-Black.ttf"),
+    "assets/fonts/Montserrat-Black.ttf",                     # cwd-relative fallback
+    "/System/Library/Fonts/SFCompactRounded.ttf",
     "/System/Library/Fonts/Supplemental/Arial Rounded Bold.ttf",
     "/System/Library/Fonts/Supplemental/Arial Black.ttf",
 ] + _FONT_CANDIDATES
+
+# Overlay palette (research-derived): white base + ONE desaturated-cyan accent
+# on numbers only. Yellow is banned — it pattern-matches to clip-farm content.
+TEXT_WHITE = (255, 255, 255, 255)
+ACCENT_CYAN = (126, 229, 227, 255)      # #7EE5E3 — the channel accent
+STROKE_BLACK = (0, 0, 0, 255)
 
 
 def _load_heavy_font(size: int):
@@ -134,45 +143,167 @@ def _load_heavy_font(size: int):
 
     for path in _HEAVY_FONTS:
         try:
-            return ImageFont.truetype(path, size)
+            font = ImageFont.truetype(path, size)
+            if "Montserrat" in path:
+                try:
+                    font.set_variation_by_name("Black")
+                except OSError:
+                    pass
+            return font
         except OSError:
             continue
     return _load_font(size)
 
 
+def _numberish(token: str) -> bool:
+    return any(c.isdigit() for c in token) or "₹" in token
+
+
 def _overlay_png(text: str, font_size: int, fill, out_path: str,
-                 pill: bool = False, max_width: int = 980,
-                 accent_bar: bool = False) -> str:
-    """Render text (heavy face, thick stroke, optional dark pill / accent bar)
-    to a transparent PNG."""
-    from PIL import Image, ImageDraw
+                 pill: bool = False, max_width: int = 780,
+                 accent_bar: bool = False, accent_digits: bool = False) -> str:
+    """Render text to a transparent PNG. Research-derived treatment: heavy
+    face, ~9% black stroke (load-bearing over busy footage), soft blurred
+    shadow, and — for number pops — cyan digits with white unit labels so the
+    single accent color stays reserved for the payload figure.
+    max_width=780 keeps centered text inside the Shorts safe box
+    (x∈[60,930] on 1080w, right 150px reserved for the engagement rail)."""
+    from PIL import Image, ImageDraw, ImageFilter
 
     font = _load_heavy_font(font_size)   # one face everywhere = coherent look
     tmp = ImageDraw.Draw(Image.new("RGBA", (10, 10)))
     lines = _wrap(tmp, text, font, max_width)
     ascent, descent = font.getmetrics()
     line_h = ascent + descent + 8
-    width = max(int(tmp.textlength(l, font=font)) for l in lines) + 80
-    height = line_h * len(lines) + 48
+    stroke = max(3, round(font_size * 0.09))
+    width = max(int(tmp.textlength(l, font=font)) for l in lines) + 80 + 2 * stroke
+    height = line_h * len(lines) + 48 + 2 * stroke
     img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
     if pill:
         draw.rounded_rectangle([0, 0, width - 1, height - 1], radius=26,
                                fill=(10, 10, 14, 200))
-    y = 24
+
+    def draw_line(target, line, x, y, with_color):
+        if with_color and accent_digits:
+            # cyan on the figure, white on the unit — sequential segments
+            cx = x
+            for token in line.split(" "):
+                color = ACCENT_CYAN if _numberish(token) else TEXT_WHITE
+                target.text((cx, y), token, font=font, fill=color,
+                            stroke_width=stroke, stroke_fill=STROKE_BLACK)
+                cx += target.textlength(token + " ", font=font)
+        else:
+            color = fill if with_color else (0, 0, 0, 255)
+            target.text((x, y), line, font=font, fill=color,
+                        stroke_width=stroke if with_color else 0,
+                        stroke_fill=STROKE_BLACK)
+
+    # soft blurred shadow on its own layer (research: offset +3/+5, blur 8)
+    shadow = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    sdraw = ImageDraw.Draw(shadow)
+    y = 24 + stroke
     for line in lines:
-        x = (width - draw.textlength(line, font=font)) // 2
-        draw.text((x + 2, y + 3), line, font=font, fill=(0, 0, 0, 160))   # soft shadow
-        draw.text((x, y), line, font=font, fill=fill,
-                  stroke_width=max(2, font_size // 22), stroke_fill=(0, 0, 0, 230))
+        x = (width - tmp.textlength(line, font=font)) // 2
+        draw_line(sdraw, line, x + 3, y + 5, with_color=False)
         y += line_h
-    if accent_bar:   # short brand-yellow bar under the text = channel signature
+    shadow = shadow.filter(ImageFilter.GaussianBlur(8))
+    shadow.putalpha(shadow.getchannel("A").point(lambda a: int(a * 0.55)))
+    img.alpha_composite(shadow)
+
+    y = 24 + stroke
+    for line in lines:
+        x = (width - tmp.textlength(line, font=font)) // 2
+        draw_line(draw, line, x, y, with_color=True)
+        y += line_h
+    if accent_bar:   # cyan signature bar under the figure
         bar_w = min(width - 100, max(140, width // 3))
         bx = (width - bar_w) // 2
-        draw.rounded_rectangle([bx, y + 2, bx + bar_w, y + 16], radius=7,
-                               fill=(255, 214, 10, 235))
+        draw.rounded_rectangle([bx, y + 4, bx + bar_w, y + 14], radius=5,
+                               fill=ACCENT_CYAN)
     img.save(out_path)
     return out_path
+
+
+def _settle_scale(t: float) -> float:
+    """Grow-overshoot-settle: 0.92 -> 1.05 -> 1.00 over 0.22s (research: the
+    canonical premium arrival; overshoot capped well under 1.15)."""
+    if t >= 0.22:
+        return 1.0
+    if t < 0.12:
+        progress = t / 0.12
+        return 0.92 + 0.13 * (1 - (1 - progress) ** 2)
+    return 1.05 - 0.05 * ((t - 0.12) / 0.10)
+
+
+def _slam_scale(t: float) -> float:
+    """Reaction-text entrance: 1.3 -> 1.0 in 150ms, hard and loud on purpose —
+    a different voice from the pop rail (the editor reacting, not captions)."""
+    return 1.3 - 0.3 * min(t, 0.15) / 0.15 if t < 0.15 else 1.0
+
+
+def _wipe_bar_frames(full_width: int, tdir: str, tag: str) -> list[str]:
+    """12 frames of a cyan marker-bar wiping left->right (ease-out, 0.35s)."""
+    from PIL import Image, ImageDraw
+
+    frames = []
+    for f in range(12):
+        progress = 1 - (1 - (f + 1) / 12) ** 2
+        w = max(3, int(full_width * progress))
+        img = Image.new("RGBA", (full_width, 14), (0, 0, 0, 0))
+        ImageDraw.Draw(img).rounded_rectangle([0, 2, w, 12], radius=5,
+                                              fill=ACCENT_CYAN)
+        path = f"{tdir}/{tag}_f{f}.png"
+        img.save(path)
+        frames.append(path)
+    return frames
+
+
+def _countup_frames(final_text: str, label: str, tdir: str, tag: str,
+                    n_frames: int = 34) -> list[str]:
+    """Big-number card count-up: ease-out toward the exact final value, digits
+    in accent cyan at ~300px, static white label below. One per short, for THE
+    payoff stat only."""
+    import re as _re
+
+    from PIL import Image, ImageDraw
+
+    match = _re.search(r"\d[\d,]*(?:\.\d+)?", final_text)
+    final_value = float(match.group(0).replace(",", "")) if match else 0.0
+    prefix = final_text[:match.start()] if match else ""
+    suffix = final_text[match.end():] if match else final_text
+    decimals = len(match.group(0).split(".")[1]) if match and "." in match.group(0) else 0
+    # autofit: THE number should be huge, but never clipped — shrink until the
+    # final text (the widest frame) sits inside the Shorts safe box (<=860px)
+    from PIL import Image as _Img, ImageDraw as _Draw
+    probe = _Draw.Draw(_Img.new("RGBA", (8, 8)))
+    digit_size = 300
+    final_probe = f"{prefix}{final_value:,.{decimals}f}{suffix}".upper()
+    while digit_size > 90 and probe.textlength(
+            final_probe, font=_load_heavy_font(digit_size)) > 860:
+        digit_size -= 10
+    digit_font = _load_heavy_font(digit_size)
+    label_font = _load_heavy_font(64)
+    stroke = round(digit_size * 0.09)
+    width, height = 1080, digit_size + 320
+    frames = []
+    for f in range(n_frames):
+        progress = 1 - (1 - (f + 1) / n_frames) ** 3     # ease-out, slow landing
+        value = final_value * progress if f < n_frames - 1 else final_value
+        text = f"{prefix}{value:,.{decimals}f}{suffix}".upper()
+        img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        x = (width - d.textlength(text, font=digit_font)) // 2
+        d.text((x, 60), text, font=digit_font, fill=ACCENT_CYAN,
+               stroke_width=stroke, stroke_fill=STROKE_BLACK)
+        if label:
+            lx = (width - d.textlength(label.upper(), font=label_font)) // 2
+            d.text((lx, digit_size + 180), label.upper(), font=label_font,
+                   fill=TEXT_WHITE, stroke_width=6, stroke_fill=STROKE_BLACK)
+        path = f"{tdir}/{tag}_f{f}.png"
+        img.save(path)
+        frames.append(path)
+    return frames
 
 
 class VideoRenderer(ABC):
@@ -307,7 +438,8 @@ class MoviePyRenderer(VideoRenderer):
         they feel like video; captions are optional; optional music is mixed low
         under the voice."""
         from moviepy import (AudioFileClip, CompositeVideoClip, ImageClip,
-                             VideoFileClip, concatenate_videoclips)
+                             ImageSequenceClip, VideoFileClip,
+                             concatenate_videoclips)
 
         clips = []
         for idx, section in enumerate(sections):
@@ -354,18 +486,62 @@ class MoviePyRenderer(VideoRenderer):
             dur = AudioFileClip(section.audio_path).duration
             if k:
                 boundaries.append(cursor)
-            for pi, (pop_start, pop_dur, pop_text) in enumerate(section.word_pops):
-                # voice-synced highlight pop: on screen exactly while spoken
-                png = _overlay_png(pop_text.upper(), 84,
-                                   (255, 214, 10, 255) if any(c.isdigit() for c in pop_text)
-                                   else (245, 245, 245, 255),
-                                   f"{tdir}/pop_{k}_{pi}.png", accent_bar=True)
-                clip = (ImageClip(png, transparent=True)
-                        .with_start(cursor + pop_start)
-                        .with_duration(min(pop_dur, dur - pop_start))
-                        .resized(lambda t: 1.12 - 0.12 * min(t, 0.18) / 0.18)
-                        .with_position(("center", int(height * 0.64))))
-                overlays.append(clip)
+            for pi, pop in enumerate(section.word_pops):
+                pop_start, pop_dur, pop_text = pop[0], pop[1], pop[2]
+                kind = pop[3] if len(pop) > 3 else (
+                    "number" if any(c.isdigit() for c in pop_text) else "word")
+                label = pop[4] if len(pop) > 4 else ""
+                start_abs = cursor + pop_start
+                # reactions straddle the section cut on purpose (silence beat)
+                show_dur = (pop_dur if kind == "reaction"
+                            else min(pop_dur, dur - pop_start))
+                if kind == "card":
+                    # big-number payoff card: count-up to the exact figure
+                    frames = _countup_frames(pop_text, label, tdir, f"card_{k}_{pi}")
+                    countup = (ImageSequenceClip(frames, fps=24)
+                               .with_start(start_abs)
+                               .with_position(("center", int(height * 0.30))))
+                    hold = (ImageClip(frames[-1], transparent=True)
+                            .with_start(start_abs + countup.duration)
+                            .with_duration(max(0.7, show_dur - countup.duration))
+                            .with_position(("center", int(height * 0.30))))
+                    overlays.extend([countup, hold])
+                elif kind == "reaction":
+                    # the editor's dry voice, upper third, slams into the
+                    # silence beat right after the punchline lands
+                    png = _overlay_png(pop_text.upper(), 110, TEXT_WHITE,
+                                       f"{tdir}/rx_{k}_{pi}.png")
+                    clip = (ImageClip(png, transparent=True)
+                            .with_start(start_abs)
+                            .with_duration(show_dur)
+                            .resized(_slam_scale)
+                            .with_position(("center", int(height * 0.30))))
+                    overlays.append(clip)
+                else:
+                    png = _overlay_png(pop_text.upper(), 96, TEXT_WHITE,
+                                       f"{tdir}/pop_{k}_{pi}.png",
+                                       accent_digits=(kind == "number"))
+                    clip = (ImageClip(png, transparent=True)
+                            .with_start(start_abs)
+                            .with_duration(show_dur)
+                            .resized(_settle_scale)
+                            .with_position(("center", int(height * 0.64))))
+                    overlays.append(clip)
+                    if kind == "number":
+                        # cyan marker-wipe under the figure (0.35s ease-out)
+                        from PIL import Image as _PILImage
+                        png_w = _PILImage.open(png).width
+                        bar_w = min(png_w - 90, max(140, png_w // 3))
+                        bar_y = int(height * 0.64) + _PILImage.open(png).height - 8
+                        frames = _wipe_bar_frames(bar_w, tdir, f"bar_{k}_{pi}")
+                        wipe = (ImageSequenceClip(frames, fps=34)
+                                .with_start(start_abs)
+                                .with_position(("center", bar_y)))
+                        bar_hold = (ImageClip(frames[-1], transparent=True)
+                                    .with_start(start_abs + wipe.duration)
+                                    .with_duration(max(0.1, show_dur - wipe.duration))
+                                    .with_position(("center", bar_y)))
+                        overlays.extend([wipe, bar_hold])
             if section.word_pops:
                 cursor += dur
                 continue                 # pops replace all legacy text below

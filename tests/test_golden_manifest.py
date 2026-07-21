@@ -47,7 +47,9 @@ def fixture_tree(tmp_path, monkeypatch):
             {"role": "spec", "text": "It makes 100 PS of power, and 200 Nm of torque, which is plenty.",
              "cited_spec_names": ["power", "torque"]},
             {"role": "peak", "text": "Buying rivals instead? Bold move. Genuinely bold.",
-             "cited_spec_names": [], "pops": ["Bold move"]},
+             "cited_spec_names": [],
+             "pops": ["Bold move",
+                      {"anchor": "Genuinely bold", "show": "INSPIRED."}]},
             {"role": "cta", "text": "Would you take one home? Say it in the comments, and follow.",
              "cited_spec_names": []},
         ],
@@ -89,8 +91,16 @@ def test_pops_generated_for_spec_figures(fixture_tree, monkeypatch):
     sections = json.loads(Path(manifest_path).read_text())["sections"]
     spec_pops = [p["text"] for p in sections[1]["pops"]]
     assert "100 PS" in spec_pops, spec_pops
-    peak_pops = [p["text"] for p in sections[2]["pops"]]
+    peak_pops = {p["text"]: p for p in sections[2]["pops"]}
     assert "Bold move" in peak_pops, peak_pops
+    assert peak_pops["Bold move"]["kind"] == "word"
+    # reaction pop: non-transcript text, fires AFTER its anchor is spoken
+    assert "INSPIRED." in peak_pops, peak_pops
+    reaction = peak_pops["INSPIRED."]
+    assert reaction["kind"] == "reaction"
+    assert reaction["start"] > peak_pops["Bold move"]["start"]
+    spec_kinds = {p["text"]: p["kind"] for p in sections[1]["pops"]}
+    assert spec_kinds.get("100 PS") == "number"
 
 
 def test_plan_manifest_invariants(fixture_tree, monkeypatch):
@@ -130,8 +140,14 @@ def test_plan_manifest_invariants(fixture_tree, monkeypatch):
         section_words = {w.strip('.,?!—').lower() for w in sec["text"].split()}
         prev_end = -1.0
         for pop in pops:
-            assert pop["start"] >= prev_end + 0.4, f"pops crowd sec {sec['index']}"
-            assert 0 <= pop["start"] < sec["duration"] - 0.4
+            gap_needed = -0.3 if pop["kind"] == "reaction" else 0.4
+            assert pop["start"] >= prev_end + gap_needed, f"pops crowd sec {sec['index']}"
+            assert 0 <= pop["start"] < sec["duration"] - 0.3
+            if pop["kind"] == "reaction":
+                # written editorial text, straddles the cut — words are NOT
+                # transcript, so no word-source check
+                prev_end = pop["start"] + pop["dur"]
+                continue
             assert pop["start"] + pop["dur"] <= sec["duration"] + 0.6
             for w in pop["text"].split():
                 assert w.strip('.,?!—').lower() in section_words

@@ -249,41 +249,91 @@ def _exact_span(frag: str, marks_file: str | None, fallback: tuple) -> tuple | N
     return None              # words not found -> perfectly timed or absent
 
 
-_POP_MAX_PER_SECTION = 2
+_POP_MAX_PER_SECTION = 3
 _POP_GAP = 0.6
 
 
-def _word_pops(seg, marks_file: str | None, dur: float) -> list[tuple[float, float, str]]:
-    """WORD-SYNCED HIGHLIGHT POPS — the single on-screen text engine.
-
-    Candidates (curated script `pops` first, then every spec figure found in
-    the line) are matched word-exactly against the TTS word timeline. A pop
-    renders from the moment its first word is spoken until just after its
-    last — no word-exact match, no text. Owner rule, stated three times:
-    text on screen ONLY while the voice speaks those exact words.
+def _pop_candidates(seg, sheet) -> list[dict]:
+    """Pop candidates, strongest first: curated script pops, then every spec
+    figure in the line, then cited spec VALUES spoken verbatim — the spec
+    sheet is the well of extra on-screen information. Kinds:
+      word     — white transcript fragment
+      number   — cyan figure + white unit, marker-wipe underline
+      reaction — written editorial reaction, fires AFTER the anchor (punchlines)
+      card     — big count-up number card, THE payoff stat, max one per short
     """
-    candidates = [c for c in (getattr(seg, "pops", None) or []) if len(c) <= 26]
+    def kind_of(show: str) -> str:
+        return "number" if any(ch.isdigit() for ch in show) else "word"
+
+    out: list[dict] = []
+    for c in (getattr(seg, "pops", None) or []):
+        if isinstance(c, dict):
+            anchor = c.get("anchor", "")
+            show = c.get("show", "") or anchor
+            kind = ("card" if c.get("card")
+                    else "reaction" if show.strip().lower() != anchor.strip().lower()
+                    else kind_of(show))
+            label = c.get("label", "")
+        else:
+            anchor, show, kind, label = c, c, kind_of(c), ""
+        if anchor and len(show) <= 26:
+            out.append({"anchor": anchor, "show": show, "kind": kind, "label": label})
     for match in _KW_NUM.finditer(seg.text):
         cand = match.group(0).strip().rstrip(".,")
-        if cand and len(cand) <= 26 and cand not in candidates:
-            candidates.append(cand)
-    pops: list[tuple[float, float, str]] = []
-    for cand in candidates:
+        if cand and len(cand) <= 26 and all(cand != o["anchor"] for o in out):
+            out.append({"anchor": cand, "show": cand, "kind": "number", "label": ""})
+    if sheet is not None:
+        for spec in sheet.specs:
+            value = spec.value.strip().rstrip(".,")
+            if (2 < len(value) <= 26 and value.lower() in seg.text.lower()
+                    and all(value != o["anchor"] for o in out)):
+                out.append({"anchor": value, "show": value,
+                            "kind": kind_of(value), "label": ""})
+    return out
+
+
+def _word_pops(seg, marks_file: str | None, dur: float,
+               sheet=None) -> list[tuple]:
+    """WORD-SYNCED HIGHLIGHT POPS — the single on-screen text engine.
+
+    Every candidate's ANCHOR words are matched word-exactly against the TTS
+    word timeline; no word-exact match, no text — ever. Transcript pops render
+    from the first anchor word to just after the last. Reaction pops fire in
+    the SILENCE BEAT ~0.25s after the anchor ends (comedy-editing standard:
+    the reaction lands after the line, never on it). Returns
+    [(start, dur, show_text, kind, label)].
+    """
+    pops: list[tuple] = []
+    for cand in _pop_candidates(seg, sheet):
         if len(pops) >= _POP_MAX_PER_SECTION:
             break
-        span = _exact_span(cand, marks_file, (0.0, 0.0))
+        span = _exact_span(cand["anchor"], marks_file, (0.0, 0.0))
         if span is None:
             continue
         start, span_dur = span
-        span_dur = min(span_dur, 3.5, max(0.9, dur - start - 0.1))
-        if start >= dur - 0.5:
-            continue
-        crowded = any(start < prev_start + prev_dur + _POP_GAP
-                      and prev_start < start + span_dur + _POP_GAP
-                      for prev_start, prev_dur, _ in pops)
+        if cand["kind"] == "reaction":
+            # fire in the silence beat after the anchor. Punchlines usually END
+            # a beat, so the reaction may straddle the section cut — allowed:
+            # it renders on the global timeline, and the cut IS the silence.
+            if dur < 1.2:
+                continue
+            start = min(start + span_dur - 0.35 + 0.25, dur - 0.4)
+            span_dur = 1.1
+        else:
+            if cand["kind"] == "card":
+                span_dur = max(2.2, span_dur)      # count-up (1.4s) + hold
+            span_dur = min(span_dur, 3.5, max(0.9, dur - start - 0.1))
+            if start >= dur - 0.5:
+                continue
+        # rail pops need clear air between them; a reaction lives in its own
+        # slot (upper third) so it only needs to avoid REAL simultaneity
+        gap = -0.25 if cand["kind"] == "reaction" else _POP_GAP
+        crowded = any(start < prev[0] + prev[1] + gap
+                      and prev[0] < start + span_dur + gap
+                      for prev in pops)
         if crowded:
             continue
-        pops.append((start, span_dur, cand))
+        pops.append((start, span_dur, cand["show"], cand["kind"], cand["label"]))
     return sorted(pops)
 
 
@@ -735,7 +785,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                 timed_cuts.append((t_off, pick))
                 prev_asset = pick
         sec_phrases = phrase_map[i]
-        word_pops = _word_pops(seg, marks_paths[i], durations[i]) if kwcaps else []
+        word_pops = _word_pops(seg, marks_paths[i], durations[i], sheet) if kwcaps else []
         # the very last thing on screen must be the subject car
         if i == len(script.segments) - 1 and timed_cuts:
             car_families = {"roxx", "red", "thar", "mahindra", "pool"}
@@ -771,8 +821,8 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
             "text": seg.text,
             "phrases": [{"t": round(t, 3), "text": txt} for t, txt in sec_phrases],
             "cuts": [{"t": round(t, 3), "asset": Path(a).name} for t, a in timed_cuts],
-            "pops": [{"start": round(st, 3), "dur": round(d, 3), "text": txt}
-                     for st, d, txt in word_pops],
+            "pops": [{"start": round(p[0], 3), "dur": round(p[1], 3),
+                      "text": p[2], "kind": p[3]} for p in word_pops],
         })
 
     manifest_path = out.with_suffix(".manifest.json")
