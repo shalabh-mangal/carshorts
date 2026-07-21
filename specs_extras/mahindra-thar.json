@@ -8,14 +8,31 @@
   "value_source": "https://www.cardekho.com/mahindra/thar",
   "news": [
     {
-      "fact": "A facelifted 3-door Thar is reported to launch in 2026, borrowing Thar Roxx styling with new LED headlamps and a bigger 10.25-inch touchscreen",
-      "source": "https://www.team-bhp.com/news/mahindra-thar-xuv700-facelifts-be-launched-2026",
+      "fact": "The 2026 Thar facelift was spied with Roxx-style flush headlamps, C-shaped LED DRLs, a body-colour grille and 19-inch alloys",
+      "source": "https://www.rushlane.com/2026-mahindra-thar-facelift-spied-roxx-inspired-design-12542233.html",
       "date": "July 2026"
     },
     {
-      "fact": "The 2026 Thar facelift is expected to add a 360-degree camera and Level 2 ADAS, per industry reports",
-      "source": "https://www.carlelo.com/news/2026-mahindra-thar-facelift-launch-details-out",
+      "fact": "Inside, the facelift is expected to get a new dashboard with a free-standing 10.25-inch touchscreen and wireless Android Auto/CarPlay",
+      "source": "https://www.cardekho.com/india-car-news/mahindra-thar-facelift-spotted-to-get-new-front-grille-and-headlamps-like-the-roxx-36211.htm",
+      "date": "July 2026"
+    },
+    {
+      "fact": "Level 2 ADAS (adaptive cruise, lane assist, emergency braking) is reported to be under consideration for the Thar facelift",
+      "source": "https://zeenews.india.com/auto/mahindra-thar-facelift-2026-spy-shots-design-changes-features-adas-engine-options-2999776.html",
+      "date": "July 2026"
+    },
+    {
+      "fact": "The Thar facelift launch is expected in the second half of 2026, around the festive season",
+      "source": "https://www.cars24.com/news/auto/upcoming-mahindra-thar-facelift-spied-testing-top-things-to-know/",
       "date": "July 2026"
     }
+  ],
+  "news_callouts": [
+    "2026 FACELIFT — what's new",
+    "Roxx face: flush LEDs + C-DRLs",
+    "10.25\" screen, new dash",
+    "Level 2 ADAS (reported)",
+    "Launch: festive 2026"
   ]
 }

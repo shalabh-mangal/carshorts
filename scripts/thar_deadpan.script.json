@@ -3,30 +3,33 @@
   "segments": [
     {
       "role": "hook",
-      "text": "A facelift Thar lands in 2026 — Roxx looks, bigger screen. So: buy now, or wait?",
+      "text": "Mahindra just got caught testing the new Thar — and it's wearing the Roxx's face.",
       "cited_spec_names": [
         "news_1"
       ]
     },
     {
       "role": "spec",
-      "text": "Today's Thar: 2.0-litre turbo-petrol, 152 PS, 320 Nm. Enough to climb things that were never on the route.",
+      "text": "The 2026 facelift, spied: flush LED headlamps, C-shaped DRLs, body-colour grille, 19-inch alloys. Inside — a 10.25-inch screen, and Level 2 ADAS is reportedly coming.",
       "cited_spec_names": [
-        "engine_litre",
-        "power",
-        "torque"
+        "news_1",
+        "news_2",
+        "news_3"
       ]
     },
     {
       "role": "spec",
-      "text": "Proper 4x4 on the petrol and the big diesel. The base one is rear-wheel drive — for off-roaders who mostly off-road to brunch.",
+      "text": "Today's Thar still packs the punch: 2.0-litre turbo-petrol, 152 PS, 320 Nm, proper 4x4.",
       "cited_spec_names": [
+        "engine_litre",
+        "power",
+        "torque",
         "four_wheel_drive"
       ]
     },
     {
       "role": "value",
-      "text": "Prices run ₹10.32 to ₹17.80 lakh. Smart money's on the LXT RWD Diesel, around ₹12.99 lakh — 10.25-inch screen, cruise control, keyless entry, rear camera. All the toys, none of the 4x4 premium.",
+      "text": "Prices run ₹10.32 to ₹17.80 lakh. Smart money's on the LXT RWD Diesel, around ₹12.99 lakh — big screen, cruise, keyless — without the 4x4 premium.",
       "cited_spec_names": [
         "price_estimate",
         "value_variant",
@@ -35,14 +38,14 @@
     },
     {
       "role": "peak",
-      "text": "And if you're buying a Thar for on-road comfort — you're not doing it wrong. You're doing it tragically wrong.",
+      "text": "Buying a Thar for on-road comfort? You're not doing it wrong. You're doing it tragically wrong.",
       "cited_spec_names": []
     },
     {
       "role": "cta",
-      "text": "So — today's Thar, or wait for the facelift with its 360 camera and ADAS? Argue in the comments. Follow for more.",
+      "text": "The facelift lands festive 2026. Grab today's deal, or wait for the Roxx face? Fight it out in the comments.",
       "cited_spec_names": [
-        "news_2"
+        "news_4"
       ]
     }
   ]

@@ -114,12 +114,31 @@ class Section:
 
 
 
+_HEAVY_FONTS = [
+    "/System/Library/Fonts/Supplemental/Arial Black.ttf",
+    "/System/Library/Fonts/Supplemental/Impact.ttf",
+] + _FONT_CANDIDATES
+
+
+def _load_heavy_font(size: int):
+    from PIL import ImageFont
+
+    for path in _HEAVY_FONTS:
+        try:
+            return ImageFont.truetype(path, size)
+        except OSError:
+            continue
+    return _load_font(size)
+
+
 def _overlay_png(text: str, font_size: int, fill, out_path: str,
-                 pill: bool = False, max_width: int = 980) -> str:
-    """Render text (with heavy stroke, optional dark pill) to a transparent PNG."""
+                 pill: bool = False, max_width: int = 980,
+                 accent_bar: bool = False) -> str:
+    """Render text (heavy face, thick stroke, optional dark pill / accent bar)
+    to a transparent PNG."""
     from PIL import Image, ImageDraw
 
-    font = _load_font(font_size)
+    font = _load_heavy_font(font_size) if not pill else _load_font(font_size)
     tmp = ImageDraw.Draw(Image.new("RGBA", (10, 10)))
     lines = _wrap(tmp, text, font, max_width)
     ascent, descent = font.getmetrics()
@@ -137,6 +156,11 @@ def _overlay_png(text: str, font_size: int, fill, out_path: str,
         draw.text((x, y), line, font=font, fill=fill,
                   stroke_width=max(4, font_size // 12), stroke_fill=(0, 0, 0, 255))
         y += line_h
+    if accent_bar:   # short brand-yellow bar under the text = channel signature
+        bar_w = min(width - 100, max(140, width // 3))
+        bx = (width - bar_w) // 2
+        draw.rounded_rectangle([bx, y + 2, bx + bar_w, y + 16], radius=7,
+                               fill=(255, 214, 10, 235))
     img.save(out_path)
     return out_path
 
@@ -297,10 +321,10 @@ class MoviePyRenderer(VideoRenderer):
             if k:
                 boundaries.append(cursor)
             if section.keyword:
-                png = _overlay_png(section.keyword.upper(), 92,
+                png = _overlay_png(section.keyword.upper(), 88,
                                    (255, 214, 10, 255) if any(c.isdigit() for c in section.keyword)
                                    else (245, 245, 245, 255),
-                                   f"{tdir}/kw_{k}.png")
+                                   f"{tdir}/kw_{k}.png", accent_bar=True)
                 showing = min(2.4, dur * 0.85)
                 clip = (ImageClip(png, transparent=True)
                         .with_start(cursor + 0.12).with_duration(showing)

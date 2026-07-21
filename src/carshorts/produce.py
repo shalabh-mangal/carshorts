@@ -152,6 +152,23 @@ def _keyword_for(seg) -> str:
     return frag + ("?" if "?" in seg.text and not frag.endswith("?") else "")
 
 
+def _news_callouts() -> list[str]:
+    return []   # replaced per-car below by _news_callouts_for
+
+
+def _news_callouts_for(sheet) -> list[str]:
+    """What's-new card lines from the extras news_callouts list."""
+    if sheet is None:
+        return []
+    path = Path("specs_extras") / f"{_slug(sheet.subject)}.json"
+    if not path.exists():
+        return []
+    try:
+        return list(json.loads(path.read_text()).get("news_callouts", []))[:5]
+    except Exception:  # noqa: BLE001
+        return []
+
+
 def _callout_lines_for(sheet) -> list[str]:
     """Feature lines for the value-beat card, from the sourced value spec."""
     idx = sheet.fact_index() if sheet else {}
@@ -449,7 +466,12 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         sections.append(Section(
             audio_path=audio_paths[i], caption=seg.text, background_pool=visuals,
             keyword=_keyword_for(seg) if kwcaps else "",
-            callout_lines=_callout_lines_for(sheet) if (kwcaps and seg.role == "value") else []))
+            callout_lines=(
+                _callout_lines_for(sheet) if (kwcaps and seg.role == "value")
+                else _news_callouts_for(sheet)
+                if (kwcaps and seg.role != "cta"
+                    and any(c.startswith("news") for c in seg.cited_spec_names))
+                else [])))
 
     # Background music: auto-generate a royalty-free beat unless disabled/overridden.
     music_path: str | None = None
