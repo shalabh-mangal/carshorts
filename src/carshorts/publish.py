@@ -66,6 +66,16 @@ def upload(video_path: str, title: str, description: str = "", tags=None,
             print("   thumbnail set")
         except Exception as exc:  # noqa: BLE001 — channel may lack custom-thumb perms
             print(f"   thumbnail not set ({exc}); set it in the mobile app")
+    try:   # link the upload to its recipe card so the analyst can join metrics
+        import json as _json
+        rp = Path("data/recipes") / (Path(video_path).stem + ".json")
+        if rp.exists():
+            rec = _json.loads(rp.read_text())
+            rec["video_id"] = video_id
+            rp.write_text(_json.dumps(rec, indent=2, ensure_ascii=False))
+            print(f"   recipe linked: {rp.name}")
+    except Exception:  # noqa: BLE001
+        pass
     print(f"Done -> https://youtube.com/watch?v={video_id}  (privacy={privacy})")
     return video_id
 

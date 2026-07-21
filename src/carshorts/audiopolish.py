@@ -82,10 +82,14 @@ def polish(video_in: str, out_path: str, music_path: str | None = None,
         # hard ceiling: single-pass loudnorm can overshoot TP on punchy voices
         "alimiter=limit=0.79:level=0[aout]")
 
+    # Unified LIGHT grade: one subtle curve over everything (own clips, stock,
+    # stills, press) so mixed sources read as one look. Costs a re-encode.
     cmd = ["ffmpeg", "-y", *inputs,
            "-filter_complex", ";".join(parts),
            "-map", "0:v", "-map", "[aout]",
-           "-c:v", "copy", "-c:a", "aac", "-b:a", "192k",
+           "-vf", "eq=contrast=1.03:saturation=1.06,unsharp=3:3:0.3",
+           "-c:v", "libx264", "-crf", "19", "-preset", "faster",
+           "-c:a", "aac", "-b:a", "192k",
            str(out_path)]
     proc = subprocess.run(cmd, capture_output=True, text=True)
     if proc.returncode != 0:

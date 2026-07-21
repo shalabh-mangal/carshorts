@@ -460,9 +460,18 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                 tts.synthesize(seg.text, str(cached), marks_path=str(marks_file))
             except TypeError:   # provider without word-boundary support
                 tts.synthesize(seg.text, str(cached))
-        audio_paths.append(str(cached))
+        trimmed = cache_dir / f"{key}.trim.mp3"
+        if not trimmed.exists():
+            import subprocess as _sp
+            _sp.run(["ffmpeg", "-y", "-i", str(cached),
+                     "-af", "areverse,silenceremove=start_periods=1:start_silence=0.18:start_threshold=-42dB,areverse",
+                     "-codec:a", "libmp3lame", "-q:a", "2", str(trimmed)],
+                    capture_output=True)
+            if not trimmed.exists() or trimmed.stat().st_size == 0:
+                trimmed = cached   # trim failed -> use original
+        audio_paths.append(str(trimmed))
         marks_paths.append(str(marks_file) if marks_file.exists() else None)
-        durations.append(_Audio(str(cached)).duration)
+        durations.append(_Audio(str(audio_paths[-1])).duration)
 
     user_clips = sorted(str(p) for p in ai_dir.glob("*.mp4"))
 
@@ -680,8 +689,20 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     if music == "auto":
         library = sorted(Path("assets/music").glob("*.mp3")) + sorted(Path("assets/music").glob("*.wav"))
         if library:
-            music_path = str(library[0])
-            print(f"     music: {Path(music_path).name} (from assets/music)")
+            # mood-match: pick the track tagged for this persona (data/music_tags.json)
+            choice = library[0]
+            tags_file = Path("data/music_tags.json")
+            if tags_file.exists():
+                try:
+                    tags = json.loads(tags_file.read_text())
+                    fitting = [t for t in library
+                               if (persona or "default") in tags.get(t.name, {}).get("fits", [])]
+                    if fitting:
+                        choice = fitting[0]
+                except Exception:  # noqa: BLE001
+                    pass
+            music_path = str(choice)
+            print(f"     music: {Path(music_path).name} (mood-matched)")
         else:
             music_path = str(out.with_suffix(".beat.wav"))
             print("     generating royalty-free beat...")
@@ -710,7 +731,6 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         try:
             _polish(voice_only, str(out), music_path=music_path,
                     whoosh_times=boundaries[:6], riser_time=value_start)
-            Path(voice_only).unlink(missing_ok=True)
         except Exception as exc:  # noqa: BLE001 — fall back to unpolished
             print(f"     polish failed ({exc}); delivering unpolished mix.")
             renderer.render_sections(sections, str(out), music_path=music_path,
@@ -726,11 +746,53 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         "out": str(out), "sections": manifest_sections,
         "pool_size": len(pool),
     }, indent=2, ensure_ascii=False))
+    # --- Self-correcting QA loop: known failure classes map to fixes that are
+    # applied automatically and re-verified; every failure is journaled and
+    # becomes a learning the writer/pipeline sees next time.
     try:
         from .qa import run_qa
-        qa_ok = run_qa(str(out), str(manifest_path))
+        journal = Path("data/failures.jsonl")
+        journal.parent.mkdir(parents=True, exist_ok=True)
+        qa_ok, fails = run_qa(str(out), str(manifest_path), details=True)
+        attempts = 0
+        auto_fixed: list[str] = []
+        while not qa_ok and attempts < 2:
+            audio_only = all(("loudness" in f["check"] or "peak" in f["check"]) for f in fails)
+            if not (audio_only and polish_audio and 'voice_only' in dir()):
+                break
+            attempts += 1
+            print(f"     🔧 auto-fix attempt {attempts}: re-polishing audio with more headroom")
+            from .audiopolish import polish as _polish2
+            _polish2(voice_only, str(out), music_path=music_path,
+                     whoosh_times=boundaries[:6], riser_time=value_start,
+                     music_gain=0.45, sfx_gain=0.4)
+            auto_fixed = [f["check"] for f in fails]
+            qa_ok, fails = run_qa(str(out), str(manifest_path), details=True)
+        import datetime as _dtm
+        for f in fails:
+            with journal.open("a") as fh:
+                fh.write(json.dumps({"at": _dtm.datetime.now().isoformat(timespec="seconds"),
+                                     "video": str(out), "check": f["check"],
+                                     "detail": f["detail"], "resolved": False}) + "\n")
+        if auto_fixed and qa_ok:
+            with journal.open("a") as fh:
+                for name in auto_fixed:
+                    fh.write(json.dumps({"at": _dtm.datetime.now().isoformat(timespec="seconds"),
+                                         "video": str(out), "check": name,
+                                         "detail": "auto-repolish", "resolved": True}) + "\n")
+            try:   # a resolved failure becomes a standing lesson (deduped)
+                ldata = json.loads(Path("data/learnings.json").read_text())
+                lesson = f"QA auto-fix works for {'/'.join(sorted(set(auto_fixed)))} via re-polish with extra headroom; keep gains conservative on punchy voices."
+                if lesson not in ldata.get("data_learnings", []):
+                    ldata.setdefault("data_learnings", []).append(lesson)
+                    ldata["data_learnings"] = ldata["data_learnings"][-10:]
+                    Path("data/learnings.json").write_text(json.dumps(ldata, indent=2, ensure_ascii=False))
+            except Exception:  # noqa: BLE001
+                pass
         if not qa_ok:
             print("     🔴 QA FAILED — inspect before publishing.")
+        elif attempts:
+            print("     ✅ QA green after auto-fix.")
     except Exception as exc:  # noqa: BLE001
         print(f"     QA skipped ({exc})")
 

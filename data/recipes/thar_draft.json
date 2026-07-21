@@ -1,12 +1,12 @@
 {
   "out": "out/thar_draft.mp4",
   "subject": "Mahindra Thar",
-  "rendered_at": "2026-07-21T21:04:14",
+  "rendered_at": "2026-07-21T21:46:51",
   "script_file": "scripts/thar_deadpan.script.json",
   "persona": "deadpan",
   "voice_engine": "edge",
   "language": "english",
-  "music": "Above The Clouds - Jeremy Black.mp3",
+  "music": "Balearic Slide - Jeremy Black.mp3",
   "captions": false,
   "word_count": 116,
   "sections": 6,
@@ -17,7 +17,7 @@
     "stock": 11,
     "stills": 6
   },
-  "cut_target_s": 3.7,
+  "cut_target_s": 3.5,
   "video_id": null,
   "metrics": null
 }

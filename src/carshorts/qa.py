@@ -47,7 +47,8 @@ def _family(asset_name: str) -> str:
     return stem.split("_")[0].lower()
 
 
-def run_qa(video_path: str, manifest_path: str | None = None) -> bool:
+def run_qa(video_path: str, manifest_path: str | None = None,
+           details: bool = False):
     manifest_path = manifest_path or str(Path(video_path).with_suffix(".manifest.json"))
     checks: list[tuple[str, bool, str]] = []
 
@@ -69,6 +70,8 @@ def run_qa(video_path: str, manifest_path: str | None = None) -> bool:
     actual = float(probe.get("format", {}).get("duration", 0))
     check("duration ≈ plan", abs(actual - planned) < 1.6,
           f"video {actual:.1f}s vs plan {planned:.1f}s (+loop flash)")
+
+    check("runtime ≤ 63s (Shorts sweet spot)", actual <= 63.0, f"{actual:.1f}s")
 
     lufs, tp = _loudness(video_path)
     check("loudness -14 LUFS ±2", -16.0 <= lufs <= -12.0, f"{lufs:.1f} LUFS")
@@ -115,6 +118,9 @@ def run_qa(video_path: str, manifest_path: str | None = None) -> bool:
     print("     ── RENDER QA ──")
     for name, ok, det in checks:
         print(f"     {'✅' if ok else '🔴'} {name}" + (f"  ({det})" if det else ""))
+    if details:
+        return all(ok for _, ok, _ in checks), [
+            {"check": n, "detail": d} for n, ok, d in checks if not ok]
     return all(ok for _, ok, _ in checks)
 
 

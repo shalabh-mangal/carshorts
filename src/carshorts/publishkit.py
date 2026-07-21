@@ -39,6 +39,26 @@ def build(script_path: str, spec_path: str | None, provider: str | None) -> str:
     data_rows = llm.complete_json(SYSTEM, f"SCRIPT:\n{script.full_text}")
     data = data_rows[0] if isinstance(data_rows, list) and data_rows else data_rows
 
+    # Promise check: a title may not promise anything the video doesn't deliver
+    # (clickbait taxes trust). Titles that overpromise are dropped.
+    titles = data.get("titles", [])
+    if titles:
+        try:
+            verdict_rows = _rows(llm.complete_json(
+                "You are a strict editor. For each TITLE, decide if it promises "
+                "anything the SCRIPT does not actually deliver (facts, reveals, "
+                "comparisons). Being punchy is fine; overpromising is not. "
+                'Output ONLY JSON: [{"title": "...", "keep": true/false, "why": "..."}]',
+                f"SCRIPT:\n{script.full_text}\n\nTITLES:\n" + "\n".join(titles)))
+            kept = [r["title"] for r in verdict_rows if r.get("keep") and r.get("title")]
+            dropped = [(r.get("title"), r.get("why")) for r in verdict_rows if not r.get("keep")]
+            for t, why in dropped:
+                print(f"  dropped title (overpromise): {t} — {why}")
+            if kept:
+                data["titles"] = kept
+        except Exception:  # noqa: BLE001 — check is best-effort
+            pass
+
     slug = _slug(script.subject)
     credits = attribution_lines(f"assets/cars/{slug}/images")
     press = list(Path(f"assets/cars/{slug}/press").glob("*")) if Path(f"assets/cars/{slug}/press").exists() else []

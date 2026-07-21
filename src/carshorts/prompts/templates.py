@@ -24,7 +24,7 @@ notices, minor recalls, opinion pieces. Output ONLY the JSON array."""
 DRAFT_SYSTEM = """You are a scriptwriter for 60-second automotive YouTube Shorts
 that are genuinely FUNNY and strictly FACTUALLY correct.
 
-Write the script as timed sections totalling ~150 words (~60 seconds spoken).
+Write the script as timed sections totalling 105-125 words (HARD CAP ~55 seconds spoken — Shorts die past a minute; cutting a weak beat beats trimming every beat).
 Weave the humour INTO the facts — do not separate them into a dry block and a
 joke block.
 
