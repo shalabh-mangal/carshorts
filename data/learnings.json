@@ -13,7 +13,6 @@
     "Front-load value beats: price/verdict by the midpoint, never last."
   ],
   "data_learnings": [
-    "[medium] Improve the rendering process to minimize the occurrence of visual QA issues, potentially by enhancing the asset selection process or the rendering engine's ability to accurately place and display vehicle types and license plates",
     "[low] Monitor future videos for similar patterns of QA failures to determine if the issues are isolated or systemic, requiring broader changes to the production workflow",
     "[high][owner-feedback] Thar draft rated 2/5: text overlays still mismatch the voice at several beats — tighten keyword/callout anchoring; verify overlay text against the phrase actually spoken.",
     "[high][owner-feedback] Peak-beat humor reads flat — jokes must be specific roasts/analogies, not generic; punch-up pass should rewrite any joke that could apply to any car.",
@@ -24,6 +23,7 @@
     "[high][owner-feedback] Improve text overlay timing to match voiceover highlights, ensuring it only appears when the voiceover speaks about specific points to enhance the overall viewing experience",
     "[high][owner-feedback] Improve text overlay timing to match voiceover highlights, ensuring it only appears when the voiceover speaks about specific points",
     "[high][owner-feedback] Enhance the overall usage of text overlays to create a more engaging experience",
-    "[high][owner-feedback] Refine font styles and text overlay placement for better visual appeal and clarity"
+    "[high][owner-feedback] Refine font styles and text overlay placement for better visual appeal and clarity",
+    "[high][owner-feedback] Conduct thorough research on the optimal use of text on screen to enhance visual storytelling and avoid repetition"
   ]
 }

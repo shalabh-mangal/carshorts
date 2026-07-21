@@ -4,3 +4,4 @@
 {"at": "2026-07-22T00:08:43", "kind": "triage", "check": "visual-qa", "class": "code", "action": "Update the asset selection logic to ensure that the correct vehicle type is matched with the narration phrase. In this case, the phrase 'Buying a Thar for on-road comfort?' should be accompanied by a visual of the correct vehicle type, which is the Thar."}
 {"at": "2026-07-22T00:49:59", "kind": "rework", "slug": "mahindra-thar", "ok": true, "lessons": 3, "rewrote": false}
 {"at": "2026-07-22T01:07:05", "kind": "rework", "slug": "mahindra-thar", "ok": true, "lessons": 3, "rewrote": true}
+{"at": "2026-07-22T01:18:34", "kind": "rework", "slug": "mahindra-thar", "ok": true, "lessons": 1, "rewrote": false}

@@ -47,28 +47,44 @@ PAGE = """<!doctype html><meta charset="utf-8">
    border-radius:20px;padding:2px 9px;text-transform:uppercase}
  .pill.awaiting_approval{background:#2b3a55;color:#93c5fd}
  .pill.rework,.pill.reworking{background:#4a3a12;color:var(--warn)}
- .pill.reworking::after{content:"…";animation:p 1s infinite}
+ .pill.rendering{background:#173a52;color:#7dd3fc}
+ .pill.reworking::after,.pill.rendering::after{content:"…";animation:p 1s infinite}
  @keyframes p{50%{opacity:.3}}
  .pill.approved,.pill.published{background:#123a2a;color:var(--ok)}
  .stage{position:sticky;top:74px;align-self:start}
  video{width:100%;border-radius:14px;background:#000;box-shadow:0 8px 30px #0008}
+ .busy{background:var(--panel);border:1px dashed var(--warn);border-radius:14px;
+   padding:34px 22px;text-align:center}
+ .busy .gear{font-size:34px;display:inline-block;animation:spin 2.4s linear infinite}
+ @keyframes spin{to{transform:rotate(360deg)}}
+ .busy .step{margin-top:10px;font-weight:700;color:var(--warn)}
+ .busy .sub{margin-top:6px;color:var(--mut);font-size:12px}
  .stars{margin:12px 0 4px;font-size:26px;cursor:pointer;user-select:none}
  .stars span{color:#3a4256;transition:.1s}.stars span.on{color:var(--acc)}
  .actions{display:flex;gap:10px;margin-top:10px}
  button{flex:1;border:0;border-radius:10px;padding:12px;font-weight:800;font-size:13px;
    cursor:pointer;transition:.15s}button:hover{transform:translateY(-1px)}
  .rework{background:var(--warn);color:#1a1a1a}.approve{background:var(--ok);color:#06281c}
+ .savebar{display:none;margin-top:10px}
+ .savebar button{background:var(--acc);color:#1a1a1a;width:100%}
  .beats h3{margin:4px 0 10px;font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:.6px}
  .beat{background:var(--panel);border:1px solid var(--line);border-left:4px solid transparent;
    border-radius:12px;padding:12px 14px;margin-bottom:10px;cursor:pointer;transition:.15s}
  .beat.live{border-left-color:var(--acc);background:var(--panel2)}
+ .beat.edited{border-left-color:#7dd3fc}
  .beat .role{font-size:10px;font-weight:800;color:var(--acc);text-transform:uppercase;letter-spacing:.6px}
- .beat .t{float:right;color:var(--mut);font-size:11px}
+ .beat .t{float:right;color:var(--mut);font-size:11px;margin-left:8px}
+ .beat .edit{float:right;color:var(--mut);cursor:pointer;font-size:13px;padding:0 4px}
+ .beat .edit:hover{color:var(--acc)}
  .beat p{margin:5px 0 8px}
+ .beat textarea{font:13px/1.5 ui-monospace,SFMono-Regular,monospace;margin:5px 0 8px}
  .chips{display:flex;flex-wrap:wrap;gap:6px}
+ .lbl{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;
+   width:100%;margin-top:2px}
  .chip{border:1px solid var(--line);border-radius:20px;padding:3px 11px;font-size:12px;
    color:var(--mut);cursor:pointer;user-select:none;transition:.12s}
- .chip.on{background:var(--bad);border-color:var(--bad);color:#fff}
+ .chip.issue.on{background:var(--bad);border-color:var(--bad);color:#fff}
+ .chip.win.on{background:var(--ok);border-color:var(--ok);color:#06281c}
  textarea{width:100%;background:var(--panel);color:var(--txt);border:1px solid var(--line);
    border-radius:10px;padding:10px;margin-top:6px;resize:vertical}
  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--panel2);
@@ -77,7 +93,8 @@ PAGE = """<!doctype html><meta charset="utf-8">
  .empty{color:var(--mut);padding:40px;text-align:center}
 </style>
 <header><div class="logo">car<em>shorts</em> · review station</div>
- <div class="hint"><kbd>space</kbd> play · <kbd>1–6</kbd> seek beat · <kbd>a</kbd> approve · <kbd>r</kbd> rework</div></header>
+ <div class="hint"><kbd>space</kbd> play · <kbd>1–6</kbd> seek beat · <kbd>✎</kbd> edit script ·
+  <kbd>a</kbd> approve · <kbd>r</kbd> rework</div></header>
 <div class="wrap">
  <div class="list" id="list"></div>
  <div class="stage" id="stage"><div class="empty">Select a draft ←</div></div>
@@ -85,8 +102,11 @@ PAGE = """<!doctype html><meta charset="utf-8">
 </div>
 <div class="toast" id="toast"></div>
 <script>
-const ISSUES=["visual mismatch","weak hook","pacing","joke flat","text on screen","audio"];
-let cards=[],sel=null,rating=4;
+const ISSUES=["visual mismatch","weak hook","pacing","joke flat","text on screen","audio",
+  "music","voice","wrong info","too long","boring","cut timing"];
+const WINS=["🔥 loved it","great joke","great visual","great pacing"];
+const BUSY=s=>s==='reworking'||s==='rendering';
+let cards=[],sel=null,rating=4,edits={},selWasBusy=false;
 const $=id=>document.getElementById(id);
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');
  setTimeout(()=>t.classList.remove('show'),2600);}
@@ -95,35 +115,73 @@ function renderList(){
  $('list').innerHTML=cards.map((c,i)=>
   `<div class="card ${sel===i?'sel':''}" onclick="pick(${i})">
     <div style="display:flex;justify-content:space-between;align-items:center">
-     <b>${c.car}</b><span class="pill ${c.status}">${c.status.replace('_',' ')}</span></div>
+     <b>${c.car}</b><span class="pill ${c.status}">${c.status.replace(/_/g,' ')}</span></div>
     <div style="color:var(--mut);font-size:12px;margin-top:4px">${c.persona} · ${c.language}</div>
-    ${c.status==='reworking'?`<div style="margin-top:8px;font-size:12px;color:var(--warn)">
+    ${BUSY(c.status)?`<div style="margin-top:8px;font-size:12px;color:var(--warn)">
       ⚙️ ${c.progress?c.progress.step:'starting…'}<br>
-      <span style="color:var(--mut)">since ${c.progress?c.progress.at.slice(11,16):'now'}</span></div>`:''}
+      <span style="color:var(--mut)">${c.progress&&c.progress.at?'since '+c.progress.at.slice(11,16):''}</span></div>`:''}
     ${c.note&&c.status==='awaiting_approval'?`<div style="margin-top:8px;font-size:11px;color:var(--ok)">${c.note.slice(0,90)}</div>`:''}
    </div>`).join('')||'<div class="empty">Queue empty.<br>Run <code>pipeline --next</code></div>';
 }
 function pick(i){
- sel=i;rating=4;renderList();const c=cards[i];
- $('stage').innerHTML=`<video id="vid" src="/video?p=${encodeURIComponent(c.draft)}" controls></video>
-  <div class="stars" id="stars"></div>
-  <textarea id="notes" rows="3" placeholder="what worked / what didn't…"></textarea>
-  <div class="actions">
-   <button class="rework" onclick="send('rework')">⟳ Needs rework</button>
-   <button class="approve" onclick="send('approve')">✓ Approve → upload</button></div>`;
- $('beats').innerHTML='<h3>Beats — click to seek · tag anything off</h3>'+
+ sel=i;rating=4;edits={};renderList();const c=cards[i];
+ selWasBusy=BUSY(c.status);
+ if(selWasBusy){
+  $('stage').innerHTML=`<div class="busy"><span class="gear">⚙️</span>
+   <div class="step">${c.progress?c.progress.step:'working…'}</div>
+   <div class="sub">the video file is being rewritten right now —<br>
+    player and actions unlock automatically when it lands</div></div>`;
+ }else{
+  $('stage').innerHTML=`<video id="vid" src="/video?p=${encodeURIComponent(c.draft)}&v=${c.draft_v||0}" controls></video>
+   <div class="stars" id="stars"></div>
+   <textarea id="notes" rows="3" placeholder="what worked / what didn't…"></textarea>
+   <div class="savebar" id="savebar">
+    <button onclick="saveScript()">💾 Save script & re-render</button></div>
+   <div class="actions">
+    <button class="rework" onclick="send('rework')">⟳ Needs rework</button>
+    <button class="approve" onclick="send('approve')">✓ Approve → upload</button></div>`;
+ }
+ $('beats').innerHTML='<h3>Beats — click to seek · ✎ to rewrite · tag red (fix) or green (keep)</h3>'+
   (c.beats||[]).map((b,bi)=>`<div class="beat" id="beat${bi}" onclick="seek(${b.start})">
-    <span class="t">${fmt(b.start)}</span><span class="role">${b.role}</span>
-    <p>${b.text}</p>
+    <span class="t">${fmt(b.start)}</span>
+    <span class="edit" title="rewrite this line"
+      onclick="event.stopPropagation();editBeat(${bi})">✎</span>
+    <span class="role">${b.role}</span>
+    <p id="btxt${bi}"></p>
     <div class="chips">${ISSUES.map(t=>
-     `<span class="chip" data-beat="${bi}" data-tag="${t}"
+     `<span class="chip issue" data-beat="${bi}" data-tag="${t}"
+        onclick="event.stopPropagation();this.classList.toggle('on')">${t}</span>`).join('')}
+     <span class="lbl"></span>${WINS.map(t=>
+     `<span class="chip win" data-beat="${bi}" data-tag="${t}"
         onclick="event.stopPropagation();this.classList.toggle('on')">${t}</span>`).join('')}</div>
    </div>`).join('');
- drawStars();
- const v=$('vid');
- v.addEventListener('timeupdate',()=>{
-  (c.beats||[]).forEach((b,bi)=>{
-   $('beat'+bi).classList.toggle('live',v.currentTime>=b.start&&v.currentTime<b.start+b.dur);});});
+ (c.beats||[]).forEach((b,bi)=>{$('btxt'+bi).textContent=b.text;});
+ if(!selWasBusy){
+  drawStars();
+  const v=$('vid');
+  v.addEventListener('timeupdate',()=>{
+   (c.beats||[]).forEach((b,bi)=>{const el=$('beat'+bi);
+    if(el)el.classList.toggle('live',v.currentTime>=b.start&&v.currentTime<b.start+b.dur);});});
+ }
+}
+function editBeat(bi){
+ if(sel!==null&&BUSY(cards[sel].status)){toast('Wait — a render is in flight for this draft');return;}
+ const el=$('btxt'+bi);if(!el||el.tagName==='TEXTAREA')return;
+ const c=cards[sel];const cur=edits[bi]!==undefined?edits[bi]:c.beats[bi].text;
+ const ta=document.createElement('textarea');
+ ta.id='btxt'+bi;ta.rows=3;ta.value=cur;
+ ta.onclick=e=>e.stopPropagation();
+ ta.oninput=()=>{edits[bi]=ta.value;$('beat'+bi).classList.add('edited');
+  const s=$('savebar');if(s)s.style.display='block';};
+ el.replaceWith(ta);ta.focus();
+}
+async function saveScript(){
+ if(sel===null||!Object.keys(edits).length)return;const c=cards[sel];
+ await fetch('/api/script',{method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({slug:c.slug,texts:edits})});
+ toast('Script saved — re-rendering with your words ⟳');
+ edits={};sel=null;
+ $('stage').innerHTML='<div class="empty">Select a draft ←</div>';$('beats').innerHTML='';load();
 }
 function fmt(s){return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');}
 function drawStars(){$('stars').innerHTML=[1,2,3,4,5].map(n=>
@@ -131,10 +189,15 @@ function drawStars(){$('stars').innerHTML=[1,2,3,4,5].map(n=>
 function seek(t){const v=$('vid');if(v){v.currentTime=t;v.play();}}
 async function send(verdict){
  if(sel===null)return;const c=cards[sel];
- const tags={};document.querySelectorAll('.chip.on').forEach(x=>{
+ if(BUSY(c.status)){toast('Hold on — a render is in flight for this draft');return;}
+ const tags={},wins={};
+ document.querySelectorAll('.chip.issue.on').forEach(x=>{
   (tags[x.dataset.beat]=tags[x.dataset.beat]||[]).push(x.dataset.tag);});
+ document.querySelectorAll('.chip.win.on').forEach(x=>{
+  (wins[x.dataset.beat]=wins[x.dataset.beat]||[]).push(x.dataset.tag);});
  await fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},
-  body:JSON.stringify({slug:c.slug,verdict,rating,beat_tags:tags,notes:$('notes').value})});
+  body:JSON.stringify({slug:c.slug,verdict,rating,beat_tags:tags,beat_wins:wins,
+   notes:$('notes')?$('notes').value:''})});
  toast(verdict==='approve'?'Approved — final render + upload started ✓':'Feedback saved — rework queued ⟳');
  sel=null;$('stage').innerHTML='<div class="empty">Select a draft ←</div>';$('beats').innerHTML='';load();
 }
@@ -147,10 +210,17 @@ document.addEventListener('keydown',e=>{
  if(e.key==='r'&&sel!==null)send('rework');
 });
 load();
-setInterval(async()=>{   // live status: reworking -> awaiting approval appears by itself
+setInterval(async()=>{   // live: reworking/rendering -> fresh video appears by itself
  const fresh=await(await fetch('/api/queue')).json();
- const sig=x=>JSON.stringify(x.map(c=>[c.status,c.progress&&c.progress.step]));
- if(sig(fresh)!==sig(cards)){cards=fresh;renderList();}
+ const sig=x=>JSON.stringify(x.map(c=>[c.status,c.progress&&c.progress.step,c.draft_v]));
+ if(sig(fresh)!==sig(cards)){
+  cards=fresh;renderList();
+  if(sel!==null&&cards[sel]){
+   const c=cards[sel];
+   if(selWasBusy&&!BUSY(c.status)){toast('Fresh render landed — player unlocked ✓');pick(sel);}
+   else if(!selWasBusy&&BUSY(c.status))pick(sel);
+  }
+ }
 },6000);
 </script>"""
 
@@ -168,6 +238,12 @@ def _queue_cards() -> list[dict]:
         pf = path.with_name(path.stem + ".progress.json")
         if pf.exists():
             card["progress"] = json.loads(pf.read_text())
+        # a render lock on the draft overrides everything: file is being written
+        draft = Path(card.get("draft", ""))
+        if draft.with_suffix(".lock").exists():
+            card["status"] = "rendering"
+            card.setdefault("progress", {"step": "encoding video…", "at": ""})
+        card["draft_v"] = int(draft.stat().st_mtime) if draft.exists() else 0
         # SELF-HEAL: a card stuck in legacy 'rework' (submitted to an old
         # server process) gets its worker spawned right here
         if card.get("status") == "rework" and card["slug"] not in _healing:
@@ -231,6 +307,40 @@ class Handler(BaseHTTPRequestHandler):
             self._send(404, b"{}")
 
     def do_POST(self):
+        if self.path.startswith("/api/script"):
+            length = int(self.headers.get("Content-Length", 0))
+            body = json.loads(self.rfile.read(length))
+            card_path = QUEUE / f"{body['slug']}.json"
+            if not card_path.exists():
+                self._send(404, b"{}")
+                return
+            card = json.loads(card_path.read_text())
+            sp = Path(card["script"])
+            script = json.loads(sp.read_text())
+            for i, text in body.get("texts", {}).items():
+                idx = int(i)
+                if 0 <= idx < len(script["segments"]) and text.strip():
+                    script["segments"][idx]["text"] = text.strip()
+            sp.write_text(json.dumps(script, ensure_ascii=False, indent=2))
+            card["status"] = "reworking"
+            card["note"] = "script edited in portal — re-rendering"
+            card_path.write_text(json.dumps(card, indent=2))
+            pf = QUEUE / f"{body['slug']}.progress.json"
+            pf.write_text(json.dumps({"step": "re-rendering your edited script",
+                                      "at": datetime.datetime.now().isoformat(timespec='seconds')}))
+            proc_cmd = [sys.executable, "-c", (
+                "import subprocess,sys,json,pathlib;"
+                f"r=subprocess.run([sys.executable,'-m','carshorts.produce','--script-file',{card['script']!r},"
+                f"'--spec',{card['spec']!r},'--skip-factcheck','--persona',{card.get('persona','deadpan')!r},"
+                f"'--out',{card['draft']!r}],capture_output=True,text=True);"
+                f"cp=pathlib.Path({str(card_path)!r});c=json.loads(cp.read_text());"
+                "c['status']='awaiting_approval' if r.returncode==0 else 'rework_failed';"
+                "c['note']=('edited script rendered'+(' — ⚠ QA flagged' if 'QA FAILED' in (r.stdout or '') else ''));"
+                "cp.write_text(json.dumps(c,indent=2));"
+                f"pathlib.Path({str(pf)!r}).unlink(missing_ok=True)")]
+            subprocess.Popen(proc_cmd, start_new_session=True)
+            self._send(200, b'{"ok": true}')
+            return
         if not self.path.startswith("/api/feedback"):
             self._send(404, b"{}")
             return

@@ -762,6 +762,10 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         print(f"     plan-only: manifest -> {manifest_path}")
         return str(manifest_path)
 
+    lock = out.with_suffix(".lock")
+    lock.write_text(json.dumps({"started": __import__("datetime").datetime.now()
+                                .isoformat(timespec="seconds")}))
+
     # Background music: auto-generate a royalty-free beat unless disabled/overridden.
     music_path: str | None = None
     if music == "auto":
@@ -894,6 +898,8 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         print(f"     recipe card -> {rp}")
     except Exception as exc:  # noqa: BLE001 — logging must never break a render
         print(f"     recipe card skipped ({exc})")
+
+    lock.unlink(missing_ok=True)
 
     credits = attribution_lines(f"assets/cars/{_slug(script.subject)}/images") if images else []
     if credits:

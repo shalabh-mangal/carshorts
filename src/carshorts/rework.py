@@ -32,7 +32,9 @@ def _latest_feedback(slug: str) -> dict | None:
 def _fold_learnings(feedback: dict, llm) -> list[str]:
     rows = _rows(llm.complete_json(
         "Convert this owner feedback on a car Short into 1-3 concrete, "
-        "actionable lessons for the script writer / renderer. Prefix nothing; "
+        "actionable lessons for the script writer / renderer. beat_tags are "
+        "problems to fix; beat_wins are things the owner LOVED — turn each win "
+        'into a "keep doing X" lesson. Prefix nothing; '
         'output ONLY JSON: [{"lesson": "..."}]',
         json.dumps(feedback, ensure_ascii=False)))
     ldata = json.loads(Path("data/learnings.json").read_text())
