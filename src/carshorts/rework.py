@@ -107,12 +107,14 @@ def run(slug: str) -> None:
          card.get("persona", "deadpan"), "--out", card["draft"]],
         capture_output=True, text=True)
     ok = result.returncode == 0
+    qa_green = "QA FAILED" not in (result.stdout or "")
 
     card["status"] = "awaiting_approval" if ok else "rework_failed"
     card["note"] = (f"AUTO-REWORK {datetime.date.today()}: "
                     f"{len(lessons)} lesson(s) folded"
                     + (", tagged jokes rewritten" if rewrote else "")
-                    + ", re-rendered with updated text engine")
+                    + ", re-rendered with updated text engine"
+                    + ("" if qa_green else " — ⚠ QA flagged, check before approving"))
     card_path.write_text(json.dumps(card, indent=2))
     _progress(slug, "", done=True)
 

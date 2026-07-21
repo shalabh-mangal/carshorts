@@ -6,3 +6,6 @@
 {"at": "2026-07-22T00:30:03", "video": "out/thar_draft.mp4", "check": "closes on subject car", "detail": "suv_river_crossing_splash_30306547.mp4", "resolved": false}
 {"at": "2026-07-22T00:32:31", "video": "out/thar_draft.mp4", "check": "closes on subject car", "detail": "suv_river_crossing_splash_30306547.mp4", "resolved": false}
 {"at": "2026-07-22T01:07:04", "video": "out/thar_draft.mp4", "check": "runtime \u2264 63s (Shorts sweet spot)", "detail": "68.1s", "resolved": false}
+{"at": "2026-07-22T01:08:44", "video": "out/thar_draft.mp4", "check": "duration \u2248 plan", "detail": "video 65.4s vs plan 67.5s (+loop flash)", "resolved": false}
+{"at": "2026-07-22T01:08:44", "video": "out/thar_draft.mp4", "check": "runtime \u2264 63s (Shorts sweet spot)", "detail": "65.4s", "resolved": false}
+{"at": "2026-07-22T01:08:44", "video": "out/thar_draft.mp4", "check": "loudness -14 LUFS \u00b12", "detail": "-21.2 LUFS", "resolved": false}
