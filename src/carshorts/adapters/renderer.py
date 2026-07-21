@@ -103,7 +103,8 @@ class Section:
     def __init__(self, audio_path: str, caption: str, background_image: str | None = None,
                  background_video: str | None = None,
                  background_pool: list[str] | None = None,
-                 keyword: str = "", callout_lines: list[str] | None = None):
+                 keyword: str = "", callout_lines: list[str] | None = None,
+                 timed_cuts: list | None = None):
         self.audio_path = audio_path
         self.caption = caption
         self.background_image = background_image
@@ -111,6 +112,7 @@ class Section:
         self.background_pool = background_pool or []
         self.keyword = keyword                     # short on-screen punch text
         self.callout_lines = callout_lines or []   # staggered feature card lines
+        self.timed_cuts = timed_cuts or []         # [(offset_s, path)] phrase-synced
 
 
 
@@ -221,6 +223,27 @@ class MoviePyRenderer(VideoRenderer):
         chunk = dur / len(visuals)
         subs = []
         for j, path in enumerate(visuals):
+            subs.append(self._sub_visual(path, chunk, j, VideoFileClip, ImageClip,
+                                         CompositeVideoClip, concatenate_videoclips))
+        return concatenate_videoclips(subs, method="chain")
+
+    def _timed_scene(self, cuts: list, dur: float,
+                     VideoFileClip, ImageClip, CompositeVideoClip, concatenate_videoclips):
+        """Phrase-synced scene: cuts = [(offset_seconds, visual_path)] with
+        offsets aligned to the narration's phrase starts, so the picture changes
+        exactly when the words change subject."""
+        subs = []
+        for j, (start, path) in enumerate(cuts):
+            end = cuts[j + 1][0] if j + 1 < len(cuts) else dur
+            chunk = max(0.4, end - start)
+            subs.append(self._sub_visual(path, chunk, j, VideoFileClip, ImageClip,
+                                         CompositeVideoClip, concatenate_videoclips))
+        return concatenate_videoclips(subs, method="chain")
+
+    def _sub_visual(self, path: str, chunk: float, j: int,
+                    VideoFileClip, ImageClip, CompositeVideoClip, concatenate_videoclips):
+        width, height = self.size
+        if True:
             if path.lower().endswith(self._VIDEO_EXT):
                 if j % 3 == 2:   # speed-ramped cut: 1.15x, same on-screen time
                     from moviepy import vfx
@@ -231,7 +254,7 @@ class MoviePyRenderer(VideoRenderer):
                     raw = self._video_scene(path, chunk, VideoFileClip, concatenate_videoclips)
                     punched = raw.resized(lambda t, d=chunk: 1.0 + 0.05 * (t / d)).with_position("center")
                     clip = CompositeVideoClip([punched], size=self.size).with_duration(chunk)
-                subs.append(clip)
+                return clip
             else:
                 bg_path = self._prepare_background(path, None)
                 base = ImageClip(bg_path).with_duration(chunk)
@@ -250,8 +273,7 @@ class MoviePyRenderer(VideoRenderer):
                     else:
                         moving = moving.with_position(
                             lambda t, d=chunk, ox=over_x, oy=over_y: (-ox * (1 - t / d), -oy))
-                subs.append(CompositeVideoClip([moving], size=self.size).with_duration(chunk))
-        return concatenate_videoclips(subs, method="chain")
+                return CompositeVideoClip([moving], size=self.size).with_duration(chunk)
 
     def _video_scene(self, path: str, dur: float, VideoFileClip, concatenate_videoclips):
         """A stock clip, cover-cropped to the vertical frame, silenced, and
@@ -283,7 +305,11 @@ class MoviePyRenderer(VideoRenderer):
         for idx, section in enumerate(sections):
             audio = AudioFileClip(section.audio_path)
             dur = audio.duration
-            if section.background_pool:
+            if section.timed_cuts:
+                scene = self._timed_scene(section.timed_cuts, dur,
+                                          VideoFileClip, ImageClip,
+                                          CompositeVideoClip, concatenate_videoclips)
+            elif section.background_pool:
                 scene = self._pooled_scene(section.background_pool, dur,
                                            VideoFileClip, ImageClip,
                                            CompositeVideoClip, concatenate_videoclips)
@@ -344,7 +370,7 @@ class MoviePyRenderer(VideoRenderer):
             cursor += dur
         # Loop-close: flash the opening visual for half a second at the very end
         # so the short loops seamlessly back into its own first frame (rewatches).
-        first_pool = sections[0].background_pool if sections else []
+        first_pool = ([c[1] for c in sections[0].timed_cuts] or sections[0].background_pool) if sections else []
         if loop_close and first_pool:
             flash = first_pool[0]
             if flash.lower().endswith(self._VIDEO_EXT):

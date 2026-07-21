@@ -70,14 +70,28 @@ class EdgeTTSProvider(TTSProvider):
         self.rate = rate
         self.pitch = pitch
 
-    def synthesize(self, text: str, out_path: str) -> str:
+    def synthesize(self, text: str, out_path: str, marks_path: str | None = None) -> str:
+        """Write audio; optionally also write word-boundary marks (JSON list of
+        {"w": word, "t": seconds}) — the raw material for phrase-synced cuts."""
+        import json
+
         import edge_tts
 
         text = normalize_for_speech(text)
 
         async def _run() -> None:
-            communicate = edge_tts.Communicate(text, self.voice, rate=self.rate, pitch=self.pitch)
-            await communicate.save(out_path)
+            communicate = edge_tts.Communicate(text, self.voice, rate=self.rate,
+                                                pitch=self.pitch, boundary="WordBoundary")
+            words = []
+            with open(out_path, "wb") as fh:
+                async for chunk in communicate.stream():
+                    if chunk["type"] == "audio":
+                        fh.write(chunk["data"])
+                    elif chunk["type"] == "WordBoundary":
+                        words.append({"w": chunk["text"], "t": chunk["offset"] / 1e7})
+            if marks_path:
+                with open(marks_path, "w") as fh:
+                    json.dump(words, fh)
 
         asyncio.run(_run())
         return out_path

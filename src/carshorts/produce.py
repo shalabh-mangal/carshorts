@@ -183,6 +183,81 @@ def _callout_lines_for(sheet) -> list[str]:
     return lines
 
 
+
+def _phrases_with_times(text: str, marks_file: str | None) -> list[tuple[float, str]]:
+    """Split narration into phrases and anchor each to its spoken start time
+    (word-boundary marks from TTS). Falls back to a single phrase when marks
+    are unavailable (e.g. cached ElevenLabs audio)."""
+    from .adapters.tts import normalize_for_speech
+
+    norm = normalize_for_speech(text)
+    raw = [p.strip() for p in re.split(r"(?<=[,.;:!?])\s+|\s+—\s+", norm) if p.strip()]
+    phrases: list[str] = []
+    for ph in raw:   # merge fragments so no cut is shorter than ~3 words
+        if phrases and (len(ph.split()) < 3 or len(phrases[-1].split()) < 3):
+            phrases[-1] += " " + ph
+        else:
+            phrases.append(ph)
+    if not marks_file or not Path(marks_file).exists() or len(phrases) <= 1:
+        return [(0.0, norm)]
+    try:
+        marks = json.loads(Path(marks_file).read_text())
+    except Exception:  # noqa: BLE001
+        return [(0.0, norm)]
+    if not marks:
+        return [(0.0, norm)]
+    out: list[tuple[float, str]] = []
+    word_i = 0
+    for ph in phrases:
+        t = marks[min(word_i, len(marks) - 1)]["t"]
+        # start the visual a beat BEFORE the word lands (pro b-roll lead)
+        out.append((max(0.0, t - 0.15), ph))
+        word_i += len(ph.split())
+    out[0] = (0.0, out[0][1])
+    return out
+
+
+def _llm_phrase_match(entries: list[tuple[int, int, str]], pool: list[str],
+                      provider: str | None) -> dict[tuple[int, int], str]:
+    """One call: best asset per PHRASE (or NONE). entries = (sec, ph, text)."""
+    import os as _os
+    if not pool or not (provider or _os.environ.get("GROQ_API_KEY")):
+        return {}
+    try:
+        from .stages.pipeline import _rows
+        llm = make_llm(provider or "groq")
+        names = [Path(a).name for a in pool]
+        listing = "\n".join(f"{si}.{pi}: {txt}" for si, pi, txt in entries)
+        assets = "\n".join(f"- {n}" for n in names)
+        system = (
+            "You match b-roll to narration PHRASES for a car short. For each "
+            "phrase pick the single best-fitting asset filename, or the string "
+            "NONE if nothing genuinely matches (do NOT force a bad match — a "
+            "wrong visual is worse than a neutral one). Match meaning: screen/"
+            "dash phrases -> console/press interior shots, off-road claims -> "
+            "mud/trail/river, facelift/Roxx news -> roxx/press images, price -> "
+            "car front shots. Output ONLY a JSON array: "
+            '[{"id": "<sec>.<ph>", "asset": "<filename or NONE>"}]'
+        )
+        rows = _rows(llm.complete_json(system, f"PHRASES:\n{listing}\n\nASSETS:\n{assets}"))
+        by_name = {Path(a).name: a for a in pool}
+        out: dict[tuple[int, int], str] = {}
+        for row in rows:
+            rid = str(row.get("id", ""))
+            if "." not in rid:
+                continue
+            asset = row.get("asset", "NONE")
+            if asset in by_name:
+                si, pi = rid.split(".", 1)
+                try:
+                    out[(int(si), int(pi))] = by_name[asset]
+                except ValueError:
+                    continue
+        return out
+    except Exception:  # noqa: BLE001
+        return {}
+
+
 def _llm_shot_match(segments, pool: list[str], provider: str | None) -> dict[int, list[str]]:
     """One LLM call: rank pool assets per script beat by semantic fit (asset
     filenames are descriptive). Returns {section_index: [asset paths ranked]}.
@@ -345,13 +420,21 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     cache_dir = Path("out/tts_cache") / voice_engine
     cache_dir.mkdir(parents=True, exist_ok=True)
 
-    audio_paths, durations = [], []
+    audio_paths, durations, marks_paths = [], [], []
     for i, seg in enumerate(script.segments):
         key = hashlib.md5(f"{voice_engine}|{voice}|{persona}|{seg.text}".encode()).hexdigest()[:16]
         cached = cache_dir / f"{key}.mp3"
-        if not cached.exists():
-            tts.synthesize(seg.text, str(cached))
+        marks_file = cache_dir / f"{key}.marks.json"
+        # re-synthesize when word marks are missing (old cache entries) — free
+        # for edge, and marks are what phrase-synced cutting runs on
+        needs = (not cached.exists()) or (voice_engine == "edge" and not marks_file.exists())
+        if needs:
+            try:
+                tts.synthesize(seg.text, str(cached), marks_path=str(marks_file))
+            except TypeError:   # provider without word-boundary support
+                tts.synthesize(seg.text, str(cached))
         audio_paths.append(str(cached))
+        marks_paths.append(str(marks_file) if marks_file.exists() else None)
         durations.append(_Audio(str(cached)).duration)
 
     user_clips = sorted(str(p) for p in ai_dir.glob("*.mp4"))
@@ -425,7 +508,24 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
             section_buckets.add(_bucket(asset))
         return picked
 
-    llm_ranked = _llm_shot_match(script.segments, pool, provider)
+    # --- Phrase-level sync (the retention core): visuals change exactly when
+    # the narration changes subject. Needs word marks (edge TTS); cached
+    # ElevenLabs audio without marks falls back to beat-level matching.
+    phrase_map = {i: _phrases_with_times(seg.text, marks_paths[i])
+                  for i, seg in enumerate(script.segments)}
+    phrase_sync = any(len(v) > 1 for v in phrase_map.values())
+    entries = [(i, j, txt) for i, phs in phrase_map.items()
+               for j, (_, txt) in enumerate(phs)]
+    phrase_ranked = _llm_phrase_match(entries, pool, provider) if phrase_sync else {}
+    if phrase_ranked:
+        print(f"     phrase-sync: {len(phrase_ranked)}/{len(entries)} phrases matched to visuals")
+        gaps = [txt for (i, j, txt) in entries if (i, j) not in phrase_ranked]
+        if gaps:
+            print("     B-ROLL GAPS (no matching asset — worth shooting/fetching):")
+            for g in gaps[:8]:
+                print(f"       - {g[:70]}")
+
+    llm_ranked = _llm_shot_match(script.segments, pool, provider) if not phrase_ranked else {}
     if llm_ranked:
         print(f"     shot-matcher aligned {len(llm_ranked)} beats to visuals")
     sections = []
@@ -463,8 +563,37 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
             # across different assets, never hammering the same opening clip.
             visuals.append(pool[reuse_cursor[0] % len(pool)])
             reuse_cursor[0] += 1
+        timed_cuts: list = []
+        if phrase_ranked or phrase_sync:
+            cuts_src = phrase_map[i]
+            prev_asset = sections[-1].timed_cuts[-1][1] if (sections and sections[-1].timed_cuts) else None
+            for j, (t_off, _txt) in enumerate(cuts_src):
+                pick = phrase_ranked.get((i, j))
+                if pick is not None and pick in used:
+                    pick = None          # once-only: a used asset can't repeat
+                if pick is None:
+                    # neutral fill: first unused asset not clashing with the
+                    # previous cut's look family
+                    for cand in pool:
+                        if cand in used:
+                            continue
+                        if prev_asset and _bucket(cand) == _bucket(prev_asset):
+                            continue
+                        pick = cand
+                        break
+                if pick is None:         # pool exhausted: spread reuse
+                    pick = pool[reuse_cursor[0] % len(pool)]
+                    reuse_cursor[0] += 1
+                used.add(pick)
+                # merge cuts closer than 1.1s into the previous visual
+                if timed_cuts and t_off - timed_cuts[-1][0] < 1.1:
+                    prev_asset = pick
+                    continue
+                timed_cuts.append((t_off, pick))
+                prev_asset = pick
         sections.append(Section(
             audio_path=audio_paths[i], caption=seg.text, background_pool=visuals,
+            timed_cuts=timed_cuts,
             keyword=_keyword_for(seg) if kwcaps else "",
             callout_lines=(
                 _callout_lines_for(sheet) if (kwcaps and seg.role == "value")
