@@ -573,11 +573,20 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                     pick = None          # once-only: a used asset can't repeat
                 if pick is None:
                     # neutral fill: first unused asset not clashing with the
-                    # previous cut's look family
-                    for cand in pool:
+                    # previous cut's look family. On the HOOK and the CTA the
+                    # subject car itself must be on screen — edges of the video
+                    # are where irrelevant b-roll hurts most.
+                    car_families = {"roxx", "red", "thar", "mahindra"}
+                    edge_beat = (i == 0 or i == len(script.segments) - 1)
+                    ordering = (sorted(pool, key=lambda a: _bucket(a) not in car_families)
+                                if edge_beat else pool)
+                    for cand in ordering:
                         if cand in used:
                             continue
                         if prev_asset and _bucket(cand) == _bucket(prev_asset):
+                            continue
+                        if edge_beat and _bucket(cand) not in car_families and any(
+                                _bucket(x) in car_families and x not in used for x in pool):
                             continue
                         pick = cand
                         break

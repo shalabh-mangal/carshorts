@@ -1,7 +1,7 @@
 {
   "out": "out/thar_draft.mp4",
   "subject": "Mahindra Thar",
-  "rendered_at": "2026-07-21T19:56:40",
+  "rendered_at": "2026-07-21T20:32:44",
   "script_file": "scripts/thar_deadpan.script.json",
   "persona": "deadpan",
   "voice_engine": "edge",
@@ -14,10 +14,10 @@
   "hook_type": "news",
   "pool": {
     "own": 0,
-    "stock": 10,
+    "stock": 11,
     "stills": 6
   },
-  "cut_target_s": 4.0,
+  "cut_target_s": 3.7,
   "video_id": null,
   "metrics": null
 }
