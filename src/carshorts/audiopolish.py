@@ -78,7 +78,9 @@ def polish(video_in: str, out_path: str, music_path: str | None = None,
         "".join(mix_ins) +
         f"amix=inputs={len(mix_ins)}:duration=first:normalize=0,"
         # loudnorm outputs 192 kHz internally; resample back or AAC ships 96 kHz
-        "loudnorm=I=-14:TP=-1.5:LRA=11,aresample=44100[aout]")
+        "loudnorm=I=-14:TP=-1.5:LRA=11,aresample=44100,"
+        # hard ceiling: single-pass loudnorm can overshoot TP on punchy voices
+        "alimiter=limit=0.79:level=0[aout]")
 
     cmd = ["ffmpeg", "-y", *inputs,
            "-filter_complex", ";".join(parts),

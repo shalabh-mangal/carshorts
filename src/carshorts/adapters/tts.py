@@ -111,14 +111,19 @@ class ElevenLabsTTSProvider(TTSProvider):
         self.api_key = api_key or os.environ.get("ELEVENLABS_API_KEY")
         self.model = model
 
-    def synthesize(self, text: str, out_path: str) -> str:
+    def synthesize(self, text: str, out_path: str, marks_path: str | None = None) -> str:
+        """Synthesize expressive speech; also derive word-boundary marks from the
+        character-alignment endpoint so phrase-synced cutting works on finals."""
+        import base64
         import json
         import urllib.request
 
         if not self.api_key:
             raise RuntimeError("ELEVENLABS_API_KEY not set — get a free key at elevenlabs.io")
         text = normalize_for_speech(text)
-        url = f"https://api.elevenlabs.io/v1/text-to-speech/{self.voice_id}"
+        endpoint = "with-timestamps" if marks_path else ""
+        url = (f"https://api.elevenlabs.io/v1/text-to-speech/{self.voice_id}"
+               + (f"/{endpoint}" if endpoint else ""))
         body = json.dumps({
             "text": text,
             "model_id": self.model,
@@ -132,7 +137,29 @@ class ElevenLabsTTSProvider(TTSProvider):
             "User-Agent": "carshorts/0.1",
         })
         with urllib.request.urlopen(req, timeout=120, context=_SSL_CONTEXT) as resp:
-            audio = resp.read()
+            payload = resp.read()
+        if marks_path:
+            data = json.loads(payload)
+            audio = base64.b64decode(data["audio_base64"])
+            align = data.get("alignment") or {}
+            chars = align.get("characters", [])
+            starts = align.get("character_start_times_seconds", [])
+            words, word, w_start = [], "", None
+            for ch, t in zip(chars, starts):
+                if ch.isspace():
+                    if word:
+                        words.append({"w": word, "t": w_start})
+                        word, w_start = "", None
+                else:
+                    if w_start is None:
+                        w_start = t
+                    word += ch
+            if word:
+                words.append({"w": word, "t": w_start})
+            with open(marks_path, "w") as fh:
+                json.dump(words, fh)
+        else:
+            audio = payload
         with open(out_path, "wb") as fh:
             fh.write(audio)
         return out_path

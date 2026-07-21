@@ -446,12 +446,15 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
 
     audio_paths, durations, marks_paths = [], [], []
     for i, seg in enumerate(script.segments):
-        key = hashlib.md5(f"{voice_engine}|{voice}|{persona}|{seg.text}".encode()).hexdigest()[:16]
+        effective_voice = getattr(tts, "voice_id", None) or voice   # 11labs voice matters!
+        key = hashlib.md5(f"{voice_engine}|{effective_voice}|{persona}|{seg.text}".encode()).hexdigest()[:16]
         cached = cache_dir / f"{key}.mp3"
         marks_file = cache_dir / f"{key}.marks.json"
         # re-synthesize when word marks are missing (old cache entries) — free
         # for edge, and marks are what phrase-synced cutting runs on
-        needs = (not cached.exists()) or (voice_engine == "edge" and not marks_file.exists())
+        needs = not cached.exists()
+        if voice_engine == "edge" and not marks_file.exists():
+            needs = True   # free to regenerate for word marks; NEVER auto-respend paid engines
         if needs:
             try:
                 tts.synthesize(seg.text, str(cached), marks_path=str(marks_file))
