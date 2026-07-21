@@ -7,5 +7,6 @@
   "spec": "specs/mahindra-thar.json",
   "draft": "out/thar_draft.mp4",
   "created": "2026-07-22",
-  "status": "rework"
+  "status": "rework",
+  "note": "REWORK v2: overlay clutter removed (card OR keyword, never both), unanchored text dropped, matcher prefers press/beauty shots per your tags, peak joke rewritten"
 }

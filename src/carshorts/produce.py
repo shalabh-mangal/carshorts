@@ -678,12 +678,29 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         if i == len(script.segments) - 1 and timed_cuts:
             car_families = {"roxx", "red", "thar", "mahindra", "pool"}
             if _bucket(timed_cuts[-1][1]) not in car_families:
-                for j in range(len(timed_cuts) - 2, -1, -1):
+                swapped = False
+                for j in range(len(timed_cuts) - 2, -1, -1):   # within this section
                     if _bucket(timed_cuts[j][1]) in car_families:
                         timed_cuts[-1], timed_cuts[j] = (
                             (timed_cuts[-1][0], timed_cuts[j][1]),
                             (timed_cuts[j][0], timed_cuts[-1][1]))
+                        swapped = True
                         break
+                if not swapped:
+                    # no car cut in the CTA — swap with one from an EARLIER
+                    # section (never the opener); asset counts stay identical
+                    for prev in reversed(sections):
+                        for k in range(len(prev.timed_cuts) - 1, -1, -1):
+                            if prev is sections[0] and k == 0:
+                                continue
+                            if _bucket(prev.timed_cuts[k][1]) in car_families:
+                                a, b = prev.timed_cuts[k], timed_cuts[-1]
+                                prev.timed_cuts[k] = (a[0], b[1])
+                                timed_cuts[-1] = (b[0], a[1])
+                                swapped = True
+                                break
+                        if swapped:
+                            break
         sections.append(Section(
             audio_path=audio_paths[i], caption=seg.text, background_pool=visuals,
             timed_cuts=timed_cuts, keyword_span=keyword_span,
