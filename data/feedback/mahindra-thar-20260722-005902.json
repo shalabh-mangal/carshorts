@@ -1,0 +1,26 @@
+{
+  "slug": "mahindra-thar",
+  "verdict": "rework",
+  "rating": 4,
+  "beat_tags": {
+    "0": [
+      "text on screen"
+    ],
+    "1": [
+      "text on screen"
+    ],
+    "2": [
+      "text on screen"
+    ],
+    "3": [
+      "text on screen"
+    ],
+    "4": [
+      "joke flat"
+    ],
+    "5": [
+      "text on screen"
+    ]
+  },
+  "notes": "fonts are improved but still the text overloay not following what has been asked. Please display text overlay only when voice overlay speaks those highlights. Work on it more better. Text overlay can work wonders if it is used better"
+}

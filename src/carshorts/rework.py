@@ -76,6 +76,15 @@ def _punch_up_tagged(card: dict, feedback: dict, llm) -> bool:
     return changed
 
 
+def _progress(slug: str, step: str, done: bool = False) -> None:
+    pf = Path("data/queue") / f"{slug}.progress.json"
+    if done:
+        pf.unlink(missing_ok=True)
+        return
+    pf.write_text(json.dumps({"step": step,
+                              "at": datetime.datetime.now().isoformat(timespec="seconds")}))
+
+
 def run(slug: str) -> None:
     card_path = Path("data/queue") / f"{slug}.json"
     if not card_path.exists():
@@ -86,9 +95,12 @@ def run(slug: str) -> None:
         sys.exit("no feedback found")
 
     llm = make_llm(None)
+    _progress(slug, "1/3 folding your feedback into learnings")
     lessons = _fold_learnings(feedback, llm)
+    _progress(slug, "2/3 rewriting tagged beats")
     rewrote = _punch_up_tagged(card, feedback, llm)
 
+    _progress(slug, "3/3 re-rendering the draft (~2 min)")
     result = subprocess.run(
         [sys.executable, "-m", "carshorts.produce", "--script-file", card["script"],
          "--spec", card["spec"], "--skip-factcheck", "--persona",
@@ -102,6 +114,7 @@ def run(slug: str) -> None:
                     + (", tagged jokes rewritten" if rewrote else "")
                     + ", re-rendered with updated text engine")
     card_path.write_text(json.dumps(card, indent=2))
+    _progress(slug, "", done=True)
 
     log = Path("data/brain_log.jsonl")
     with log.open("a") as fh:

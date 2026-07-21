@@ -219,17 +219,17 @@ def _phrases_with_times(text: str, marks_file: str | None) -> list[tuple[float, 
 
 
 
-def _exact_span(frag: str, marks_file: str | None, fallback: tuple) -> tuple:
+def _exact_span(frag: str, marks_file: str | None, fallback: tuple) -> tuple | None:
     """Time on-screen text to the EXACT moment its words are SPOKEN. Finds the
     fragment's word sequence in the TTS word marks; text appears with the first
     word, leaves shortly after the last. Owner feedback: 'magic happens if text
     appears with beats only when perfectly timed with voice'."""
     if not marks_file or not Path(marks_file).exists():
-        return fallback
+        return None          # no word timeline -> no on-screen text at all
     try:
         marks = json.loads(Path(marks_file).read_text())
     except Exception:  # noqa: BLE001
-        return fallback
+        return None
 
     def norm(word: str) -> str:
         return re.sub(r"[^a-z0-9.]", "", word.lower())
@@ -237,7 +237,7 @@ def _exact_span(frag: str, marks_file: str | None, fallback: tuple) -> tuple:
     want = [norm(w) for w in frag.split() if norm(w)]
     have = [norm(m["w"]) for m in marks]
     if not want or not have:
-        return fallback
+        return None
     for i in range(len(have) - len(want) + 1):
         if have[i:i + len(want)] == want:
             start = max(0.0, marks[i]["t"] - 0.05)
@@ -245,7 +245,7 @@ def _exact_span(frag: str, marks_file: str | None, fallback: tuple) -> tuple:
             end = (marks[last_i + 1]["t"] if last_i + 1 < len(marks)
                    else marks[last_i]["t"] + 0.8)
             return (start, max(1.2, end - start + 0.35))
-    return fallback
+    return None              # words not found -> perfectly timed or absent
 
 
 def _time_callouts(lines: list[str], sec_phrases: list[tuple[float, str]],
@@ -699,7 +699,9 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         kw_end = sec_phrases[1][0] if len(sec_phrases) > 1 else min(2.8, durations[i])
         kw_text = _keyword_for(seg) if kwcaps else ""
         keyword_span = _exact_span(kw_text, marks_paths[i],
-                                   (0.12, max(1.4, kw_end - 0.12))) if kw_text else (0.12, 1.4)
+                                   (0.12, max(1.4, kw_end - 0.12))) if kw_text else None
+        if keyword_span is None:
+            kw_text = ""     # owner rule: text renders ONLY when word-exact
         callout_src = (
             _callout_lines_for(sheet) if (kwcaps and seg.role == "value")
             else _news_callouts_for(sheet)
@@ -738,7 +740,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
             audio_path=audio_paths[i], caption=seg.text, background_pool=visuals,
             timed_cuts=timed_cuts, keyword_span=keyword_span,
             timed_callouts=timed_callouts,
-            keyword=_keyword_for(seg) if kwcaps else "",
+            keyword=kw_text,
             callout_lines=callout_src))
         manifest_sections.append({
             "index": i, "role": seg.role, "duration": round(durations[i], 3),

@@ -97,6 +97,10 @@ function renderList(){
     <div style="display:flex;justify-content:space-between;align-items:center">
      <b>${c.car}</b><span class="pill ${c.status}">${c.status.replace('_',' ')}</span></div>
     <div style="color:var(--mut);font-size:12px;margin-top:4px">${c.persona} · ${c.language}</div>
+    ${c.status==='reworking'?`<div style="margin-top:8px;font-size:12px;color:var(--warn)">
+      ⚙️ ${c.progress?c.progress.step:'starting…'}<br>
+      <span style="color:var(--mut)">since ${c.progress?c.progress.at.slice(11,16):'now'}</span></div>`:''}
+    ${c.note&&c.status==='awaiting_approval'?`<div style="margin-top:8px;font-size:11px;color:var(--ok)">${c.note.slice(0,90)}</div>`:''}
    </div>`).join('')||'<div class="empty">Queue empty.<br>Run <code>pipeline --next</code></div>';
 }
 function pick(i){
@@ -145,16 +149,33 @@ document.addEventListener('keydown',e=>{
 load();
 setInterval(async()=>{   // live status: reworking -> awaiting approval appears by itself
  const fresh=await(await fetch('/api/queue')).json();
- if(JSON.stringify(fresh.map(c=>c.status))!==JSON.stringify(cards.map(c=>c.status))){
-  cards=fresh;renderList();}
+ const sig=x=>JSON.stringify(x.map(c=>[c.status,c.progress&&c.progress.step]));
+ if(sig(fresh)!==sig(cards)){cards=fresh;renderList();}
 },6000);
 </script>"""
+
+
+_healing: set = set()
 
 
 def _queue_cards() -> list[dict]:
     cards = []
     for path in sorted(QUEUE.glob("*.json")) if QUEUE.exists() else []:
+        if path.name.endswith(".progress.json"):
+            continue
         card = json.loads(path.read_text())
+        # live progress for the FE
+        pf = path.with_name(path.stem + ".progress.json")
+        if pf.exists():
+            card["progress"] = json.loads(pf.read_text())
+        # SELF-HEAL: a card stuck in legacy 'rework' (submitted to an old
+        # server process) gets its worker spawned right here
+        if card.get("status") == "rework" and card["slug"] not in _healing:
+            _healing.add(card["slug"])
+            card["status"] = "reworking"
+            path.write_text(json.dumps(card, indent=2))
+            subprocess.Popen([sys.executable, "-m", "carshorts.rework",
+                              card["slug"]], start_new_session=True)
         manifest = Path(card.get("draft", "")).with_suffix(".manifest.json")
         beats, cursor = [], 0.0
         if manifest.exists():
@@ -228,9 +249,8 @@ class Handler(BaseHTTPRequestHandler):
                     [sys.executable, "-m", "carshorts.pipeline", "--approve", fb["slug"]],),
                     daemon=True).start()
             else:   # auto-rework picks the feedback up immediately
-                threading.Thread(target=subprocess.call, args=(
-                    [sys.executable, "-m", "carshorts.rework", fb["slug"]],),
-                    daemon=True).start()
+                subprocess.Popen([sys.executable, "-m", "carshorts.rework",
+                                  fb["slug"]], start_new_session=True)
         self._send(200, b'{"ok": true}')
 
 
