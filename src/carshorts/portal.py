@@ -26,65 +26,120 @@ QUEUE = Path("data/queue")
 FEEDBACK = Path("data/feedback")
 
 PAGE = """<!doctype html><meta charset="utf-8">
-<title>carshorts — review station</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>carshorts · review station</title>
 <style>
- body{font:15px -apple-system,sans-serif;margin:0;background:#0f1115;color:#e8e8ea}
- header{padding:14px 22px;background:#171a21;font-weight:700;font-size:18px}
- .wrap{display:flex;gap:18px;padding:18px}
- .list{width:260px}.card{background:#171a21;border-radius:10px;padding:12px;margin-bottom:10px;cursor:pointer}
- .card.sel{outline:2px solid #ffd60a}.muted{color:#9aa0ab;font-size:12px}
- .main{flex:1;display:flex;gap:18px}
- video{width:300px;border-radius:12px;background:#000}
- .beats{flex:1}.beat{background:#171a21;border-radius:10px;padding:10px 14px;margin-bottom:8px}
- .beat b{color:#ffd60a}.tags{margin-top:6px}
- .tags label{margin-right:10px;font-size:12px;color:#c8ccd4}
- textarea{width:100%;background:#0f1115;color:#e8e8ea;border:1px solid #2a2f3a;border-radius:8px;padding:8px}
- .actions{margin-top:12px;display:flex;gap:10px;align-items:center}
- button{border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer}
- .approve{background:#2ecc71}.rework{background:#ffd60a}.rate{font-size:20px}
+ :root{--bg:#0b0d12;--panel:#141821;--panel2:#1b2130;--txt:#e9ecf2;--mut:#8a93a5;
+   --acc:#ffd60a;--ok:#34d399;--warn:#fbbf24;--bad:#f87171;--line:#232a3a}
+ *{box-sizing:border-box}body{font:14px/1.45 -apple-system,Inter,sans-serif;margin:0;
+   background:var(--bg);color:var(--txt)}
+ header{display:flex;align-items:center;gap:12px;padding:14px 22px;
+   background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+ header .logo{font-weight:800;font-size:17px}header .logo em{color:var(--acc);font-style:normal}
+ header .hint{margin-left:auto;color:var(--mut);font-size:12px}
+ kbd{background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:11px}
+ .wrap{display:grid;grid-template-columns:270px 330px 1fr;gap:16px;padding:16px;max-width:1500px;margin:0 auto}
+ .list .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+   padding:12px 14px;margin-bottom:10px;cursor:pointer;transition:.15s}
+ .card:hover{border-color:var(--acc)}
+ .card.sel{border-color:var(--acc);background:var(--panel2)}
+ .pill{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.4px;
+   border-radius:20px;padding:2px 9px;text-transform:uppercase}
+ .pill.awaiting_approval{background:#2b3a55;color:#93c5fd}
+ .pill.rework{background:#4a3a12;color:var(--warn)}
+ .pill.approved,.pill.published{background:#123a2a;color:var(--ok)}
+ .stage{position:sticky;top:74px;align-self:start}
+ video{width:100%;border-radius:14px;background:#000;box-shadow:0 8px 30px #0008}
+ .stars{margin:12px 0 4px;font-size:26px;cursor:pointer;user-select:none}
+ .stars span{color:#3a4256;transition:.1s}.stars span.on{color:var(--acc)}
+ .actions{display:flex;gap:10px;margin-top:10px}
+ button{flex:1;border:0;border-radius:10px;padding:12px;font-weight:800;font-size:13px;
+   cursor:pointer;transition:.15s}button:hover{transform:translateY(-1px)}
+ .rework{background:var(--warn);color:#1a1a1a}.approve{background:var(--ok);color:#06281c}
+ .beats h3{margin:4px 0 10px;font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:.6px}
+ .beat{background:var(--panel);border:1px solid var(--line);border-left:4px solid transparent;
+   border-radius:12px;padding:12px 14px;margin-bottom:10px;cursor:pointer;transition:.15s}
+ .beat.live{border-left-color:var(--acc);background:var(--panel2)}
+ .beat .role{font-size:10px;font-weight:800;color:var(--acc);text-transform:uppercase;letter-spacing:.6px}
+ .beat .t{float:right;color:var(--mut);font-size:11px}
+ .beat p{margin:5px 0 8px}
+ .chips{display:flex;flex-wrap:wrap;gap:6px}
+ .chip{border:1px solid var(--line);border-radius:20px;padding:3px 11px;font-size:12px;
+   color:var(--mut);cursor:pointer;user-select:none;transition:.12s}
+ .chip.on{background:var(--bad);border-color:var(--bad);color:#fff}
+ textarea{width:100%;background:var(--panel);color:var(--txt);border:1px solid var(--line);
+   border-radius:10px;padding:10px;margin-top:6px;resize:vertical}
+ .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--panel2);
+   border:1px solid var(--acc);border-radius:12px;padding:12px 22px;font-weight:700;
+   opacity:0;pointer-events:none;transition:.25s}.toast.show{opacity:1}
+ .empty{color:var(--mut);padding:40px;text-align:center}
 </style>
-<header>carshorts — review station</header>
+<header><div class="logo">car<em>shorts</em> · review station</div>
+ <div class="hint"><kbd>space</kbd> play · <kbd>1–6</kbd> seek beat · <kbd>a</kbd> approve · <kbd>r</kbd> rework</div></header>
 <div class="wrap">
  <div class="list" id="list"></div>
- <div class="main" id="main"><div class="muted">Select a draft.</div></div>
+ <div class="stage" id="stage"><div class="empty">Select a draft ←</div></div>
+ <div class="beats" id="beats"></div>
 </div>
+<div class="toast" id="toast"></div>
 <script>
 const ISSUES=["visual mismatch","weak hook","pacing","joke flat","text on screen","audio"];
-let cards=[],sel=null;
-async function load(){cards=await (await fetch('/api/queue')).json();render();}
-function render(){
- document.getElementById('list').innerHTML=cards.map((c,i)=>
-  `<div class="card ${sel===i?'sel':''}" onclick="pick(${i})"><b>${c.car}</b>
-   <div class="muted">${c.persona} · ${c.status}</div></div>`).join('')||'<div class="muted">Queue empty — run pipeline.</div>';
- if(sel===null)return;
- const c=cards[sel];
- document.getElementById('main').innerHTML=`
-  <div><video src="/video?p=${encodeURIComponent(c.draft)}" controls></video>
-   <div class="actions"><span class="rate">Rating:
-    <select id="rating">${[5,4,3,2,1].map(n=>`<option>${n}</option>`).join('')}</select></span></div>
-   <div class="actions">
-    <button class="rework" onclick="send('rework')">Needs rework</button>
-    <button class="approve" onclick="send('approve')">Approve → upload</button></div>
-  </div>
-  <div class="beats"><h3>Beats — tag anything off</h3>
-   ${(c.beats||[]).map((b,bi)=>`<div class="beat"><b>${b.role}</b> ${b.text}
-     <div class="tags">${ISSUES.map(t=>
-      `<label><input type="checkbox" data-beat="${bi}" value="${t}"> ${t}</label>`).join('')}
-     </div></div>`).join('')}
-   <h3>Notes</h3><textarea id="notes" rows="3" placeholder="what you liked / didn't…"></textarea>
-  </div>`;
+let cards=[],sel=null,rating=4;
+const $=id=>document.getElementById(id);
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');
+ setTimeout(()=>t.classList.remove('show'),2600);}
+async function load(){cards=await(await fetch('/api/queue')).json();renderList();}
+function renderList(){
+ $('list').innerHTML=cards.map((c,i)=>
+  `<div class="card ${sel===i?'sel':''}" onclick="pick(${i})">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+     <b>${c.car}</b><span class="pill ${c.status}">${c.status.replace('_',' ')}</span></div>
+    <div style="color:var(--mut);font-size:12px;margin-top:4px">${c.persona} · ${c.language}</div>
+   </div>`).join('')||'<div class="empty">Queue empty.<br>Run <code>pipeline --next</code></div>';
 }
-function pick(i){sel=i;render();}
+function pick(i){
+ sel=i;rating=4;renderList();const c=cards[i];
+ $('stage').innerHTML=`<video id="vid" src="/video?p=${encodeURIComponent(c.draft)}" controls></video>
+  <div class="stars" id="stars"></div>
+  <textarea id="notes" rows="3" placeholder="what worked / what didn't…"></textarea>
+  <div class="actions">
+   <button class="rework" onclick="send('rework')">⟳ Needs rework</button>
+   <button class="approve" onclick="send('approve')">✓ Approve → upload</button></div>`;
+ $('beats').innerHTML='<h3>Beats — click to seek · tag anything off</h3>'+
+  (c.beats||[]).map((b,bi)=>`<div class="beat" id="beat${bi}" onclick="seek(${b.start})">
+    <span class="t">${fmt(b.start)}</span><span class="role">${b.role}</span>
+    <p>${b.text}</p>
+    <div class="chips">${ISSUES.map(t=>
+     `<span class="chip" data-beat="${bi}" data-tag="${t}"
+        onclick="event.stopPropagation();this.classList.toggle('on')">${t}</span>`).join('')}</div>
+   </div>`).join('');
+ drawStars();
+ const v=$('vid');
+ v.addEventListener('timeupdate',()=>{
+  (c.beats||[]).forEach((b,bi)=>{
+   $('beat'+bi).classList.toggle('live',v.currentTime>=b.start&&v.currentTime<b.start+b.dur);});});
+}
+function fmt(s){return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');}
+function drawStars(){$('stars').innerHTML=[1,2,3,4,5].map(n=>
+ `<span class="${n<=rating?'on':''}" onclick="rating=${n};drawStars()">★</span>`).join('');}
+function seek(t){const v=$('vid');if(v){v.currentTime=t;v.play();}}
 async function send(verdict){
- const c=cards[sel];
- const tags={};document.querySelectorAll('input[type=checkbox]:checked').forEach(x=>{
-  (tags[x.dataset.beat]=tags[x.dataset.beat]||[]).push(x.value);});
+ if(sel===null)return;const c=cards[sel];
+ const tags={};document.querySelectorAll('.chip.on').forEach(x=>{
+  (tags[x.dataset.beat]=tags[x.dataset.beat]||[]).push(x.dataset.tag);});
  await fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},
-  body:JSON.stringify({slug:c.slug,verdict,rating:+document.getElementById('rating').value,
-   beat_tags:tags,notes:document.getElementById('notes').value})});
- alert(verdict==='approve'?'Approved — final render + upload started.':'Feedback saved for rework.');
- sel=null;load();
+  body:JSON.stringify({slug:c.slug,verdict,rating,beat_tags:tags,notes:$('notes').value})});
+ toast(verdict==='approve'?'Approved — final render + upload started ✓':'Feedback saved — rework queued ⟳');
+ sel=null;$('stage').innerHTML='<div class="empty">Select a draft ←</div>';$('beats').innerHTML='';load();
 }
+document.addEventListener('keydown',e=>{
+ if(e.target.tagName==='TEXTAREA')return;
+ const v=$('vid');
+ if(e.key===' '&&v){e.preventDefault();v.paused?v.play():v.pause();}
+ if(/^[1-6]$/.test(e.key)&&sel!==null){const b=cards[sel].beats[+e.key-1];if(b)seek(b.start);}
+ if(e.key==='a'&&sel!==null)send('approve');
+ if(e.key==='r'&&sel!==null)send('rework');
+});
 load();
 </script>"""
 
@@ -94,10 +149,12 @@ def _queue_cards() -> list[dict]:
     for path in sorted(QUEUE.glob("*.json")) if QUEUE.exists() else []:
         card = json.loads(path.read_text())
         manifest = Path(card.get("draft", "")).with_suffix(".manifest.json")
-        beats = []
+        beats, cursor = [], 0.0
         if manifest.exists():
             for sec in json.loads(manifest.read_text()).get("sections", []):
-                beats.append({"role": sec["role"], "text": sec["text"]})
+                beats.append({"role": sec["role"], "text": sec["text"],
+                              "start": round(cursor, 2), "dur": round(sec["duration"], 2)})
+                cursor += sec["duration"]
         card["beats"] = beats
         cards.append(card)
     return cards

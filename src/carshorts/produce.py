@@ -232,8 +232,13 @@ def _time_callouts(lines: list[str], sec_phrases: list[tuple[float, str]],
             score = len(tokens & ph)
             if score > best_score:
                 best_score, best_t = score, t
-        start = best_t if best_t is not None and best_score > 0 else last
-        start = max(start - 0.1, last, 0.2)      # keep list order monotonic
+        if best_t is None or best_score == 0:
+            # first line (card title) may lead the section; anything else that
+            # can't anchor to spoken words is dropped — no guessed timings
+            if timed:
+                continue
+            best_t = 0.35
+        start = max(best_t - 0.1, last, 0.2)     # keep list order monotonic
         end = min(dur - 0.05, start + 6.0)       # hold while context lasts, no longer
         if start < dur - 0.6:
             timed.append((start, end, line))
@@ -259,8 +264,11 @@ def _llm_phrase_match(entries: list[tuple[int, int, str]], pool: list[str],
             "NONE if nothing genuinely matches (do NOT force a bad match — a "
             "wrong visual is worse than a neutral one). Match meaning: screen/"
             "dash phrases -> console/press interior shots, off-road claims -> "
-            "mud/trail/river, facelift/Roxx news -> roxx/press images, price -> "
-            "car front shots. Output ONLY a JSON array: "
+            "mud/trail/river, facelift/new-model/caught-testing phrases -> the "
+            "OFFICIAL press/roxx images (best match for the newer model), "
+            "price/value phrases -> clean beauty shots of the subject car "
+            "(front/detail), NEVER action/event/crowd shots on price talk. "
+            "Output ONLY a JSON array: "
             '[{"id": "<sec>.<ph>", "asset": "<filename or NONE>"}]'
         )
         rows = _rows(llm.complete_json(system, f"PHRASES:\n{listing}\n\nASSETS:\n{assets}"))

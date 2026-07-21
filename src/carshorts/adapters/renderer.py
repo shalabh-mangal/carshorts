@@ -350,7 +350,9 @@ class MoviePyRenderer(VideoRenderer):
             dur = AudioFileClip(section.audio_path).duration
             if k:
                 boundaries.append(cursor)
-            if section.keyword:
+            if section.keyword and not section.timed_callouts:
+                # a keyword AND a callout card together crowd the frame — the
+                # card wins (owner feedback: on-screen text felt mismatched)
                 png = _overlay_png(section.keyword.upper(), 88,
                                    (255, 214, 10, 255) if any(c.isdigit() for c in section.keyword)
                                    else (245, 245, 245, 255),

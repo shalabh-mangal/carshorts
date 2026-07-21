@@ -1,23 +1,23 @@
 {
   "out": "out/thar_draft.mp4",
   "subject": "Mahindra Thar",
-  "rendered_at": "2026-07-21T21:46:51",
+  "rendered_at": "2026-07-22T00:30:03",
   "script_file": "scripts/thar_deadpan.script.json",
   "persona": "deadpan",
   "voice_engine": "edge",
   "language": "english",
   "music": "Balearic Slide - Jeremy Black.mp3",
   "captions": false,
-  "word_count": 116,
+  "word_count": 120,
   "sections": 6,
   "hook_text": "Mahindra just got caught testing the new Thar \u2014 and it's wearing the Roxx's face.",
   "hook_type": "news",
   "pool": {
     "own": 0,
-    "stock": 11,
+    "stock": 10,
     "stills": 6
   },
-  "cut_target_s": 3.5,
+  "cut_target_s": 3.8,
   "video_id": null,
   "metrics": null
 }
