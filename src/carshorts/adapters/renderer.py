@@ -121,8 +121,9 @@ class Section:
 
 
 _HEAVY_FONTS = [
+    "/System/Library/Fonts/SFCompactRounded.ttf",            # modern, premium
+    "/System/Library/Fonts/Supplemental/Arial Rounded Bold.ttf",
     "/System/Library/Fonts/Supplemental/Arial Black.ttf",
-    "/System/Library/Fonts/Supplemental/Impact.ttf",
 ] + _FONT_CANDIDATES
 
 
@@ -144,7 +145,7 @@ def _overlay_png(text: str, font_size: int, fill, out_path: str,
     to a transparent PNG."""
     from PIL import Image, ImageDraw
 
-    font = _load_heavy_font(font_size) if not pill else _load_font(font_size)
+    font = _load_heavy_font(font_size)   # one face everywhere = coherent look
     tmp = ImageDraw.Draw(Image.new("RGBA", (10, 10)))
     lines = _wrap(tmp, text, font, max_width)
     ascent, descent = font.getmetrics()
@@ -159,8 +160,9 @@ def _overlay_png(text: str, font_size: int, fill, out_path: str,
     y = 24
     for line in lines:
         x = (width - draw.textlength(line, font=font)) // 2
+        draw.text((x + 2, y + 3), line, font=font, fill=(0, 0, 0, 160))   # soft shadow
         draw.text((x, y), line, font=font, fill=fill,
-                  stroke_width=max(4, font_size // 12), stroke_fill=(0, 0, 0, 255))
+                  stroke_width=max(2, font_size // 22), stroke_fill=(0, 0, 0, 230))
         y += line_h
     if accent_bar:   # short brand-yellow bar under the text = channel signature
         bar_w = min(width - 100, max(140, width // 3))
@@ -363,17 +365,17 @@ class MoviePyRenderer(VideoRenderer):
                     kw_start, kw_dur = 0.12, min(2.4, dur * 0.85)
                 clip = (ImageClip(png, transparent=True)
                         .with_start(cursor + kw_start).with_duration(min(kw_dur, dur - kw_start))
-                        .resized(lambda t: 1.16 - 0.16 * min(t, 0.22) / 0.22)
-                        .with_position(("center", int(height * 0.14))))
+                        .resized(lambda t: 1.12 - 0.12 * min(t, 0.18) / 0.18)
+                        .with_position(("center", int(height * 0.66))))
                 overlays.append(clip)
             if section.timed_callouts:     # speech-timed lines: appear with their words
-                for li, (st, en, line) in enumerate(section.timed_callouts[:5]):
-                    png = _overlay_png(line, 58, (245, 245, 245, 255),
+                for li, (st, en, line) in enumerate(section.timed_callouts[:4]):
+                    png = _overlay_png(line, 54, (245, 245, 245, 255),
                                        f"{tdir}/co_{k}_{li}.png", pill=True)
                     st = min(st, dur - 0.6)
                     clip = (ImageClip(png, transparent=True)
                             .with_start(cursor + st).with_duration(max(0.8, min(en, dur) - st))
-                            .with_position(("center", int(height * (0.52 + 0.085 * li)))))
+                            .with_position(("center", int(height * (0.55 + 0.08 * li)))))
                     overlays.append(clip)
             else:
                 for li, line in enumerate(section.callout_lines[:5]):

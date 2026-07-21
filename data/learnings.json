@@ -13,9 +13,6 @@
     "Front-load value beats: price/verdict by the midpoint, never last."
   ],
   "data_learnings": [
-    "carshorts video #1 (Nexon): only 25% swiped in from feed - flat descriptive hook underperforms; avg view 58% once in.",
-    "carshorts video #2 (Swift): fast cuts + no subtitles + real footage held attention better (qualitative).",
-    "carshorts video #3 feedback: visuals MUST track narration phrase-by-phrase — beat-level matching is not enough; phrase-sync (word timestamps) is now the pipeline default and the single biggest attention-sustainer.",
     "[medium] Review and refine the visual QA process to reduce errors related to 'wrong_vehicle_type' and 'readable_plate' issues, as seen in multiple QA failures",
     "[medium] Consider revising the script to ensure accurate vehicle representation in the video, as multiple instances of 'wrong_vehicle_type' were reported",
     "[low] Given the low view count (24 views), it's premature to draw conclusions about the video's performance; however, the lack of engagement (1 like, 0 comments) might indicate a need to reassess the hook or content strategy in future videos",
@@ -24,6 +21,9 @@
     "[low] Monitor future videos for similar patterns of QA failures to determine if the issues are isolated or systemic, requiring broader changes to the production workflow",
     "[high][owner-feedback] Thar draft rated 2/5: text overlays still mismatch the voice at several beats — tighten keyword/callout anchoring; verify overlay text against the phrase actually spoken.",
     "[high][owner-feedback] Peak-beat humor reads flat — jokes must be specific roasts/analogies, not generic; punch-up pass should rewrite any joke that could apply to any car.",
-    "[medium][owner-feedback] Visual mismatch persists on news/value beats when the pool lacks true subject footage — prefer neutral scenery over near-miss car shots."
+    "[medium][owner-feedback] Visual mismatch persists on news/value beats when the pool lacks true subject footage — prefer neutral scenery over near-miss car shots.",
+    "[high][owner-feedback] Improve text overlay by enhancing font, placement, and timing to sync with beats and voice for a better user experience",
+    "[high][owner-feedback] Enhance text overlay to appear perfectly timed with voice and beats, avoiding premature or delayed appearances",
+    "[high][owner-feedback] Experiment with different font styles and placements to optimize text overlay and minimize negative impact on user experience"
   ]
 }

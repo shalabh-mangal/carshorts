@@ -218,6 +218,36 @@ def _phrases_with_times(text: str, marks_file: str | None) -> list[tuple[float, 
 
 
 
+
+def _exact_span(frag: str, marks_file: str | None, fallback: tuple) -> tuple:
+    """Time on-screen text to the EXACT moment its words are SPOKEN. Finds the
+    fragment's word sequence in the TTS word marks; text appears with the first
+    word, leaves shortly after the last. Owner feedback: 'magic happens if text
+    appears with beats only when perfectly timed with voice'."""
+    if not marks_file or not Path(marks_file).exists():
+        return fallback
+    try:
+        marks = json.loads(Path(marks_file).read_text())
+    except Exception:  # noqa: BLE001
+        return fallback
+
+    def norm(word: str) -> str:
+        return re.sub(r"[^a-z0-9.]", "", word.lower())
+
+    want = [norm(w) for w in frag.split() if norm(w)]
+    have = [norm(m["w"]) for m in marks]
+    if not want or not have:
+        return fallback
+    for i in range(len(have) - len(want) + 1):
+        if have[i:i + len(want)] == want:
+            start = max(0.0, marks[i]["t"] - 0.05)
+            last_i = i + len(want) - 1
+            end = (marks[last_i + 1]["t"] if last_i + 1 < len(marks)
+                   else marks[last_i]["t"] + 0.8)
+            return (start, max(1.2, end - start + 0.35))
+    return fallback
+
+
 def _time_callouts(lines: list[str], sec_phrases: list[tuple[float, str]],
                    dur: float) -> list[tuple[float, float, str]]:
     """Anchor each callout line to the phrase that SPEAKS it (token overlap),
@@ -232,6 +262,7 @@ def _time_callouts(lines: list[str], sec_phrases: list[tuple[float, str]],
             score = len(tokens & ph)
             if score > best_score:
                 best_score, best_t = score, t
+        # end when the NEXT line's words begin (no stale text), else short hold
         if best_t is None or best_score == 0:
             # first line (card title) may lead the section; anything else that
             # can't anchor to spoken words is dropped — no guessed timings
@@ -666,7 +697,9 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                 prev_asset = pick
         sec_phrases = phrase_map[i]
         kw_end = sec_phrases[1][0] if len(sec_phrases) > 1 else min(2.8, durations[i])
-        keyword_span = (0.12, max(1.4, kw_end - 0.12))
+        kw_text = _keyword_for(seg) if kwcaps else ""
+        keyword_span = _exact_span(kw_text, marks_paths[i],
+                                   (0.12, max(1.4, kw_end - 0.12))) if kw_text else (0.12, 1.4)
         callout_src = (
             _callout_lines_for(sheet) if (kwcaps and seg.role == "value")
             else _news_callouts_for(sheet)

@@ -46,7 +46,9 @@ PAGE = """<!doctype html><meta charset="utf-8">
  .pill{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.4px;
    border-radius:20px;padding:2px 9px;text-transform:uppercase}
  .pill.awaiting_approval{background:#2b3a55;color:#93c5fd}
- .pill.rework{background:#4a3a12;color:var(--warn)}
+ .pill.rework,.pill.reworking{background:#4a3a12;color:var(--warn)}
+ .pill.reworking::after{content:"…";animation:p 1s infinite}
+ @keyframes p{50%{opacity:.3}}
  .pill.approved,.pill.published{background:#123a2a;color:var(--ok)}
  .stage{position:sticky;top:74px;align-self:start}
  video{width:100%;border-radius:14px;background:#000;box-shadow:0 8px 30px #0008}
@@ -141,6 +143,11 @@ document.addEventListener('keydown',e=>{
  if(e.key==='r'&&sel!==null)send('rework');
 });
 load();
+setInterval(async()=>{   // live status: reworking -> awaiting approval appears by itself
+ const fresh=await(await fetch('/api/queue')).json();
+ if(JSON.stringify(fresh.map(c=>c.status))!==JSON.stringify(cards.map(c=>c.status))){
+  cards=fresh;renderList();}
+},6000);
 </script>"""
 
 
@@ -214,11 +221,15 @@ class Handler(BaseHTTPRequestHandler):
         card_path = QUEUE / f"{fb['slug']}.json"
         if card_path.exists():
             card = json.loads(card_path.read_text())
-            card["status"] = "approved" if fb["verdict"] == "approve" else "rework"
+            card["status"] = "approved" if fb["verdict"] == "approve" else "reworking"
             card_path.write_text(json.dumps(card, indent=2))
             if fb["verdict"] == "approve":
                 threading.Thread(target=subprocess.call, args=(
                     [sys.executable, "-m", "carshorts.pipeline", "--approve", fb["slug"]],),
+                    daemon=True).start()
+            else:   # auto-rework picks the feedback up immediately
+                threading.Thread(target=subprocess.call, args=(
+                    [sys.executable, "-m", "carshorts.rework", fb["slug"]],),
                     daemon=True).start()
         self._send(200, b'{"ok": true}')
 
