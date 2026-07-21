@@ -32,6 +32,15 @@ B. **Experiment scheduler ✅** — data/calendar.json of pre-assigned A/Bs
    (persona / hook-type / format / length / music rotations);
    `pipeline --next` pulls the top entry. Makes learnings causal.
 C. Comment mining ✅ (comments.py — topics to data/topic_ideas.json, draft replies; re-run as audience grows)
-D. Semantic asset index + cross-video freshness (as footage grows)
-E. Hinglish/Hindi re-issues of winners
-F. Cadence: aim daily once A+B land — the loop learns per upload
+D. **Brain v1 (in progress)** — brain.py: embedded judgment (failure triage
+   beyond the fix-table, asset-vet second opinion, news curation, weekly
+   strategy note) with decisions journal (data/brain_log.jsonl). Groq for
+   bounded verdicts; headless Claude for hard calls. Daily heartbeat via cron.
+E. **Review portal v1 (in progress)** — portal.py (localhost, stdlib): daily
+   draft variants side by side, BEAT-LEVEL feedback framework (tag hook/visual/
+   pacing/joke per section), pick → rework → approve → auto-upload → analytics
+   tab. Feedback JSON feeds learnings. v2: variants differ by one calendar
+   variable; unlisted-upload mobile review.
+F. Semantic asset index + cross-video freshness (as footage grows)
+G. Hinglish/Hindi re-issues of winners
+H. Cadence: daily heartbeat — brain drafts, you approve

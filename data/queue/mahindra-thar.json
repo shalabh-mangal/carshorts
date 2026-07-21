@@ -1,0 +1,11 @@
+{
+  "car": "Mahindra Thar",
+  "slug": "mahindra-thar",
+  "persona": "deadpan",
+  "language": "english",
+  "script": "scripts/thar_deadpan.script.json",
+  "spec": "specs/mahindra-thar.json",
+  "draft": "out/thar_draft.mp4",
+  "created": "2026-07-22",
+  "status": "awaiting_approval"
+}
