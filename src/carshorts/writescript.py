@@ -1,6 +1,6 @@
 """Premium script studio: spec sheet -> best fact-checked script.
 
-  python -m carshorts.writescript --spec specs_top5/tata-nexon.json \
+  python -m carshorts.writescript --spec specs/tata-nexon.json \
       --persona bhai --language hinglish --variants 3 --provider groq \
       --out scripts/nexon_bhai.script.json
 

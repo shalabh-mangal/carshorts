@@ -36,10 +36,10 @@ def _run(cmd: list[str]) -> int:
 def draft(car: str, persona: str = "deadpan", language: str = "english",
           video_format: str = "spotlight") -> None:
     slug = _slug(car)
-    spec = Path(f"specs_top5/{slug}.json")
+    spec = Path(f"specs/{slug}.json")
     extras = Path(f"specs_extras/{slug}.json")
     if not spec.exists():
-        sys.exit(f"missing {spec} — crawl it first:  python -m carshorts.crawl \"{car}\" --out specs_top5\n"
+        sys.exit(f"missing {spec} — crawl it first:  python -m carshorts.crawl \"{car}\" --out specs\n"
                  f"then VERIFY the specs against CarDekho (generation mixing!).")
     if not extras.exists():
         sys.exit(f"missing {extras} — add price/value/news (see specs_extras/mahindra-thar.json as template).")

@@ -1,66 +1,49 @@
-# carshorts — Milestone 1 vertical slice
+# carshorts — a self-correcting YouTube Shorts factory for cars
 
-Proves the riskiest claim in the project before any video code exists:
-*can the system produce a 60s car script where every factual claim is
-traceable to a source, and a human can verify it in ~2 minutes?*
+Turns a car name into a published, fact-checked, phrase-synced YouTube Short —
+free tools for drafts, one premium voice call for finals, human judgment at
+exactly two gates.
 
-No video. No audio. No publishing. Just discover → script → **Gate 1**.
-
-## Run it
+## The two commands that matter
 
 ```bash
-pip install -e .                 # or: pip install pydantic
-PYTHONPATH=src python -m carshorts.run
+python -m carshorts.pipeline "Hyundai Creta"          # or: pipeline --next (calendar)
+#  → script (variants→judge→editor) → free draft render → QA + Visual QA
+#  → approval card in data/queue/            ← GATE 1: watch it, edit the script
+python -m carshorts.pipeline --approve hyundai-creta
+#  → ElevenLabs final → publish kit → uploaded public → recipe linked
 ```
 
-The default run uses a mock LLM with a **deliberately planted hallucination**
-(a 0–100 time that isn't in the spec sheet) so you can watch Gate 1 catch it.
+## What the machine guarantees per video
+- **Facts**: every number sourced (spec sheet + news with URLs); separate LLM
+  skeptic + deterministic number-guard; prices labeled as estimates.
+- **Sync**: cuts land where the words do (TTS word timestamps → phrase-matched
+  visuals, 0.15s b-roll lead); on-screen text appears with its words.
+- **Legality**: own/CC/press/vetted-stock assets only; plates blurred; no
+  third-party watermarks, ever.
+- **Craft**: curiosity hook ≤2.5s, ≤63s runtime, no repeated asset, car on the
+  first and last frame, ducked music at −14 LUFS, loop-close ending.
+- **Verification**: 12-check QA gate (auto-fix loop) + vision QA on real frames;
+  failures journaled and turned into standing lessons.
 
-To run against a real free-tier model:
-
-```bash
-pip install -e ".[real]"
-export GEMINI_API_KEY=...
-PYTHONPATH=src python -m carshorts.run --real
-```
-
-## Test
-
-```bash
-pip install -e ".[dev]"
-pytest
-```
-
-## The one idea that matters
-
-Writing and fact-checking are **separate LLM calls**:
-
-- The **writer** (`DRAFT_SYSTEM`) may use *only* the provided spec sheet — it
-  cannot introduce a figure from its own memory.
-- The **skeptic** (`FACTCHECK_SYSTEM`) runs as a separate pass over the finished
-  script and flags any claim the spec sheet doesn't back. Its incentive is to
-  doubt, not defend.
-- A **structural check** (`structural_citation_check`) catches phantom citations
-  with no LLM at all.
-
-Gate 1 then shows the human the flags first, each real claim next to its source
-sentence. That linkage is what makes verification fast.
+## The learning loop
+`data/recipes/` (every creative choice) + YouTube Analytics (`analyze.py`,
+retention curve mapped to beats) + comments (`comments.py` → topic ideas) feed
+`data/learnings.json`, which is injected into every future script. The
+experiment calendar (`calendar_plan.py`) pre-assigns A/Bs so cohorts compare.
 
 ## Layout
-
 ```
-src/carshorts/
-  models.py              typed contracts (DDD value objects)
-  adapters/llm.py        LLMClient interface + Mock + Gemini impls
-  prompts/templates.py   writer / skeptic / ranker prompts
-  stages/pipeline.py     rank, draft, fact_check, structural check
-  gate1.py               human review report renderer
-  run.py                 CLI entry point
-tests/test_pipeline.py   accuracy behaviours, all LLM mocked
+src/carshorts/       code (adapters/ prompts/ stages/ + one module per stage)
+specs/ specs_extras/ verified spec sheets + human-curated price/news/value
+scripts/             locked .script.json per video
+assets/              inbox/ (drop footage) music/ (drop tracks) cars/<slug>/ stock/
+data/                learnings, recipes, calendar, queue, reports, failures
+out/                 renders, manifests, thumbs, publish kits, tts_cache
 ```
 
-## Deliberately NOT here (premature for this milestone)
+## Setup
+`pip install -e ".[dev,video,real,crawl]"` · keys in `.env` (see `.env.example`)
+· YouTube OAuth: `client_secret.json` + first run consents · `pytest` (offline).
 
-Video, TTS, footage sourcing, publishing, web UI, SQLite persistence, Kafka,
-Temporal, multi-agent orchestration, RAG, multi-domain plugins. Each attaches
-later at a known seam.
+See ROADMAP.md for what's next. Human gates are the product: keep them.

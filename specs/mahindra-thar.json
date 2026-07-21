@@ -3,37 +3,30 @@
   "specs": [
     {
       "name": "power",
-      "value": "63 hp",
-      "source_url": "https://en.wikipedia.org/wiki/Mahindra_Thar",
-      "source_sentence": "It was powered by a 2.5-liter turbocharged diesel engine that produced 63 hp (47 kW; 64 PS) and 182 N⋅m (134 lb⋅ft) of torque.",
+      "value": "152 PS",
+      "source_url": "https://www.cardekho.com/mahindra/thar",
+      "source_sentence": "The Thar's 2.0-litre turbo-petrol makes 152 PS and 320 Nm; the 2.2-litre diesel makes 132 PS with 300 Nm (source CarDekho).",
       "confidence": 1.0
     },
     {
       "name": "torque",
-      "value": "182 N⋅m",
-      "source_url": "https://en.wikipedia.org/wiki/Mahindra_Thar",
-      "source_sentence": "It was powered by a 2.5-liter turbocharged diesel engine that produced 63 hp (47 kW; 64 PS) and 182 N⋅m (134 lb⋅ft) of torque.",
+      "value": "320 Nm",
+      "source_url": "https://www.cardekho.com/mahindra/thar",
+      "source_sentence": "The Thar's 2.0-litre turbo-petrol makes 152 PS and 320 Nm; the 2.2-litre diesel makes 132 PS with 300 Nm (source CarDekho).",
       "confidence": 1.0
     },
     {
       "name": "engine_litre",
-      "value": "2.5-liter",
-      "source_url": "https://en.wikipedia.org/wiki/Mahindra_Thar",
-      "source_sentence": "It was powered by a 2.5-liter turbocharged diesel engine that produced 63 hp (47 kW; 64 PS) and 182 N⋅m (134 lb⋅ft) of torque.",
+      "value": "2.0-litre",
+      "source_url": "https://www.cardekho.com/mahindra/thar",
+      "source_sentence": "Engine options: a 2.0-litre turbo-petrol, a 1.5-litre diesel and a 2.2-litre diesel (source CarDekho).",
       "confidence": 1.0
     },
     {
-      "name": "top_speed",
-      "value": "45 mph",
-      "source_url": "https://en.wikipedia.org/wiki/Mahindra_Thar",
-      "source_sentence": "Unlike the Thar, the Roxor is not street legal, and is positioned as a side-by-side off-road vehicle with a top speed of 45 mph.",
-      "confidence": 1.0
-    },
-    {
-      "name": "price",
-      "value": "₹9.99 lakh",
-      "source_url": "https://en.wikipedia.org/wiki/Mahindra_Thar",
-      "source_sentence": "At launch, prices ranged from ₹9.99 lakh to ₹16.99 lakh (ex-showroom, India).",
+      "name": "four_wheel_drive",
+      "value": "4x4",
+      "source_url": "https://www.cardekho.com/mahindra/thar",
+      "source_sentence": "4x4 (4WD) is available on the 2.2-litre diesel and 2.0-litre petrol variants; the base 1.5-litre diesel is rear-wheel drive (source CarDekho).",
       "confidence": 1.0
     }
   ]

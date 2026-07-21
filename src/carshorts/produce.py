@@ -1,6 +1,6 @@
 """Produce a full video from a spec sheet: specs -> script -> fact-check -> video.
 
-  python -m carshorts.produce --spec specs_top5/tata-nexon.json --language hinglish
+  python -m carshorts.produce --spec specs/tata-nexon.json --language hinglish
   python -m carshorts.produce --script-file out/nexon.script.json --out out/nexon.mp4
   python -m carshorts.produce --spec ... --skip-factcheck        # render without the skeptic
 
