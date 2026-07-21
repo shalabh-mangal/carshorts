@@ -23,7 +23,7 @@ from .adapters.llm import make_llm
 from .gate1 import render_gate1_report
 from .models import SpecSheet
 from .produce import _apply_extras, _slug
-from .prompts.templates import ANGLES
+from .prompts.templates import ANGLES, FORMATS
 from .stages.pipeline import (
     draft_script,
     fact_check,
@@ -35,13 +35,17 @@ from .stages.pipeline import (
 
 
 def write_premium(spec_path: str, out_path: str, persona: str = "", language: str = "english",
-                  variants: int = 3, provider: str | None = None) -> str:
+                  variants: int = 3, provider: str | None = None,
+                  video_format: str = "spotlight") -> str:
     sheet = SpecSheet.model_validate_json(Path(spec_path).read_text())
     guidance = _apply_extras(sheet)          # sourced price + value-pick, if any
     from .learnings import load_learnings_guidance
     craft = load_learnings_guidance()
     if craft:
         guidance = f"{guidance}\n\n{craft}" if guidance else craft
+    fmt = FORMATS.get(video_format, "")
+    if fmt:
+        guidance = f"{guidance}\n\n{fmt}" if guidance else fmt
     llm = make_llm(provider)
 
     print(f"1/4  drafting {variants} variant(s) [persona={persona or 'default'}, {language}]...")
@@ -91,6 +95,9 @@ def main() -> None:
                    help="Channel voice to write in.")
     p.add_argument("--language", default="english", choices=["english", "hinglish", "hindi"])
     p.add_argument("--variants", type=int, default=3, help="How many candidates to generate.")
+    p.add_argument("--format", default="spotlight",
+                   choices=["spotlight", "vs", "five_things", "mythbust", "base_vs_top"],
+                   help="Narrative shell for the video.")
     p.add_argument("--provider", choices=["gemini", "groq", "cerebras", "openrouter", "ollama"],
                    help="LLM backend (or CARSHORTS_LLM). Default gemini.")
     args = p.parse_args()
@@ -98,7 +105,7 @@ def main() -> None:
     sheet = SpecSheet.model_validate_json(Path(args.spec).read_text())
     out = args.out or f"scripts/{_slug(sheet.subject)}_{args.persona or 'default'}.script.json"
     write_premium(args.spec, out, persona=args.persona, language=args.language,
-                  variants=args.variants, provider=args.provider)
+                  variants=args.variants, provider=args.provider, video_format=args.format)
 
 
 if __name__ == "__main__":

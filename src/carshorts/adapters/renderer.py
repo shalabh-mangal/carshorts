@@ -189,22 +189,44 @@ class MoviePyRenderer(VideoRenderer):
 
     def _pooled_scene(self, visuals: list[str], dur: float,
                       VideoFileClip, ImageClip, CompositeVideoClip, concatenate_videoclips):
-        """Fast-paced scene: split `dur` across the given visuals (videos play,
-        stills get alternating zoom), cut back-to-back. One visual = one sub-scene."""
+        """Fast-paced scene: split `dur` across the given visuals, cut
+        back-to-back. Motion varies per cut so nothing feels like a slideshow:
+        stills rotate zoom-in / zoom-out / pan-left / pan-right; video chunks
+        get a micro punch-in, and every third one a subtle speed ramp."""
+        width, height = self.size
         chunk = dur / len(visuals)
         subs = []
         for j, path in enumerate(visuals):
             if path.lower().endswith(self._VIDEO_EXT):
-                subs.append(self._video_scene(path, chunk, VideoFileClip, concatenate_videoclips))
+                if j % 3 == 2:   # speed-ramped cut: 1.15x, same on-screen time
+                    from moviepy import vfx
+                    raw = self._video_scene(path, chunk * 1.15,
+                                            VideoFileClip, concatenate_videoclips)
+                    clip = raw.with_effects([vfx.MultiplySpeed(1.15)]).with_duration(chunk)
+                else:            # micro punch-in keeps even real video alive
+                    raw = self._video_scene(path, chunk, VideoFileClip, concatenate_videoclips)
+                    punched = raw.resized(lambda t, d=chunk: 1.0 + 0.05 * (t / d)).with_position("center")
+                    clip = CompositeVideoClip([punched], size=self.size).with_duration(chunk)
+                subs.append(clip)
             else:
                 bg_path = self._prepare_background(path, None)
                 base = ImageClip(bg_path).with_duration(chunk)
-                if j % 2 == 0:
-                    motion = lambda t, d=chunk: 1.0 + 0.10 * (t / d)
-                else:
-                    motion = lambda t, d=chunk: 1.10 - 0.10 * (t / d)
-                zoom = base.resized(motion).with_position("center")
-                subs.append(CompositeVideoClip([zoom], size=self.size).with_duration(chunk))
+                mode = j % 4
+                if mode == 0:    # zoom in
+                    moving = base.resized(lambda t, d=chunk: 1.0 + 0.10 * (t / d)).with_position("center")
+                elif mode == 1:  # zoom out
+                    moving = base.resized(lambda t, d=chunk: 1.10 - 0.10 * (t / d)).with_position("center")
+                else:            # pan left / right at a fixed 1.12 scale
+                    moving = base.resized(1.12)
+                    over_x = int(width * 0.12)
+                    over_y = int(height * 0.12) // 2
+                    if mode == 2:
+                        moving = moving.with_position(
+                            lambda t, d=chunk, ox=over_x, oy=over_y: (-ox * (t / d), -oy))
+                    else:
+                        moving = moving.with_position(
+                            lambda t, d=chunk, ox=over_x, oy=over_y: (-ox * (1 - t / d), -oy))
+                subs.append(CompositeVideoClip([moving], size=self.size).with_duration(chunk))
         return concatenate_videoclips(subs, method="chain")
 
     def _video_scene(self, path: str, dur: float, VideoFileClip, concatenate_videoclips):
@@ -223,7 +245,8 @@ class MoviePyRenderer(VideoRenderer):
 
     def render_sections(self, sections: list[Section], out_path: str,
                         music_path: str | None = None, ken_burns: bool = True,
-                        draw_captions: bool = True, fps: int = 30) -> str:
+                        draw_captions: bool = True, fps: int = 30,
+                        loop_close: bool = True) -> str:
         """Multi-scene render: each Section becomes a clip whose length equals its
         own audio — so visuals stay in sync with the spoken script, section by
         section. Still photos get motion (alternating slow zoom-in / zoom-out) so
@@ -295,8 +318,18 @@ class MoviePyRenderer(VideoRenderer):
                         .with_position(("center", int(height * (0.52 + 0.085 * li)))))
                 overlays.append(clip)
             cursor += dur
+        # Loop-close: flash the opening visual for half a second at the very end
+        # so the short loops seamlessly back into its own first frame (rewatches).
+        first_pool = sections[0].background_pool if sections else []
+        if loop_close and first_pool:
+            flash = first_pool[0]
+            if flash.lower().endswith(self._VIDEO_EXT):
+                tail = self._video_scene(flash, 0.5, VideoFileClip, concatenate_videoclips)
+            else:
+                tail = ImageClip(self._prepare_background(flash, None)).with_duration(0.5)
+            video = concatenate_videoclips([video, tail], method="chain")
         if overlays:
-            video = CompositeVideoClip([video, *overlays], size=self.size).with_duration(cursor)
+            video = CompositeVideoClip([video, *overlays], size=self.size).with_duration(video.duration)
 
         video = self._add_music(video, music_path)
         video.write_videofile(out_path, fps=fps, codec="libx264",

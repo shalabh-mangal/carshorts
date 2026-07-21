@@ -157,3 +157,31 @@ def render_spec_sheet(spec_sheet) -> str:
     for s in spec_sheet.specs:
         lines.append(f'- name="{s.name}" value="{s.value}" (source: {s.source_url})')
     return "\n".join(lines)
+
+
+# Video FORMATS — same accuracy machine, different narrative shells. Rotating
+# formats keeps the feed fresh and gives the learning loop cohorts to compare.
+FORMATS = {
+    "spotlight": "",   # the default single-car structure defined above
+    "vs": (
+        "FORMAT OVERRIDE — VS BATTLE: frame the whole short as CAR A vs CAR B "
+        "decided by exactly 3 numbers. Only compare figures present in the "
+        "sheet(s); never invent the rival's numbers. Verdict beat picks a "
+        "winner per number; CTA asks viewers to defend their pick."
+    ),
+    "five_things": (
+        "FORMAT OVERRIDE — 5 THINGS NOBODY TELLS YOU: five rapid beats, each a "
+        "surprising sourced fact or honest drawback. Beat 5 must be the "
+        "strongest (tease it in the hook: 'number 5 changes the math')."
+    ),
+    "mythbust": (
+        "FORMAT OVERRIDE — MYTH-BUST: open with a belief people hold, then "
+        "bust or confirm it with sourced numbers. Structure: myth -> evidence "
+        "-> verdict -> what to do instead."
+    ),
+    "base_vs_top": (
+        "FORMAT OVERRIDE — BASE vs TOP VARIANT: same car, cheapest vs "
+        "top-end. What the extra money actually buys, feature by feature; "
+        "verdict = who should genuinely pay the difference."
+    ),
+}
