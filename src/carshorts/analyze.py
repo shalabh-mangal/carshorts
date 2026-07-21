@@ -35,10 +35,21 @@ def _fetch_metrics(video_id: str) -> dict | None:
             metrics="views,averageViewDuration,averageViewPercentage",
             filters=f"video=={video_id}").execute()
         row = (rep.get("rows") or [[None, None, None]])[0]
-        return {"views": int(st.get("viewCount", 0)),
-                "likes": int(st.get("likeCount", 0)),
-                "comments": int(st.get("commentCount", 0)),
-                "avg_view_s": row[1], "avg_view_pct": row[2]}
+        metrics = {"views": int(st.get("viewCount", 0)),
+                   "likes": int(st.get("likeCount", 0)),
+                   "comments": int(st.get("commentCount", 0)),
+                   "avg_view_s": row[1], "avg_view_pct": row[2]}
+        try:   # per-second retention curve (elapsed ratio -> audience ratio)
+            curve = yta.reports().query(
+                ids=f"channel=={ch}", startDate="2005-02-14",
+                endDate=datetime.date.today().isoformat(),
+                metrics="audienceWatchRatio",
+                dimensions="elapsedVideoTimeRatio",
+                filters=f"video=={video_id}").execute().get("rows", [])
+            metrics["retention_curve"] = [[float(a), float(b)] for a, b in curve]
+        except Exception:  # noqa: BLE001 — needs enough views to exist
+            pass
+        return metrics
     except Exception:  # noqa: BLE001
         return None
 
@@ -53,6 +64,32 @@ def run(provider: str | None = None) -> None:
                 r["metrics"] = m
                 path.write_text(json.dumps(r, indent=2, ensure_ascii=False))
         recipes.append(r)
+    # map each video's retention curve onto its BEATS via the render manifest:
+    # which section was playing when viewers left.
+    for r in recipes:
+        curve = (r.get("metrics") or {}).get("retention_curve")
+        manifest_path = Path(r.get("out", "")).with_suffix(".manifest.json")
+        if not curve or not manifest_path.exists():
+            continue
+        manifest = json.loads(manifest_path.read_text())
+        total = sum(sec["duration"] for sec in manifest.get("sections", []))
+        bounds, acc = [], 0.0
+        for sec in manifest.get("sections", []):
+            acc += sec["duration"]
+            bounds.append((sec["role"], acc))
+        beat_drop: dict[str, float] = {}
+        prev_ratio = None
+        for elapsed, watch in curve:
+            t = elapsed * total
+            role = next((rl for rl, end in bounds if t <= end), bounds[-1][0])
+            if prev_ratio is not None:
+                beat_drop[role] = beat_drop.get(role, 0.0) + max(0.0, prev_ratio - watch)
+            prev_ratio = watch
+        if beat_drop:
+            worst = max(beat_drop, key=beat_drop.get)
+            r["metrics"]["drop_by_beat"] = {k: round(v, 3) for k, v in beat_drop.items()}
+            r["metrics"]["worst_beat"] = worst
+
     with_data = [r for r in recipes if r.get("metrics")]
     print(f"recipes: {len(recipes)}, with metrics: {len(with_data)}")
     if not with_data:

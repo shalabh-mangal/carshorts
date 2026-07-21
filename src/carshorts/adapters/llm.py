@@ -170,6 +170,23 @@ class OpenAICompatLLMClient(LLMClient):
         return body["choices"][0]["message"]["content"]
 
 
+class FallbackLLMClient(LLMClient):
+    """Tries providers in order; a provider outage never blocks a render."""
+
+    def __init__(self, clients: list[tuple[str, LLMClient]]):
+        self.clients = clients
+
+    def complete(self, system: str, user: str, json_mode: bool = False) -> str:
+        last_error: Exception | None = None
+        for name, client in self.clients:
+            try:
+                return client.complete(system, user, json_mode=json_mode)
+            except Exception as exc:  # noqa: BLE001 — fall through the chain
+                print(f"     LLM fallback: {name} failed ({str(exc)[:80]}); trying next")
+                last_error = exc
+        raise last_error or RuntimeError("no LLM providers available")
+
+
 def make_llm(provider: str | None = None, model: str | None = None) -> LLMClient:
     """Pick an LLM backend by name (or the CARSHORTS_LLM env var).
 
@@ -179,6 +196,16 @@ def make_llm(provider: str | None = None, model: str | None = None) -> LLMClient
     openrouter — free models, one key many models (needs OPENROUTER_API_KEY)
     ollama   — local, free, unlimited, offline (needs a pulled model)
     """
+    if provider is None and not os.environ.get("CARSHORTS_LLM"):
+        # no explicit choice -> resilient chain from whatever keys exist
+        chain: list[tuple[str, LLMClient]] = []
+        if os.environ.get("GROQ_API_KEY"):
+            chain.append(("groq", make_llm("groq", model)))
+        if os.environ.get("GEMINI_API_KEY"):
+            chain.append(("gemini", make_llm("gemini", model)))
+        chain.append(("ollama", make_llm("ollama", model)))
+        if len(chain) > 1:
+            return FallbackLLMClient(chain)
     provider = (provider or os.environ.get("CARSHORTS_LLM", "gemini")).lower()
     if provider == "gemini":
         return GeminiLLMClient(model=model or "gemini-2.5-flash")
