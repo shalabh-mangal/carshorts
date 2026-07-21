@@ -33,7 +33,7 @@ from .ytauth import service as _yt_service
 
 def upload(video_path: str, title: str, description: str = "", tags=None,
            privacy: str = "private", made_for_kids: bool = False,
-           category_id: str = "2") -> str:
+           category_id: str = "2", thumbnail: str | None = None) -> str:
     """Upload a video; return the new video id. category 2 = Autos & Vehicles."""
     from googleapiclient.http import MediaFileUpload
 
@@ -59,6 +59,13 @@ def upload(video_path: str, title: str, description: str = "", tags=None,
         if status:
             print(f"   upload {int(status.progress() * 100)}%")
     video_id = response["id"]
+    if thumbnail and Path(thumbnail).exists():
+        try:
+            service.thumbnails().set(videoId=video_id,
+                                     media_body=MediaFileUpload(thumbnail)).execute()
+            print("   thumbnail set")
+        except Exception as exc:  # noqa: BLE001 — channel may lack custom-thumb perms
+            print(f"   thumbnail not set ({exc}); set it in the mobile app")
     print(f"Done -> https://youtube.com/watch?v={video_id}  (privacy={privacy})")
     return video_id
 
@@ -72,12 +79,14 @@ def main() -> None:
     p.add_argument("--tags", default="", help="Comma-separated tags.")
     p.add_argument("--privacy", default="private", choices=["private", "unlisted", "public"])
     p.add_argument("--made-for-kids", action="store_true")
+    p.add_argument("--thumbnail", help="PNG/JPG to set as the video thumbnail.")
     args = p.parse_args()
 
     description = (Path(args.description_file).read_text() if args.description_file
                   else args.description)
     tags = [t.strip() for t in args.tags.split(",") if t.strip()]
-    upload(args.video, args.title, description, tags, args.privacy, args.made_for_kids)
+    upload(args.video, args.title, description, tags, args.privacy, args.made_for_kids,
+           thumbnail=args.thumbnail)
 
 
 if __name__ == "__main__":
