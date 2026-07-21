@@ -76,3 +76,36 @@ def generate_beat(out_path: str, duration: float, bpm: int = 84, sr: int = _SR) 
         wav.setframerate(sr)
         wav.writeframes(pcm.tobytes())
     return out_path
+
+
+def _write_wav(path: str, audio, sr: int = _SR) -> str:
+    peak = float(np.max(np.abs(audio))) or 1.0
+    pcm = (audio / peak * 0.85 * 32767).astype(np.int16)
+    with wave.open(path, "w") as wav:
+        wav.setnchannels(1)
+        wav.setsampwidth(2)
+        wav.setframerate(sr)
+        wav.writeframes(pcm.tobytes())
+    return path
+
+
+def generate_whoosh(out_path: str, duration: float = 0.35, sr: int = _SR) -> str:
+    """A soft transition whoosh: filtered noise with a rising-then-falling sweep.
+    Self-synthesized -> no license, no attribution, consistent channel sound."""
+    n = int(duration * sr)
+    t = np.linspace(0, duration, n, endpoint=False)
+    noise = np.cumsum(np.sin(2 * np.pi * (900 + 2600 * t / duration) * t))
+    noise = noise / (np.max(np.abs(noise)) or 1.0)
+    env = np.sin(np.pi * t / duration) ** 2          # swell in, fade out
+    return _write_wav(out_path, 0.5 * noise * env, sr)
+
+
+def generate_riser(out_path: str, duration: float = 1.1, sr: int = _SR) -> str:
+    """A subtle riser into a reveal: sine sweep + tremolo, quiet by design."""
+    n = int(duration * sr)
+    t = np.linspace(0, duration, n, endpoint=False)
+    freq = 180 + 520 * (t / duration) ** 2
+    sweep = np.sin(2 * np.pi * np.cumsum(freq) / sr)
+    tremolo = 0.6 + 0.4 * np.sin(2 * np.pi * 9 * t)
+    env = (t / duration) ** 1.6                      # grows toward the hit
+    return _write_wav(out_path, 0.4 * sweep * tremolo * env, sr)

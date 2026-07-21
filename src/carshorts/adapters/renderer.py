@@ -102,12 +102,43 @@ class Section:
 
     def __init__(self, audio_path: str, caption: str, background_image: str | None = None,
                  background_video: str | None = None,
-                 background_pool: list[str] | None = None):
+                 background_pool: list[str] | None = None,
+                 keyword: str = "", callout_lines: list[str] | None = None):
         self.audio_path = audio_path
         self.caption = caption
         self.background_image = background_image
         self.background_video = background_video
         self.background_pool = background_pool or []
+        self.keyword = keyword                     # short on-screen punch text
+        self.callout_lines = callout_lines or []   # staggered feature card lines
+
+
+
+def _overlay_png(text: str, font_size: int, fill, out_path: str,
+                 pill: bool = False, max_width: int = 980) -> str:
+    """Render text (with heavy stroke, optional dark pill) to a transparent PNG."""
+    from PIL import Image, ImageDraw
+
+    font = _load_font(font_size)
+    tmp = ImageDraw.Draw(Image.new("RGBA", (10, 10)))
+    lines = _wrap(tmp, text, font, max_width)
+    ascent, descent = font.getmetrics()
+    line_h = ascent + descent + 8
+    width = max(int(tmp.textlength(l, font=font)) for l in lines) + 80
+    height = line_h * len(lines) + 48
+    img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    if pill:
+        draw.rounded_rectangle([0, 0, width - 1, height - 1], radius=26,
+                               fill=(10, 10, 14, 200))
+    y = 24
+    for line in lines:
+        x = (width - draw.textlength(line, font=font)) // 2
+        draw.text((x, y), line, font=font, fill=fill,
+                  stroke_width=max(4, font_size // 12), stroke_fill=(0, 0, 0, 255))
+        y += line_h
+    img.save(out_path)
+    return out_path
 
 
 class VideoRenderer(ABC):
@@ -231,9 +262,46 @@ class MoviePyRenderer(VideoRenderer):
             clips.append(scene.with_audio(audio))
 
         video = concatenate_videoclips(clips, method="chain")
+
+        # --- On-screen overlays: keyword pop-ins + staggered callout lines.
+        overlays = []
+        width, height = self.size
+        tdir = tempfile.mkdtemp(prefix="ovl_")
+        cursor = 0.0
+        boundaries: list[float] = []
+        for k, section in enumerate(sections):
+            dur = AudioFileClip(section.audio_path).duration
+            if k:
+                boundaries.append(cursor)
+            if section.keyword:
+                png = _overlay_png(section.keyword.upper(), 92,
+                                   (255, 214, 10, 255) if any(c.isdigit() for c in section.keyword)
+                                   else (245, 245, 245, 255),
+                                   f"{tdir}/kw_{k}.png")
+                showing = min(2.4, dur * 0.85)
+                clip = (ImageClip(png, transparent=True)
+                        .with_start(cursor + 0.12).with_duration(showing)
+                        .resized(lambda t: 1.16 - 0.16 * min(t, 0.22) / 0.22)
+                        .with_position(("center", int(height * 0.14))))
+                overlays.append(clip)
+            for li, line in enumerate(section.callout_lines[:5]):
+                png = _overlay_png(line, 58, (245, 245, 245, 255),
+                                   f"{tdir}/co_{k}_{li}.png", pill=True)
+                start = cursor + 0.9 + li * min(1.1, max(0.6, (dur - 1.8) / max(1, len(section.callout_lines))))
+                if start >= cursor + dur - 0.6:
+                    break
+                clip = (ImageClip(png, transparent=True)
+                        .with_start(start).with_duration(max(0.8, cursor + dur - start))
+                        .with_position(("center", int(height * (0.52 + 0.085 * li)))))
+                overlays.append(clip)
+            cursor += dur
+        if overlays:
+            video = CompositeVideoClip([video, *overlays], size=self.size).with_duration(cursor)
+
         video = self._add_music(video, music_path)
         video.write_videofile(out_path, fps=fps, codec="libx264",
                               audio_codec="aac", bitrate="10M", logger=None)
+        self.last_boundaries = boundaries
         return out_path
 
     def _add_music(self, video, music_path: str | None):

@@ -130,6 +130,42 @@ VOICE_BY_LANG = {
 
 
 
+
+_KW_NUM = re.compile(
+    r"(?:₹|Rs\.?\s?)?\d[\d,.]*\s?(?:to|–|-)?\s?(?:₹|Rs\.?\s?)?[\d,.]*\s?"
+    r"(?:lakh|crore|PS|bhp|kW|Nm|N⋅m|kmpl|km/h|seconds?|litre|liter|-litre)", re.I)
+
+
+def _keyword_for(seg) -> str:
+    """Short punch text shown on screen while the beat is spoken. Muted viewers
+    (the majority on Shorts) must still get the payoff."""
+    m = _KW_NUM.search(seg.text)
+    if m:
+        return m.group(0).strip().rstrip(".,")[:22]
+    frag = ""
+    for w in (w.strip(",.!—-") for w in seg.text.split()):
+        if not w:
+            continue
+        if len(frag) + len(w) + 1 > 24:   # whole words only, never chop mid-word
+            break
+        frag = f"{frag} {w}".strip()
+    return frag + ("?" if "?" in seg.text and not frag.endswith("?") else "")
+
+
+def _callout_lines_for(sheet) -> list[str]:
+    """Feature lines for the value-beat card, from the sourced value spec."""
+    idx = sheet.fact_index() if sheet else {}
+    feat = idx.get("value_features")
+    variant = idx.get("value_variant")
+    if not feat:
+        return []
+    raw = re.split(r",| and ", feat.value)
+    lines = [f.strip().rstrip(".").capitalize() for f in raw if f.strip()][:4]
+    if variant:
+        lines.insert(0, f"{variant.value} = value pick")
+    return lines
+
+
 def _llm_shot_match(segments, pool: list[str], provider: str | None) -> dict[int, list[str]]:
     """One LLM call: rank pool assets per script beat by semantic fit (asset
     filenames are descriptive). Returns {section_index: [asset paths ranked]}.
@@ -176,7 +212,8 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
             footage: bool = True, music: str | None = "auto",
             captions: bool = False, stock: bool | None = None,
             voice_engine: str = "edge", persona: str = "",
-            shots_file: str | None = None) -> str:
+            shots_file: str | None = None, kwcaps: bool = True,
+            polish_audio: bool = True) -> str:
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
 
@@ -409,8 +446,10 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
             # across different assets, never hammering the same opening clip.
             visuals.append(pool[reuse_cursor[0] % len(pool)])
             reuse_cursor[0] += 1
-        sections.append(Section(audio_path=audio_paths[i], caption=seg.text,
-                                background_pool=visuals))
+        sections.append(Section(
+            audio_path=audio_paths[i], caption=seg.text, background_pool=visuals,
+            keyword=_keyword_for(seg) if kwcaps else "",
+            callout_lines=_callout_lines_for(sheet) if (kwcaps and seg.role == "value") else []))
 
     # Background music: auto-generate a royalty-free beat unless disabled/overridden.
     music_path: str | None = None
@@ -427,9 +466,34 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         music_path = music
 
     print(f"5/5  rendering synced video -> {out_path}  "
-          f"(captions={'on' if captions else 'off'}, music={'yes' if music_path else 'no'})")
-    MoviePyRenderer().render_sections(sections, str(out), music_path=music_path,
-                                      draw_captions=captions)
+          f"(kwcaps={'on' if kwcaps else 'off'}, music={'yes' if music_path else 'no'}, "
+          f"polish={'on' if polish_audio else 'off'})")
+    renderer = MoviePyRenderer()
+    if polish_audio:
+        voice_only = str(out.with_suffix(".voice.mp4"))
+        renderer.render_sections(sections, voice_only, music_path=None,
+                                 draw_captions=captions)
+        boundaries = getattr(renderer, "last_boundaries", [])
+        value_start = None
+        cursor = 0.0
+        from moviepy import AudioFileClip as _A
+        for i, seg in enumerate(script.segments):
+            if seg.role == "value":
+                value_start = cursor
+                break
+            cursor += _A(audio_paths[i]).duration
+        from .audiopolish import polish as _polish
+        try:
+            _polish(voice_only, str(out), music_path=music_path,
+                    whoosh_times=boundaries[:6], riser_time=value_start)
+            Path(voice_only).unlink(missing_ok=True)
+        except Exception as exc:  # noqa: BLE001 — fall back to unpolished
+            print(f"     polish failed ({exc}); delivering unpolished mix.")
+            renderer.render_sections(sections, str(out), music_path=music_path,
+                                     draw_captions=captions)
+    else:
+        renderer.render_sections(sections, str(out), music_path=music_path,
+                                 draw_captions=captions)
 
     # Recipe card: log every creative choice so analytics can attribute results.
     try:
@@ -488,6 +552,8 @@ def main() -> None:
     parser.add_argument("--persona", default="", choices=["", "bhai", "deadpan", "hype"],
                         help="Voice energy profile (edge rate/pitch).")
     parser.add_argument("--shots", help="Shot-plan JSON (routes beats to AI clips vs car footage).")
+    parser.add_argument("--no-kwcaps", action="store_true", help="Disable keyword pop captions.")
+    parser.add_argument("--no-polish", action="store_true", help="Skip audio duck/SFX/loudnorm pass.")
     args = parser.parse_args()
 
     stock = True if args.stock else (False if args.no_stock else None)
@@ -496,7 +562,8 @@ def main() -> None:
                    provider=args.provider, footage=not args.no_footage, music=args.music,
                    captions=args.captions, stock=stock,
                    voice_engine=args.voice_engine, persona=args.persona,
-                   shots_file=args.shots)
+                   shots_file=args.shots, kwcaps=not args.no_kwcaps,
+                   polish_audio=not args.no_polish)
     print(f"\nDone -> {path}")
 
 
