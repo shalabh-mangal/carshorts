@@ -129,6 +129,42 @@ VOICE_BY_LANG = {
 }
 
 
+
+def _llm_shot_match(segments, pool: list[str], provider: str | None) -> dict[int, list[str]]:
+    """One LLM call: rank pool assets per script beat by semantic fit (asset
+    filenames are descriptive). Returns {section_index: [asset paths ranked]}.
+    Empty dict on any failure — callers fall back to keyword hints."""
+    import os as _os
+    if not pool or not (provider or _os.environ.get("GROQ_API_KEY")):
+        return {}
+    try:
+        from .stages.pipeline import _rows  # tolerant JSON row coercion
+        llm = make_llm(provider or "groq")
+        names = [Path(a).name for a in pool]
+        beats = "\n".join(f"{i}. [{seg.role}] {seg.text}" for i, seg in enumerate(segments))
+        assets = "\n".join(f"- {n}" for n in names)
+        system = (
+            "You match visuals to a car-video script. For EACH beat, rank the 3 "
+            "best-fitting asset filenames (they describe their content). Match "
+            "meaning: engine lines -> engine shots, off-road claims -> "
+            "mud/trail/river action, news/facelift -> press/roxx images, price/"
+            "value -> interior/feature shots. Output ONLY a JSON array: "
+            '[{"beat": <index>, "assets": ["<filename>", ...]}]'
+        )
+        rows = _rows(llm.complete_json(system, f"BEATS:\n{beats}\n\nASSETS:\n{assets}"))
+        by_name = {Path(a).name: a for a in pool}
+        ranked: dict[int, list[str]] = {}
+        for row in rows:
+            try:
+                idx = int(row.get("beat"))
+            except (TypeError, ValueError):
+                continue
+            ranked[idx] = [by_name[n] for n in row.get("assets", []) if n in by_name]
+        return ranked
+    except Exception:  # noqa: BLE001 — matcher is best-effort
+        return {}
+
+
 def _is_quota_error(exc: Exception) -> bool:
     text = str(exc).lower()
     return "429" in text or "quota" in text or "resourceexhausted" in text
@@ -200,7 +236,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     # when it's empty (fetched images must then be vetted — old-gen/plates).
     images: list[str] = []
     if footage:
-        img_dir = f"assets/images/{_slug(script.subject)}"
+        img_dir = f"assets/cars/{_slug(script.subject)}/images"
         images = sorted(str(p) for p in Path(img_dir).glob("*.[jp][pn]g"))
         if images:
             print(f"3/5  using {len(images)} vetted local images from {img_dir}")
@@ -236,7 +272,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     tts = make_tts(engine=voice_engine, persona=persona, voice=voice)
     print(f"4/5  voicing {len(script.segments)} sections "
           f"(engine={voice_engine}, persona={persona or 'default'})...")
-    ai_dir = Path("assets/ai") / _slug(script.subject)
+    ai_dir = Path("assets/cars") / _slug(script.subject) / "own"
 
     # --- Voice all sections first so we know each duration, then distribute a
     # visual POOL across fast sub-scenes (~2.8s cuts). Every asset is used at
@@ -260,7 +296,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         audio_paths.append(str(cached))
         durations.append(_Audio(str(cached)).duration)
 
-    user_clips = sorted(str(p) for p in ai_dir.glob("pool_*.mp4"))
+    user_clips = sorted(str(p) for p in ai_dir.glob("*.mp4"))
 
     # Order the pool so visually-similar shots never sit adjacent: bucket by
     # look (pool_NN_<category> prefix for own clips, query name for stock),
@@ -331,12 +367,23 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
             section_buckets.add(_bucket(asset))
         return picked
 
+    llm_ranked = _llm_shot_match(script.segments, pool, provider)
+    if llm_ranked:
+        print(f"     shot-matcher aligned {len(llm_ranked)} beats to visuals")
     sections = []
     prev_last_bucket = ""
     for i, seg in enumerate(script.segments):
         chunks = max(1, round(durations[i] / target))
         visuals: list[str] = []
         section_buckets: set = set()
+        for asset in llm_ranked.get(i, []):     # semantic matches first
+            if len(visuals) >= chunks:
+                break
+            if asset in used or _bucket(asset) in section_buckets:
+                continue
+            visuals.append(asset)
+            used.add(asset)
+            section_buckets.add(_bucket(asset))
         for text_pat, file_pat in topic_hints:
             if text_pat.search(seg.text):
                 visuals += _grab(lambda a, p=file_pat: bool(p.search(Path(a).name)),
@@ -364,9 +411,14 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     # Background music: auto-generate a royalty-free beat unless disabled/overridden.
     music_path: str | None = None
     if music == "auto":
-        music_path = str(out.with_suffix(".beat.wav"))
-        print("     generating royalty-free beat...")
-        generate_beat(music_path, duration=90)
+        library = sorted(Path("assets/music").glob("*.mp3")) + sorted(Path("assets/music").glob("*.wav"))
+        if library:
+            music_path = str(library[0])
+            print(f"     music: {Path(music_path).name} (from assets/music)")
+        else:
+            music_path = str(out.with_suffix(".beat.wav"))
+            print("     generating royalty-free beat...")
+            generate_beat(music_path, duration=90)
     elif music and music != "none":
         music_path = music
 
@@ -375,7 +427,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     MoviePyRenderer().render_sections(sections, str(out), music_path=music_path,
                                       draw_captions=captions)
 
-    credits = attribution_lines(f"assets/images/{_slug(script.subject)}") if images else []
+    credits = attribution_lines(f"assets/cars/{_slug(script.subject)}/images") if images else []
     if credits:
         print("\nImage credits (put these in the YouTube description):")
         for line in credits:
