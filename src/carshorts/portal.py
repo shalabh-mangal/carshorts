@@ -51,6 +51,10 @@ PAGE = """<!doctype html><meta charset="utf-8">
  .pill.reworking::after,.pill.rendering::after{content:"…";animation:p 1s infinite}
  @keyframes p{50%{opacity:.3}}
  .pill.approved,.pill.published{background:#123a2a;color:var(--ok)}
+ .pill.approved::after,.pill.publishing::after{content:"…";animation:p 1s infinite}
+ .pill.final_review{background:#3a1d52;color:#d8b4fe}
+ .pill.publishing{background:#3a1d52;color:#d8b4fe}
+ .publish{background:#a855f7;color:#fff}
  .stage{position:sticky;top:74px;align-self:start}
  video{width:100%;border-radius:14px;background:#000;box-shadow:0 8px 30px #0008}
  .busy{background:var(--panel);border:1px dashed var(--warn);border-radius:14px;
@@ -105,7 +109,7 @@ PAGE = """<!doctype html><meta charset="utf-8">
 const ISSUES=["visual mismatch","weak hook","pacing","joke flat","text on screen","audio",
   "music","voice","wrong info","too long","boring","cut timing"];
 const WINS=["🔥 loved it","great joke","great visual","great pacing"];
-const BUSY=s=>s==='reworking'||s==='rendering';
+const BUSY=s=>['reworking','rendering','approved','publishing'].includes(s);
 let cards=[],sel=null,rating=4,edits={},selWasBusy=false;
 const $=id=>document.getElementById(id);
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');
@@ -120,7 +124,7 @@ function renderList(){
     ${BUSY(c.status)?`<div style="margin-top:8px;font-size:12px;color:var(--warn)">
       ⚙️ ${c.progress?c.progress.step:'starting…'}<br>
       <span style="color:var(--mut)">${c.progress&&c.progress.at?'since '+c.progress.at.slice(11,16):''}</span></div>`:''}
-    ${c.note&&c.status==='awaiting_approval'?`<div style="margin-top:8px;font-size:11px;color:var(--ok)">${c.note.slice(0,90)}</div>`:''}
+    ${c.note&&['awaiting_approval','final_review'].includes(c.status)?`<div style="margin-top:8px;font-size:11px;color:var(--ok)">${c.note.slice(0,90)}</div>`:''}
    </div>`).join('')||'<div class="empty">Queue empty.<br>Run <code>pipeline --next</code></div>';
 }
 function pick(i){
@@ -132,14 +136,17 @@ function pick(i){
    <div class="sub">the video file is being rewritten right now —<br>
     player and actions unlock automatically when it lands</div></div>`;
  }else{
-  $('stage').innerHTML=`<video id="vid" src="/video?p=${encodeURIComponent(c.draft)}&v=${c.draft_v||0}" controls></video>
+  const isFinal=c.status==='final_review';
+  $('stage').innerHTML=`<video id="vid" src="/video?p=${encodeURIComponent(c.play||c.draft)}&v=${c.draft_v||0}" controls></video>
+   ${isFinal?`<div style="margin-top:8px;font-size:12px;color:#d8b4fe">🎙 PREMIUM FINAL — this exact file ships to YouTube</div>`:''}
    <div class="stars" id="stars"></div>
    <textarea id="notes" rows="3" placeholder="what worked / what didn't…"></textarea>
    <div class="savebar" id="savebar">
     <button onclick="saveScript()">💾 Save script & re-render</button></div>
    <div class="actions">
     <button class="rework" onclick="send('rework')">⟳ Needs rework</button>
-    <button class="approve" onclick="send('approve')">✓ Approve → upload</button></div>`;
+    ${isFinal?`<button class="publish" onclick="send('publish')">🚀 Publish to YouTube</button>`
+             :`<button class="approve" onclick="send('approve')">✓ Approve → premium final</button>`}</div>`;
  }
  $('beats').innerHTML='<h3>Beats — click to seek · ✎ to rewrite · tag red (fix) or green (keep)</h3>'+
   (c.beats||[]).map((b,bi)=>`<div class="beat" id="beat${bi}" onclick="seek(${b.start})">
@@ -198,7 +205,9 @@ async function send(verdict){
  await fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},
   body:JSON.stringify({slug:c.slug,verdict,rating,beat_tags:tags,beat_wins:wins,
    notes:$('notes')?$('notes').value:''})});
- toast(verdict==='approve'?'Approved — final render + upload started ✓':'Feedback saved — rework queued ⟳');
+ toast(verdict==='approve'?'Approved — premium final rendering, it comes back here for a last look ✓'
+      :verdict==='publish'?'Publishing to YouTube 🚀'
+      :'Feedback saved — rework queued ⟳');
  sel=null;$('stage').innerHTML='<div class="empty">Select a draft ←</div>';$('beats').innerHTML='';load();
 }
 document.addEventListener('keydown',e=>{
@@ -206,7 +215,7 @@ document.addEventListener('keydown',e=>{
  const v=$('vid');
  if(e.key===' '&&v){e.preventDefault();v.paused?v.play():v.pause();}
  if(/^[1-6]$/.test(e.key)&&sel!==null){const b=cards[sel].beats[+e.key-1];if(b)seek(b.start);}
- if(e.key==='a'&&sel!==null)send('approve');
+ if(e.key==='a'&&sel!==null)send(cards[sel].status==='final_review'?'publish':'approve');
  if(e.key==='r'&&sel!==null)send('rework');
 });
 load();
@@ -238,12 +247,20 @@ def _queue_cards() -> list[dict]:
         pf = path.with_name(path.stem + ".progress.json")
         if pf.exists():
             card["progress"] = json.loads(pf.read_text())
-        # a render lock on the draft overrides everything: file is being written
+        # a render lock (draft OR final) overrides everything: file mid-write
         draft = Path(card.get("draft", ""))
-        if draft.with_suffix(".lock").exists():
+        final = Path(card.get("final") or f"out/{card.get('slug','')}_final.mp4")
+        if draft.with_suffix(".lock").exists() or final.with_suffix(".lock").exists():
             card["status"] = "rendering"
             card.setdefault("progress", {"step": "encoding video…", "at": ""})
-        card["draft_v"] = int(draft.stat().st_mtime) if draft.exists() else 0
+        # the portal plays the FINAL once it exists and the card is past draft
+        if card.get("status") in ("final_review", "publishing", "published") \
+                and final.exists():
+            card["play"] = str(final)
+        else:
+            card["play"] = card.get("draft", "")
+        play = Path(card["play"])
+        card["draft_v"] = int(play.stat().st_mtime) if play.exists() else 0
         # SELF-HEAL: a card stuck in legacy 'rework' (submitted to an old
         # server process) gets its worker spawned right here
         if card.get("status") == "rework" and card["slug"] not in _healing:
@@ -252,7 +269,7 @@ def _queue_cards() -> list[dict]:
             path.write_text(json.dumps(card, indent=2))
             subprocess.Popen([sys.executable, "-m", "carshorts.rework",
                               card["slug"]], start_new_session=True)
-        manifest = Path(card.get("draft", "")).with_suffix(".manifest.json")
+        manifest = Path(card.get("play") or card.get("draft", "")).with_suffix(".manifest.json")
         beats, cursor = [], 0.0
         if manifest.exists():
             for sec in json.loads(manifest.read_text()).get("sections", []):
@@ -353,12 +370,14 @@ class Handler(BaseHTTPRequestHandler):
         card_path = QUEUE / f"{fb['slug']}.json"
         if card_path.exists():
             card = json.loads(card_path.read_text())
-            card["status"] = "approved" if fb["verdict"] == "approve" else "reworking"
+            card["status"] = {"approve": "approved",
+                              "publish": "publishing"}.get(fb["verdict"], "reworking")
             card_path.write_text(json.dumps(card, indent=2))
-            if fb["verdict"] == "approve":
-                threading.Thread(target=subprocess.call, args=(
-                    [sys.executable, "-m", "carshorts.pipeline", "--approve", fb["slug"]],),
-                    daemon=True).start()
+            if fb["verdict"] in ("approve", "publish"):
+                flag = "--approve" if fb["verdict"] == "approve" else "--publish"
+                subprocess.Popen(
+                    [sys.executable, "-m", "carshorts.pipeline", flag, fb["slug"]],
+                    start_new_session=True)
             else:   # auto-rework picks the feedback up immediately
                 subprocess.Popen([sys.executable, "-m", "carshorts.rework",
                                   fb["slug"]], start_new_session=True)

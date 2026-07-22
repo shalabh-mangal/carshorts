@@ -72,19 +72,54 @@ def draft(car: str, persona: str = "deadpan", language: str = "english",
           f"   (re-run draft after edits: python -m carshorts.pipeline \"{car}\")")
 
 
+def _progress(slug: str, step: str, done: bool = False) -> None:
+    pf = QUEUE / f"{slug}.progress.json"
+    if done:
+        pf.unlink(missing_ok=True)
+        return
+    pf.write_text(json.dumps({"step": step,
+                              "at": datetime.datetime.now().isoformat(timespec="seconds")}))
+
+
 def approve(slug: str, privacy: str = "public") -> None:
+    """Draft approved -> render the PREMIUM final and put it back in the
+    portal for a second approval. Nothing is uploaded from here — the owner
+    reviews the actual file that would ship (owner rule: the final version
+    must also be shown and approved)."""
     card_path = QUEUE / f"{slug}.json"
     if not card_path.exists():
         sys.exit(f"nothing queued for {slug!r} — run the draft stage first.")
     card = json.loads(card_path.read_text())
 
     final_out = Path(f"out/{slug}_final.mp4")
+    _progress(slug, "rendering premium final (ElevenLabs voice)…")
     if _run([sys.executable, "-m", "carshorts.produce", "--script-file", card["script"],
              "--spec", card["spec"], "--skip-factcheck", "--voice-engine", "elevenlabs",
              "--provider", "groq", "--out", str(final_out)]) != 0:
+        card["status"] = "final_failed"
+        card_path.write_text(json.dumps(card, indent=2))
+        _progress(slug, "", done=True)
         sys.exit("final render failed — queue card kept")
+    _progress(slug, "visual QA on the final…")
     _run([sys.executable, "-m", "carshorts.vqa", str(final_out)])
 
+    card["status"] = "final_review"
+    card["final"] = str(final_out)
+    card["note"] = ("PREMIUM FINAL ready (ElevenLabs voice) — review THIS file; "
+                    "Publish ships it to YouTube untouched.")
+    card_path.write_text(json.dumps(card, indent=2))
+    _progress(slug, "", done=True)
+    print(f"final ready for second approval -> {final_out}")
+
+
+def publish(slug: str, privacy: str = "public") -> None:
+    """Second approval given on the FINAL -> publish kit + YouTube upload."""
+    card_path = QUEUE / f"{slug}.json"
+    card = json.loads(card_path.read_text())
+    final_out = Path(card.get("final") or f"out/{slug}_final.mp4")
+    if not final_out.exists():
+        sys.exit("no final file — approve the draft first")
+    _progress(slug, "writing title/description kit…")
     _run([sys.executable, "-m", "carshorts.publishkit", "--script", card["script"],
           "--spec", card["spec"], "--provider", "groq"])
     kit = Path("out") / (Path(card["script"]).stem.replace(".script", "") + ".publish.md")
@@ -102,14 +137,20 @@ def approve(slug: str, privacy: str = "public") -> None:
     desc_file = Path(f"out/{slug}_upload_desc.txt")
     desc_file.write_text("\n".join(desc_lines).strip() + "\n\n" + (hashtags[-1] if hashtags else ""))
 
+    _progress(slug, "uploading to YouTube…")
     if _run([sys.executable, "-m", "carshorts.publish", str(final_out),
              "--title", title, "--description-file", str(desc_file),
              "--privacy", privacy]) != 0:
+        card["status"] = "final_review"
+        card["note"] = "⚠ upload failed — final kept on disk, publish again to retry"
+        card_path.write_text(json.dumps(card, indent=2))
+        _progress(slug, "", done=True)
         sys.exit("upload failed — final kept on disk")
 
     card["status"] = "published"
     card["published_at"] = datetime.datetime.now().isoformat(timespec="seconds")
     card_path.write_text(json.dumps(card, indent=2))
+    _progress(slug, "", done=True)
     print(f"\n🚗 shipped {card['car']} — set the thumbnail via mobile app if needed.")
 
 
@@ -129,7 +170,10 @@ def main() -> None:
     ap.add_argument("--language", default="english", choices=["english", "hinglish", "hindi"])
     ap.add_argument("--format", default="spotlight",
                     choices=["spotlight", "vs", "five_things", "mythbust", "base_vs_top"])
-    ap.add_argument("--approve", metavar="SLUG", help="Approve a queued draft -> final + upload.")
+    ap.add_argument("--approve", metavar="SLUG",
+                    help="Approve a queued draft -> premium final -> back to portal for 2nd approval.")
+    ap.add_argument("--publish", metavar="SLUG",
+                    help="Second approval on the final -> publish kit + YouTube upload.")
     ap.add_argument("--privacy", default="public", choices=["public", "unlisted", "private"])
     ap.add_argument("--queue", action="store_true", help="Show the approval queue.")
     ap.add_argument("--next", action="store_true",
@@ -150,6 +194,8 @@ def main() -> None:
         show_queue()
     elif args.approve:
         approve(args.approve, privacy=args.privacy)
+    elif args.publish:
+        publish(args.publish, privacy=args.privacy)
     elif args.car:
         draft(args.car, persona=args.persona, language=args.language, video_format=args.format)
     else:
