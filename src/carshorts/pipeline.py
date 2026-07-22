@@ -138,9 +138,20 @@ def publish(slug: str, privacy: str = "public") -> None:
     desc_file.write_text("\n".join(desc_lines).strip() + "\n\n" + (hashtags[-1] if hashtags else ""))
 
     _progress(slug, "uploading to YouTube…")
-    if _run([sys.executable, "-m", "carshorts.publish", str(final_out),
-             "--title", title, "--description-file", str(desc_file),
-             "--privacy", privacy]) != 0:
+    # pass a thumbnail when one exists (out/<slug>_thumb.jpg|png). Shorts
+    # ignore custom thumbs in the feed (frame 1 is the thumb there — QA
+    # already forces a car shot), but the channel grid/search can use it.
+    publish_cmd = [sys.executable, "-m", "carshorts.publish", str(final_out),
+                   "--title", title, "--description-file", str(desc_file),
+                   "--privacy", privacy]
+    for ext in ("jpg", "png"):
+        thumb = Path(f"out/{slug.split('-')[-1]}_thumb.{ext}")
+        thumb2 = Path(f"out/{slug}_thumb.{ext}")
+        pick = thumb2 if thumb2.exists() else thumb if thumb.exists() else None
+        if pick:
+            publish_cmd += ["--thumbnail", str(pick)]
+            break
+    if _run(publish_cmd) != 0:
         card["status"] = "final_review"
         card["note"] = "⚠ upload failed — final kept on disk, publish again to retry"
         card_path.write_text(json.dumps(card, indent=2))
