@@ -57,3 +57,5 @@
 {"at": "2026-07-22T14:03:21", "video": "out/hyundai-creta_draft.mp4", "check": "true peak \u2264 -1 dBTP", "detail": "-0.8 dBTP", "resolved": false}
 {"at": "2026-07-22T16:49:37", "video": "out/hyundai-creta_draft.mp4", "check": "runtime \u2264 63s (Shorts sweet spot)", "detail": "67.2s", "resolved": false}
 {"at": "2026-07-22T16:54:16", "video": "out/hyundai-creta_draft.mp4", "check": "runtime \u2264 63s (Shorts sweet spot)", "detail": "67.2s", "resolved": false}
+{"at": "2026-07-22T19:20:26", "video": "out/hyundai-creta_draft.mp4", "check": "visual-qa", "detail": "{\"t\": 47.58, \"asset\": \"Hyundai_Creta_001.jpg\", \"phrase\": \"Creta is the paneer butter masala of Indian SUVs.\", \"issues\": [\"readable_plate\"], \"match\": true}", "resolved": false}
+{"at": "2026-07-22T19:27:17", "video": "out/hyundai-creta_draft.mp4", "check": "visual-qa", "detail": "{\"t\": 10.13, \"asset\": \"20151017_Hyundai_Creta_02.jpg\", \"phrase\": \"Half your parking is already Cretas.\", \"issues\": [\"too_dark_or_blurry\"], \"match\": true}", "resolved": false}
