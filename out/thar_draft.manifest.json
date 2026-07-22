@@ -1,0 +1,342 @@
+{
+  "out": "out/thar_draft.mp4",
+  "sections": [
+    {
+      "index": 0,
+      "role": "hook",
+      "duration": 4.75,
+      "text": "Mahindra just got caught testing the new Thar — and it's wearing the Roxx's face.",
+      "phrases": [
+        {
+          "t": 0.0,
+          "text": "Mahindra just got caught testing the new Thar"
+        },
+        {
+          "t": 2.554,
+          "text": "and it's wearing the Roxx's face."
+        }
+      ],
+      "cuts": [
+        {
+          "t": 0.0,
+          "asset": "roxx_press_full.png"
+        },
+        {
+          "t": 2.554,
+          "asset": "thar_suv_india_16100214.mp4"
+        }
+      ],
+      "pops": [
+        {
+          "start": 3.422,
+          "dur": 1.228,
+          "text": "Roxx's face",
+          "kind": "word"
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "role": "spec",
+      "duration": 14.59,
+      "text": "The 2026 facelift, spied: flush LED headlamps, C-shaped DRLs, body-colour grille, 19-inch alloys. Inside — a 10.25-inch screen, and Level 2 ADAS is reportedly coming.",
+      "phrases": [
+        {
+          "t": 0.0,
+          "text": "The 2026 facelift, spied:"
+        },
+        {
+          "t": 2.476,
+          "text": "flush LED headlamps, C-shaped DRLs, body-colour grille, 19-inch alloys. Inside"
+        },
+        {
+          "t": 9.47,
+          "text": "a 10.25-inch screen,"
+        },
+        {
+          "t": 11.762,
+          "text": "and Level 2 ADAS is reportedly coming."
+        }
+      ],
+      "cuts": [
+        {
+          "t": 0.0,
+          "asset": "4x4_jeep_india_offroad_17996822.mp4"
+        },
+        {
+          "t": 2.476,
+          "asset": "mountain_dirt_trail_aerial_24796949.mp4"
+        },
+        {
+          "t": 9.47,
+          "asset": "offroad_dust_desert_driving_36017397.mp4"
+        },
+        {
+          "t": 11.762,
+          "asset": "suv_offroad_rocks_crawling_12557714.mp4"
+        }
+      ],
+      "pops": [
+        {
+          "start": 2.576,
+          "dur": 1.343,
+          "text": "flush LED headlamps",
+          "kind": "word"
+        },
+        {
+          "start": 3.969,
+          "dur": 1.473,
+          "text": "C-shaped DRLs",
+          "kind": "word"
+        },
+        {
+          "start": 5.493,
+          "dur": 1.07,
+          "text": "body-colour grille",
+          "kind": "word"
+        },
+        {
+          "start": 6.612,
+          "dur": 2.616,
+          "text": "19-inch alloys",
+          "kind": "number"
+        },
+        {
+          "start": 9.648,
+          "dur": 2.333,
+          "text": "10.25-inch screen",
+          "kind": "number"
+        },
+        {
+          "start": 12.031,
+          "dur": 1.39,
+          "text": "Level 2 ADAS",
+          "kind": "number"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "role": "spec",
+      "duration": 9.72,
+      "text": "Today's Thar still packs the punch: 2.0-litre turbo-petrol, 152 PS, 320 Nm, proper 4x4.",
+      "phrases": [
+        {
+          "t": 0.0,
+          "text": "Today's Thar still packs the punch: 2.0-litre turbo-petrol, 152 P-S, 320 N-m, proper 4x4."
+        }
+      ],
+      "cuts": [
+        {
+          "t": 0.0,
+          "asset": "red_thar_front_detail.jpg"
+        }
+      ],
+      "pops": [
+        {
+          "start": 2.042,
+          "dur": 2.281,
+          "text": "2.0-litre turbo-petrol",
+          "kind": "number"
+        },
+        {
+          "start": 4.373,
+          "dur": 1.929,
+          "text": "152 PS",
+          "kind": "number"
+        },
+        {
+          "start": 6.352,
+          "dur": 1.656,
+          "text": "320 Nm",
+          "kind": "number"
+        },
+        {
+          "start": 8.383,
+          "dur": 1.2,
+          "text": "4x4",
+          "kind": "number"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "role": "value",
+      "duration": 15.46,
+      "text": "Prices run ₹10.32 to ₹17.80 lakh. Smart money's on the LXT RWD Diesel, around ₹12.99 lakh — big screen, cruise, keyless — without the 4x4 premium.",
+      "phrases": [
+        {
+          "t": 0.0,
+          "text": "Prices run 10.32 to 17.80 lakh."
+        },
+        {
+          "t": 5.069,
+          "text": "Smart money's on the LXT RWD Diesel,"
+        },
+        {
+          "t": 8.52,
+          "text": "around 12.99 lakh big screen, cruise, keyless"
+        },
+        {
+          "t": 13.233,
+          "text": "without the 4x4 premium."
+        }
+      ],
+      "cuts": [
+        {
+          "t": 0.0,
+          "asset": "roxx_dirt_detail.jpg"
+        },
+        {
+          "t": 5.069,
+          "asset": "4x4_jeep_india_offroad_33404782.mp4"
+        },
+        {
+          "t": 8.52,
+          "asset": "mountain_dirt_trail_aerial_31949200.mp4"
+        },
+        {
+          "t": 13.233,
+          "asset": "suv_river_crossing_splash_30306547.mp4"
+        }
+      ],
+      "pops": [
+        {
+          "start": 0.883,
+          "dur": 3.5,
+          "text": "₹10.32 to ₹17.80 lakh",
+          "kind": "number"
+        },
+        {
+          "start": 5.169,
+          "dur": 2.2,
+          "text": "₹12.99 lakh",
+          "kind": "card"
+        },
+        {
+          "start": 10.872,
+          "dur": 0.9,
+          "text": "big screen",
+          "kind": "word"
+        },
+        {
+          "start": 11.823,
+          "dur": 0.757,
+          "text": "cruise",
+          "kind": "word"
+        },
+        {
+          "start": 12.63,
+          "dur": 1.096,
+          "text": "keyless",
+          "kind": "word"
+        },
+        {
+          "start": 13.776,
+          "dur": 1.22,
+          "text": "4x4",
+          "kind": "number"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "role": "peak",
+      "duration": 8.04,
+      "text": "Everyone buys the Thar for the mountains. The only summit most will ever see is the mall parking ramp — twice on Sundays.",
+      "phrases": [
+        {
+          "t": 0.0,
+          "text": "Everyone buys the Thar for the mountains."
+        },
+        {
+          "t": 2.973,
+          "text": "The only summit most will ever see is the mall parking ramp"
+        },
+        {
+          "t": 6.41,
+          "text": "twice on Sundays."
+        }
+      ],
+      "cuts": [
+        {
+          "t": 0.0,
+          "asset": "red_thar_plateblur.jpg"
+        },
+        {
+          "t": 2.973,
+          "asset": "roxx_dirt_full.jpg"
+        },
+        {
+          "t": 6.41,
+          "asset": "4x4_offroad_mud_driving_33404782.mp4"
+        }
+      ],
+      "pops": [
+        {
+          "start": 7.64,
+          "dur": 1.1,
+          "text": "PEAK OFF-ROADING.",
+          "kind": "reaction"
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "role": "cta",
+      "duration": 9.29,
+      "text": "The facelift lands festive 2026. Grab today's deal, or wait for the Roxx face? Fight it out in the comments.",
+      "phrases": [
+        {
+          "t": 0.0,
+          "text": "The facelift lands festive 2026."
+        },
+        {
+          "t": 3.559,
+          "text": "Grab today's deal,"
+        },
+        {
+          "t": 4.965,
+          "text": "or wait for the Roxx face?"
+        },
+        {
+          "t": 7.491,
+          "text": "Fight it out in the comments."
+        }
+      ],
+      "cuts": [
+        {
+          "t": 0.0,
+          "asset": "suv_river_crossing_splash_30306547.mp4"
+        },
+        {
+          "t": 3.559,
+          "asset": "suv_river_crossing_splash_30306553.mp4"
+        },
+        {
+          "t": 4.965,
+          "asset": "mountain_dirt_trail_aerial_31949200.mp4"
+        },
+        {
+          "t": 7.491,
+          "asset": "roxx_press_grille_detail.jpg"
+        }
+      ],
+      "pops": [
+        {
+          "start": 1.131,
+          "dur": 2.928,
+          "text": "festive 2026",
+          "kind": "number"
+        },
+        {
+          "start": 8.691,
+          "dur": 1.1,
+          "text": "LIKE · SHARE · SUBSCRIBE",
+          "kind": "reaction"
+        }
+      ]
+    }
+  ],
+  "pool_size": 16
+}
