@@ -1,0 +1,23 @@
+{
+  "out": "out/mahindra-thar_final.mp4",
+  "subject": "Mahindra Thar",
+  "rendered_at": "2026-07-22T10:23:37",
+  "script_file": "scripts/thar_deadpan.script.json",
+  "persona": "default",
+  "voice_engine": "elevenlabs",
+  "language": "english",
+  "music": "Above The Clouds - Jeremy Black.mp3",
+  "captions": false,
+  "word_count": 123,
+  "sections": 6,
+  "hook_text": "Mahindra just got caught testing the new Thar — and it's wearing the Roxx's face.",
+  "hook_type": "news",
+  "pool": {
+    "own": 0,
+    "stock": 10,
+    "stills": 6
+  },
+  "cut_target_s": 3.4,
+  "video_id": "EXCHHyUDyyg",
+  "metrics": null
+}

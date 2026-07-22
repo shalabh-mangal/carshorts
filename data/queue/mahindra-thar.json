@@ -7,7 +7,8 @@
   "spec": "specs/mahindra-thar.json",
   "draft": "out/thar_draft.mp4",
   "created": "2026-07-22",
-  "status": "awaiting_approval",
+  "status": "published",
   "note": "2026-07-22: review APPLIED item-by-item \u2014 DRLs/grille/10.25 screen (beat 2), 320 Nm (beat 3), card rolls early with context + big screen/cruise (beat 4), LIKE\u00b7SHARE\u00b7SUBSCRIBE reaction (CTA). 20 pops, QA 13/13",
-  "render_flags": []
+  "render_flags": [],
+  "published_at": "2026-07-22T10:24:34"
 }
