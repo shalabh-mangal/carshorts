@@ -1,0 +1,317 @@
+{
+  "out": "out/hyundai-creta_draft.mp4",
+  "sections": [
+    {
+      "index": 0,
+      "role": "hook",
+      "duration": 11.28,
+      "text": "Another Creta Electric price hike in June 2026 — ₹18.03 to ₹24.70 lakh. Half your parking is already Cretas.",
+      "phrases": [
+        {
+          "t": 0.0,
+          "text": "Another Creta Electric price hike in June 2026"
+        },
+        {
+          "t": 5.592,
+          "text": "18.03 to 24.70 lakh."
+        },
+        {
+          "t": 8.976,
+          "text": "Half your parking is already Cretas."
+        }
+      ],
+      "cuts": [
+        {
+          "t": 0.0,
+          "asset": "2024_Hyundai_Creta_N_Line_1.5_T_GDi_India_front_view.png"
+        },
+        {
+          "t": 5.592,
+          "asset": "creta_hyundai_creta_13675325.mp4"
+        },
+        {
+          "t": 8.976,
+          "asset": "citysuv_india_city_traffic_34185651.mp4"
+        }
+      ],
+      "pops": [
+        {
+          "start": 1.396,
+          "dur": 0.787,
+          "text": "price hike",
+          "kind": "word"
+        },
+        {
+          "start": 1.696,
+          "dur": 1.1,
+          "text": "AGAIN.",
+          "kind": "reaction"
+        },
+        {
+          "start": 2.233,
+          "dur": 2.001,
+          "text": "June 2026",
+          "kind": "number"
+        },
+        {
+          "start": 4.284,
+          "dur": 3.5,
+          "text": "₹18.03 to ₹24.70 lakh",
+          "kind": "number"
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "role": "spec",
+      "duration": 10.42,
+      "text": "The regular Creta: ₹10.91 to ₹20.11 lakh, twenty-seven variants, three engines. Every one ends up on school duty.",
+      "phrases": [
+        {
+          "t": 0.0,
+          "text": "The regular Creta:"
+        },
+        {
+          "t": 1.393,
+          "text": "10.91 to 20.11 lakh, twenty-seven variants, three engines."
+        },
+        {
+          "t": 7.86,
+          "text": "Every one ends up on school duty."
+        }
+      ],
+      "cuts": [
+        {
+          "t": 0.0,
+          "asset": "Hyundai_Creta_1.5_GLS_2022_1_.jpg"
+        },
+        {
+          "t": 1.393,
+          "asset": "2021_Hyundai_Creta_1.5_Prime_SU2id_Indonesia_front_view_01.jpg"
+        },
+        {
+          "t": 7.86,
+          "asset": "2022_Hyundai_Creta_1.5_IVT_orange_and_black_front_view_in_Brunei.jpg"
+        }
+      ],
+      "pops": [
+        {
+          "start": 1.493,
+          "dur": 3.178,
+          "text": "₹10.91 to ₹20.11 lakh",
+          "kind": "number"
+        },
+        {
+          "start": 4.721,
+          "dur": 1.394,
+          "text": "twenty-seven variants",
+          "kind": "word"
+        },
+        {
+          "start": 6.165,
+          "dur": 2.195,
+          "text": "three engines",
+          "kind": "word"
+        },
+        {
+          "start": 9.234,
+          "dur": 1.086,
+          "text": "school duty",
+          "kind": "word"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "role": "spec",
+      "duration": 10.54,
+      "text": "Autocar says the all-new Creta lands late 2026 — bigger, finally hybrid. Today's showroom car? Already old news.",
+      "phrases": [
+        {
+          "t": 0.0,
+          "text": "Autocar says the all-new Creta lands late 2026 bigger, finally hybrid."
+        },
+        {
+          "t": 6.743,
+          "text": "Today's showroom car?"
+        },
+        {
+          "t": 8.843,
+          "text": "Already old news."
+        }
+      ],
+      "cuts": [
+        {
+          "t": 0.0,
+          "asset": "Moscow_Hyundai_Creta_II_N_line_silver_May_2026_02.jpg"
+        },
+        {
+          "t": 6.743,
+          "asset": "2023_Hyundai_Creta_Black_Edition.jpg"
+        },
+        {
+          "t": 8.843,
+          "asset": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China.jpg"
+        }
+      ],
+      "pops": [
+        {
+          "start": 1.044,
+          "dur": 1.188,
+          "text": "all-new Creta",
+          "kind": "word"
+        },
+        {
+          "start": 2.282,
+          "dur": 2.293,
+          "text": "late 2026",
+          "kind": "number"
+        },
+        {
+          "start": 4.854,
+          "dur": 2.389,
+          "text": "finally hybrid",
+          "kind": "word"
+        },
+        {
+          "start": 8.943,
+          "dur": 1.497,
+          "text": "Already old news",
+          "kind": "word"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "role": "value",
+      "duration": 13.3,
+      "text": "My pick: S(O) 1.5 Petrol, ₹12.06 lakh — wireless charging, ventilated seats, six airbags. Pricier variants add shine, not substance.",
+      "phrases": [
+        {
+          "t": 0.0,
+          "text": "My pick: S(O) 1.5 Petrol, 12.06 lakh wireless charging, ventilated seats, six airbags."
+        },
+        {
+          "t": 8.674,
+          "text": "Pricier variants add shine, not substance."
+        }
+      ],
+      "cuts": [
+        {
+          "t": 0.0,
+          "asset": "2024_Hyundai_Creta_1.5_MPi_SX_O_India_front_view.png"
+        },
+        {
+          "t": 8.674,
+          "asset": "2025_Hyundai_Creta_N_Line.jpg"
+        }
+      ],
+      "pops": [
+        {
+          "start": 0.049,
+          "dur": 12.951,
+          "text": "₹12.06 lakh",
+          "kind": "card"
+        },
+        {
+          "start": 5.777,
+          "dur": 1.2,
+          "text": "wireless charging",
+          "kind": "word"
+        },
+        {
+          "start": 7.027,
+          "dur": 1.297,
+          "text": "ventilated seats",
+          "kind": "word"
+        },
+        {
+          "start": 8.374,
+          "dur": 2.304,
+          "text": "six airbags",
+          "kind": "word"
+        },
+        {
+          "start": 11.382,
+          "dur": 1.818,
+          "text": "shine, not substance",
+          "kind": "word"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "role": "peak",
+      "duration": 9.34,
+      "text": "Creta is the paneer butter masala of Indian SUVs. Every family agrees. Nobody remembers which one they had last.",
+      "phrases": [
+        {
+          "t": 0.0,
+          "text": "Creta is the paneer butter masala of Indian SUVs."
+        },
+        {
+          "t": 4.073,
+          "text": "Every family agrees."
+        },
+        {
+          "t": 6.416,
+          "text": "Nobody remembers which one they had last."
+        }
+      ],
+      "cuts": [
+        {
+          "t": 0.0,
+          "asset": "Hyundai_Creta_1.5_Design_2024.jpg"
+        },
+        {
+          "t": 4.073,
+          "asset": "oldgen_20151017_Hyundai_Creta_02.jpg"
+        },
+        {
+          "t": 6.416,
+          "asset": "creta_hyundai_creta_35485780.mp4"
+        }
+      ],
+      "pops": []
+    },
+    {
+      "index": 5,
+      "role": "cta",
+      "duration": 6.7,
+      "text": "Which car should get this treatment next? Comment below — and like, share, subscribe.",
+      "phrases": [
+        {
+          "t": 0.0,
+          "text": "Which car should get this treatment next? Comment below — and like, share, subscribe."
+        }
+      ],
+      "cuts": [
+        {
+          "t": 0.0,
+          "asset": "2021_Hyundai_Creta_1.5_Prime_SU2id_Indonesia_rear_view_01.jpg"
+        }
+      ],
+      "pops": [
+        {
+          "start": 3.466,
+          "dur": 1.1,
+          "text": "YOUR PICK.",
+          "kind": "reaction"
+        },
+        {
+          "start": 4.489,
+          "dur": 2.011,
+          "text": "LSS",
+          "kind": "lss"
+        }
+      ]
+    }
+  ],
+  "pool_size": 214,
+  "subject": "Hyundai Creta",
+  "subject_families": [
+    "creta",
+    "hyundai",
+    "pool"
+  ]
+}

@@ -10,11 +10,12 @@ __pycache__/
 .env
 *.key
 
-# Generated media + downloaded footage (regenerable, large)
+# Generated renders (regenerable; finals live on YouTube)
 out/
-assets/
-*.mp3
-*.mp4
+# one oversized archive clip exceeds GitHub's 100MB hard limit
+assets/stock_archive/
+# curated asset pool (assets/) IS committed — licensed content + credits
+# are part of the system's knowledge; renders are not
 
 # Harness output
 harness_report.json

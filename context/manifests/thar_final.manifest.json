@@ -1,0 +1,324 @@
+{
+  "out": "out/thar_final.mp4",
+  "sections": [
+    {
+      "index": 0,
+      "role": "hook",
+      "duration": 4.62,
+      "text": "Mahindra just got caught testing the new Thar — and it's wearing the Roxx's face.",
+      "phrases": [
+        {
+          "t": 0.0,
+          "text": "Mahindra just got caught testing the new Thar"
+        },
+        {
+          "t": 2.207,
+          "text": "and it's wearing the Roxx's face."
+        }
+      ],
+      "cuts": [
+        {
+          "t": 0.0,
+          "asset": "thar_suv_india_16100214.mp4"
+        },
+        {
+          "t": 2.207,
+          "asset": "roxx_press_full.png"
+        }
+      ],
+      "keyword": {
+        "text": "Mahindra just got caught",
+        "start": 0.12,
+        "dur": 2.087
+      },
+      "callouts": [
+        {
+          "start": 0.4,
+          "end": 4.57,
+          "text": "2026 FACELIFT — what's new"
+        },
+        {
+          "start": 0.9,
+          "end": 4.57,
+          "text": "Roxx face: flush LEDs + C-DRLs"
+        },
+        {
+          "start": 1.4,
+          "end": 4.57,
+          "text": "10.25\" screen, new dash"
+        },
+        {
+          "start": 1.9,
+          "end": 4.57,
+          "text": "Level 2 ADAS (reported)"
+        },
+        {
+          "start": 2.4,
+          "end": 4.57,
+          "text": "Launch: festive 2026"
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "role": "spec",
+      "duration": 14.52,
+      "text": "The 2026 facelift, spied: flush LED headlamps, C-shaped DRLs, body-colour grille, 19-inch alloys. Inside — a 10.25-inch screen, and Level 2 ADAS is reportedly coming.",
+      "phrases": [
+        {
+          "t": 0.0,
+          "text": "The 2026 facelift, spied:"
+        },
+        {
+          "t": 2.776,
+          "text": "flush LED headlamps, C-shaped DRLs, body-colour grille, 19-inch alloys. Inside"
+        },
+        {
+          "t": 9.73,
+          "text": "a 10.25-inch screen,"
+        },
+        {
+          "t": 10.961,
+          "text": "and Level 2 ADAS is reportedly coming."
+        }
+      ],
+      "cuts": [
+        {
+          "t": 0.0,
+          "asset": "4x4_jeep_india_offroad_17996822.mp4"
+        },
+        {
+          "t": 2.776,
+          "asset": "roxx_press_grille_detail.jpg"
+        },
+        {
+          "t": 9.73,
+          "asset": "mountain_dirt_trail_aerial_24796949.mp4"
+        },
+        {
+          "t": 10.961,
+          "asset": "offroad_dust_desert_driving_36017397.mp4"
+        }
+      ],
+      "keyword": {
+        "text": "The 2026 facelift spied:",
+        "start": 0.12,
+        "dur": 2.656
+      },
+      "callouts": [
+        {
+          "start": 0.4,
+          "end": 6.4,
+          "text": "2026 FACELIFT — what's new"
+        },
+        {
+          "start": 2.676,
+          "end": 8.676,
+          "text": "Roxx face: flush LEDs + C-DRLs"
+        },
+        {
+          "start": 9.63,
+          "end": 14.47,
+          "text": "10.25\" screen, new dash"
+        },
+        {
+          "start": 10.861,
+          "end": 14.47,
+          "text": "Level 2 ADAS (reported)"
+        },
+        {
+          "start": 11.361,
+          "end": 14.47,
+          "text": "Launch: festive 2026"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "role": "spec",
+      "duration": 8.54,
+      "text": "Today's Thar still packs the punch: 2.0-litre turbo-petrol, 152 PS, 320 Nm, proper 4x4.",
+      "phrases": [
+        {
+          "t": 0.0,
+          "text": "Today's Thar still packs the punch: 2.0-litre turbo-petrol, 152 P-S, 320 N-m, proper 4x4."
+        }
+      ],
+      "cuts": [
+        {
+          "t": 0.0,
+          "asset": "rocky_mountain_trail_drone_34912714.mp4"
+        }
+      ],
+      "keyword": {
+        "text": "2.0-litre",
+        "start": 0.12,
+        "dur": 2.68
+      },
+      "callouts": []
+    },
+    {
+      "index": 3,
+      "role": "value",
+      "duration": 15.54,
+      "text": "Prices run ₹10.32 to ₹17.80 lakh. Smart money's on the LXT RWD Diesel, around ₹12.99 lakh — big screen, cruise, keyless — without the 4x4 premium.",
+      "phrases": [
+        {
+          "t": 0.0,
+          "text": "Prices run 10.32 to 17.80 lakh."
+        },
+        {
+          "t": 4.401,
+          "text": "Smart money's on the LXT RWD Diesel,"
+        },
+        {
+          "t": 7.768,
+          "text": "around 12.99 lakh big screen, cruise, keyless"
+        },
+        {
+          "t": 12.261,
+          "text": "without the 4x4 premium."
+        }
+      ],
+      "cuts": [
+        {
+          "t": 0.0,
+          "asset": "red_thar_front_detail.jpg"
+        },
+        {
+          "t": 4.401,
+          "asset": "suv_offroad_rocks_crawling_12557714.mp4"
+        },
+        {
+          "t": 7.768,
+          "asset": "roxx_dirt_detail.jpg"
+        },
+        {
+          "t": 12.261,
+          "asset": "4x4_jeep_india_offroad_33404782.mp4"
+        }
+      ],
+      "keyword": {
+        "text": "₹10.32 to ₹17.80 lakh",
+        "start": 0.12,
+        "dur": 4.281
+      },
+      "callouts": [
+        {
+          "start": 4.301,
+          "end": 10.301,
+          "text": "LXT RWD Diesel = value pick"
+        },
+        {
+          "start": 7.668,
+          "end": 13.668,
+          "text": "A 10.25-inch infotainment screen"
+        },
+        {
+          "start": 8.168,
+          "end": 14.168,
+          "text": "Cruise control"
+        },
+        {
+          "start": 8.668,
+          "end": 14.668,
+          "text": "Keyless entry"
+        },
+        {
+          "start": 9.168,
+          "end": 15.168,
+          "text": "A rear camera"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "role": "peak",
+      "duration": 5.8,
+      "text": "Buying a Thar for on-road comfort? You're not doing it wrong. You're doing it tragically wrong.",
+      "phrases": [
+        {
+          "t": 0.0,
+          "text": "Buying a Thar for on-road comfort?"
+        },
+        {
+          "t": 2.276,
+          "text": "You're not doing it wrong."
+        },
+        {
+          "t": 3.786,
+          "text": "You're doing it tragically wrong."
+        }
+      ],
+      "cuts": [
+        {
+          "t": 0.0,
+          "asset": "mountain_dirt_trail_aerial_31949200.mp4"
+        },
+        {
+          "t": 2.276,
+          "asset": "suv_river_crossing_splash_30306547.mp4"
+        },
+        {
+          "t": 3.786,
+          "asset": "red_thar_plateblur.jpg"
+        }
+      ],
+      "keyword": {
+        "text": "Buying a Thar for?",
+        "start": 0.12,
+        "dur": 2.156
+      },
+      "callouts": []
+    },
+    {
+      "index": 5,
+      "role": "cta",
+      "duration": 7.6,
+      "text": "The facelift lands festive 2026. Grab today's deal, or wait for the Roxx face? Fight it out in the comments.",
+      "phrases": [
+        {
+          "t": 0.0,
+          "text": "The facelift lands festive 2026."
+        },
+        {
+          "t": 2.764,
+          "text": "Grab today's deal,"
+        },
+        {
+          "t": 4.064,
+          "text": "or wait for the Roxx face?"
+        },
+        {
+          "t": 6.05,
+          "text": "Fight it out in the comments."
+        }
+      ],
+      "cuts": [
+        {
+          "t": 0.0,
+          "asset": "4x4_jeep_india_offroad_33404782.mp4"
+        },
+        {
+          "t": 2.764,
+          "asset": "4x4_offroad_mud_driving_33404782.mp4"
+        },
+        {
+          "t": 4.064,
+          "asset": "suv_river_crossing_splash_30306553.mp4"
+        },
+        {
+          "t": 6.05,
+          "asset": "roxx_dirt_full.jpg"
+        }
+      ],
+      "keyword": {
+        "text": "The facelift lands?",
+        "start": 0.12,
+        "dur": 2.644
+      },
+      "callouts": []
+    }
+  ],
+  "pool_size": 17
+}
