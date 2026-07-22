@@ -52,6 +52,10 @@ Craft (the approved house style — read data/learnings.json first):
   "show":"<DRY 1-3 word written reaction ending in a period>"}. Value gets
   the payoff card: {"anchor":"<verbatim words leading into the price>",
   "show":"₹X.XX lakh","card":true,"label":"<3-word label>"}.
+- CTA must ask viewers WHICH CAR NEXT (comment bait) AND include the
+  spoken words "like, share, subscribe" verbatim. The engine auto-draws
+  the like/share/subscribe icon strip when those three words are spoken —
+  NEVER add a text pop for "like/share/subscribe".
 
 ## Step 3 — prove it (must pass before you finish)
 Run and show output:

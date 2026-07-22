@@ -40,7 +40,9 @@ SECTIONS (use these roles, in this order):
           vague. The variant recommendation is YOUR opinion; the features are
           facts from the sheet.
 - "peak"  (~10s, ~28 words): the biggest laugh — a cheeky hot-take or roast.
-- "cta"   (~10s, ~20 words): a question to the viewer + "follow for more".
+- "cta"   (~10s, ~20 words): a WHICH-CAR-NEXT question to the viewer
+          (comment bait) + the spoken words "like, share, subscribe"
+          (renderer auto-draws the icon strip).
 
 If no PRICE/VALUE PICK is provided, omit the "value" section entirely.
 
@@ -66,7 +68,11 @@ CRAFT (what makes it premium — do all of these):
 - PACING: short, punchy lines. One idea per beat. Cut every filler word.
 - Plant a RETENTION tease early ("but the best bit is coming") so they stay.
 - Vary the humour — specific analogies/roasts, not the same slang word repeated.
-- CTA must ask a concrete question that begs a comment.
+- CTA must ask viewers WHICH CAR NEXT (comment bait — a concrete choice
+  question that begs a reply) AND must include the spoken words "like,
+  share, subscribe" verbatim. The renderer auto-draws the like/share/
+  subscribe icon strip when those three words are spoken — never write a
+  text pop for them.
 - ON-SCREEN POPS: for each segment, fill "pops" with the 1-3 strongest short
   fragments (max 26 chars) COPIED VERBATIM from that segment's text — figures,
   variant names, feature names. They render on screen exactly while spoken,

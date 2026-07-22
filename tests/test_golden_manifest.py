@@ -140,7 +140,7 @@ def test_plan_manifest_invariants(fixture_tree, monkeypatch):
         section_words = {w.strip('.,?!—').lower() for w in sec["text"].split()}
         prev_end = -1.0
         for pop in pops:
-            own_slot = pop["kind"] in ("reaction", "card")
+            own_slot = pop["kind"] in ("reaction", "card", "lss")
             if not own_slot:
                 assert pop["start"] >= prev_end + 0.04, f"pops crowd sec {sec['index']}"
             assert 0 <= pop["start"] < sec["duration"] - 0.3
@@ -150,8 +150,11 @@ def test_plan_manifest_invariants(fixture_tree, monkeypatch):
                 prev_end = pop["start"] + pop["dur"]
                 continue
             assert pop["start"] + pop["dur"] <= sec["duration"] + 0.6
-            for w in pop["text"].split():
-                assert w.strip('.,?!—').lower() in section_words
+            # lss + card pops carry synthetic tags ('LSS', figures) rather
+            # than transcript words — skip the word-source check for them
+            if pop["kind"] not in ("lss", "card"):
+                for w in pop["text"].split():
+                    assert w.strip('.,?!—').lower() in section_words
             prev_end = pop["start"] + pop["dur"]
 
     repeats = len(all_assets) - len(set(all_assets))
@@ -162,6 +165,45 @@ def test_plan_manifest_invariants(fixture_tree, monkeypatch):
         return Path(asset).stem.split("_")[0].lower()
     assert family(sections[0]["cuts"][0]["asset"]) in CAR_FAMILIES
     assert family(sections[-1]["cuts"][-1]["asset"]) in CAR_FAMILIES
+
+
+def test_lss_graphic_generated_from_cta(fixture_tree, monkeypatch):
+    """CTA narration containing 'like, share, subscribe' (any punctuation)
+    auto-generates a pop with kind='lss'. The renderer draws the three-icon
+    graphic strip in place of transcript text — no text pop needed."""
+    for key in ("GROQ_API_KEY", "PEXELS_API_KEY", "GEMINI_API_KEY", "ELEVENLABS_API_KEY"):
+        monkeypatch.delenv(key, raising=False)
+    monkeypatch.setenv("CARSHORTS_LLM", "ollama")
+    from carshorts.produce import produce
+
+    script = {
+        "subject": "Test Car",
+        "segments": [
+            {"role": "hook", "text": "Is the Test Car actually the smart buy this year, or a trap?",
+             "cited_spec_names": [], "pops": []},
+            {"role": "cta", "text": "Which car should get this treatment next? Comment below — and like, share, subscribe.",
+             "cited_spec_names": [], "pops": []},
+        ],
+    }
+    Path("script_lss.json").write_text(json.dumps(script))
+    manifest_path = produce(
+        spec_path="specs/test-car.json",
+        out_path="out/test_car_lss.mp4",
+        script_file="script_lss.json",
+        skip_factcheck=True,
+        voice_engine="mock",
+        provider=None,
+        plan_only=True,
+        music="none",
+        stock=False,
+    )
+    sections = json.loads(Path(manifest_path).read_text())["sections"]
+    cta_pops = sections[-1]["pops"]
+    kinds = [p["kind"] for p in cta_pops]
+    assert "lss" in kinds, f"lss pop missing from CTA — got {cta_pops}"
+    lss = next(p for p in cta_pops if p["kind"] == "lss")
+    assert lss["dur"] >= 0.9
+    assert lss["start"] > 0.0
 
 
 def test_plan_manifest_no_kwcaps(fixture_tree, monkeypatch):

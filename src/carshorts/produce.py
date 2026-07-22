@@ -261,6 +261,11 @@ def _exact_span(frag: str, marks_file: str | None, fallback: tuple) -> tuple | N
 
 _POP_MAX_PER_SECTION = 6
 _POP_GAP = 0.15
+# CTA narrations that speak "like, share, subscribe" (any punctuation between)
+# auto-generate an LSS graphic pop — the renderer draws three icons in place
+# of text (thumbs-up / share arrow / bell). Detects any word order-preserving
+# spacing so "like, share, subscribe" and "like share subscribe" both trigger.
+_LSS_RE = re.compile(r"\blike\W+share\W+subscribe\b", re.I)
 
 
 def _subject_families(subject: str) -> set[str]:
@@ -349,7 +354,10 @@ def _word_pops(seg, marks_file: str | None, dur: float,
             floaters.append((start, 1.1, cand["show"], "reaction", ""))
             continue
         if cand["kind"] == "card":
-            span_dur = min(max(2.2, span_dur), max(2.2, dur - start - 0.1))
+            # Card holds until the section beat ends (owner: keep the value
+            # card up while the voice keeps talking about it). ~2.2s is the
+            # animated count-up; the rest is a static hold on the final figure.
+            span_dur = max(2.2, dur - start - 0.3)
             if start < dur - 0.5:
                 floaters.append((start, span_dur, cand["show"], "card",
                                  cand["label"]))
@@ -358,12 +366,24 @@ def _word_pops(seg, marks_file: str | None, dur: float,
         if start < dur - 0.5:
             rail.append((start, span_dur, cand["show"], cand["kind"],
                          cand["label"]))
-    # the card owns the screen while it counts up: drop rail pops that
-    # duplicate its figure or animate inside its window (one focal point)
+    # Auto-LSS: if the narration speaks "like, share, subscribe", generate a
+    # graphic pop timed word-exactly to those three words. Renderer draws the
+    # icon strip; the show text is a manifest tag so QA/tests can see it.
+    if _LSS_RE.search(seg.text):
+        lss_span = _exact_span("like share subscribe", marks_file, (0.0, 0.0))
+        if lss_span is not None:
+            lss_start, _ = lss_span
+            lss_dur = max(0.9, dur - lss_start - 0.2)
+            if lss_start < dur - 0.5:
+                floaters.append((lss_start, lss_dur, "LSS", "lss", ""))
+    # the card owns the screen while it counts up (first 2.2s). AFTER the
+    # count-up settles, rail pops may run again — the static hold on the
+    # final figure isn't a focal-point conflict, so let feature pops fire
+    # over it (owner: rail must render AFTER the count-up settles).
     cards = [f for f in floaters if f[3] == "card"]
     rail = [r for r in rail
             if not any(r[2] == c[2]
-                       or (r[0] < c[0] + c[1] + 0.2 and c[0] < r[0] + 0.2)
+                       or (c[0] <= r[0] < c[0] + 2.2)
                        for c in cards)]
     # karaoke pass: rail pops replace each other — trim each to the next
     # pop's start; drop only what lands under the 0.5s legibility floor

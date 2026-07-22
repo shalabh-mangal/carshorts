@@ -13,9 +13,6 @@
     "Front-load value beats: price/verdict by the midpoint, never last."
   ],
   "data_learnings": [
-    "[high][owner-feedback] Ensure all features are accurately represented, such as the C shape DRL, body color grille, and 10.25 inch screen, to maintain consistency and authenticity in the visuals.",
-    "[high][owner-feedback] Double-check the specifications and details, like the 320 Nm torque, to provide accurate information to the viewers.",
-    "[high][owner-feedback] Improve timing and context matching for elements like 'SMART MONEY PICK' and ensure the inclusion of relevant features such as the big screen and cruise control in the appropriate sections.",
     "[high][owner-feedback] APPROVED 5/5 (Thar, 2026-07-22): karaoke-density word-synced pops (20/video, 6 on spec beats), cyan-on-figures color system, price count-up card rolling into the spoken figure, written reaction on the punchline, LIKE·SHARE·SUBSCRIBE reaction on CTA — this combination is the approved house style; keep it.",
     "[high][owner-feedback] Keep incorporating elements that the audience loves, such as the great joke in the Hyundai Creta script, to maintain viewer engagement and satisfaction",
     "[high][owner-feedback] Improve script clarity by providing explanations for unclear statements, such as the references to society, beige school pickup, and 'Current one is already outgoing', to avoid confusing the audience",
@@ -24,6 +21,11 @@
     "[medium][analyst] five_things: put numbered chips ①-⑤ on-screen synced to each item's phrase and persist an 'N/5' counter through the beat — CarWale + MotorOctane converge on this; our five_things renders lack the persistent counter that acts as a visible progress bar and lifts completion.",
     "[medium][analyst] Comment-bait CTA on the tail card: append a binary poll (e.g. 'Nexon or Brezza — 1 or 2? comment') AFTER the verdict, keeping the approved LIKE·SHARE·SUBSCRIBE reaction — MotorOctane's engagement lever, harvests reply signal that recommender uses.",
     "[medium][analyst] Hype hook overlay: first written word is an ALL-CAPS superlative verb (SHOCK / SHOULD / NEVER / ONLY / MUST) on frame 1 with a screen-punch stinger; MotorOctane's curiosity-gap stopping power — fits the hype persona five_things Nexon slot.",
-    "[medium][analyst] Authority anchor in first 1.5s: prefix hook with a 1-beat source chip ('CARDEKHO SPEC', 'SPEC SHEET', 'TEST DATA') — CarWale/carwow trust move; visibly separates our sourced-sheet facts from unverified reel noise and reduces the 3s cliff drop."
+    "[medium][analyst] Authority anchor in first 1.5s: prefix hook with a 1-beat source chip ('CARDEKHO SPEC', 'SPEC SHEET', 'TEST DATA') — CarWale/carwow trust move; visibly separates our sourced-sheet facts from unverified reel noise and reduces the 3s cliff drop.",
+    "[high][owner-feedback] ask viewers to suggest which car they would like to see next instead of suggesting a specific model",
+    "[high][owner-feedback] keep text overlays on screen for as long as the voiceover is discussing the corresponding topic",
+    "[high][owner-feedback] add graphics and voiceovers to encourage viewers to like, share, and subscribe",
+    "[high][mechanic] Payoff card (kind=card) now holds until section end -0.3 (was min-2.2s); rail pops fire AFTER the 2.2s count-up (only suppressed if they start inside the count-up window). Keeps the value figure on screen while the voice keeps talking about it AND lets concrete feature pops render below.",
+    "[high][mechanic] CTA narration containing 'like, share, subscribe' (any punctuation) auto-generates a graphic pop kind=lss — three PIL icons (thumbs-up, share arrow, bell) drawn procedurally, slam-in at y=0.30. NEVER write a text pop for those words; the engine draws the graphic. Scriptwright prompt now enforces the spoken phrase + which-car-next question in every CTA."
   ]
 }

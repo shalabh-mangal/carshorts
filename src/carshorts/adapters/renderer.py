@@ -266,6 +266,103 @@ def _wipe_bar_frames(full_width: int, tdir: str, tag: str) -> list[str]:
     return frames
 
 
+def _lss_strip_png(out_path: str, icon_size: int = 116,
+                   strip_width: int = 640) -> str:
+    """Like/Share/Subscribe strip — three filled white icons with a dilated
+    black outline (same visual language as the text stroke) + small labels.
+    Drawn procedurally with Pillow; no emoji fonts, no downloads."""
+    from PIL import Image, ImageDraw, ImageFilter
+
+    stroke = max(4, round(icon_size * 0.08))
+    label_font = _load_heavy_font(30)
+    pad = 40
+    label_h = 52
+    canvas_w = strip_width + 2 * pad
+    canvas_h = icon_size + label_h + 2 * pad
+    cell = strip_width // 3
+    centers = [pad + cell // 2 + i * cell for i in range(3)]
+    cy = pad + icon_size // 2
+
+    # white silhouettes first — outline and shadow derive from their alpha
+    white = Image.new("RGBA", (canvas_w, canvas_h), (0, 0, 0, 0))
+    d = ImageDraw.Draw(white)
+    W = (255, 255, 255, 255)
+
+    def thumb(cx):
+        s_ = icon_size
+        # palm block
+        d.rounded_rectangle([cx - s_ * 0.30, cy - s_ * 0.10,
+                             cx + s_ * 0.30, cy + s_ * 0.42],
+                            radius=s_ * 0.10, fill=W)
+        # thumb sweeping up-left
+        d.rounded_rectangle([cx - s_ * 0.30, cy - s_ * 0.42,
+                             cx - s_ * 0.02, cy + s_ * 0.05],
+                            radius=s_ * 0.13, fill=W)
+        d.pieslice([cx - s_ * 0.34, cy - s_ * 0.50,
+                    cx + s_ * 0.10, cy - s_ * 0.10], 150, 340, fill=W)
+
+    def share(cx):
+        s_ = icon_size
+        # tray: thick open-top U
+        t = s_ * 0.11
+        d.rounded_rectangle([cx - s_ * 0.34, cy + s_ * 0.30,
+                             cx + s_ * 0.34, cy + s_ * 0.44],
+                            radius=t / 2, fill=W)          # base
+        d.rounded_rectangle([cx - s_ * 0.34, cy - s_ * 0.02,
+                             cx - s_ * 0.34 + t, cy + s_ * 0.44],
+                            radius=t / 2, fill=W)          # left wall
+        d.rounded_rectangle([cx + s_ * 0.34 - t, cy - s_ * 0.02,
+                             cx + s_ * 0.34, cy + s_ * 0.44],
+                            radius=t / 2, fill=W)          # right wall
+        # arrow: shaft + head rising from the tray
+        d.rounded_rectangle([cx - t / 2, cy - s_ * 0.30,
+                             cx + t / 2, cy + s_ * 0.18],
+                            radius=t / 2, fill=W)
+        d.polygon([(cx - s_ * 0.22, cy - s_ * 0.20), (cx, cy - s_ * 0.50),
+                   (cx + s_ * 0.22, cy - s_ * 0.20)], fill=W)
+
+    def bell(cx):
+        s_ = icon_size
+        # dome
+        d.pieslice([cx - s_ * 0.30, cy - s_ * 0.44,
+                    cx + s_ * 0.30, cy + s_ * 0.36], 180, 360, fill=W)
+        d.rectangle([cx - s_ * 0.30, cy - s_ * 0.04,
+                     cx + s_ * 0.30, cy + s_ * 0.22], fill=W)
+        # flared skirt
+        d.rounded_rectangle([cx - s_ * 0.38, cy + s_ * 0.18,
+                             cx + s_ * 0.38, cy + s_ * 0.30],
+                            radius=s_ * 0.06, fill=W)
+        # clapper + top nub
+        d.ellipse([cx - s_ * 0.08, cy + s_ * 0.32,
+                   cx + s_ * 0.08, cy + s_ * 0.48], fill=W)
+        d.ellipse([cx - s_ * 0.06, cy - s_ * 0.52,
+                   cx + s_ * 0.06, cy - s_ * 0.40], fill=W)
+
+    for draw_icon, cx in zip((thumb, share, bell), centers):
+        draw_icon(cx)
+    for label, cx in zip(("LIKE", "SHARE", "SUBSCRIBE"), centers):
+        lw = d.textlength(label, font=label_font)
+        d.text((cx - lw / 2, pad + icon_size + 14), label,
+               font=label_font, fill=W)
+
+    # outline: dilate the white alpha, fill black, sit it underneath
+    alpha = white.getchannel("A")
+    outline_mask = alpha.filter(ImageFilter.MaxFilter(stroke * 2 + 1))
+    outline = Image.new("RGBA", white.size, (0, 0, 0, 0))
+    outline.paste((0, 0, 0, 255), mask=outline_mask)
+    # soft shadow from the outline's silhouette
+    shadow = Image.new("RGBA", white.size, (0, 0, 0, 0))
+    shadow.paste((0, 0, 0, 140), mask=outline_mask)
+    shadow = shadow.filter(ImageFilter.GaussianBlur(8))
+
+    img = Image.new("RGBA", white.size, (0, 0, 0, 0))
+    img.alpha_composite(shadow, (3, 5))
+    img.alpha_composite(outline)
+    img.alpha_composite(white)
+    img.save(out_path)
+    return out_path
+
+
 def _countup_frames(final_text: str, label: str, tdir: str, tag: str,
                     n_frames: int = 34) -> list[str]:
     """Big-number card count-up: ease-out toward the exact final value, digits
@@ -518,6 +615,17 @@ class MoviePyRenderer(VideoRenderer):
                     # silence beat right after the punchline lands
                     png = _overlay_png(pop_text.upper(), 110, TEXT_WHITE,
                                        f"{tdir}/rx_{k}_{pi}.png", fit_one_line=True)
+                    clip = (ImageClip(png, transparent=True)
+                            .with_start(start_abs)
+                            .with_duration(show_dur)
+                            .resized(_slam_scale)
+                            .with_position(("center", int(height * 0.30))))
+                    overlays.append(clip)
+                elif kind == "lss":
+                    # like/share/subscribe icon strip — three procedural PIL
+                    # icons (thumbs-up, share arrow, bell). Slams in like a
+                    # reaction, own slot at y=0.30, holds through the beat.
+                    png = _lss_strip_png(f"{tdir}/lss_{k}_{pi}.png")
                     clip = (ImageClip(png, transparent=True)
                             .with_start(start_abs)
                             .with_duration(show_dur)

@@ -60,33 +60,24 @@
         "wireless charging",
         "ventilated seats",
         "six airbags",
-        "shine, not substance"
+        "shine, not substance",
+        "S(O) 1.5 Petrol"
       ]
     },
     {
       "role": "peak",
       "text": "Creta is the paneer butter masala of Indian SUVs. Every family agrees. Nobody remembers which one they had last.",
       "cited_spec_names": [],
-      "pops": [
-        {
-          "anchor": "which one they had last",
-          "show": "Zero memory."
-        }
-      ]
+      "pops": []
     },
     {
       "role": "cta",
-      "text": "Today's Creta or the new one — 1 or 2? Comment. Subscribe — the Nexon fights back next.",
+      "text": "Which car should get this treatment next? Comment below — and like, share, subscribe.",
       "cited_spec_names": [],
       "pops": [
-        "Today's Creta",
         {
-          "anchor": "1 or 2",
-          "show": "1 OR 2?"
-        },
-        {
-          "anchor": "the Nexon fights back",
-          "show": "NEXT: NEXON."
+          "anchor": "treatment next",
+          "show": "YOUR PICK."
         }
       ]
     }

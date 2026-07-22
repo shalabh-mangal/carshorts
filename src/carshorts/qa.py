@@ -132,7 +132,7 @@ def run_qa(video_path: str, manifest_path: str | None = None,
                 pop_ok, pop_detail = False, f"{len(pops)} pops crowd sec {sec['index']}"
             prev_end = -1.0
             for pop in pops:
-                own_slot = pop.get("kind") in ("reaction", "card")
+                own_slot = pop.get("kind") in ("reaction", "card", "lss")
                 if not own_slot and pop["start"] < prev_end + 0.04:
                     pop_ok, pop_detail = False, f"pops overlap in sec {sec['index']}"
                 if pop["dur"] < 0.45:
