@@ -59,6 +59,23 @@ def draft(car: str, persona: str = "deadpan", language: str = "english",
         print(("scriptwright: " + str(outcome["result"])[:600]) if agent_wrote
               else f"scriptwright unavailable ({str(outcome['result'])[:120]}) — "
                    f"falling back to the template writer")
+    # CURATOR: thin visual pool -> the asset hunter fills it (license-clean)
+    if not no_agent:
+        pool_count = (len(list(Path(f"assets/cars/{slug}/images").glob("*")))
+                      + len(list(Path(f"assets/cars/{slug}/stock").glob("*.mp4"))))
+        if pool_count < 12:
+            from .agent import run_agent
+            print(f"visual pool thin ({pool_count}) — curator agent hunting assets…")
+            run_agent("curator", f"Car: {car}\nSlug: {slug}\n"
+                                 f"Pool root: assets/cars/{slug}/")
+    # COMPOSER: one-time per-car sound profile (cached forever after)
+    if not no_agent and not Path(f"data/sound_profiles/{slug}.json").exists():
+        from .agent import run_agent
+        print("composer agent profiling the car's sound…")
+        run_agent("composer", f"Car: {car}\nSlug: {slug}\n"
+                              f"Spec: specs/{slug}.json\nScript: {script}\n"
+                              f"Profile out: data/sound_profiles/{slug}.json")
+
     if not agent_wrote:
         if not extras.exists():
             sys.exit(f"missing {extras} — add price/value/news "

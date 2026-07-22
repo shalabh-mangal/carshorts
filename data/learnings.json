@@ -22,6 +22,8 @@
     "[high][owner-feedback] Keep incorporating elements that the audience loves, such as the great joke in the Hyundai Creta script, to maintain viewer engagement and satisfaction",
     "[high][owner-feedback] Improve script clarity by providing explanations for unclear statements, such as the references to society, beige school pickup, and 'Current one is already outgoing', to avoid confusing the audience",
     "[high][owner-feedback] Enhance viewer interaction by optimizing the 'like, share, subscribe' prompt to be more visible and engaging on the screen, encouraging viewers to participate",
-    "QA auto-fix works for true peak ≤ -1 dBTP via re-polish with extra headroom; keep gains conservative on punchy voices."
+    "QA auto-fix works for true peak ≤ -1 dBTP via re-polish with extra headroom; keep gains conservative on punchy voices.",
+    "[high][owner-feedback] If the owner asks 'what does this mean?' about a joke, the audience won't get it either — rewrite plain. Deadpan works through clarity, not obscurity.",
+    "[high][mechanic] Deadpan edge voice budget: ~112 words max for a 63s Short (0.56s/word + loop flash). 133 words = 68s = QA red."
   ]
 }

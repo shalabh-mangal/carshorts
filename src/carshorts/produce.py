@@ -898,18 +898,31 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                                 .isoformat(timespec="seconds")}))
 
     # Background music: auto-generate a royalty-free beat unless disabled/overridden.
+    # The composer agent's per-car sound profile (data/sound_profiles/<slug>.json)
+    # outranks the persona default: the CAR's personality picks the sound.
     music_path: str | None = None
+    sound_profile: dict = {}
+    profile_file = Path("data/sound_profiles") / f"{_slug(script.subject)}.json"
+    if profile_file.exists():
+        try:
+            sound_profile = json.loads(profile_file.read_text())
+        except Exception:  # noqa: BLE001
+            pass
     if music == "auto":
         library = sorted(Path("assets/music").glob("*.mp3")) + sorted(Path("assets/music").glob("*.wav"))
         if library:
-            # mood-match: pick the track tagged for this persona (data/music_tags.json)
+            # mood-match: composer mood first, then persona (data/music_tags.json)
             choice = library[0]
             tags_file = Path("data/music_tags.json")
             if tags_file.exists():
                 try:
                     tags = json.loads(tags_file.read_text())
+                    wanted = sound_profile.get("mood") or (persona or "default")
                     fitting = [t for t in library
-                               if (persona or "default") in tags.get(t.name, {}).get("fits", [])]
+                               if wanted in tags.get(t.name, {}).get("fits", [])]
+                    if not fitting:
+                        fitting = [t for t in library
+                                   if (persona or "default") in tags.get(t.name, {}).get("fits", [])]
                     if fitting:
                         choice = fitting[0]
                 except Exception:  # noqa: BLE001
@@ -918,8 +931,11 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
             print(f"     music: {Path(music_path).name} (mood-matched)")
         else:
             music_path = str(out.with_suffix(".beat.wav"))
-            print("     generating royalty-free beat...")
-            generate_beat(music_path, duration=90)
+            bpm = int(sound_profile.get("bpm") or 84)
+            print(f"     generating royalty-free beat ({bpm} bpm"
+                  + (f", {sound_profile['mood']}" if sound_profile.get("mood") else "")
+                  + ")...")
+            generate_beat(music_path, duration=90, bpm=bpm)
     elif music and music != "none":
         music_path = music
 
