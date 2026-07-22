@@ -578,12 +578,20 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
 
     # --- Stock b-roll: prefer the VETTED local folder (curated by hand); only
     # fetch fresh clips when the folder is empty and a Pexels key exists.
+    # Two tiers: assets/cars/<slug>/stock/ (subject-appropriate — e.g. offroad
+    # clips live with Thar, not Creta) and assets/stock/ (brand-neutral generic
+    # motion — dashboards, road POV — safe for any car). Subject-scoped comes
+    # first so the pool leans into car-appropriate motion.
     stock_videos: list[str] = []
     use_stock = stock if stock is not None else True
     if use_stock:
-        stock_videos = sorted(str(p) for p in Path("assets/stock").glob("*.mp4"))
+        car_stock_dir = Path("assets/cars") / _slug(script.subject) / "stock"
+        car_stock = sorted(str(p) for p in car_stock_dir.glob("*.mp4"))
+        generic_stock = sorted(str(p) for p in Path("assets/stock").glob("*.mp4"))
+        stock_videos = car_stock + generic_stock
         if stock_videos:
-            print(f"     using {len(stock_videos)} vetted local stock clips")
+            print(f"     using {len(car_stock)} car-scoped + {len(generic_stock)} "
+                  f"generic vetted stock clips")
         elif os.environ.get("PEXELS_API_KEY"):
             print("     fetching stock car b-roll (Pexels) for motion...")
             try:
