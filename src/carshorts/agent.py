@@ -28,7 +28,7 @@ BUDGET_FILE = Path("data/agent_budget.json")
 LOG_FILE = Path("data/agent_log.jsonl")
 
 DAILY_RUN_CAP = 12          # escalations per day, shared across roles
-MAX_TURNS = 40              # per-run agentic turn cap
+MAX_TURNS = 60              # per-run agentic turn cap (40 proved tight for edit+render+verify)
 TIMEOUT_S = 2400            # 40 min hard wall per run
 
 

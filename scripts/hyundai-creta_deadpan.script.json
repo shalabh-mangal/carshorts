@@ -3,7 +3,7 @@
   "segments": [
     {
       "role": "hook",
-      "text": "Creta Electric just got another price hike in June 2026, and the range now runs ₹18.03 to ₹24.70 lakh. Hyundai clearly assumes your society already has three.",
+      "text": "Creta Electric got another price hike in June 2026 — ₹18.03 to ₹24.70 lakh. Hyundai assumes your society already has three.",
       "cited_spec_names": ["news_1"],
       "pops": [
         "another price hike",
@@ -14,33 +14,31 @@
     },
     {
       "role": "spec",
-      "text": "On paper the petrol Creta looks tame: ₹10.91 lakh to ₹20.11 lakh, twenty-seven variants, three engines. Choose Your Own Adventure — every ending is a beige-metallic school pickup.",
+      "text": "Petrol Creta: ₹10.91 lakh to ₹20.11 lakh, twenty-seven variants, three engines. Every one ends as a beige school pickup.",
       "cited_spec_names": ["price_estimate"],
       "pops": [
         "₹10.91 lakh",
         "₹20.11 lakh",
         "twenty-seven variants",
         "three engines",
-        "Choose Your Own",
         "school pickup"
       ]
     },
     {
       "role": "spec",
-      "text": "Autocar says the all-new Creta lands late 2026, growing from 4.3 to nearly 4.5 metres, finally hybrid. Translation: the current one is already an outgoing model. Your neighbour still hasn't noticed.",
+      "text": "Autocar says all-new Creta lands late 2026 — 4.5 metres, finally hybrid. Current one is already outgoing.",
       "cited_spec_names": ["news_2"],
       "pops": [
         "all-new Creta",
         "late 2026",
         "4.5 metres",
         "finally hybrid",
-        "outgoing model",
-        "hasn't noticed"
+        "already outgoing"
       ]
     },
     {
       "role": "value",
-      "text": "My pick: the S(O) 1.5 Petrol at around ₹12.06 lakh — wireless charging, ventilated seats, a 10.25-inch screen, six airbags. Everything above just adds beige leather.",
+      "text": "My pick: S(O) 1.5 Petrol, around ₹12.06 lakh — wireless charging, ventilated seats, 10.25-inch screen, six airbags. Everything above adds beige leather.",
       "cited_spec_names": ["value_variant", "value_features"],
       "pops": [
         {"anchor": "around ₹12.06 lakh", "show": "₹12.06 lakh", "card": true, "label": "SMART MONEY PICK"},
@@ -52,7 +50,7 @@
     },
     {
       "role": "peak",
-      "text": "The Creta is the paneer butter masala of Indian SUVs. Every family agrees on it. Nobody can tell you which one they had last.",
+      "text": "Creta is the paneer butter masala of Indian SUVs. Every family agrees. Nobody remembers which one they had last.",
       "cited_spec_names": [],
       "pops": [
         {"anchor": "which one they had last", "show": "Zero memory."}
@@ -60,7 +58,7 @@
     },
     {
       "role": "cta",
-      "text": "Take the current Creta or hold out for the all-new one? Tell me below. Subscribe — Nexon's revenge is next.",
+      "text": "Current Creta or the all-new one? Subscribe — Nexon's revenge is next.",
       "cited_spec_names": [],
       "pops": [
         {"anchor": "Subscribe", "show": "LIKE·SHARE·SUBSCRIBE"}
