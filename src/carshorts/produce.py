@@ -744,6 +744,10 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     llm_ranked = _llm_shot_match(script.segments, pool, provider) if not phrase_ranked else {}
     if llm_ranked:
         print(f"     shot-matcher aligned {len(llm_ranked)} beats to visuals")
+    subject_families = _subject_families(script.subject)
+
+    def _is_subject_asset(asset: str) -> bool:
+        return any(f in Path(asset).name.lower() for f in subject_families)
     sections = []
     manifest_sections: list[dict] = []
     prev_last_bucket = ""
@@ -811,8 +815,8 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                             continue
                         if prev_asset and _bucket(cand) == _bucket(prev_asset):
                             continue
-                        if edge_beat and _bucket(cand) not in car_families and any(
-                                _bucket(x) in car_families and x not in used for x in pool):
+                        if edge_beat and not _is_subject_asset(cand) and any(
+                                _is_subject_asset(x) and x not in used for x in pool):
                             continue
                         pick = cand
                         break
@@ -829,14 +833,12 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                 prev_asset = pick
         sec_phrases = phrase_map[i]
         word_pops = _word_pops(seg, marks_paths[i], durations[i], sheet) if kwcaps else []
-        subject_families = _subject_families(script.subject)
         # the very last thing on screen must be the subject car
         if i == len(script.segments) - 1 and timed_cuts:
-            car_families = subject_families
-            if _bucket(timed_cuts[-1][1]) not in car_families:
+            if not _is_subject_asset(timed_cuts[-1][1]):
                 swapped = False
                 for j in range(len(timed_cuts) - 2, -1, -1):   # within this section
-                    if _bucket(timed_cuts[j][1]) in car_families:
+                    if _is_subject_asset(timed_cuts[j][1]):
                         timed_cuts[-1], timed_cuts[j] = (
                             (timed_cuts[-1][0], timed_cuts[j][1]),
                             (timed_cuts[j][0], timed_cuts[-1][1]))
@@ -849,7 +851,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                         for k in range(len(prev.timed_cuts) - 1, -1, -1):
                             if prev is sections[0] and k == 0:
                                 continue
-                            if _bucket(prev.timed_cuts[k][1]) in car_families:
+                            if _is_subject_asset(prev.timed_cuts[k][1]):
                                 a, b = prev.timed_cuts[k], timed_cuts[-1]
                                 prev.timed_cuts[k] = (a[0], b[1])
                                 timed_cuts[-1] = (b[0], a[1])
