@@ -175,6 +175,17 @@ def _progress(slug: str, step: str, done: bool = False) -> None:
                               "at": datetime.datetime.now().isoformat(timespec="seconds")}))
 
 
+def _feedback_is_empty(feedback: dict) -> bool:
+    """Owner clicked 'rework' but left notes/tags/wins all empty.
+    LLM proposes, code disposes: no explicit signal -> no changes.
+    Ledger incident #1 (invented --no-kwcaps) traces to acting on non-explicit
+    input. The right move here is to bounce the card back with a request for
+    specifics, not to escalate to the paid deep-brain and let it guess."""
+    return (not (feedback.get("notes") or "").strip()
+            and not feedback.get("beat_tags")
+            and not feedback.get("beat_wins"))
+
+
 def run(slug: str) -> None:
     card_path = Path("data/queue") / f"{slug}.json"
     if not card_path.exists():
@@ -183,6 +194,32 @@ def run(slug: str) -> None:
     feedback = _latest_feedback(slug)
     if not feedback:
         sys.exit("no feedback found")
+
+    if _feedback_is_empty(feedback):
+        card["status"] = "awaiting_approval"
+        card["note"] = (f"REWORK RECEIVED {datetime.date.today()} but empty "
+                        f"(no notes, no beat tags, no wins) — nothing changed. "
+                        f"Tag the weak beats or leave a note describing what "
+                        f"you want fixed, then click Needs rework again.")
+        card_path.write_text(json.dumps(card, indent=2))
+        _progress(slug, "", done=True)
+        log = Path("data/brain_log.jsonl")
+        with log.open("a") as fh:
+            fh.write(json.dumps({"at": datetime.datetime.now().isoformat(timespec="seconds"),
+                                 "kind": "rework_empty", "slug": slug}) + "\n")
+        print(f"rework skipped for {slug}: empty feedback")
+        return
+
+    if not (feedback.get("notes", "").strip() or feedback.get("beat_tags")
+            or feedback.get("beat_wins")):
+        # empty rework click: nothing to act on — never burn an agent run on it
+        card["status"] = "awaiting_approval"
+        card["note"] = ("Rework requested with no tags or notes — tell me what "
+                        "to change (tag beats or write a note) and I'll act.")
+        card_path.write_text(json.dumps(card, indent=2))
+        _progress(slug, "", done=True)
+        print(f"rework skipped for {slug}: empty feedback")
+        return
 
     llm = make_llm(None)
     _progress(slug, "1/4 folding your feedback into learnings")

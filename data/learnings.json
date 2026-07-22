@@ -13,9 +13,6 @@
     "Front-load value beats: price/verdict by the midpoint, never last."
   ],
   "data_learnings": [
-    "[high][owner-feedback] APPROVED 5/5 (Thar, 2026-07-22): karaoke-density word-synced pops (20/video, 6 on spec beats), cyan-on-figures color system, price count-up card rolling into the spoken figure, written reaction on the punchline, LIKE·SHARE·SUBSCRIBE reaction on CTA — this combination is the approved house style; keep it.",
-    "[high][owner-feedback] Keep incorporating elements that the audience loves, such as the great joke in the Hyundai Creta script, to maintain viewer engagement and satisfaction",
-    "[high][owner-feedback] Improve script clarity by providing explanations for unclear statements, such as the references to society, beige school pickup, and 'Current one is already outgoing', to avoid confusing the audience",
     "[high][owner-feedback] If the owner asks 'what does this mean?' about a joke, the audience won't get it either — rewrite plain. Deadpan works through clarity, not obscurity.",
     "[high][mechanic] Deadpan edge voice budget: ~112 words max for a 63s Short (0.56s/word + loop flash). 133 words = 68s = QA red.",
     "[medium][analyst] five_things: put numbered chips ①-⑤ on-screen synced to each item's phrase and persist an 'N/5' counter through the beat — CarWale + MotorOctane converge on this; our five_things renders lack the persistent counter that acts as a visible progress bar and lifts completion.",
@@ -26,6 +23,8 @@
     "[high][owner-feedback] keep text overlays on screen for as long as the voiceover is discussing the corresponding topic",
     "[high][owner-feedback] add graphics and voiceovers to encourage viewers to like, share, and subscribe",
     "[high][mechanic] Payoff card (kind=card) now holds until section end -0.3 (was min-2.2s); rail pops fire AFTER the 2.2s count-up (only suppressed if they start inside the count-up window). Keeps the value figure on screen while the voice keeps talking about it AND lets concrete feature pops render below.",
-    "[high][mechanic] CTA narration containing 'like, share, subscribe' (any punctuation) auto-generates a graphic pop kind=lss — three PIL icons (thumbs-up, share arrow, bell) drawn procedurally, slam-in at y=0.30. NEVER write a text pop for those words; the engine draws the graphic. Scriptwright prompt now enforces the spoken phrase + which-car-next question in every CTA."
+    "[high][mechanic] CTA narration containing 'like, share, subscribe' (any punctuation) auto-generates a graphic pop kind=lss — three PIL icons (thumbs-up, share arrow, bell) drawn procedurally, slam-in at y=0.30. NEVER write a text pop for those words; the engine draws the graphic. Scriptwright prompt now enforces the spoken phrase + which-car-next question in every CTA.",
+    "[high][owner-feedback] No specific feedback was provided, consider adding more details to the beat_tags and beat_wins to generate actionable lessons",
+    "[high][mechanic] Empty rework verdict (notes+beat_tags+beat_wins all empty) MUST NOT invent changes and MUST NOT escalate to the paid deep brain — free brain now short-circuits: card flips back to awaiting_approval with a 'tag beats or leave a note' prompt. Ledger #1 (invented --no-kwcaps from ambiguous input) is the tax we already paid; do not pay it again."
   ]
 }
