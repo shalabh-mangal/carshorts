@@ -144,7 +144,7 @@ def approve(slug: str, privacy: str = "public") -> None:
 
     card["status"] = "final_review"
     card["final"] = str(final_out)
-    card["note"] = ("PREMIUM FINAL ready (ElevenLabs voice) — review THIS file; "
+    card["note"] = ("PREMIUM FINAL ready (channel voice) — review THIS file; "
                     "Publish ships it to YouTube untouched.")
     card_path.write_text(json.dumps(card, indent=2))
     _progress(slug, "", done=True)

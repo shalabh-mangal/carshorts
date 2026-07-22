@@ -1,7 +1,7 @@
 {
   "out": "out/hyundai-creta_final.mp4",
   "subject": "Hyundai Creta",
-  "rendered_at": "2026-07-22T22:56:13",
+  "rendered_at": "2026-07-23T00:44:28",
   "script_file": "scripts/hyundai-creta_deadpan.script.json",
   "persona": "deadpan",
   "voice_engine": "edge",
@@ -14,8 +14,8 @@
   "hook_type": "news",
   "pool": {
     "own": 0,
-    "stock": 17,
-    "stills": 199
+    "stock": 16,
+    "stills": 198
   },
   "cut_target_s": 2.3,
   "video_id": null,
