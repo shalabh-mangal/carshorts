@@ -13,17 +13,15 @@
     "Front-load value beats: price/verdict by the midpoint, never last."
   ],
   "data_learnings": [
-    "[high][owner-feedback] Peak-beat humor reads flat \u2014 jokes must be specific roasts/analogies, not generic; punch-up pass should rewrite any joke that could apply to any car.",
-    "[medium][owner-feedback] Visual mismatch persists on news/value beats when the pool lacks true subject footage \u2014 prefer neutral scenery over near-miss car shots.",
-    "QA auto-fix works for true peak \u2264 -1 dBTP via re-polish with extra headroom; keep gains conservative on punchy voices.",
-    "[high][owner-feedback] On-screen text = word-synced highlight pops ONLY: each pop is a word-exact fragment of the narration and renders exactly while those words are spoken (TTS word marks). Max 2 per beat, never stacked. Writers should fill segment `pops` with the 1-2 strongest fragments per beat (figures, names, punchline objects).",
-    "[high][owner-feedback] Add more text overlays in sections discussing specs or news to enhance viewer engagement and provide additional context.",
-    "[high][owner-feedback] add more text overlays from each section where specs or news is discussed to enhance viewer engagement and provide additional information",
     "[high][owner-feedback] Ensure all features are accurately represented, such as the C shape DRL, body color grille, and 10.25 inch screen, to maintain consistency and authenticity in the visuals.",
     "[high][owner-feedback] Double-check the specifications and details, like the 320 Nm torque, to provide accurate information to the viewers.",
     "[high][owner-feedback] Improve timing and context matching for elements like 'SMART MONEY PICK' and ensure the inclusion of relevant features such as the big screen and cruise control in the appropriate sections.",
     "[high][owner-feedback] Maintain consistency in the placement of calls to action, like 'Like share subscribe', to ensure they are visibly present in the expected sections.",
-    "[high][owner-feedback] APPROVED 5/5 (Thar, 2026-07-22): karaoke-density word-synced pops (20/video, 6 on spec beats), cyan-on-figures color system, price count-up card rolling into the spoken figure, written reaction on the punchline, LIKE\u00b7SHARE\u00b7SUBSCRIBE reaction on CTA \u2014 this combination is the approved house style; keep it.",
-    "[high][mechanic] Scriptwright word-budget: edge-tts voices ~0.52-0.55s/word for English deadpan; video adds ~0.5s loop flash. Cap script to <=118 words to reliably land video <=63s. First-pass 156w overshot at 76.7s -- 130w overshot at 67.2s -- 116w at 63.5s -- 110w green at 62.1s."
+    "[high][owner-feedback] APPROVED 5/5 (Thar, 2026-07-22): karaoke-density word-synced pops (20/video, 6 on spec beats), cyan-on-figures color system, price count-up card rolling into the spoken figure, written reaction on the punchline, LIKE·SHARE·SUBSCRIBE reaction on CTA — this combination is the approved house style; keep it.",
+    "[high][mechanic] Scriptwright word-budget: edge-tts voices ~0.52-0.55s/word for English deadpan; video adds ~0.5s loop flash. Cap script to <=118 words to reliably land video <=63s. First-pass 156w overshot at 76.7s -- 130w overshot at 67.2s -- 116w at 63.5s -- 110w green at 62.1s.",
+    "[high][owner-feedback] Keep incorporating elements that the audience loves, such as the great joke in the Hyundai Creta script, to maintain viewer engagement and satisfaction",
+    "[high][owner-feedback] Improve script clarity by providing explanations for unclear statements, such as the references to society, beige school pickup, and 'Current one is already outgoing', to avoid confusing the audience",
+    "[high][owner-feedback] Enhance viewer interaction by optimizing the 'like, share, subscribe' prompt to be more visible and engaging on the screen, encouraging viewers to participate",
+    "QA auto-fix works for true peak ≤ -1 dBTP via re-polish with extra headroom; keep gains conservative on punchy voices."
   ]
 }

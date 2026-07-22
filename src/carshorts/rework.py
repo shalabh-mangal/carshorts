@@ -114,9 +114,15 @@ def _notes_to_actions(card: dict, feedback: dict, llm) -> list[str]:
                     changed_script = True
                     applied.append(f"pop '{frag}' -> beat {row['segment']}")
         elif row.get("action") == "set_flag":
+            # LLM proposes, code disposes: a removal flag needs the owner to
+            # have SAID remove — one misfire stripped a whole render of text
             flag = row.get("flag", "")
-            if flag in ("--no-kwcaps", "--music=none") \
-                    and flag not in card.setdefault("render_flags", []):
+            notes_l = notes.lower()
+            explicit = ((flag == "--no-kwcaps"
+                         and ("remove text" in notes_l or "no text" in notes_l))
+                        or (flag == "--music=none"
+                            and ("remove music" in notes_l or "no music" in notes_l)))
+            if explicit and flag not in card.setdefault("render_flags", []):
                 card["render_flags"].append(flag)
                 applied.append(f"flag {flag}")
     if changed_script:

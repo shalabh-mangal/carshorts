@@ -161,7 +161,8 @@ def _numberish(token: str) -> bool:
 
 def _overlay_png(text: str, font_size: int, fill, out_path: str,
                  pill: bool = False, max_width: int = 780,
-                 accent_bar: bool = False, accent_digits: bool = False) -> str:
+                 accent_bar: bool = False, accent_digits: bool = False,
+                 fit_one_line: bool = False) -> str:
     """Render text to a transparent PNG. Research-derived treatment: heavy
     face, ~9% black stroke (load-bearing over busy footage), soft blurred
     shadow, and — for number pops — cyan digits with white unit labels so the
@@ -172,6 +173,12 @@ def _overlay_png(text: str, font_size: int, fill, out_path: str,
 
     font = _load_heavy_font(font_size)   # one face everywhere = coherent look
     tmp = ImageDraw.Draw(Image.new("RGBA", (10, 10)))
+    if fit_one_line:
+        # shrink until the whole text sits on ONE line inside the safe box
+        # (reaction slams scale 1.3x on entry — leave headroom for that too)
+        while font_size > 44 and tmp.textlength(text, font=font) > 560:
+            font_size -= 6
+            font = _load_heavy_font(font_size)
     lines = _wrap(tmp, text, font, max_width)
     ascent, descent = font.getmetrics()
     line_h = ascent + descent + 8
@@ -510,7 +517,7 @@ class MoviePyRenderer(VideoRenderer):
                     # the editor's dry voice, upper third, slams into the
                     # silence beat right after the punchline lands
                     png = _overlay_png(pop_text.upper(), 110, TEXT_WHITE,
-                                       f"{tdir}/rx_{k}_{pi}.png")
+                                       f"{tdir}/rx_{k}_{pi}.png", fit_one_line=True)
                     clip = (ImageClip(png, transparent=True)
                             .with_start(start_abs)
                             .with_duration(show_dur)
