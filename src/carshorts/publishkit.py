@@ -60,7 +60,26 @@ def build(script_path: str, spec_path: str | None, provider: str | None) -> str:
             pass
 
     slug = _slug(script.subject)
+    # credit ONLY the assets the FINAL actually uses (the folder may hold
+    # hundreds of fetched files — crediting them all once produced a 37k-char
+    # description; YouTube's hard cap is 5,000)
     credits = attribution_lines(f"assets/cars/{slug}/images")
+    used_assets: set[str] = set()
+    for manifest in (Path(f"out/{slug}_final.manifest.json"),
+                     Path(f"out/{slug}_draft.manifest.json")):
+        if manifest.exists():
+            import json as _json
+            m = _json.loads(manifest.read_text())
+            used_assets = {c["asset"] for sec in m.get("sections", [])
+                           for c in sec.get("cuts", [])}
+            break
+    if used_assets:
+        def _used(line: str) -> bool:
+            token = line.split(" by ")[0].replace("File:", "").strip()
+            base = token.replace(" ", "_")
+            return any(base[:40] in a or a.rsplit(".", 1)[0][:40] in line.replace(" ", "_")
+                       for a in used_assets)
+        credits = [c for c in credits if _used(c)]
     press = list(Path(f"assets/cars/{slug}/press").glob("*")) if Path(f"assets/cars/{slug}/press").exists() else []
 
     lines = [f"# Publish kit — {script.subject}", "", "## Title options"]

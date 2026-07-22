@@ -94,6 +94,10 @@ def main() -> None:
 
     description = (Path(args.description_file).read_text() if args.description_file
                   else args.description)
+    if len(description) > 4900:   # YouTube hard cap 5000 — truncate at a line break
+        description = description[:4900].rsplit("\n", 1)[0] + "\n…"
+        print(f"   description truncated to {len(description)} chars (YouTube cap)")
+    description = description.replace("<", "(").replace(">", ")")  # forbidden chars
     tags = [t.strip() for t in args.tags.split(",") if t.strip()]
     upload(args.video, args.title, description, tags, args.privacy, args.made_for_kids,
            thumbnail=args.thumbnail)
