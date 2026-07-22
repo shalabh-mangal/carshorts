@@ -1,0 +1,33 @@
+{
+  "price_estimate": "₹10.91 lakh to ₹20.11 lakh",
+  "price_note": "ex-showroom; 27 variants live as of July 2026",
+  "price_source": "https://www.cardekho.com/hyundai/creta",
+  "value_variant": "S(O) 1.5 Petrol",
+  "value_price": "around ₹12.06 lakh",
+  "value_features": "wireless charging, ventilated front seats, a 10.25-inch touchscreen with Android Auto and CarPlay, six airbags standard and a rear camera",
+  "value_source": "https://www.cardekho.com/hyundai/creta",
+  "news": [
+    {
+      "fact": "Hyundai hiked Creta Electric prices in June 2026, with the range now stretching from ₹18.03 lakh to ₹24.70 lakh ex-showroom",
+      "date": "June 2026",
+      "source": "https://www.cars24.com/news/auto/hyundai-creta-electric-price-hike-june-2026-here-is-what-changed/"
+    },
+    {
+      "fact": "The all-new third-generation Creta on the K3 platform is expected in late 2026 with a hybrid powertrain, growing from 4.3 to nearly 4.5 metres long",
+      "date": "July 2026",
+      "source": "https://www.autocarindia.com/advice/when-will-the-hyundai-creta-facelift-launch-in-india-447918"
+    },
+    {
+      "fact": "Creta Electric offers up to 510 km of MIDC range from its 51.4 kWh long-range battery, with a 420 km 42 kWh variant below it",
+      "date": "2026",
+      "source": "https://www.autocarindia.com/cars/hyundai/creta-electric"
+    }
+  ],
+  "news_callouts": [
+    "PETROL: ₹10.91–20.11 lakh",
+    "EV: ₹18.03–24.70 lakh",
+    "All-new Creta: late 2026",
+    "K3 platform, hybrid coming",
+    "EV range up to 510 km"
+  ]
+}

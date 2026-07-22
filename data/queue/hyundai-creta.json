@@ -1,0 +1,11 @@
+{
+  "car": "Hyundai Creta",
+  "slug": "hyundai-creta",
+  "persona": "deadpan",
+  "language": "english",
+  "script": "scripts/hyundai-creta_deadpan.script.json",
+  "spec": "specs/hyundai-creta.json",
+  "draft": "out/hyundai-creta_draft.mp4",
+  "created": "2026-07-22T11:32:42",
+  "status": "awaiting_approval"
+}

@@ -1,0 +1,23 @@
+{
+  "out": "out/hyundai-creta_draft.mp4",
+  "subject": "Hyundai Creta",
+  "rendered_at": "2026-07-22T11:31:27",
+  "script_file": "scripts/hyundai-creta_deadpan.script.json",
+  "persona": "deadpan",
+  "voice_engine": "edge",
+  "language": "english",
+  "music": "Balearic Slide - Jeremy Black.mp3",
+  "captions": false,
+  "word_count": 156,
+  "sections": 6,
+  "hook_text": "Creta Electric just got another price hike in June 2026, and the range now runs \u20b918.03 to \u20b924.70 lakh. Hyundai clearly assumes your society already has three.",
+  "hook_type": "news",
+  "pool": {
+    "own": 0,
+    "stock": 10,
+    "stills": 2
+  },
+  "cut_target_s": 4.2,
+  "video_id": null,
+  "metrics": null
+}

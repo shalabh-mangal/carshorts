@@ -263,6 +263,22 @@ _POP_MAX_PER_SECTION = 6
 _POP_GAP = 0.15
 
 
+def _subject_families(subject: str) -> set[str]:
+    """Name tokens that identify THIS car in asset filenames (plus curated
+    aliases from specs_extras, e.g. Thar -> roxx). Used by the edge-beat
+    car rule and written into the manifest for QA."""
+    slug = _slug(subject)
+    families = {t for t in slug.split("-") if len(t) >= 3} | {"pool"}
+    extras_path = Path("specs_extras") / f"{slug}.json"
+    if extras_path.exists():
+        try:
+            families |= {a.lower() for a in
+                         json.loads(extras_path.read_text()).get("aliases", [])}
+        except Exception:  # noqa: BLE001
+            pass
+    return families
+
+
 def _pop_candidates(seg, sheet) -> list[dict]:
     """Pop candidates, strongest first: curated script pops, then every spec
     figure in the line, then cited spec VALUES spoken verbatim — the spec
@@ -786,9 +802,9 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                     # previous cut's look family. On the HOOK and the CTA the
                     # subject car itself must be on screen — edges of the video
                     # are where irrelevant b-roll hurts most.
-                    car_families = {"roxx", "red", "thar", "mahindra"}
                     edge_beat = (i == 0 or i == len(script.segments) - 1)
-                    ordering = (sorted(pool, key=lambda a: _bucket(a) not in car_families)
+                    ordering = (sorted(pool, key=lambda a, fam=subject_families:
+                                       not any(f in Path(a).name.lower() for f in fam))
                                 if edge_beat else pool)
                     for cand in ordering:
                         if cand in used:
@@ -813,9 +829,10 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                 prev_asset = pick
         sec_phrases = phrase_map[i]
         word_pops = _word_pops(seg, marks_paths[i], durations[i], sheet) if kwcaps else []
+        subject_families = _subject_families(script.subject)
         # the very last thing on screen must be the subject car
         if i == len(script.segments) - 1 and timed_cuts:
-            car_families = {"roxx", "red", "thar", "mahindra", "pool"}
+            car_families = subject_families
             if _bucket(timed_cuts[-1][1]) not in car_families:
                 swapped = False
                 for j in range(len(timed_cuts) - 2, -1, -1):   # within this section
@@ -853,9 +870,14 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         })
 
     manifest_path = out.with_suffix(".manifest.json")
+    # subject families: QA's opens/closes-on-car checks must know THIS car's
+    # names (plus curated aliases like Thar->roxx), not a hardcoded list
+    families = _subject_families(script.subject)
     manifest_path.write_text(json.dumps({
         "out": str(out), "sections": manifest_sections,
         "pool_size": len(pool),
+        "subject": script.subject,
+        "subject_families": sorted(families),
     }, indent=2, ensure_ascii=False))
     if plan_only:
         print(f"     plan-only: manifest -> {manifest_path}")

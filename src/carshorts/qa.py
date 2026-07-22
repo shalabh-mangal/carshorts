@@ -98,8 +98,13 @@ def run_qa(video_path: str, manifest_path: str | None = None,
 
         first = sections[0].get("cuts", [{}])[0].get("asset", "")
         last = sections[-1].get("cuts", [{}])[-1].get("asset", "")
-        check("opens on subject car", _family(first) in CAR_FAMILIES, first)
-        check("closes on subject car", _family(last) in CAR_FAMILIES, last)
+        families = set(manifest.get("subject_families") or CAR_FAMILIES)
+
+        def on_subject(asset: str) -> bool:
+            name = asset.lower()
+            return any(f in name for f in families)
+        check("opens on subject car", on_subject(first), first)
+        check("closes on subject car", on_subject(last), last)
 
         ov_ok = True
         detail = ""
