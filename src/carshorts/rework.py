@@ -64,6 +64,66 @@ def _fold_learnings(feedback: dict, llm) -> list[str]:
     return added
 
 
+def _notes_to_actions(card: dict, feedback: dict, llm) -> list[str]:
+    """The rework BRAIN: translate free-text owner notes into concrete render
+    actions on THIS video. Without this, imperative notes ('add more overlays
+    on spec beats') fold into learnings — which only teach FUTURE scripts —
+    and the re-render comes back identical: the system looks deaf.
+
+    Supported actions (LLM proposes, code validates hard):
+      {"action": "add_pops", "segment": i, "pops": ["verbatim fragment", ...]}
+      {"action": "set_flag", "flag": "--no-kwcaps" | "--music=none"}
+    Returns human-readable descriptions of every action actually applied.
+    """
+    notes = (feedback.get("notes") or "").strip()
+    if not notes:
+        return []
+    script_path = Path(card["script"])
+    script = json.loads(script_path.read_text())
+    segments_view = [
+        {"index": i, "role": seg["role"], "text": seg["text"],
+         "current_pops": [c if isinstance(c, str) else c.get("show", "")
+                          for c in seg.get("pops", [])]}
+        for i, seg in enumerate(script["segments"])]
+    rows = _rows(llm.complete_json(
+        "You translate owner feedback on a car Short into render actions. "
+        "Actions available:\n"
+        '  {"action": "add_pops", "segment": <i>, "pops": ["<fragment>", ...]}\n'
+        "    — each fragment MUST be copied VERBATIM (word-for-word) from that "
+        "segment's text, max 26 chars, 1-3 words, the strongest spec/news/"
+        "figure moments not already in current_pops.\n"
+        '  {"action": "set_flag", "flag": "--no-kwcaps"}   — remove ALL text\n'
+        '  {"action": "set_flag", "flag": "--music=none"}  — remove music\n'
+        "Apply ONLY what the owner asked. Output ONLY a JSON array (may be "
+        "empty).",
+        json.dumps({"owner_notes": notes, "segments": segments_view},
+                   ensure_ascii=False)))
+    applied: list[str] = []
+    changed_script = False
+    for row in rows:
+        if row.get("action") == "add_pops":
+            try:
+                seg = script["segments"][int(row.get("segment", -1))]
+            except (ValueError, IndexError):
+                continue
+            for frag in row.get("pops", []):
+                if (isinstance(frag, str) and 0 < len(frag) <= 26
+                        and frag.lower() in seg["text"].lower()
+                        and frag not in seg.get("pops", [])):
+                    seg.setdefault("pops", []).append(frag)
+                    changed_script = True
+                    applied.append(f"pop '{frag}' -> beat {row['segment']}")
+        elif row.get("action") == "set_flag":
+            flag = row.get("flag", "")
+            if flag in ("--no-kwcaps", "--music=none") \
+                    and flag not in card.setdefault("render_flags", []):
+                card["render_flags"].append(flag)
+                applied.append(f"flag {flag}")
+    if changed_script:
+        script_path.write_text(json.dumps(script, ensure_ascii=False, indent=2))
+    return applied
+
+
 def _punch_up_tagged(card: dict, feedback: dict, llm) -> bool:
     """Rewrite only the segments tagged weak-hook / joke-flat."""
     tags = feedback.get("beat_tags", {})
@@ -119,15 +179,31 @@ def run(slug: str) -> None:
         sys.exit("no feedback found")
 
     llm = make_llm(None)
-    _progress(slug, "1/3 folding your feedback into learnings")
+    _progress(slug, "1/4 folding your feedback into learnings")
     lessons = _fold_learnings(feedback, llm)
     for flag in _render_directives(feedback):
         if flag not in card.setdefault("render_flags", []):
             card["render_flags"].append(flag)
-    _progress(slug, "2/3 rewriting tagged beats")
+    _progress(slug, "2/4 translating your notes into render actions")
+    actions = _notes_to_actions(card, feedback, llm)
+    _progress(slug, "3/4 rewriting tagged beats")
     rewrote = _punch_up_tagged(card, feedback, llm)
 
-    step3 = "3/3 re-rendering the draft (~2 min)"
+    if not (actions or rewrote or _render_directives(feedback)):
+        # NOTHING actionable — re-rendering would produce an identical video.
+        # Be honest on the card instead of pretending motion is progress.
+        card["status"] = "awaiting_approval"
+        card["note"] = (f"REWORK SKIPPED {datetime.date.today()}: your feedback "
+                        f"was saved as a lesson, but nothing in it maps to a "
+                        f"render change for THIS video — the re-render would be "
+                        f"identical. Tag beats or give a concrete instruction "
+                        f"(e.g. 'add pops to beat 2', 'remove music').")
+        card_path.write_text(json.dumps(card, indent=2))
+        _progress(slug, "", done=True)
+        print(f"rework skipped for {slug}: nothing actionable")
+        return
+
+    step3 = "4/4 re-rendering the draft (~2 min)"
     if "--no-kwcaps" in card.get("render_flags", []):
         step3 = "3/3 re-rendering WITHOUT text overlays (~2 min)"
     _progress(slug, step3)
@@ -141,15 +217,17 @@ def run(slug: str) -> None:
     qa_green = "QA FAILED" not in (result.stdout or "")
 
     card["status"] = "awaiting_approval" if ok else "rework_failed"
-    applied = ""
+    flags_note = ""
     if "--no-kwcaps" in card.get("render_flags", []):
-        applied += ", TEXT OVERLAYS REMOVED"
+        flags_note += ", TEXT OVERLAYS REMOVED"
     if "--music=none" in card.get("render_flags", []):
-        applied += ", MUSIC REMOVED"
+        flags_note += ", MUSIC REMOVED"
+    action_note = f", {len(actions)} note-action(s): " + "; ".join(actions[:3]) if actions else ""
     card["note"] = (f"AUTO-REWORK {datetime.date.today()}: "
                     f"{len(lessons)} lesson(s) folded"
                     + (", tagged jokes rewritten" if rewrote else "")
-                    + applied
+                    + action_note
+                    + flags_note
                     + ", re-rendered"
                     + ("" if qa_green else " — ⚠ QA flagged, check before approving"))
     card_path.write_text(json.dumps(card, indent=2))

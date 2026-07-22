@@ -236,15 +236,25 @@ def _exact_span(frag: str, marks_file: str | None, fallback: tuple) -> tuple | N
         return re.sub(r"\.+$", "", re.sub(r"[^a-z0-9.]", "", word.lower()))
 
     want = [norm(w) for w in frag.split() if norm(w)]
-    have = [norm(m["w"]) for m in marks]
+    # a single TTS mark can carry MULTIPLE words ("Level 2" arrives as one
+    # boundary) — flatten to word granularity, remembering each word's mark
+    have: list[str] = []
+    mark_of: list[int] = []
+    for mi, m in enumerate(marks):
+        for piece in m["w"].split():
+            n = norm(piece)
+            if n:
+                have.append(n)
+                mark_of.append(mi)
     if not want or not have:
         return None
     for i in range(len(have) - len(want) + 1):
         if have[i:i + len(want)] == want:
-            start = max(0.0, marks[i]["t"] - 0.05)
-            last_i = i + len(want) - 1
-            end = (marks[last_i + 1]["t"] if last_i + 1 < len(marks)
-                   else marks[last_i]["t"] + 0.8)
+            first_mark = mark_of[i]
+            last_mark = mark_of[i + len(want) - 1]
+            start = max(0.0, marks[first_mark]["t"] - 0.05)
+            end = (marks[last_mark + 1]["t"] if last_mark + 1 < len(marks)
+                   else marks[last_mark]["t"] + 0.8)
             return (start, max(1.2, end - start + 0.35))
     return None              # words not found -> perfectly timed or absent
 
