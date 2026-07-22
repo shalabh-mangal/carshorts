@@ -9,5 +9,6 @@
   "created": "2026-07-22T11:32:42",
   "status": "awaiting_approval",
   "mechanic_note": "MECHANIC 2026-07-22 (empty-feedback bounce): the rework verdict arrived with notes/beat_tags/beat_wins all empty and rating=4 \u2014 no explicit signal, so per ledger incident #1 (never invent removals) NOTHING was changed on this card and no re-render was run. The prior render (60.7s, QA 12/12 green, LSS icons + count-up card holding until section end, deadpan CTA with which-car-next comment bait) stands unchanged. Free brain now short-circuits this class (see _feedback_is_empty in src/carshorts/rework.py) so the deep brain is not paged for silent rework clicks. If you meant to rework, please tag the weak beats or add a short note describing what to change, then click Needs rework again. If you meant to approve, click Approve.",
-  "note": "2026-07-22: REAL CRETA CONTENT \u2014 curator fetched ~200 licensed stills (India/N Line/2024 facelift); all 15 cuts now on genuine Creta, zero repeats, VQA clean, NeerjaExpressive voice, 62.1s"
+  "note": "2026-07-23: REAL CRETA EVERYWHERE \u2014 ~200 licensed stills fetched, every cut on genuine Creta, zero repeats, flagged assets pruned, NeerjaExpressive voice, 62.1s QA green",
+  "final": "out/hyundai-creta_final.mp4"
 }
