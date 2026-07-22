@@ -259,8 +259,8 @@ def _exact_span(frag: str, marks_file: str | None, fallback: tuple) -> tuple | N
     return None              # words not found -> perfectly timed or absent
 
 
-_POP_MAX_PER_SECTION = 3
-_POP_GAP = 0.6
+_POP_MAX_PER_SECTION = 6
+_POP_GAP = 0.15
 
 
 def _pop_candidates(seg, sheet) -> list[dict]:
@@ -313,10 +313,12 @@ def _word_pops(seg, marks_file: str | None, dur: float,
     the reaction lands after the line, never on it). Returns
     [(start, dur, show_text, kind, label)].
     """
-    pops: list[tuple] = []
+    # SELECT-ALL-THEN-TRIM: match every candidate first; the karaoke pass
+    # below resolves overlaps by trimming, not by silently dropping owner-
+    # requested pops (the old crowding gate ate rapid spec lists).
+    rail: list[tuple] = []          # word/number pops share the y=0.64 rail
+    floaters: list[tuple] = []      # reaction (y=0.30) and card have own slots
     for cand in _pop_candidates(seg, sheet):
-        if len(pops) >= _POP_MAX_PER_SECTION:
-            break
         span = _exact_span(cand["anchor"], marks_file, (0.0, 0.0))
         if span is None:
             continue
@@ -328,23 +330,38 @@ def _word_pops(seg, marks_file: str | None, dur: float,
             if dur < 1.2:
                 continue
             start = min(start + span_dur - 0.35 + 0.25, dur - 0.4)
-            span_dur = 1.1
-        else:
-            if cand["kind"] == "card":
-                span_dur = max(2.2, span_dur)      # count-up (1.4s) + hold
-            span_dur = min(span_dur, 3.5, max(0.9, dur - start - 0.1))
-            if start >= dur - 0.5:
-                continue
-        # rail pops need clear air between them; a reaction lives in its own
-        # slot (upper third) so it only needs to avoid REAL simultaneity
-        gap = -0.25 if cand["kind"] == "reaction" else _POP_GAP
-        crowded = any(start < prev[0] + prev[1] + gap
-                      and prev[0] < start + span_dur + gap
-                      for prev in pops)
-        if crowded:
+            floaters.append((start, 1.1, cand["show"], "reaction", ""))
             continue
-        pops.append((start, span_dur, cand["show"], cand["kind"], cand["label"]))
-    return sorted(pops)
+        if cand["kind"] == "card":
+            span_dur = min(max(2.2, span_dur), max(2.2, dur - start - 0.1))
+            if start < dur - 0.5:
+                floaters.append((start, span_dur, cand["show"], "card",
+                                 cand["label"]))
+            continue
+        span_dur = min(span_dur, 3.5, max(0.9, dur - start - 0.1))
+        if start < dur - 0.5:
+            rail.append((start, span_dur, cand["show"], cand["kind"],
+                         cand["label"]))
+    # the card owns the screen while it counts up: drop rail pops that
+    # duplicate its figure or animate inside its window (one focal point)
+    cards = [f for f in floaters if f[3] == "card"]
+    rail = [r for r in rail
+            if not any(r[2] == c[2]
+                       or (r[0] < c[0] + c[1] + 0.2 and c[0] < r[0] + 0.2)
+                       for c in cards)]
+    # karaoke pass: rail pops replace each other — trim each to the next
+    # pop's start; drop only what lands under the 0.5s legibility floor
+    rail.sort()
+    trimmed: list[tuple] = []
+    for j, pop in enumerate(rail):
+        if len(trimmed) >= _POP_MAX_PER_SECTION:
+            break
+        span_dur = pop[1]
+        if j + 1 < len(rail):
+            span_dur = min(span_dur, rail[j + 1][0] - pop[0] - 0.05)
+        if span_dur >= 0.5:
+            trimmed.append((pop[0], span_dur, pop[2], pop[3], pop[4]))
+    return sorted(trimmed + floaters)
 
 
 def _time_callouts(lines: list[str], sec_phrases: list[tuple[float, str]],

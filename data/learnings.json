@@ -18,6 +18,10 @@
     "QA auto-fix works for true peak ≤ -1 dBTP via re-polish with extra headroom; keep gains conservative on punchy voices.",
     "[high][owner-feedback] On-screen text = word-synced highlight pops ONLY: each pop is a word-exact fragment of the narration and renders exactly while those words are spoken (TTS word marks). Max 2 per beat, never stacked. Writers should fill segment `pops` with the 1-2 strongest fragments per beat (figures, names, punchline objects).",
     "[high][owner-feedback] Add more text overlays in sections discussing specs or news to enhance viewer engagement and provide additional context.",
-    "[high][owner-feedback] add more text overlays from each section where specs or news is discussed to enhance viewer engagement and provide additional information"
+    "[high][owner-feedback] add more text overlays from each section where specs or news is discussed to enhance viewer engagement and provide additional information",
+    "[high][owner-feedback] Ensure all features are accurately represented, such as the C shape DRL, body color grille, and 10.25 inch screen, to maintain consistency and authenticity in the visuals.",
+    "[high][owner-feedback] Double-check the specifications and details, like the 320 Nm torque, to provide accurate information to the viewers.",
+    "[high][owner-feedback] Improve timing and context matching for elements like 'SMART MONEY PICK' and ensure the inclusion of relevant features such as the big screen and cruise control in the appropriate sections.",
+    "[high][owner-feedback] Maintain consistency in the placement of calls to action, like 'Like share subscribe', to ensure they are visibly present in the expected sections."
   ]
 }

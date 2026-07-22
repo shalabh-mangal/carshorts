@@ -17,3 +17,8 @@
 {"at": "2026-07-22T09:41:23", "video": "out/thar_draft.mp4", "check": "true peak \u2264 -1 dBTP", "detail": "auto-repolish", "resolved": true}
 {"at": "2026-07-22T09:49:30", "video": "out/thar_draft.mp4", "check": "true peak \u2264 -1 dBTP", "detail": "auto-repolish", "resolved": true}
 {"at": "2026-07-22T09:54:26", "video": "out/thar_draft.mp4", "check": "true peak \u2264 -1 dBTP", "detail": "auto-repolish", "resolved": true}
+{"at": "2026-07-22T10:05:58", "video": "out/thar_draft.mp4", "check": "true peak \u2264 -1 dBTP", "detail": "auto-repolish", "resolved": true}
+{"at": "2026-07-22T10:09:32", "video": "out/thar_draft.mp4", "check": "true peak \u2264 -1 dBTP", "detail": "auto-repolish", "resolved": true}
+{"at": "2026-07-22T10:13:39", "video": "out/thar_draft.mp4", "check": "true peak \u2264 -1 dBTP", "detail": "-0.9 dBTP", "resolved": false}
+{"at": "2026-07-22T10:13:39", "video": "out/thar_draft.mp4", "check": "text pops voice-synced & uncrowded", "detail": "pops overlap in sec 3", "resolved": false}
+{"at": "2026-07-22T10:17:32", "video": "out/thar_draft.mp4", "check": "true peak \u2264 -1 dBTP", "detail": "auto-repolish", "resolved": true}

@@ -54,7 +54,7 @@
       ],
       "pops": [
         {
-          "anchor": "₹12.99 lakh",
+          "anchor": "Smart money's on",
           "show": "₹12.99 lakh",
           "card": true,
           "label": "smart money pick"
@@ -62,7 +62,8 @@
         "LXT RWD Diesel",
         "₹10.32 to ₹17.80 lakh",
         "cruise",
-        "keyless"
+        "keyless",
+        "big screen"
       ]
     },
     {
@@ -83,7 +84,11 @@
         "news_4"
       ],
       "pops": [
-        "festive 2026"
+        "festive 2026",
+        {
+          "anchor": "Fight it out",
+          "show": "LIKE · SHARE · SUBSCRIBE"
+        }
       ]
     }
   ]

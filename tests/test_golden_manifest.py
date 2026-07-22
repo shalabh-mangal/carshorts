@@ -136,12 +136,13 @@ def test_plan_manifest_invariants(fixture_tree, monkeypatch):
         # word-synced pops: <=2, ordered, non-overlapping, inside the section,
         # and every pop's words must exist in the spoken line (word-exact source)
         pops = sec["pops"]
-        assert len(pops) <= 2
+        assert len(pops) <= 6
         section_words = {w.strip('.,?!—').lower() for w in sec["text"].split()}
         prev_end = -1.0
         for pop in pops:
-            gap_needed = -0.3 if pop["kind"] == "reaction" else 0.4
-            assert pop["start"] >= prev_end + gap_needed, f"pops crowd sec {sec['index']}"
+            own_slot = pop["kind"] in ("reaction", "card")
+            if not own_slot:
+                assert pop["start"] >= prev_end + 0.04, f"pops crowd sec {sec['index']}"
             assert 0 <= pop["start"] < sec["duration"] - 0.3
             if pop["kind"] == "reaction":
                 # written editorial text, straddles the cut — words are NOT
