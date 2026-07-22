@@ -190,17 +190,40 @@ def run(slug: str) -> None:
     rewrote = _punch_up_tagged(card, feedback, llm)
 
     if not (actions or rewrote or _render_directives(feedback)):
-        # NOTHING actionable — re-rendering would produce an identical video.
-        # Be honest on the card instead of pretending motion is progress.
-        card["status"] = "awaiting_approval"
-        card["note"] = (f"REWORK SKIPPED {datetime.date.today()}: your feedback "
-                        f"was saved as a lesson, but nothing in it maps to a "
-                        f"render change for THIS video — the re-render would be "
-                        f"identical. Tag beats or give a concrete instruction "
-                        f"(e.g. 'add pops to beat 2', 'remove music').")
+        # NOTHING in the free brain's menu maps to this feedback. Escalate to
+        # the deep brain: a headless Claude session with repo access that can
+        # change code, re-render and verify — then grow the menu so the free
+        # brain handles this class of feedback next time.
+        from .agent import run_agent
+        _progress(slug, "escalating to the deep brain (Claude mechanic)…")
+        outcome = run_agent("mechanic", (
+            f"Owner feedback on queue card {slug} maps to no action in the "
+            f"free rework brain. Make the owner's request real in the DRAFT "
+            f"video, re-render, verify QA green, re-queue the card.\n\n"
+            f"Feedback JSON: {json.dumps(feedback, ensure_ascii=False)}\n"
+            f"Card: data/queue/{slug}.json\n"
+            f"Script: {card['script']}\nSpec: {card['spec']}\n"
+            f"Draft out path: {card['draft']}"))
+        card = json.loads(card_path.read_text())   # mechanic may have edited it
+        if outcome["ok"]:
+            if card.get("status") != "awaiting_approval":
+                card["status"] = "awaiting_approval"
+            card["note"] = ("DEEP-BRAIN REWORK " + str(datetime.date.today())
+                            + ": " + str(outcome["result"])[:220])
+        else:
+            card["status"] = "awaiting_approval"
+            card["note"] = (f"REWORK SKIPPED {datetime.date.today()}: feedback "
+                            f"saved as a lesson; deep brain unavailable "
+                            f"({str(outcome['result'])[:120]}). Tag beats or "
+                            f"give a concrete instruction.")
         card_path.write_text(json.dumps(card, indent=2))
         _progress(slug, "", done=True)
-        print(f"rework skipped for {slug}: nothing actionable")
+        log = Path("data/brain_log.jsonl")
+        with log.open("a") as fh:
+            fh.write(json.dumps({"at": datetime.datetime.now().isoformat(timespec="seconds"),
+                                 "kind": "escalation", "slug": slug,
+                                 "ok": outcome["ok"]}) + "\n")
+        print(f"rework escalated for {slug}: ok={outcome['ok']}")
         return
 
     step3 = "4/4 re-rendering the draft (~2 min)"

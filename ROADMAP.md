@@ -44,3 +44,32 @@ E. **Review portal v1 (in progress)** — portal.py (localhost, stdlib): daily
 F. Semantic asset index + cross-video freshness (as footage grows)
 G. Hinglish/Hindi re-issues of winners
 H. Cadence: daily heartbeat — brain drafts, you approve
+
+
+## North star (owner directive, 2026-07-22): a system with its own brain
+
+Architecture: **deterministic hands, agentic minds.** The tested pipeline
+(produce/QA/VQA/portal/publish) stays the hands. Five Claude-powered minds
+(headless `claude -p`, role charters in agents/, budget-capped, journaled)
+supply the judgment. The interactive supervisor (Claude) audits, corrects,
+and grows the free brain's menu from every escalation.
+
+- [x] **P1 Foundation** — agent harness (src/carshorts/agent.py: budget
+      12 runs/day, 40-turn cap, journal data/agent_log.jsonl), mechanic +
+      supervisor charters, rework dead-ends escalate to the mechanic,
+      menu-growth inbox (data/brain_inbox.jsonl). Smoke-tested live.
+- [ ] **P2 Scriptwright** — agents/scriptwright.md: crawl fresh news +
+      price/spec data from outlets (free/official), write the script with
+      humor that lands + curated pops; output = specs_extras + script JSON
+      through the existing number-guard/fact-check gates.
+- [ ] **P3 Analyst** — agents/analyst.md: weekly competitor tactic research
+      (what top car channels do for attention/retention) + own analytics
+      (retention curve → beats) → learnings + experiment calendar entries.
+- [ ] **P4 Composer** — agents/composer.md: car personality profile →
+      music mood/beat/SFX choices (extends music_tags.json + generate_beat).
+- [ ] **P5 Curator** — agents/curator.md: crawl assets (Wikimedia, official
+      press kits, Pexels) with license checks, build per-car pools, propose
+      stitching variety (shot plans) for the renderer.
+- [ ] **P6 Supervisor cadence** — scheduled daily supervisor run (audit
+      agent logs, fold brain_inbox into the free menu, heal stuck cards,
+      report to owner). Needs owner OK for the schedule mechanism.
