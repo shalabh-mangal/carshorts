@@ -13,8 +13,6 @@
     "Front-load value beats: price/verdict by the midpoint, never last."
   ],
   "data_learnings": [
-    "[high][owner-feedback] If the owner asks 'what does this mean?' about a joke, the audience won't get it either — rewrite plain. Deadpan works through clarity, not obscurity.",
-    "[high][mechanic] Deadpan edge voice budget: ~112 words max for a 63s Short (0.56s/word + loop flash). 133 words = 68s = QA red.",
     "[medium][analyst] five_things: put numbered chips ①-⑤ on-screen synced to each item's phrase and persist an 'N/5' counter through the beat — CarWale + MotorOctane converge on this; our five_things renders lack the persistent counter that acts as a visible progress bar and lifts completion.",
     "[medium][analyst] Comment-bait CTA on the tail card: append a binary poll (e.g. 'Nexon or Brezza — 1 or 2? comment') AFTER the verdict, keeping the approved LIKE·SHARE·SUBSCRIBE reaction — MotorOctane's engagement lever, harvests reply signal that recommender uses.",
     "[medium][analyst] Hype hook overlay: first written word is an ALL-CAPS superlative verb (SHOCK / SHOULD / NEVER / ONLY / MUST) on frame 1 with a screen-punch stinger; MotorOctane's curiosity-gap stopping power — fits the hype persona five_things Nexon slot.",
@@ -25,6 +23,7 @@
     "[high][mechanic] Payoff card (kind=card) now holds until section end -0.3 (was min-2.2s); rail pops fire AFTER the 2.2s count-up (only suppressed if they start inside the count-up window). Keeps the value figure on screen while the voice keeps talking about it AND lets concrete feature pops render below.",
     "[high][mechanic] CTA narration containing 'like, share, subscribe' (any punctuation) auto-generates a graphic pop kind=lss — three PIL icons (thumbs-up, share arrow, bell) drawn procedurally, slam-in at y=0.30. NEVER write a text pop for those words; the engine draws the graphic. Scriptwright prompt now enforces the spoken phrase + which-car-next question in every CTA.",
     "[high][owner-feedback] No specific feedback was provided, consider adding more details to the beat_tags and beat_wins to generate actionable lessons",
-    "[high][mechanic] Empty rework verdict (notes+beat_tags+beat_wins all empty) MUST NOT invent changes and MUST NOT escalate to the paid deep brain — free brain now short-circuits: card flips back to awaiting_approval with a 'tag beats or leave a note' prompt. Ledger #1 (invented --no-kwcaps from ambiguous input) is the tax we already paid; do not pay it again."
+    "[high][mechanic] Empty rework verdict (notes+beat_tags+beat_wins all empty) MUST NOT invent changes and MUST NOT escalate to the paid deep brain — free brain now short-circuits: card flips back to awaiting_approval with a 'tag beats or leave a note' prompt. Ledger #1 (invented --no-kwcaps from ambiguous input) is the tax we already paid; do not pay it again.",
+    "[high][mechanic] Voice ceilings are PER-VOICE: NeerjaExpressive at +3% fits ~112 words in 62s; always re-check runtime after any voice or rate change — cached audio must never mask it."
   ]
 }

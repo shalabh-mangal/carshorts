@@ -584,10 +584,21 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     # when it's empty (fetched images must then be vetted — old-gen/plates).
     images: list[str] = []
     if footage:
-        img_dir = f"assets/cars/{_slug(script.subject)}/images"
-        images = sorted(str(p) for p in Path(img_dir).glob("*.[jp][pn]g"))
+        car_root = Path("assets/cars") / _slug(script.subject)
+        img_dir = str(car_root / "images")
+        # OFFICIAL PRESS outranks everything among stills (highest quality,
+        # correct generation, no plates) — then the vetted image folder.
+        # oldgen_-prefixed files sort last within their tier.
+        def _still_rank(path: Path) -> tuple:
+            return (path.name.startswith("oldgen_"), path.name)
+        press = [str(x) for x in sorted((car_root / "press").glob("*.[jp][pn]g"),
+                                        key=_still_rank)]
+        vetted = [str(x) for x in sorted(Path(img_dir).glob("*.[jp][pn]g"),
+                                         key=_still_rank)]
+        images = press + [v for v in vetted if v not in press]
         if images:
-            print(f"3/5  using {len(images)} vetted local images from {img_dir}")
+            print(f"3/5  using {len(press)} press + {len(vetted)} vetted local "
+                  f"images from {car_root}")
         else:
             print(f"3/5  fetching CC car photos -> {img_dir} ...")
             try:
@@ -841,10 +852,12 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                     # previous cut's look family. On the HOOK and the CTA the
                     # subject car itself must be on screen — edges of the video
                     # are where irrelevant b-roll hurts most.
+                    # SUBJECT-FIRST everywhere (owner rule): real content of
+                    # THIS car claims every cut it can; generic b-roll only
+                    # fills what's left. Edge beats additionally hard-require
+                    # the subject (see below).
                     edge_beat = (i == 0 or i == len(script.segments) - 1)
-                    ordering = (sorted(pool, key=lambda a, fam=subject_families:
-                                       not any(f in Path(a).name.lower() for f in fam))
-                                if edge_beat else pool)
+                    ordering = sorted(pool, key=lambda a: not _is_subject_asset(a))
                     for cand in ordering:
                         if cand in used:
                             continue
