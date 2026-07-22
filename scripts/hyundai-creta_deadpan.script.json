@@ -3,7 +3,7 @@
   "segments": [
     {
       "role": "hook",
-      "text": "Another Creta Electric price hike in June 2026 — now ₹18.03 to ₹24.70 lakh. Half your parking is already Cretas.",
+      "text": "Another Creta Electric price hike in June 2026 — ₹18.03 to ₹24.70 lakh. Half your parking is already Cretas.",
       "cited_spec_names": [
         "news_1"
       ],
@@ -19,7 +19,7 @@
     },
     {
       "role": "spec",
-      "text": "The regular Creta: ₹10.91 to ₹20.11 lakh, twenty-seven variants, three engines. Every single one ends up on school duty.",
+      "text": "The regular Creta: ₹10.91 to ₹20.11 lakh, twenty-seven variants, three engines. Every one ends up on school duty.",
       "cited_spec_names": [
         "price_estimate"
       ],
@@ -45,7 +45,7 @@
     },
     {
       "role": "value",
-      "text": "My pick: the S(O) 1.5 Petrol, ₹12.06 lakh — wireless charging, ventilated seats, six airbags. Pricier variants add shine, not substance.",
+      "text": "My pick: S(O) 1.5 Petrol, ₹12.06 lakh — wireless charging, ventilated seats, six airbags. Pricier variants add shine, not substance.",
       "cited_spec_names": [
         "value_variant",
         "value_features"
@@ -76,7 +76,7 @@
     },
     {
       "role": "cta",
-      "text": "Today's Creta or the new one — 1 or 2? Comment. And subscribe: the Nexon fights back next.",
+      "text": "Today's Creta or the new one — 1 or 2? Comment. Subscribe — the Nexon fights back next.",
       "cited_spec_names": [],
       "pops": [
         "Today's Creta",
