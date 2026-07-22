@@ -223,11 +223,14 @@ setInterval(async()=>{   // live: reworking/rendering -> fresh video appears by 
  const fresh=await(await fetch('/api/queue')).json();
  const sig=x=>JSON.stringify(x.map(c=>[c.status,c.progress&&c.progress.step,c.draft_v]));
  if(sig(fresh)!==sig(cards)){
+  const prevV=sel!==null&&cards[sel]?cards[sel].draft_v:null;
   cards=fresh;renderList();
   if(sel!==null&&cards[sel]){
    const c=cards[sel];
    if(selWasBusy&&!BUSY(c.status)){toast('Fresh render landed — player unlocked ✓');pick(sel);}
    else if(!selWasBusy&&BUSY(c.status))pick(sel);
+   else if(prevV!==null&&c.draft_v!==prevV&&!BUSY(c.status)){
+    toast('This draft was re-rendered — reloading it ✓');pick(sel);}
   }
  }
 },6000);
