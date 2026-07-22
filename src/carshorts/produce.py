@@ -645,7 +645,14 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
 
     audio_paths, durations, marks_paths = [], [], []
     for i, seg in enumerate(script.segments):
-        effective_voice = getattr(tts, "voice_id", None) or voice   # 11labs voice matters!
+        # the VOICE is part of the cache identity for every engine — 11labs
+        # stores it as .voice_id, edge as .voice. Missing the edge attr made
+        # every edge render share one key: a voice change silently reused the
+        # old voice's cached audio.
+        effective_voice = (getattr(tts, "voice_id", None)
+                           or getattr(tts, "voice", None) or voice)
+        effective_voice = (f"{effective_voice}"
+                           f"|{getattr(tts, 'rate', '')}|{getattr(tts, 'pitch', '')}")
         key = hashlib.md5(f"{voice_engine}|{effective_voice}|{persona}|{seg.text}".encode()).hexdigest()[:16]
         cached = cache_dir / f"{key}.mp3"
         marks_file = cache_dir / f"{key}.marks.json"
