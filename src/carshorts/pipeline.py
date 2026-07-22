@@ -34,21 +34,39 @@ def _run(cmd: list[str]) -> int:
 
 
 def draft(car: str, persona: str = "deadpan", language: str = "english",
-          video_format: str = "spotlight") -> None:
+          video_format: str = "spotlight", no_agent: bool = False) -> None:
     slug = _slug(car)
     spec = Path(f"specs/{slug}.json")
     extras = Path(f"specs_extras/{slug}.json")
     if not spec.exists():
         sys.exit(f"missing {spec} — crawl it first:  python -m carshorts.crawl \"{car}\" --out specs\n"
                  f"then VERIFY the specs against CarDekho (generation mixing!).")
-    if not extras.exists():
-        sys.exit(f"missing {extras} — add price/value/news (see specs_extras/mahindra-thar.json as template).")
 
     script = Path(f"scripts/{slug}_{persona}.script.json")
-    if _run([sys.executable, "-m", "carshorts.writescript", "--spec", str(spec),
-             "--persona", persona, "--language", language, "--format", video_format,
-             "--variants", "3", "--provider", "groq", "--out", str(script)]) != 0:
-        sys.exit("script stage failed")
+    agent_wrote = False
+    if not no_agent:
+        # SCRIPTWRIGHT: researches fresh news + prices from real outlets,
+        # writes extras AND the script itself, proves both guards clean.
+        from .agent import run_agent
+        print("scriptwright agent researching + writing (this takes a few minutes)…")
+        outcome = run_agent("scriptwright", (
+            f"Car: {car}\nSlug: {slug}\nPersona: {persona}\n"
+            f"Format: {video_format}\nLanguage: {language}\n"
+            f"Spec sheet: specs/{slug}.json\n"
+            f"Extras to write: specs_extras/{slug}.json\n"
+            f"Script to write: {script}"))
+        agent_wrote = outcome["ok"] and script.exists() and extras.exists()
+        print(("scriptwright: " + str(outcome["result"])[:600]) if agent_wrote
+              else f"scriptwright unavailable ({str(outcome['result'])[:120]}) — "
+                   f"falling back to the template writer")
+    if not agent_wrote:
+        if not extras.exists():
+            sys.exit(f"missing {extras} — add price/value/news "
+                     f"(see specs_extras/mahindra-thar.json as template).")
+        if _run([sys.executable, "-m", "carshorts.writescript", "--spec", str(spec),
+                 "--persona", persona, "--language", language, "--format", video_format,
+                 "--variants", "3", "--provider", "groq", "--out", str(script)]) != 0:
+            sys.exit("script stage failed")
 
     draft_out = Path(f"out/{slug}_draft.mp4")
     if _run([sys.executable, "-m", "carshorts.produce", "--script-file", str(script),
@@ -186,6 +204,8 @@ def main() -> None:
     ap.add_argument("--publish", metavar="SLUG",
                     help="Second approval on the final -> publish kit + YouTube upload.")
     ap.add_argument("--privacy", default="public", choices=["public", "unlisted", "private"])
+    ap.add_argument("--no-agent", action="store_true",
+                    help="Skip the scriptwright agent (template writer only).")
     ap.add_argument("--queue", action="store_true", help="Show the approval queue.")
     ap.add_argument("--next", action="store_true",
                     help="Draft the next pending slot from the experiment calendar.")
@@ -198,7 +218,8 @@ def main() -> None:
             sys.exit("calendar empty — python -m carshorts.calendar_plan --build")
         print(f"calendar slot {entry['slot']}: {entry['car']} "
               f"[{entry['persona']}/{entry['format']}/{entry['length_bucket']}]")
-        draft(entry["car"], persona=entry["persona"], video_format=entry["format"])
+        draft(entry["car"], persona=entry["persona"], video_format=entry["format"],
+              no_agent=args.no_agent)
         mark(entry["slot"], "drafted")
         return
     if args.queue:
@@ -208,7 +229,8 @@ def main() -> None:
     elif args.publish:
         publish(args.publish, privacy=args.privacy)
     elif args.car:
-        draft(args.car, persona=args.persona, language=args.language, video_format=args.format)
+        draft(args.car, persona=args.persona, language=args.language,
+              video_format=args.format, no_agent=args.no_agent)
     else:
         ap.print_help()
 
