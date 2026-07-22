@@ -53,3 +53,5 @@
 {"at": "2026-07-22T12:00:28", "video": "out/hyundai-creta_draft.mp4", "check": "runtime \u2264 63s (Shorts sweet spot)", "detail": "63.5s", "resolved": false}
 {"at": "2026-07-22T12:40:12", "video": "out/hyundai-creta_draft.mp4", "check": "runtime \u2264 63s (Shorts sweet spot)", "detail": "68.4s", "resolved": false}
 {"at": "2026-07-22T12:46:24", "video": "out/hyundai-creta_draft.mp4", "check": "true peak \u2264 -1 dBTP", "detail": "auto-repolish", "resolved": true}
+{"at": "2026-07-22T14:03:21", "video": "out/hyundai-creta_draft.mp4", "check": "runtime \u2264 63s (Shorts sweet spot)", "detail": "63.8s", "resolved": false}
+{"at": "2026-07-22T14:03:21", "video": "out/hyundai-creta_draft.mp4", "check": "true peak \u2264 -1 dBTP", "detail": "-0.8 dBTP", "resolved": false}

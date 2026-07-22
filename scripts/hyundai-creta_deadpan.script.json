@@ -10,7 +10,11 @@
       "pops": [
         "price hike",
         "June 2026",
-        "₹18.03 to ₹24.70 lakh"
+        "₹18.03 to ₹24.70 lakh",
+        {
+          "anchor": "Another Creta Electric",
+          "show": "AGAIN."
+        }
       ]
     },
     {
@@ -72,13 +76,13 @@
     },
     {
       "role": "cta",
-      "text": "Today's Creta or the new one? Answer below — and subscribe: the Nexon fights back next.",
+      "text": "Today's Creta or the new one — 1 or 2? Comment. And subscribe: the Nexon fights back next.",
       "cited_spec_names": [],
       "pops": [
         "Today's Creta",
         {
-          "anchor": "Answer below",
-          "show": "YOUR CALL."
+          "anchor": "1 or 2",
+          "show": "1 OR 2?"
         },
         {
           "anchor": "the Nexon fights back",
