@@ -49,7 +49,9 @@ except ImportError:
 # Per-persona edge-tts settings — a cheap way to differentiate energy for free.
 PERSONA_VOICE = {
     "bhai":    {"voice": "en-IN-PrabhatNeural", "rate": "+8%",  "pitch": "+2Hz"},
-    "deadpan": {"voice": "en-GB-RyanNeural",     "rate": "-4%",  "pitch": "-2Hz"},
+    # owner-chosen channel voice (2026-07-22): Indian English, expressive read
+    # slowed slightly so the deadpan lands dry. Free (edge) — drafts AND finals.
+    "deadpan": {"voice": "en-IN-NeerjaExpressiveNeural", "rate": "-5%", "pitch": "-2Hz"},
     "hype":    {"voice": "en-US-GuyNeural",       "rate": "+18%", "pitch": "+4Hz"},
     "default": {"voice": "en-US-GuyNeural",       "rate": "+0%",  "pitch": "+0Hz"},
 }

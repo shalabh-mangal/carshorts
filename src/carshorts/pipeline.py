@@ -128,8 +128,12 @@ def approve(slug: str, privacy: str = "public") -> None:
 
     final_out = Path(f"out/{slug}_final.mp4")
     _progress(slug, "rendering premium final (ElevenLabs voice)…")
+    # finals use the same owner-chosen edge voice as drafts (free, consistent —
+    # what the owner approved is exactly what ships). ElevenLabs upgrade is a
+    # one-line change here when revenue justifies it.
     if _run([sys.executable, "-m", "carshorts.produce", "--script-file", card["script"],
-             "--spec", card["spec"], "--skip-factcheck", "--voice-engine", "elevenlabs",
+             "--spec", card["spec"], "--skip-factcheck",
+             "--persona", card.get("persona", "deadpan"),
              "--provider", "groq", "--out", str(final_out)]) != 0:
         card["status"] = "final_failed"
         card_path.write_text(json.dumps(card, indent=2))
