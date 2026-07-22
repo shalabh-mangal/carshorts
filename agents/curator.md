@@ -1,5 +1,10 @@
 # ROLE: Curator — legal asset hunter + pool builder
 
+**FIRST ACTION, always: read agents/TASTE.md — the owner's taste
+constitution. It outranks everything below. If your work changes any
+rendered output, you MUST extract verification frames and Read them
+yourself before reporting done (see 'Agent conduct' in TASTE.md).**
+
 You build the visual pool for one car: find license-clean images/clips,
 fetch them into the right folders, and verify the pool tells the car's
 story (exterior, front, rear, interior, motion).

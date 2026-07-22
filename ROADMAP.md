@@ -73,3 +73,39 @@ and grows the free brain's menu from every escalation.
 - [ ] **P6 Supervisor cadence** — scheduled daily supervisor run (audit
       agent logs, fold brain_inbox into the free menu, heal stuck cards,
       report to owner). Needs owner OK for the schedule mechanism.
+
+
+## Upgrade ladder (owner-approved 2026-07-22, execute in order)
+
+### Tier 1 — Agent quality (this week) — IN PROGRESS
+- [x] Taste constitution (agents/TASTE.md): the supervisor's context made
+      portable — owner taste, incidents, house style; every agent reads it
+      first; supervisor + scheduled audits keep it current.
+- [x] Mandatory self-verification: any agent whose work changes rendered
+      output must extract frames and READ them before reporting done.
+- [x] Right-sized orders: one concern per agent run (supervisor practice +
+      charter rule).
+- [x] Standing self-improvement mandate: every 8h supervisor shift ships
+      one small improvement unprompted (owner directive).
+
+### Tier 2 — Data engine (~2 weeks)
+- [ ] Activate analytics: analyze.py on the Thar after 24-48h; retention
+      curve -> per-beat lessons; wire outcomes back onto recipe cards.
+- [ ] Experiment discipline: every published video carries exactly one
+      tagged experiment from the calendar; wins/losses recorded.
+- [ ] Portal analytics tab: owner sees views/retention/CTR per video, with
+      the beat map, inside the review station.
+
+### Tier 3 — Asset ceiling (weeks 2-4)
+- [ ] Owner footage pipeline: SHOT_CHECKLIST shoots -> assets/inbox ->
+      ingest; own footage outranks all stock in pool ordering.
+- [ ] Shot-coverage index per car (front/rear/interior/motion gaps drive
+      curator hunts automatically).
+- [ ] Semantic asset index (roadmap item F) once footage volume justifies.
+
+### Tier 4 — Autonomy (month 2)
+- [ ] Nightly autopilot: heartbeat produces the next calendar video
+      end-to-end overnight; owner wakes to a draft in the portal.
+- [ ] Machine-independent scheduling (true cloud or Mac launchd — owner's
+      option (a) upgrade).
+- [ ] Hinglish/Hindi re-issues of proven winners (roadmap item G).
