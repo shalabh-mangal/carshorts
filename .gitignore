@@ -8,6 +8,7 @@ __pycache__/
 
 # Secrets — never commit API keys
 .env
+env
 *.key
 
 # Generated renders (regenerable; finals live on YouTube)
@@ -19,6 +20,14 @@ assets/stock_archive/
 
 # Harness output
 harness_report.json
+
+# Runtime logs (scheduled-task output)
+data/logs/
+
+# Quarantined assets — plates/watermarks/wrong-vehicle, kept locally for
+# recovery but never committed to the clean licensed pool
+**/_quarantine/
+**/_quarantine_plated/
 
 # Editor
 .idea/

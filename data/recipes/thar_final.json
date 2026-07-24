@@ -20,11 +20,13 @@
   "cut_target_s": 3.3,
   "video_id": "mPbjAt4kSoE",
   "metrics": {
-    "views": 24,
-    "likes": 1,
+    "views": 144,
+    "likes": 2,
     "comments": 0,
     "avg_view_s": 0,
     "avg_view_pct": 0,
-    "retention_curve": []
+    "retention_curve": [],
+    "like_rate": 1.389,
+    "comment_rate": 0.0
   }
 }

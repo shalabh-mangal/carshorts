@@ -1,0 +1,23 @@
+{
+  "out": "out\\creta_selfrender.mp4",
+  "subject": "Hyundai Creta",
+  "rendered_at": "2026-07-23T04:12:55",
+  "script_file": "scripts/hyundai-creta_deadpan.script.json",
+  "persona": "deadpan",
+  "voice_engine": "edge",
+  "language": "english",
+  "music": "Balearic Slide - Jeremy Black.mp3",
+  "captions": false,
+  "word_count": 108,
+  "sections": 6,
+  "hook_text": "Another Creta Electric price hike in June 2026 \u2014 \u20b918.03 to \u20b924.70 lakh. Half your parking is already Cretas.",
+  "hook_type": "news",
+  "pool": {
+    "own": 0,
+    "stock": 16,
+    "stills": 198
+  },
+  "cut_target_s": 2.3,
+  "video_id": null,
+  "metrics": null
+}

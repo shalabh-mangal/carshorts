@@ -1,0 +1,257 @@
+{
+  "images/2021_Hyundai_Creta_1.5_Trend_SU2id_Indonesia_rear_view_01.jpg:429955": {
+    "ok": true,
+    "defects": [
+      "wrong_generation"
+    ],
+    "blocking": []
+  },
+  "images/2021_Hyundai_Creta_1.5_Value_Chile_front_view.jpg:473136": {
+    "ok": true,
+    "defects": [
+      "wrong_generation"
+    ],
+    "blocking": []
+  },
+  "images/2021_Hyundai_Creta_1.5_Value_Chile_rear_view.jpg:427381": {
+    "ok": true,
+    "defects": [
+      "wrong_generation"
+    ],
+    "blocking": []
+  },
+  "images/2021_Hyundai_Creta_2.0_HTRAC_Prestige_Russia_SU2r_rear_view.jpg:439572": {
+    "ok": true,
+    "defects": [
+      "wrong_generation"
+    ],
+    "blocking": []
+  },
+  "images/2021_Hyundai_Creta_SX_O_CRDi_India_front_view.jpg:741986": {
+    "ok": true,
+    "defects": [
+      "wrong_generation"
+    ],
+    "blocking": []
+  },
+  "images/2021_Hyundai_Creta_SX_O_CRDi_India_rear_view.jpg:753448": {
+    "ok": true,
+    "defects": [
+      "wrong_generation"
+    ],
+    "blocking": []
+  },
+  "images/red_thar_front_detail.jpg:150930": {
+    "ok": true,
+    "defects": [
+      "wrong_generation"
+    ],
+    "blocking": []
+  },
+  "images/red_thar_plateblur.jpg:510397": {
+    "ok": true,
+    "defects": [
+      "wrong_generation"
+    ],
+    "blocking": []
+  },
+  "images/roxx_dirt_detail.jpg:0": {
+    "ok": false,
+    "defects": [
+      "readable_plate",
+      "wrong_generation"
+    ],
+    "blocking": [
+      "readable_plate"
+    ]
+  },
+  "images/roxx_dirt_full.jpg:0": {
+    "ok": false,
+    "defects": [
+      "readable_plate",
+      "wrong_generation"
+    ],
+    "blocking": [
+      "readable_plate"
+    ]
+  },
+  "images/roxx_press_full.png:1037266": {
+    "ok": true,
+    "defects": [],
+    "blocking": []
+  },
+  "images/roxx_press_grille_detail.jpg:38036": {
+    "ok": true,
+    "defects": [],
+    "blocking": []
+  },
+  "_quarantine_plated/Mahindra_Thar_ROXX_on_dirt.jpg:1335052": {
+    "ok": false,
+    "defects": [
+      "readable_plate"
+    ],
+    "blocking": [
+      "readable_plate"
+    ]
+  },
+  "_quarantine_plated/Mahindra_Thar_ROXX_on_rocks_cropped_.jpg:497990": {
+    "ok": false,
+    "defects": [
+      "readable_plate"
+    ],
+    "blocking": [
+      "readable_plate"
+    ]
+  },
+  "images/11_final_prototype_2.jpg:1046705": {
+    "ok": true,
+    "defects": [],
+    "blocking": []
+  },
+  "images/1998_Suzuki_Swift_GA_in_Medium_Blue_Metallic_front_three_quarters.jpg:0": {
+    "ok": false,
+    "defects": [
+      "wrong_vehicle"
+    ],
+    "blocking": [
+      "wrong_vehicle"
+    ]
+  },
+  "images/2007_Suzuki_Swift_Sport_1.6_Front.jpg:7637252": {
+    "ok": true,
+    "defects": [],
+    "blocking": []
+  },
+  "images/_09_Suzuki_Swift_Orange_Julep_.jpg:0": {
+    "ok": false,
+    "defects": [
+      "wrong_vehicle"
+    ],
+    "blocking": [
+      "wrong_vehicle"
+    ]
+  },
+  "images/Maruti_Suzuki_Swift_LXi.jpg:0": {
+    "ok": false,
+    "defects": [
+      "readable_plate",
+      "watermark"
+    ],
+    "blocking": [
+      "readable_plate",
+      "watermark"
+    ]
+  },
+  "images/2020_Tata_Nexon_EV_India_front_view.png:0": {
+    "ok": false,
+    "defects": [
+      "readable_plate"
+    ],
+    "blocking": [
+      "readable_plate"
+    ]
+  },
+  "images/2023_Tata_Nexon_XZA_front_view.jpg:2502288": {
+    "ok": true,
+    "defects": [],
+    "blocking": []
+  },
+  "images/2023_Tata_Nexon_XZA_rear_view.jpg:2761771": {
+    "ok": true,
+    "defects": [],
+    "blocking": []
+  },
+  "images/Salon_de_l_auto_de_Gen_ve_2014_20140305_Tata_Nexon.jpg:16213677": {
+    "ok": true,
+    "defects": [
+      "wrong_generation"
+    ],
+    "blocking": []
+  },
+  "images/Tata_Nexon_2023_Rear_View_2.jpg:1041278": {
+    "ok": true,
+    "defects": [],
+    "blocking": []
+  },
+  "images/Tata_Nexon_Blue_Dual_Tone.jpg:0": {
+    "ok": false,
+    "defects": [
+      "readable_plate"
+    ],
+    "blocking": [
+      "readable_plate"
+    ]
+  },
+  "images/2022_Hyundai_Creta_1.5_IVT_orange_and_black_front_view_in_Brunei.jpg:759473": {
+    "ok": true,
+    "defects": [],
+    "blocking": []
+  },
+  "images/2022_Hyundai_Creta_SEL.jpg:484301": {
+    "ok": true,
+    "defects": [],
+    "blocking": []
+  },
+  "images/Hyundai_Creta_1.5_GL_2023_3_.jpg:432739": {
+    "ok": true,
+    "defects": [],
+    "blocking": []
+  },
+  "images/2022_Hyundai_Creta_1.5_IVT_orange_and_black_rear_view_in_Brunei.jpg:739540": {
+    "ok": true,
+    "defects": [],
+    "blocking": []
+  },
+  "images/Hyundai_Creta_1.5_GL_2023_6_.jpg:583583": {
+    "ok": true,
+    "defects": [],
+    "blocking": []
+  },
+  "images/Hyundai_Creta_1.5_GL_2023_5_.jpg:560607": {
+    "ok": true,
+    "defects": [],
+    "blocking": []
+  },
+  "images/Hyundai_Creta_Electric_SU2_EV_PE.jpg:678171": {
+    "ok": false,
+    "defects": [
+      "watermark"
+    ],
+    "blocking": [
+      "watermark"
+    ]
+  },
+  "images/Hyundai_Creta_1.5_GL_2023_2_.jpg:366066": {
+    "ok": true,
+    "defects": [],
+    "blocking": []
+  },
+  "images/Legacy_SR2_Laksana_Luragung_Termuda.jpg:365095": {
+    "ok": false,
+    "defects": [
+      "readable_plate"
+    ],
+    "blocking": [
+      "readable_plate"
+    ]
+  },
+  "images/2025_Hyundai_Creta_N_Line_cropped_.jpg:435864": {
+    "ok": true,
+    "defects": [],
+    "blocking": []
+  },
+  "images/Hyundai_Creta_SU2_1.5_GLS_interior_view.jpg:468873": {
+    "ok": true,
+    "defects": [],
+    "blocking": []
+  },
+  "images/Hyundai_Creta_1.5_Value_2023_53681783847_.jpg:617777": {
+    "ok": false,
+    "defects": [
+      "readable_plate"
+    ],
+    "blocking": [
+      "readable_plate"
+    ]
+  }
+}

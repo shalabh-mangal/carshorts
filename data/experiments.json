@@ -1,0 +1,43 @@
+{
+  "experiments": [
+    {
+      "id": "exp-001",
+      "hypothesis": "Shorts at ~35s retain better than our current ~58s",
+      "variable": "length_s",
+      "metric": "avg_view_pct",
+      "control": "58",
+      "treatment": "35",
+      "source": "competitor intel 2026-07-23: 8 rival channels median 33s short-form vs ours 58s; 6 of 8 shorter than us",
+      "min_samples": 3,
+      "min_views": 500,
+      "min_effect": 5.0,
+      "status": "running",
+      "created": "2026-07-23",
+      "arms": {
+        "control": [
+          "mPbjAt4kSoE",
+          "EXCHHyUDyyg",
+          "NXa-7sG13Uw"
+        ],
+        "treatment": []
+      },
+      "verdict": {
+        "n_a": 0,
+        "n_b": 0,
+        "mean_a": null,
+        "mean_b": null,
+        "diff": null,
+        "t": null,
+        "df": null,
+        "p": null,
+        "status": "insufficient",
+        "reason": "need >=3 per arm, have 0 control / 0 treatment",
+        "skipped": [
+          "mPbjAt4kSoE: 144 views < floor 500",
+          "EXCHHyUDyyg: 79 views < floor 500",
+          "NXa-7sG13Uw: 57 views < floor 500"
+        ]
+      }
+    }
+  ]
+}

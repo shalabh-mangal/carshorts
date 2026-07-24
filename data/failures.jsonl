@@ -82,3 +82,7 @@
 {"at": "2026-07-23T00:32:02", "video": "out/hyundai-creta_draft.mp4", "check": "visual-qa", "detail": "{\"t\": 50.78, \"asset\": \"creta_hyundai_creta_31657802.mp4\", \"phrase\": \"Every family agrees.\", \"issues\": [], \"match\": false}", "resolved": false}
 {"at": "2026-07-23T00:34:08", "video": "out/hyundai-creta_draft.mp4", "check": "visual-qa", "detail": "{\"t\": 10.13, \"asset\": \"2018_HYUNDAI_Creta_facelift_1.6_Brunei_Interior_.jpg\", \"phrase\": \"Half your parking is already Cretas.\", \"issues\": [\"too_dark_or_blurry\"], \"match\": true}", "resolved": false}
 {"at": "2026-07-23T00:34:08", "video": "out/hyundai-creta_draft.mp4", "check": "visual-qa", "detail": "{\"t\": 50.78, \"asset\": \"creta_hyundai_creta_31657802.mp4\", \"phrase\": \"Every family agrees.\", \"issues\": [\"wrong_vehicle_type\"], \"match\": false}", "resolved": false}
+{"at": "2026-07-23T03:28:40", "video": "out\\thar_selfrender.mp4", "check": "runtime \u2264 63s (Shorts sweet spot)", "detail": "69.7s", "resolved": false}
+{"at": "2026-07-23T03:28:40", "video": "out\\thar_selfrender.mp4", "check": "no repeated asset", "detail": "13 repeats vs 12 allowed (pool 4, cuts 16)", "resolved": false}
+{"at": "2026-07-23T04:12:55", "video": "out\\creta_selfrender.mp4", "check": "loudness -14 LUFS \u00b12", "detail": "-20.4 LUFS", "resolved": false}
+{"at": "2026-07-23T18:50:47", "video": "out\\creta_openfix.mp4", "check": "loudness -14 LUFS \u00b12", "detail": "-20.4 LUFS", "resolved": false}

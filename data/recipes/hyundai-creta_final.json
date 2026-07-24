@@ -19,5 +19,14 @@
   },
   "cut_target_s": 2.3,
   "video_id": "NXa-7sG13Uw",
-  "metrics": null
+  "metrics": {
+    "views": 57,
+    "likes": 2,
+    "comments": 0,
+    "avg_view_s": 0,
+    "avg_view_pct": 0,
+    "retention_curve": [],
+    "like_rate": 3.509,
+    "comment_rate": 0.0
+  }
 }

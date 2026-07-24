@@ -59,19 +59,23 @@ def _apply_extras(sheet: SpecSheet) -> str:
     if not path.exists():
         return ""
     extras = json.loads(path.read_text())
-    price = extras.get("price_estimate")
-    if not price:
-        return ""
-    note = extras.get("price_note", "estimate; varies by city")
     source = extras.get("price_source", "https://www.cardekho.com")
-    sheet.specs.append(Spec(
-        name="price_estimate",
-        value=price,
-        source_url=source,
-        source_sentence=f"Estimated price {price} ({note}; source CarDekho/CarWale).",
-    ))
+    guidance: list[str] = []
 
-    guidance = [f"PRICE (estimate, say so): {price} — {note}."]
+    # PRICE is optional. It is human-supplied (never scraped — see CLAUDE.md), so
+    # a freshly crawled car legitimately has news long before it has a price.
+    # This used to `return ""` when price was missing, which silently discarded
+    # every news item on such a car — the newscrawl output went nowhere.
+    price = extras.get("price_estimate")
+    if price:
+        note = extras.get("price_note", "estimate; varies by city")
+        sheet.specs.append(Spec(
+            name="price_estimate",
+            value=price,
+            source_url=source,
+            source_sentence=f"Estimated price {price} ({note}; source CarDekho/CarWale).",
+        ))
+        guidance.append(f"PRICE (estimate, say so): {price} — {note}.")
 
     # Fresh news items: each becomes a SOURCED fact (skeptic + number-guard
     # cover it) plus guidance to lead the hook with the strongest one — news is
@@ -603,7 +607,23 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
             print(f"3/5  fetching CC car photos -> {img_dir} ...")
             try:
                 images = WikimediaImageSource().fetch(script.subject, img_dir, limit=6)
-                print(f"     {len(images)} images (VET THESE — generation + plates)")
+                print(f"     {len(images)} images fetched — vetting before use…")
+                # Wikimedia checks the LICENCE, nothing else. Real fetches have
+                # returned readable number plates and third-party watermarks, so
+                # nothing auto-fetched may enter the pool unlooked-at. Failures
+                # are quarantined (recoverable), never deleted.
+                from .assetvet import vet_folder
+                report = vet_folder(img_dir, script.subject, apply=True)
+                if report.get("checked"):
+                    print(f"     asset vet: {report['clean']}/{report['checked']} clean, "
+                          f"{report['quarantined']} quarantined")
+                    for r in report["results"]:
+                        if not r["ok"]:
+                            print(f"       ✂ {r['file'][:44]}: {','.join(r['blocking'])}")
+                # re-derive the pool from what actually survived the vet
+                images = [str(x) for x in sorted(Path(img_dir).glob("*.[jp][pn]g"),
+                                                 key=_still_rank)]
+                print(f"     {len(images)} usable image(s) after vetting")
             except Exception as exc:  # noqa: BLE001 — no photos just means plain cards
                 print(f"     footage fetch failed ({exc}); using plain caption cards.")
 
@@ -794,6 +814,51 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
 
     def _is_subject_asset(asset: str) -> bool:
         return any(f in Path(asset).name.lower() for f in subject_families)
+
+    # --- DETERMINISTIC OPENER. On a Short frame 1 IS the thumbnail, yet it was
+    # whatever the LLM phrase-matcher happened to return that run (two renders
+    # of the same script opened on different photos). Rank the subject stills
+    # by measured stop-power against the rival baseline instead.
+    opening_pick = None
+    try:
+        from .firstframe import load_baseline, rank_opening_stills
+        _baseline = load_baseline()
+        if _baseline:
+            still_candidates = [
+                a for a in pool
+                if _is_subject_asset(a)
+                and not a.lower().endswith((".mp4", ".mov", ".m4v", ".webm"))
+                and not Path(a).name.lower().startswith("oldgen_")]
+            ranked = rank_opening_stills(still_candidates, _baseline)  # scored once
+            # VET-ON-USE: the scorer is blind to plates/watermarks/promo text, so
+            # a defective image can win on exposure alone (a Thai-promo showroom
+            # shot once did). Vet the top candidates from the top down, cache-first
+            # and capped, and drop blocking-failed ones before one becomes the
+            # thumbnail. Cached verdicts (incl. this pool's seed) cost nothing;
+            # quota-dead just means "unvetted", never "blocked".
+            blocked: set = set()
+            try:
+                from .assetvet import vet_paths
+                top = [p for _, p, _ in ranked[:12]]
+                verdicts = vet_paths(top, script.subject, max_calls=3)
+                blocked = {p for p, v in verdicts.items() if not v["ok"]}
+                if blocked:
+                    print(f"     vet-on-use: dropped {len(blocked)} opener "
+                          f"candidate(s): "
+                          + ", ".join(Path(p).name[:26] for p in blocked))
+                    pool = [a for a in pool if a not in blocked]
+            except Exception as exc:  # noqa: BLE001 — vetting is best-effort
+                print(f"     vet-on-use skipped ({str(exc)[:70]})")
+
+            for score, path, _ in ranked:
+                if path not in blocked:
+                    opening_pick = path
+                    print(f"     opener (deterministic, score {score:.2f}): "
+                          f"{Path(path).name}")
+                    break
+    except Exception as exc:  # noqa: BLE001 — never block a render on this
+        print(f"     opener scoring skipped ({str(exc)[:80]})")
+
     sections = []
     manifest_sections: list[dict] = []
     prev_last_bucket = ""
@@ -845,6 +910,10 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                 if timed_cuts and t_off - timed_cuts[-1][0] < 1.1:
                     continue
                 pick = phrase_ranked.get((i, j))
+                # the very first cut is the thumbnail — it is chosen by measured
+                # stop-power, not by whatever the matcher returned this run
+                if i == 0 and not timed_cuts and opening_pick:
+                    pick = opening_pick
                 if pick is not None and pick in used:
                     pick = None          # once-only: a used asset can't repeat
                 if pick is None:

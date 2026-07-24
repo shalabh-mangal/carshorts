@@ -1,0 +1,40 @@
+{
+  "out": "",
+  "subject": "Maruti Suzuki Swift",
+  "rendered_at": null,
+  "script_file": "scripts/swift_deadpan.script.json",
+  "persona": "deadpan",
+  "voice_engine": null,
+  "language": "english",
+  "music": null,
+  "captions": null,
+  "word_count": 90,
+  "sections": 6,
+  "hook_text": "Think power is everything? Think again — the Swift leaves rivals in the dust without the big engine.",
+  "hook_type": "question",
+  "pool": null,
+  "cut_target_s": null,
+  "video_id": "f5IAZNafgd0",
+  "metrics": {
+    "views": 467,
+    "likes": 0,
+    "comments": 0,
+    "avg_view_s": 19,
+    "avg_view_pct": 42.16,
+    "retention_curve": [],
+    "like_rate": 0.0,
+    "comment_rate": 0.0
+  },
+  "backfilled": true,
+  "published_at": "2026-07-21T06:25:17Z",
+  "duration_s": 46,
+  "backfill_evidence": "HIGH confidence: published description figures (82 PS, 111.7 Nm, 25.75 kmpl, Rs5.79-8.80 lakh) and the ZXi value-pick feature list (LED projectors, 15-inch alloys, 9-inch touchscreen) match swift_deadpan.script.json verbatim.",
+  "backfill_unknown": [
+    "voice_engine",
+    "music",
+    "pool",
+    "cut_target_s",
+    "rendered_at",
+    "out/manifest (no local render artifacts)"
+  ]
+}

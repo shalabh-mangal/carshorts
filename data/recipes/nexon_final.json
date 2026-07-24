@@ -1,0 +1,42 @@
+{
+  "out": "",
+  "subject": "Tata Nexon",
+  "rendered_at": null,
+  "script_file": "scripts/nexon_deadpan.script.json",
+  "persona": null,
+  "voice_engine": null,
+  "language": "english",
+  "music": null,
+  "captions": null,
+  "word_count": 165,
+  "sections": 7,
+  "hook_text": "Trouble's just 9.9 seconds away with the Tata Nexon - and we're not talking about the in-laws",
+  "hook_type": "statement",
+  "pool": null,
+  "cut_target_s": null,
+  "video_id": "VamhQZHDgSU",
+  "metrics": {
+    "views": 26,
+    "likes": 0,
+    "comments": 1,
+    "avg_view_s": 24,
+    "avg_view_pct": 47.09,
+    "retention_curve": [],
+    "like_rate": 0.0,
+    "comment_rate": 3.846
+  },
+  "backfilled": true,
+  "published_at": "2026-07-19T23:27:34Z",
+  "duration_s": 51,
+  "backfill_evidence": "PERSONA UNRESOLVED - do not treat as evidence. Points to deadpan: '245 N-m' is spoken only in nexon_deadpan, and the title leads on '0-100 in 9.9s' (the deadpan hook's focus). Points to hype: the Rs7.37-14.22 lakh range appears only in nexon_hype's value beat. Descriptions are generated from the spec sheet, so shared figures cannot discriminate. script_file is the LIKELY (not confirmed) variant.",
+  "backfill_unknown": [
+    "persona",
+    "script_file (deadpan vs hype unconfirmed)",
+    "voice_engine",
+    "music",
+    "pool",
+    "cut_target_s",
+    "rendered_at",
+    "out/manifest (no local render artifacts)"
+  ]
+}

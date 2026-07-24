@@ -1,0 +1,85 @@
+{
+  "at": "2026-07-23T17:18:27",
+  "ours": {
+    "title": "carsInShorts",
+    "videos": 5,
+    "median_like_rate": 1.389,
+    "median_comment_rate": 0.0,
+    "total_views": 808,
+    "comments_disabled": 0
+  },
+  "rivals": [
+    {
+      "title": "carwow",
+      "subs": 11000000,
+      "videos": 30,
+      "median_like_rate": 2.441,
+      "median_comment_rate": 0.137,
+      "total_views": 22187124,
+      "comments_disabled": 0
+    },
+    {
+      "title": "MotorOctane",
+      "subs": 5260000,
+      "videos": 30,
+      "median_like_rate": 3.282,
+      "median_comment_rate": 0.043,
+      "total_views": 7532116,
+      "comments_disabled": 0
+    },
+    {
+      "title": "Autocar India",
+      "subs": 2540000,
+      "videos": 29,
+      "median_like_rate": 1.969,
+      "median_comment_rate": 0.085,
+      "total_views": 633353,
+      "comments_disabled": 1
+    },
+    {
+      "title": "CarDekho",
+      "subs": 1360000,
+      "videos": 30,
+      "median_like_rate": 2.881,
+      "median_comment_rate": 0.059,
+      "total_views": 797559,
+      "comments_disabled": 0
+    },
+    {
+      "title": "MotorBeam",
+      "subs": 1220000,
+      "videos": 30,
+      "median_like_rate": 3.365,
+      "median_comment_rate": 0.091,
+      "total_views": 723112,
+      "comments_disabled": 0
+    },
+    {
+      "title": "ZigWheels",
+      "subs": 859000,
+      "videos": 30,
+      "median_like_rate": 1.759,
+      "median_comment_rate": 0.039,
+      "total_views": 647163,
+      "comments_disabled": 0
+    },
+    {
+      "title": "carandbike",
+      "subs": 664000,
+      "videos": 27,
+      "median_like_rate": 2.323,
+      "median_comment_rate": 0.078,
+      "total_views": 295238,
+      "comments_disabled": 0
+    },
+    {
+      "title": "CarWale",
+      "subs": 310000,
+      "videos": 30,
+      "median_like_rate": 0.862,
+      "median_comment_rate": 0.029,
+      "total_views": 1017117,
+      "comments_disabled": 0
+    }
+  ]
+}

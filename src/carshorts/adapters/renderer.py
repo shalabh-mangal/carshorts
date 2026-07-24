@@ -13,19 +13,23 @@ quirks.
 """
 from __future__ import annotations
 
+import os
 import tempfile
 from abc import ABC, abstractmethod
 from pathlib import Path
 
 VERTICAL = (1080, 1920)
 
-# Common macOS/Linux font locations, tried in order. Falls back to Pillow's
-# built-in bitmap font if none resolve (ugly but never crashes).
+# Common macOS/Linux/Windows font locations, tried in order. Falls back to
+# Pillow's built-in bitmap font if none resolve (ugly but never crashes).
 _FONT_CANDIDATES = [
     "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
     "/System/Library/Fonts/Supplemental/Arial.ttf",
     "/System/Library/Fonts/Helvetica.ttc",
     "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+    r"C:\Windows\Fonts\arialbd.ttf",       # Windows: Arial Bold
+    r"C:\Windows\Fonts\arial.ttf",         # Windows: Arial
+    r"C:\Windows\Fonts\segoeui.ttf",       # Windows: Segoe UI
 ]
 
 
@@ -126,9 +130,12 @@ class Section:
 _HEAVY_FONTS = [
     str(Path(__file__).resolve().parents[3] / "assets" / "fonts" / "Montserrat-Black.ttf"),
     "assets/fonts/Montserrat-Black.ttf",                     # cwd-relative fallback
+    r"C:\Windows\Fonts\Montserrat-Black.ttf",               # Windows: if user-installed
     "/System/Library/Fonts/SFCompactRounded.ttf",
     "/System/Library/Fonts/Supplemental/Arial Rounded Bold.ttf",
     "/System/Library/Fonts/Supplemental/Arial Black.ttf",
+    r"C:\Windows\Fonts\ariblk.ttf",                          # Windows: Arial Black (heavy)
+    r"C:\Windows\Fonts\seguisb.ttf",                         # Windows: Segoe UI Semibold
 ] + _FONT_CANDIDATES
 
 # Overlay palette (research-derived): white base + ONE desaturated-cyan accent
@@ -136,6 +143,18 @@ _HEAVY_FONTS = [
 TEXT_WHITE = (255, 255, 255, 255)
 ACCENT_CYAN = (126, 229, 227, 255)      # #7EE5E3 — the channel accent
 STROKE_BLACK = (0, 0, 0, 255)
+
+# Stills are darkened so white overlay text stays readable over any photo.
+DEFAULT_DARKEN = 0.35
+# ...but the OPENING cut is exempt. On a Short frame 1 IS the thumbnail and gets
+# about one blink to stop a scroll, and it carries no text yet — pops are
+# voice-synced and start later — so it was paying the legibility tax for a
+# benefit it never received. Measured against 127 real rival Shorts thumbnails
+# (2026-07-23) our openers ran 0.70x brightness, 0.71x contrast and 0.59x
+# colourfulness of the feed norm; undoing a 0.65x multiply lands them at it.
+# Pops that fire during the opening cut keep their own ~9% black stroke and
+# blurred shadow, which is what actually carries legibility over busy footage.
+OPENING_DARKEN = 0.0
 
 
 def _load_heavy_font(size: int):
@@ -422,15 +441,17 @@ class MoviePyRenderer(VideoRenderer):
         self.size = size
         self.bg_color = bg_color
 
-    def _prepare_background(self, background_image: str | None, text: str | None) -> str:
+    def _prepare_background(self, background_image: str | None, text: str | None,
+                            darken: float = DEFAULT_DARKEN) -> str:
         from PIL import Image, ImageDraw
 
         width, height = self.size
         if background_image:
             img = _cover_crop(Image.open(background_image).convert("RGB"), width, height)
             # Darken so white captions stay readable over any photo.
-            overlay = Image.new("RGB", (width, height), (0, 0, 0))
-            img = Image.blend(img, overlay, 0.35)
+            if darken > 0:
+                overlay = Image.new("RGB", (width, height), (0, 0, 0))
+                img = Image.blend(img, overlay, darken)
         else:
             img = Image.new("RGB", (width, height), self.bg_color)
 
@@ -457,7 +478,8 @@ class MoviePyRenderer(VideoRenderer):
     _VIDEO_EXT = (".mp4", ".mov", ".m4v", ".webm")
 
     def _pooled_scene(self, visuals: list[str], dur: float,
-                      VideoFileClip, ImageClip, CompositeVideoClip, concatenate_videoclips):
+                      VideoFileClip, ImageClip, CompositeVideoClip, concatenate_videoclips,
+                      opening: bool = False):
         """Fast-paced scene: split `dur` across the given visuals, cut
         back-to-back. Motion varies per cut so nothing feels like a slideshow:
         stills rotate zoom-in / zoom-out / pan-left / pan-right; video chunks
@@ -467,11 +489,14 @@ class MoviePyRenderer(VideoRenderer):
         subs = []
         for j, path in enumerate(visuals):
             subs.append(self._sub_visual(path, chunk, j, VideoFileClip, ImageClip,
-                                         CompositeVideoClip, concatenate_videoclips))
+                                         CompositeVideoClip, concatenate_videoclips,
+                                         darken=(OPENING_DARKEN if (opening and j == 0)
+                                                 else DEFAULT_DARKEN)))
         return concatenate_videoclips(subs, method="chain")
 
     def _timed_scene(self, cuts: list, dur: float,
-                     VideoFileClip, ImageClip, CompositeVideoClip, concatenate_videoclips):
+                     VideoFileClip, ImageClip, CompositeVideoClip, concatenate_videoclips,
+                     opening: bool = False):
         """Phrase-synced scene: cuts = [(offset_seconds, visual_path)] with
         offsets aligned to the narration's phrase starts, so the picture changes
         exactly when the words change subject."""
@@ -480,11 +505,14 @@ class MoviePyRenderer(VideoRenderer):
             end = cuts[j + 1][0] if j + 1 < len(cuts) else dur
             chunk = max(0.4, end - start)
             subs.append(self._sub_visual(path, chunk, j, VideoFileClip, ImageClip,
-                                         CompositeVideoClip, concatenate_videoclips))
+                                         CompositeVideoClip, concatenate_videoclips,
+                                         darken=(OPENING_DARKEN if (opening and j == 0)
+                                                 else DEFAULT_DARKEN)))
         return concatenate_videoclips(subs, method="chain")
 
     def _sub_visual(self, path: str, chunk: float, j: int,
-                    VideoFileClip, ImageClip, CompositeVideoClip, concatenate_videoclips):
+                    VideoFileClip, ImageClip, CompositeVideoClip, concatenate_videoclips,
+                    darken: float = DEFAULT_DARKEN):
         width, height = self.size
         if True:
             if path.lower().endswith(self._VIDEO_EXT):
@@ -499,7 +527,7 @@ class MoviePyRenderer(VideoRenderer):
                     clip = CompositeVideoClip([punched], size=self.size).with_duration(chunk)
                 return clip
             else:
-                bg_path = self._prepare_background(path, None)
+                bg_path = self._prepare_background(path, None, darken=darken)
                 base = ImageClip(bg_path).with_duration(chunk)
                 mode = j % 4
                 if mode == 0:    # zoom in
@@ -534,7 +562,7 @@ class MoviePyRenderer(VideoRenderer):
 
     def render_sections(self, sections: list[Section], out_path: str,
                         music_path: str | None = None, ken_burns: bool = True,
-                        draw_captions: bool = True, fps: int = 30,
+                        draw_captions: bool = True, fps: int = 24,
                         loop_close: bool = True) -> str:
         """Multi-scene render: each Section becomes a clip whose length equals its
         own audio — so visuals stay in sync with the spoken script, section by
@@ -552,11 +580,13 @@ class MoviePyRenderer(VideoRenderer):
             if section.timed_cuts:
                 scene = self._timed_scene(section.timed_cuts, dur,
                                           VideoFileClip, ImageClip,
-                                          CompositeVideoClip, concatenate_videoclips)
+                                          CompositeVideoClip, concatenate_videoclips,
+                                          opening=(idx == 0))
             elif section.background_pool:
                 scene = self._pooled_scene(section.background_pool, dur,
                                            VideoFileClip, ImageClip,
-                                           CompositeVideoClip, concatenate_videoclips)
+                                           CompositeVideoClip, concatenate_videoclips,
+                                           opening=(idx == 0))
             elif section.background_video:
                 scene = self._video_scene(section.background_video, dur,
                                           VideoFileClip, concatenate_videoclips)
@@ -705,14 +735,21 @@ class MoviePyRenderer(VideoRenderer):
             if flash.lower().endswith(self._VIDEO_EXT):
                 tail = self._video_scene(flash, 0.5, VideoFileClip, concatenate_videoclips)
             else:
-                tail = ImageClip(self._prepare_background(flash, None)).with_duration(0.5)
+                # same treatment as the opener it loops back to, or the seam shows
+                tail = ImageClip(self._prepare_background(
+                    flash, None, darken=OPENING_DARKEN)).with_duration(0.5)
             video = concatenate_videoclips([video, tail], method="chain")
         if overlays:
             video = CompositeVideoClip([video, *overlays], size=self.size).with_duration(video.duration)
 
         video = self._add_music(video, music_path)
+        # ultrafast + all cores: for the polished path this is a throwaway pass
+        # that audiopolish re-encodes at crf19, so quality is preserved; for the
+        # --no-polish path it keeps drafts fast. moviepy is the bottleneck on
+        # CPU-only boxes, so hand x264 every core and the cheapest preset.
         video.write_videofile(out_path, fps=fps, codec="libx264",
-                              audio_codec="aac", bitrate="10M", logger=None)
+                              audio_codec="aac", bitrate="10M", logger=None,
+                              preset="ultrafast", threads=os.cpu_count() or 4)
         self.last_boundaries = boundaries
         return out_path
 

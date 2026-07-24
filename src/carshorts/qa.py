@@ -106,6 +106,36 @@ def run_qa(video_path: str, manifest_path: str | None = None,
         check("opens on subject car", on_subject(first), first)
         check("closes on subject car", on_subject(last), last)
 
+        # VISUAL opening check. The test above is a FILENAME substring match, and
+        # it happily passed a frame that was a tight crop of a black showroom car
+        # with foreign dealer promo text and a QR code burned into the windshield
+        # — because the filename contained "creta". This one looks at the actual
+        # pixels of frame 0 against the rival Shorts baseline.
+        # Only the EXPOSURE axes can fail: brightness/contrast/colourfulness are
+        # ours to control. edge_density is reported but never fails, because
+        # closing that gap means putting text on frame 0, which collides with a
+        # hard TASTE rule (text only while its words are spoken) and is the
+        # owner's call, not QA's.
+        try:
+            import tempfile
+
+            from .firstframe import extract_frame, frame_stats, load_baseline
+            baseline = load_baseline()
+            if baseline:
+                frame0 = Path(tempfile.mkdtemp(prefix="qa_ff_")) / "frame0.jpg"
+                if extract_frame(video_path, frame0, 0.0):
+                    st = frame_stats(frame0)
+                    weak = [f"{k} {st[k] / baseline[k]:.2f}x"
+                            for k in ("brightness", "contrast", "colorfulness")
+                            if baseline.get(k) and st[k] / baseline[k] < 0.5]
+                    ed = baseline.get("edge_density")
+                    note = (f"; edge_density {st['edge_density'] / ed:.2f}x (advisory)"
+                            if ed else "")
+                    check("opening frame vs feed norm", not weak,
+                          (", ".join(weak) if weak else "within norm") + note)
+        except Exception:  # noqa: BLE001 — QA must never crash a finished render
+            pass
+
         ov_ok = True
         detail = ""
         for sec in sections:

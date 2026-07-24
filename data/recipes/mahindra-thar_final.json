@@ -19,5 +19,14 @@
   },
   "cut_target_s": 3.4,
   "video_id": "EXCHHyUDyyg",
-  "metrics": null
+  "metrics": {
+    "views": 79,
+    "likes": 2,
+    "comments": 0,
+    "avg_view_s": 0,
+    "avg_view_pct": 0,
+    "retention_curve": [],
+    "like_rate": 2.532,
+    "comment_rate": 0.0
+  }
 }
