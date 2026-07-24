@@ -436,13 +436,28 @@ RESOLVED 2026-07-24 (owner chose: quarantine the 7 + vet-on-use):
        re-encode). That pass (~370s) is now the bottleneck; the base was only
        part of the total. The hybrid removed the base cost, not the composite.
 
-       To go bigger WHILE keeping overlays identical (next increment, not yet
-       built): render each overlay as a small transparent clip with its
-       settle/slam animation baked in (cheap — pops are 1-3s, tiny regions),
-       then let ffmpeg do the final overlay+audio composite in one pass. Avoids
-       moviepy touching the full 62s. Est. much faster; more engineering.
-       Full-ffmpeg overlays (option a) would be fastest but loses the exact
-       settle/slam entrance animations — owner chose identical overlays.
+       INCREMENT 2 SHIPPED 2026-07-24 (adapters/ffoverlay.py): the overlay
+       composite is now ffmpeg too, so moviepy never touches the full timeline.
+       Each pop is baked to full-frame RGBA PNGs (position + settle/slam easing
+       + count-up/wipe sequences) using the renderer's EXACT PIL generators, then
+       ffmpeg overlays them with per-layer enable windows in one pass. Voice is
+       concatenated by ffmpeg from the section audio files (moviepy's audio
+       writer threw broken-pipe on Windows). build_overlay_command is a pure,
+       unit-tested builder (9 tests).
+       Three-tier fallback, identical overlays at every tier, fastest first:
+         full ffmpeg (fffull) -> hybrid (ffmpeg base + moviepy overlays)
+         -> pure moviepy. ON BY DEFAULT (2026-07-24); CARSHORTS_FFBASE=0 forces
+         pure moviepy; CARSHORTS_FFOVERLAY=0 forces the hybrid tier. Requires
+         ffmpeg on PATH (as QA/audiopolish already do); falls back otherwise.
+       END-TO-END Creta (--no-polish): moviepy 655s -> hybrid 408s -> FULL 209s
+         (~3.1x faster than moviepy, 2x faster than hybrid).
+       VERIFIED IDENTICAL BY EYE against the hybrid ground truth: the ₹ count-up
+       card, a number pop WITH its cyan wipe bar, and the LSS icon strip all
+       render pixel-for-pixel the same, composited by ffmpeg.
+       Remaining headroom (not chased): the 46-overlay ffmpeg chain + PIL baking
+       + QA loudnorm make up most of the 209s; a single pre-composed overlay
+       track could cut further, but 3x with identical overlays met the goal.
+       156 tests pass.
 
 ### Next blocker discovered (2026-07-23)
 The heartbeat can now SCRIPT a new car but cannot safely VISUALISE one:

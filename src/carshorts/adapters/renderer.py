@@ -560,6 +560,55 @@ class MoviePyRenderer(VideoRenderer):
         reps = int(dur / clip.duration) + 1
         return concatenate_videoclips([clip] * reps).subclipped(0, dur)
 
+    def _render_ffmpeg_full(self, sections, out_path, music_path, fps, loop_close):
+        """Fully ffmpeg path (increment 2): base scene AND overlays composited by
+        ffmpeg, so moviepy never touches the full timeline. Overlays are baked
+        from the identical PIL generators, so the look is unchanged. Raises on
+        any failure so render_sections can fall back."""
+        import subprocess
+        import tempfile
+
+        from moviepy import AudioFileClip
+
+        from . import ffoverlay
+        from .ffrenderer import global_cuts_from_sections, render_base_from_cuts
+
+        durations = [AudioFileClip(s.audio_path).duration for s in sections]
+        gcuts, total = global_cuts_from_sections(sections, durations)
+        if not gcuts:
+            raise RuntimeError("no cuts to render")
+        tdir = tempfile.mkdtemp(prefix="fffull_")
+
+        # loop-close: append a 0.5s flash of the opener, kept undarkened so the
+        # seam back to frame 1 is clean
+        no_darken = {0}
+        video_total = total
+        if loop_close:
+            no_darken.add(len(gcuts))
+            gcuts = list(gcuts) + [(total, gcuts[0][1])]
+            video_total = total + 0.5
+
+        base_path = f"{tdir}/base.mp4"
+        render_base_from_cuts(gcuts, video_total, base_path, fps=fps,
+                              size=self.size, no_darken=frozenset(no_darken))
+
+        layers = ffoverlay.build_layers(sections, durations, self.size, fps, tdir)
+
+        # voice is concatenated by ffmpeg from the section audio files (moviepy's
+        # audio writer was throwing broken-pipe on Windows)
+        cmd = ffoverlay.build_overlay_command(
+            base_path, layers, [s.audio_path for s in sections], out_path,
+            music_path=music_path, total=video_total, fps=fps)
+        proc = subprocess.run(cmd, capture_output=True, text=True)
+        if proc.returncode != 0:
+            raise RuntimeError("ffmpeg overlay composite failed:\n"
+                               + proc.stderr[-1500:])
+        # section-boundary times, for the downstream audiopolish whooshes
+        self.last_boundaries = [sum(durations[:i]) for i in range(1, len(durations))]
+        print(f"     [fffull] ffmpeg base + {len(layers)} overlay layers "
+              f"-> {out_path}")
+        return out_path
+
     def render_sections(self, sections: list[Section], out_path: str,
                         music_path: str | None = None, ken_burns: bool = True,
                         draw_captions: bool = True, fps: int = 24,
@@ -581,8 +630,22 @@ class MoviePyRenderer(VideoRenderer):
         # else falls through to the moviepy path untouched. Any failure falls
         # back too, so a render never dies on the fast path.
         import os as _os
-        use_ffbase = (_os.environ.get("CARSHORTS_FFBASE") == "1"
+        # Fast path ON by default; set CARSHORTS_FFBASE=0 to force pure moviepy.
+        # Requires ffmpeg on PATH (as QA/audiopolish already do); any failure
+        # falls back through hybrid to moviepy, so default-on is safe.
+        use_ffbase = (_os.environ.get("CARSHORTS_FFBASE", "1") != "0"
                       and bool(sections) and all(s.timed_cuts for s in sections))
+        # Increment 2: try the FULLY-ffmpeg path (base + overlays in ffmpeg).
+        # On any failure fall through to the hybrid (ffmpeg base + moviepy
+        # overlays), and from there to pure moviepy — three tiers, each with
+        # identical overlays, fastest first.
+        if use_ffbase and _os.environ.get("CARSHORTS_FFOVERLAY", "1") == "1":
+            try:
+                return self._render_ffmpeg_full(sections, out_path, music_path,
+                                                 fps, loop_close)
+            except Exception as exc:  # noqa: BLE001
+                print(f"     [fffull] failed ({str(exc)[:140]}); "
+                      f"falling back to hybrid/moviepy")
         video = None
         if use_ffbase:
             try:

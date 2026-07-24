@@ -87,13 +87,15 @@ def _video_cut(w: int, h: int, dur: float, speed_ramp: bool) -> str:
 
 
 def build_scene_filter(cuts: list[tuple[float, str]], total: float,
-                       size: tuple[int, int] = VERTICAL, fps: int = 24) -> dict:
+                       size: tuple[int, int] = VERTICAL, fps: int = 24,
+                       no_darken=frozenset({0})) -> dict:
     """Build the filter_complex for a base scene from timed cuts.
 
     cuts = [(start_seconds, asset_path), ...] on the GLOBAL timeline; total is
-    the video duration. Returns {"inputs": [...paths], "filter": "...",
-    "map": "[vout]", "durations": [...]} — everything the caller needs to run
-    ffmpeg, but no ffmpeg is run here.
+    the video duration. `no_darken` is the set of cut indices to leave at full
+    brightness — the opener (0) always, plus the loop-close flash if appended,
+    so the flash matches the opener it loops back to. Returns everything the
+    caller needs to run ffmpeg, but runs no ffmpeg.
     """
     w, h = size
     if not cuts:
@@ -119,8 +121,8 @@ def build_scene_filter(cuts: list[tuple[float, str]], total: float,
                          f"setpts=PTS-STARTPTS[v{j}]")
         else:
             inputs.append(path)
-            # opener (first cut) is not darkened — frame 1 is the thumbnail
-            darken = 0.0 if j == 0 else 0.35
+            # opener (and the loop-close flash) are not darkened
+            darken = 0.0 if j in no_darken else 0.35
             chain = _kenburns_still(j, frames, w, h, fps, darken)
             parts.append(f"[{j}:v]{chain},trim=duration={dur:.3f},"
                          f"setpts=PTS-STARTPTS[v{j}]")
@@ -190,13 +192,14 @@ def global_cuts_from_sections(sections, durations) -> tuple[list, float]:
 
 
 def render_base_from_cuts(cuts, total: float, out_path: str, fps: int = 24,
-                          size=VERTICAL, threads: int | None = None) -> str:
+                          size=VERTICAL, threads: int | None = None,
+                          no_darken=frozenset({0})) -> str:
     """Assemble the base scene (cuts + motion, no overlays/audio) in one ffmpeg
     pass. Returns out_path; raises RuntimeError with ffmpeg's tail on failure."""
     import os
     import subprocess
 
-    graph = build_scene_filter(cuts, total, size=size, fps=fps)
+    graph = build_scene_filter(cuts, total, size=size, fps=fps, no_darken=no_darken)
     if not graph["inputs"]:
         raise RuntimeError("no resolvable cuts to render")
     cmd = ["ffmpeg", "-y", *input_args(graph["inputs"]),
