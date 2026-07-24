@@ -23,7 +23,6 @@ import argparse
 import json
 import os
 import re
-import tempfile
 from pathlib import Path
 
 from .adapters.footage import WikimediaImageSource, attribution_lines
@@ -572,7 +571,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                 report = fact_check(script, sheet, llm)
                 print("\n" + render_gate1_report(
                     script, sheet, report, structural + number_problems) + "\n")
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 if _is_quota_error(exc):
                     print("\n⚠️  LLM FACT-CHECK SKIPPED — model quota exhausted. Video renders "
                           "UNVERIFIED (number-guard above still applied). Re-run the "
@@ -665,12 +664,11 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     # visual POOL across fast sub-scenes (~2.8s cuts). Every asset is used at
     # most once across the whole video (repeats read as cheap), interleaving
     # the user's real clips with stock motion and stills for variety.
-    tmpdir = Path(tempfile.mkdtemp(prefix="carshorts_"))
-    from moviepy import AudioFileClip as _Audio
-
     # TTS cache: keyed by engine+voice+text, so re-renders (music/visual tweaks)
     # never re-spend paid voice credits on unchanged lines.
     import hashlib
+
+    from moviepy import AudioFileClip as _Audio
     cache_dir = Path("out/tts_cache") / voice_engine
     cache_dir.mkdir(parents=True, exist_ok=True)
 
@@ -753,7 +751,6 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
 
     # Adapt cut length to the pool so no asset repeats: aim ~2.8s cuts, but
     # stretch (up to 3.8s) when the pool is small.
-    total = sum(durations)
     target = 2.3   # snappy default; stretch until the pool covers every cut so
     # nothing has to repeat (per-section rounding can overshoot, hence the loop)
     if pool:

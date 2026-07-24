@@ -14,7 +14,6 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
 from pydantic import BaseModel, Field, HttpUrl
 
@@ -28,7 +27,7 @@ class NewsItem(BaseModel):
     title: str
     url: HttpUrl
     source_name: str
-    published_at: Optional[datetime] = None
+    published_at: datetime | None = None
     summary: str = ""
     # Set by the ranking stage. Higher = more viral potential.
     virality_score: float = Field(default=0.0, ge=0.0, le=1.0)
@@ -110,7 +109,7 @@ class Verdict(str, Enum):
 class ClaimCheck(BaseModel):
     claim_text: str               # the specific claim extracted from the script
     verdict: Verdict
-    backing_spec_name: Optional[str] = None
+    backing_spec_name: str | None = None
     note: str = ""                # why the checker reached this verdict
 
 

@@ -16,5 +16,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
       - name: install
         run: pip install -e ".[dev,video]"
+      - name: lint (ruff)
+        run: ruff check .
       - name: tests (offline — no keys in CI)
         run: pytest -q

@@ -43,7 +43,7 @@ def video_report(video_id: str) -> None:
     ).execute()
     rows = rep.get("rows", [])
     if rows:
-        v, mins, avg_dur, avg_pct = rows[0]
+        _v, _mins, avg_dur, avg_pct = rows[0]
         print(f"  avg view duration = {avg_dur}s   avg view % = {avg_pct:.1f}%  "
               f"(the hook/pacing signal)")
         if avg_pct < 50:

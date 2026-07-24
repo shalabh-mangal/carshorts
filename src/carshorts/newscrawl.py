@@ -139,19 +139,19 @@ def parse_feed(payload: bytes, source_name: str) -> list[dict]:
     items: list[dict] = []
     # RSS: channel/item ; Atom: {ns}entry
     nodes = root.findall(".//item") or root.findall(".//{http://www.w3.org/2005/Atom}entry")
-    for node in nodes:
-        def find(*names):
-            for n in names:
-                got = node.find(n)
-                if got is not None:
-                    return got
-            return None
+    def find(node, *names):
+        for n in names:
+            got = node.find(n)
+            if got is not None:
+                return got
+        return None
 
-        title = _text(find("title", "{http://www.w3.org/2005/Atom}title"))
-        link_node = find("link", "{http://www.w3.org/2005/Atom}link")
+    for node in nodes:
+        title = _text(find(node, "title", "{http://www.w3.org/2005/Atom}title"))
+        link_node = find(node, "link", "{http://www.w3.org/2005/Atom}link")
         link = _text(link_node) or (link_node.get("href") if link_node is not None else "")
-        summary = _text(find("description", "{http://www.w3.org/2005/Atom}summary"))
-        pub = _text(find("pubDate", "{http://www.w3.org/2005/Atom}updated",
+        summary = _text(find(node, "description", "{http://www.w3.org/2005/Atom}summary"))
+        pub = _text(find(node, "pubDate", "{http://www.w3.org/2005/Atom}updated",
                          "{http://www.w3.org/2005/Atom}published"))
         if title and link:
             items.append({"title": title, "link": link, "summary": summary[:400],

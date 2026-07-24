@@ -20,11 +20,9 @@ pure function (unit-tested; no ffmpeg run).
 from __future__ import annotations
 
 import math
-from pathlib import Path
 
 from .renderer import (
     TEXT_WHITE,
-    VERTICAL,
     _countup_frames,
     _lss_strip_png,
     _overlay_png,
@@ -90,7 +88,7 @@ def build_layers(sections, durations, size, fps: int, tdir: str) -> list[dict]:
     Mirrors renderer.render_sections' word_pops block exactly (same generators,
     positions, easings, start/dur maths), so the composited result is identical.
     """
-    w, h = size
+    _w, h = size
     y_top = int(h * 0.30)
     y_rail = int(h * 0.64)
     layers: list[dict] = []

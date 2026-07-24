@@ -10,7 +10,6 @@ import json
 from carshorts.newscrawl import (
     _car_tokens,
     matches_car,
-    merge_into_extras,
     parse_feed,
     to_news_entries,
 )

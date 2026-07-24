@@ -49,7 +49,7 @@ def main() -> None:
             print(f"[skip] {car}: {exc}")
             skipped += 1
             continue
-        except Exception as exc:  # network / parse failure — report, keep going
+        except Exception as exc:  # noqa: BLE001 — network/parse failure: report, keep going
             print(f"[error] {car}: {exc}")
             skipped += 1
             continue

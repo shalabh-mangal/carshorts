@@ -26,7 +26,7 @@ def test_title_features():
     f = title_features("Tata Nexon: 0-100 in 9.9s… BEST SUV?")
     assert f["is_question"] and f["has_number"] and f["has_colon"]
     assert f["caps_words"] >= 1
-    assert f["words"] == len("Tata Nexon: 0-100 in 9.9s… BEST SUV?".split())
+    assert f["words"] == len(["Tata", "Nexon:", "0-100", "in", "9.9s…", "BEST", "SUV?"])
 
 
 def test_title_features_plain():

@@ -491,7 +491,22 @@ produce.py now vets every auto-fetched image before it can enter the pool.
 
 ### Tech debt found 2026-07-23
 - `google.generativeai` is END-OF-LIFE upstream ("all support has ended;
-  switch to google.genai"). Used by vqa.py and assetvet.py. Migrate.
+  switch to google.genai"). Used by vqa.py, assetvet.py, firstframe.py,
+  analyze.py. Migrate — functional change, needs a Gemini call to verify.
+
+### Code quality pass 2026-07-24 (industry standards)
+- ruff added (curated config in pyproject.toml): correctness + modernization +
+  simplification rules; opinionated rules that fight deliberate patterns are
+  ignored with rationale (naive local-time journals, best-effort try/except on
+  optional network work, manual subprocess return-code checks). `ruff check .`
+  is clean and now a CI step (.github/workflows/ci.yml), so it stays clean.
+  Fixed a real loop-variable-closure smell in newscrawl.parse_feed and removed
+  two dead locals in produce.py along the way. 156 tests green.
+- STILL OPEN (durable, not yet done): pass encoding="utf-8" to every read_text/
+  write_text/open. Windows defaults to cp1252 (the ₹ mojibake bug); currently
+  mitigated by PYTHONUTF8=1 (env, set on this machine) and CI being Linux
+  (utf-8 default). The proper fix touches ~50 call sites and must change reads
+  AND writes together or writes crash on ₹. Enable ruff PLW1514 when done.
 
 Framing: nobody reverse-engineers the YouTube algorithm. You beat it by
 OUT-ITERATING it — publish consistently, measure honestly, change one variable

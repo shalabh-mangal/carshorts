@@ -10,13 +10,9 @@ If a refactor breaks phrase-sync, assignment, or overlay timing, this fails
 in seconds — no video render, no network, no keys.
 """
 import json
-import os
 from pathlib import Path
 
 import pytest
-
-from carshorts.models import Script, SpecSheet
-
 
 CAR_FAMILIES = {"roxx", "red", "thar", "pool", "testcar"}
 
@@ -231,8 +227,8 @@ def test_plan_manifest_no_kwcaps(fixture_tree, monkeypatch):
 
 
 def test_phrase_times_monotonic(fixture_tree):
-    from carshorts.produce import _phrases_with_times
     from carshorts.adapters.tts import SilentTTSProvider
+    from carshorts.produce import _phrases_with_times
 
     text = "First the hook lands here, then a second idea follows, and a third one closes."
     SilentTTSProvider().synthesize(text, "voice.wav", marks_path="marks.json")

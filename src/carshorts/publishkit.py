@@ -10,7 +10,6 @@ press media, music), and hashtags. Facts come from the script/sheet only.
 from __future__ import annotations
 
 import argparse
-import json
 from pathlib import Path
 
 from .adapters.footage import attribution_lines

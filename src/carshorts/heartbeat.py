@@ -170,7 +170,7 @@ def run(dry_run: bool = False, no_agent: bool = False, max_pending: int = 2,
           + (f"  ({', '.join(c['slug'] or '?' for c in state['awaiting_owner'])})"
              if state["awaiting_owner"] else ""))
     print(f"  in flight    : {len(state['in_flight'])}")
-    print(f"  next slot    : " + (f"{slot['car']} [{slot['persona']}/{slot['format']}]"
+    print("  next slot    : " + (f"{slot['car']} [{slot['persona']}/{slot['format']}]"
                                   if slot else "none"))
     print(f"  decision     : {action.upper()} — {reason}")
 
@@ -187,7 +187,7 @@ def run(dry_run: bool = False, no_agent: bool = False, max_pending: int = 2,
         return result
 
     if dry_run:
-        print(f"  dry-run      : would run pipeline --next"
+        print("  dry-run      : would run pipeline --next"
               + (" --no-agent" if no_agent else ""))
         result["ok"] = True
         result["dry_run"] = True

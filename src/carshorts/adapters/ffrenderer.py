@@ -142,7 +142,6 @@ def global_cuts_from_manifest(manifest: dict) -> tuple[list, float]:
     + its local t. Returns (cuts, total_duration) resolving asset FILENAMES to
     real paths under the car's pools.
     """
-    import json
     from pathlib import Path as _P
 
     subject = manifest.get("subject", "")

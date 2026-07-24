@@ -12,7 +12,7 @@ real = ["google-generativeai>=0.7"]
 crawl = ["certifi"]
 video = ["edge-tts>=6.1", "moviepy>=2.0", "pillow>=10.0"]
 publish = ["google-api-python-client>=2.0", "google-auth-oauthlib>=1.0", "google-auth-httplib2>=0.2"]
-dev = ["pytest>=8.0"]
+dev = ["pytest>=8.0", "ruff>=0.16"]
 
 [build-system]
 requires = ["setuptools>=68"]
@@ -24,3 +24,38 @@ where = ["src"]
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# A curated set: correctness + modernization + obvious simplifications. Rules
+# that fight this project's deliberate patterns are left out on purpose —
+# naive local-time journals (DTZ), best-effort try/except on optional network
+# work (S110/S112), and manual subprocess return-code checks (PLW1510) are
+# intentional, not defects.
+select = ["E", "F", "W", "I", "UP", "B", "BLE", "C4", "SIM", "PIE", "PERF", "RUF"]
+ignore = [
+    "E501",     # long lines are almost all research/rationale comments — kept
+    "RUF001",   # "ambiguous" unicode is deliberate: N⋅m, en-dashes, ₹
+    "E731",     # small motion lambdas read fine as assignments
+    "E741",     # single-letter `l`/`n` locals are fine in tight comprehensions
+    "E702",     # a few compact `a; b` statements are intentional
+    "B007",     # enumerate index kept for readability even when only the item is used
+    "SIM102",   # some nested ifs read clearer than a combined condition
+    "SIM105",   # explicit try/except reads better than contextlib.suppress
+    "SIM115",   # moviepy/PIL handles aren't plain files a `with` would suit
+    "RUF005",   # list + list is clearer than unpacking for font fallback chains
+    "PERF203",  # try/except in a loop is intentional (one bad item != stop)
+    "PERF401",  # a few builder loops are clearer than comprehensions
+    "RUF007",   # zip(a, a[1:]) is clear; pairwise import not worth it
+    "B905",     # zip(strict=) not needed for these equal-length pairs
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E402"]                       # sys.path insert before imports in a few
+
+[tool.ruff.lint.isort]
+known-first-party = ["carshorts"]

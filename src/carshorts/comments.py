@@ -17,7 +17,6 @@ import json
 from pathlib import Path
 
 from .adapters.llm import make_llm
-from .stages.pipeline import _rows
 
 
 def _fetch_comments(video_id: str, limit: int = 50) -> list[dict]:

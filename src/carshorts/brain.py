@@ -63,12 +63,12 @@ def triage(provider: str | None = None) -> None:
 
 def vet(asset: str, provider: str | None = None) -> None:
     """Second opinion on one asset via vision (advisory, journaled)."""
+    import os
     import subprocess
     import tempfile
 
     import google.generativeai as genai
     from PIL import Image
-    import os
     genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
     model = genai.GenerativeModel("gemini-2.5-flash")
     tdir = tempfile.mkdtemp()

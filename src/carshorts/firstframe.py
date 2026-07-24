@@ -53,7 +53,7 @@ def crop_vertical_content(img):
     w, h = img.size
     if h <= 0 or w / h <= 1.2:
         return img
-    content_w = int(round(h * 9 / 16))
+    content_w = round(h * 9 / 16)
     if content_w <= 0 or content_w >= w:
         return img
     left = (w - content_w) // 2

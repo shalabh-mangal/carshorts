@@ -238,7 +238,7 @@ class WikipediaSpecSource(SpecSource):
         if data is None:
             raise LookupError(f"Rate-limited fetching {subject!r} after retries")
         pages = data.get("query", {}).get("pages", {})
-        for _, page in pages.items():
+        for page in pages.values():
             if "missing" in page:
                 raise LookupError(f"No Wikipedia article for {subject!r}")
             title = page.get("title", subject)

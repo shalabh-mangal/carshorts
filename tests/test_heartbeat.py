@@ -7,9 +7,9 @@ Both failure modes are quiet, so they get tests.
 """
 import json
 
-from carshorts.heartbeat import decide, produced_today
+from carshorts.heartbeat import decide
 
-CLEAR = dict(awaiting=0, in_flight=0, ran_today=False, has_slot=True, max_pending=2)
+CLEAR = {"awaiting": 0, "in_flight": 0, "ran_today": False, "has_slot": True, "max_pending": 2}
 
 
 def test_clear_day_produces():

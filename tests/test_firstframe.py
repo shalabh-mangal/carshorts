@@ -56,7 +56,7 @@ def test_brightness_tracks_luma(tmp_path):
 
 
 def test_aggregate_is_median_per_key():
-    stats = [{k: 1.0 for k in KEYS}, {k: 3.0 for k in KEYS}, {k: 100.0 for k in KEYS}]
+    stats = [dict.fromkeys(KEYS, 1.0), dict.fromkeys(KEYS, 3.0), dict.fromkeys(KEYS, 100.0)]
     agg = _aggregate(stats)
     assert all(agg[k] == 3.0 for k in KEYS)      # median, not the 34.67 mean
 

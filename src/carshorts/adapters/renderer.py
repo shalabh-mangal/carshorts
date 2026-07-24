@@ -398,7 +398,8 @@ def _countup_frames(final_text: str, label: str, tdir: str, tag: str,
     decimals = len(match.group(0).split(".")[1]) if match and "." in match.group(0) else 0
     # autofit: THE number should be huge, but never clipped — shrink until the
     # final text (the widest frame) sits inside the Shorts safe box (<=860px)
-    from PIL import Image as _Img, ImageDraw as _Draw
+    from PIL import Image as _Img
+    from PIL import ImageDraw as _Draw
     probe = _Draw.Draw(_Img.new("RGBA", (8, 8)))
     digit_size = 300
     final_probe = f"{prefix}{final_value:,.{decimals}f}{suffix}".upper()
@@ -484,7 +485,7 @@ class MoviePyRenderer(VideoRenderer):
         back-to-back. Motion varies per cut so nothing feels like a slideshow:
         stills rotate zoom-in / zoom-out / pan-left / pan-right; video chunks
         get a micro punch-in, and every third one a subtle speed ramp."""
-        width, height = self.size
+        _width, _height = self.size
         chunk = dur / len(visuals)
         subs = []
         for j, path in enumerate(visuals):
@@ -585,7 +586,7 @@ class MoviePyRenderer(VideoRenderer):
         video_total = total
         if loop_close:
             no_darken.add(len(gcuts))
-            gcuts = list(gcuts) + [(total, gcuts[0][1])]
+            gcuts = [*list(gcuts), (total, gcuts[0][1])]
             video_total = total + 0.5
 
         base_path = f"{tdir}/base.mp4"
@@ -618,10 +619,6 @@ class MoviePyRenderer(VideoRenderer):
         section. Still photos get motion (alternating slow zoom-in / zoom-out) so
         they feel like video; captions are optional; optional music is mixed low
         under the voice."""
-        from moviepy import (AudioFileClip, CompositeVideoClip, ImageClip,
-                             ImageSequenceClip, VideoFileClip,
-                             concatenate_audioclips, concatenate_videoclips)
-
         # --- FAST PATH (hybrid): let ffmpeg assemble the base scene (cuts + Ken
         # Burns) in C — ~20x faster than moviepy's per-frame Python compositing —
         # then run the IDENTICAL overlay/audio/music code below on top of it, so
@@ -630,6 +627,16 @@ class MoviePyRenderer(VideoRenderer):
         # else falls through to the moviepy path untouched. Any failure falls
         # back too, so a render never dies on the fast path.
         import os as _os
+
+        from moviepy import (
+            AudioFileClip,
+            CompositeVideoClip,
+            ImageClip,
+            ImageSequenceClip,
+            VideoFileClip,
+            concatenate_audioclips,
+            concatenate_videoclips,
+        )
         # Fast path ON by default; set CARSHORTS_FFBASE=0 to force pure moviepy.
         # Requires ffmpeg on PATH (as QA/audiopolish already do); any failure
         # falls back through hybrid to moviepy, so default-on is safe.
@@ -649,8 +656,7 @@ class MoviePyRenderer(VideoRenderer):
         video = None
         if use_ffbase:
             try:
-                from .ffrenderer import (global_cuts_from_sections,
-                                         render_base_from_cuts)
+                from .ffrenderer import global_cuts_from_sections, render_base_from_cuts
                 durations = [AudioFileClip(s.audio_path).duration for s in sections]
                 gcuts, total = global_cuts_from_sections(sections, durations)
                 base_path = tempfile.mktemp(suffix="_ffbase.mp4")
@@ -705,7 +711,7 @@ class MoviePyRenderer(VideoRenderer):
 
         # --- On-screen overlays: keyword pop-ins + staggered callout lines.
         overlays = []
-        width, height = self.size
+        _width, height = self.size
         tdir = tempfile.mkdtemp(prefix="ovl_")
         cursor = 0.0
         boundaries: list[float] = []
