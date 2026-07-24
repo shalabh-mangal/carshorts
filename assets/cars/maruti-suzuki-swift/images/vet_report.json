@@ -1,0 +1,57 @@
+{
+  "subject": "Maruti Suzuki Swift",
+  "checked": 5,
+  "clean": 2,
+  "quarantined": 0,
+  "results": [
+    {
+      "file": "11_final_prototype_2.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "A modified second-generation Suzuki Swift."
+    },
+    {
+      "file": "1998_Suzuki_Swift_GA_in_Medium_Blue_Metallic_front_three_quarters.jpg",
+      "ok": false,
+      "defects": [
+        "wrong_vehicle"
+      ],
+      "blocking": [
+        "wrong_vehicle"
+      ],
+      "note": "This is an older generation Suzuki Cultus, not the Maruti Suzuki Swift model line."
+    },
+    {
+      "file": "2007_Suzuki_Swift_Sport_1.6_Front.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "A second-generation Suzuki Swift Sport."
+    },
+    {
+      "file": "_09_Suzuki_Swift_Orange_Julep_.jpg",
+      "ok": false,
+      "defects": [
+        "wrong_vehicle"
+      ],
+      "blocking": [
+        "wrong_vehicle"
+      ],
+      "note": "This is a rebadged Chevrolet Aveo, sold as the Suzuki Swift+ in some markets, not the Maruti Suzuki Swift."
+    },
+    {
+      "file": "Maruti_Suzuki_Swift_LXi.jpg",
+      "ok": false,
+      "defects": [
+        "readable_plate",
+        "watermark"
+      ],
+      "blocking": [
+        "readable_plate",
+        "watermark"
+      ],
+      "note": "A first-generation Maruti Suzuki Swift in India (second-generation globally)."
+    }
+  ]
+}

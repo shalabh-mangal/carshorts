@@ -1,0 +1,1613 @@
+{
+  "subject": "Hyundai Creta",
+  "checked": 198,
+  "vetted": 6,
+  "unvetted": 192,
+  "clean": 6,
+  "quarantined": 0,
+  "errors": [
+    "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, hea",
+    "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, hea",
+    "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, hea",
+    "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, hea",
+    "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, hea"
+  ],
+  "results": [
+    {
+      "file": "2021_Hyundai_Creta_1.5_Prime_SU2id_Indonesia_front_view_01.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2021_Hyundai_Creta_1.5_Prime_SU2id_Indonesia_rear_view_01.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2021_Hyundai_Creta_1.5_Style_SU2id_Indonesia_rear_view_01.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2021_Hyundai_Creta_1.5_Trend_SU2id_Indonesia_front_view_01.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2021_Hyundai_Creta_1.5_Trend_SU2id_Indonesia_front_view_02.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2021_Hyundai_Creta_1.5_Trend_SU2id_Indonesia_interior.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2021_Hyundai_Creta_1.5_Trend_SU2id_Indonesia_rear_view_01.jpg",
+      "ok": true,
+      "defects": [
+        "wrong_generation"
+      ],
+      "blocking": [],
+      "note": "This is the pre-2024 facelift (SU2id) model, not the target 2024 facelift (SU2 PE).",
+      "vetted": true
+    },
+    {
+      "file": "2021_Hyundai_Creta_1.5_Value_Chile_front_view.jpg",
+      "ok": true,
+      "defects": [
+        "wrong_generation"
+      ],
+      "blocking": [],
+      "note": "This is the pre-2024 facelift (SU2) model, not the target 2024 facelift (SU2 PE).",
+      "vetted": true
+    },
+    {
+      "file": "2021_Hyundai_Creta_1.5_Value_Chile_rear_view.jpg",
+      "ok": true,
+      "defects": [
+        "wrong_generation"
+      ],
+      "blocking": [],
+      "note": "This is the pre-2024 facelift (SU2) model, not the target 2024 facelift (SU2 PE).",
+      "vetted": true
+    },
+    {
+      "file": "2021_Hyundai_Creta_2.0_HTRAC_Prestige_Russia_SU2r_rear_view.jpg",
+      "ok": true,
+      "defects": [
+        "wrong_generation"
+      ],
+      "blocking": [],
+      "note": "This is the pre-2024 facelift (SU2r) model, not the target 2024 facelift (SU2 PE).",
+      "vetted": true
+    },
+    {
+      "file": "2021_Hyundai_Creta_SX_O_CRDi_India_front_view.jpg",
+      "ok": true,
+      "defects": [
+        "wrong_generation"
+      ],
+      "blocking": [],
+      "note": "This is the pre-2024 facelift (SU2) model, not the target 2024 facelift (SU2 PE).",
+      "vetted": true
+    },
+    {
+      "file": "2021_Hyundai_Creta_SX_O_CRDi_India_rear_view.jpg",
+      "ok": true,
+      "defects": [
+        "wrong_generation"
+      ],
+      "blocking": [],
+      "note": "This is the pre-2024 facelift (SU2) model, not the target 2024 facelift (SU2 PE).",
+      "vetted": true
+    },
+    {
+      "file": "2022_Hyundai_Creta_1.5_IVT_orange_and_black_front_view_in_Brunei.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2022_Hyundai_Creta_1.5_IVT_orange_and_black_interior_view_in_Brunei.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2022_Hyundai_Creta_1.5_IVT_orange_and_black_rear_view_in_Brunei.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2022_Hyundai_Creta_1.6_Plus.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2022_Hyundai_Creta_1.6_Plus_Chile_front_view.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2022_Hyundai_Creta_Prime_GIIAS_Grand_City_Central_Surabaya.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2022_Hyundai_Creta_Prime_Indonesia_front_view.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2022_Hyundai_Creta_SE.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2022_Hyundai_Creta_SEL.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2022_Hyundai_Creta_SEL_Rear_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2022_Hyundai_Creta_SU2_1.5AT_grey_front_view_in_Brunei.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2022_Hyundai_Creta_SU2_1.5AT_grey_interior_view_in_Brunei.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2022_Hyundai_Creta_SU2_1.5AT_grey_rear_view_in_Brunei.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2023_Hyundai_Creta_Black_Edition.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2023_Hyundai_Creta_Prime_Tunjungan_Plaza_3_Central_Surabaya.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2023_Hyundai_Creta_Smart.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2024_Hyundai_Creta_1.5_MPi_SX_O_India_front_view.png",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2024_Hyundai_Creta_Alpha.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2024_Hyundai_Creta_Alpha_Pakuwon_Mall_West_Surabaya.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2024_Hyundai_Creta_N_Line_1.5_T_GDi_India_front_view.png",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2025_Hyundai_Creta_N_Line.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "2025_Hyundai_Creta_N_Line_cropped_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "4th_International_Auto_Show_Bangalore_2025_08.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "4th_International_Auto_Show_Bangalore_2025_257.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "_1_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Barkas_control_panel.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_Design_2024.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_Design_2024_54596985099_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GL_2021.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GL_2021_1_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GL_2021_2_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GL_2023_10_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GL_2023_1_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GL_2023_2_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GL_2023_3_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GL_2023_4_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GL_2023_5_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GL_2023_6_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GL_2023_7_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GL_2023_8_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GL_2023_9_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GL_2024.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GL_2024_1_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GLS_2022_1_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GLS_2022_2_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GLS_2022_3_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GLS_2022_4_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GLS_2023.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GLS_2023_1_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GLS_2023_2_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GLS_2023_3_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GLS_2023_4_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GLS_2024.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GLS_2024_1_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GLS_2024_2_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GLS_2024_3_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_GLS_2024_4_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_N_Line_Sport_2025_1_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_N_Line_Sport_2025_2_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_N_Line_Sport_2025_3_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_N_Line_Sport_2025_4_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_N_Line_Sport_2025_5_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_N_Line_Sport_2025_6_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_Plus_2024.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.5_Value_2023_53681783847_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_1.6_Plus_2022.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_creta_2024_ban_tieu_chuan.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_2_in_Tomsk_01.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_2_in_Tomsk_01_cropped_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_Electric_SU2_EV_PE.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_Electric_SU2_EV_PE_1_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_Electric_SU2_EV_PE_2_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_Electric_SU2_EV_PE_4_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_Electric_SU2_EV_PE_cropped_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_GLS_2022_1_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_N_Line.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_orange.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_Rear_2_Jakarta_Indonesia.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_Rear_Jakarta_Indonesia.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_Side_Jakarta_Indonesia.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_SU2_1.5_GLS_interior_view.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_SU2_1.5_GLS_Magnetic_Silver_Metallic_2_tone_front.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_SU2_1.5_GLS_Magnetic_Silver_Metallic_2_tone_rear.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_SU2_PE_1.5_Premium_Black.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_SU2_PE_1.5_Premium_Slate_Blue_Pearl_01.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_SU2_PE_1.5_Premium_Slate_Blue_Pearl_02.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_SU2_PE_1.5_Premium_Slate_Blue_Pearl_03.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_SU2_PE_1.5_Premium_Slate_Blue_Pearl_04.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_SU2_PE_1.5T_N_Line_Black_Red_accents.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_SU2_PE_1.5T_N_Line_Shadow_Gray_Midnight_Black_01.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_SU2_PE_1.5T_N_Line_Shadow_Gray_Midnight_Black_02.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_SU2_PE_1.5T_N_Line_Shadow_Gray_Midnight_Black_03.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_SU2id_PE_1.5T_N_Line_Shadow_Gray_Midnight_Black_01.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_SU2id_PE_1.5T_N_Line_Shadow_Gray_Midnight_Black_02.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_SU2id_PE_Creamy_White_Pearl_1_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_SU2id_PE_Creamy_White_Pearl_2_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_SU2id_PE_Creamy_White_Pearl_3_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_SU2id_PE_Creamy_White_Pearl_4_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Creta_SU2id_PE_Creamy_White_Pearl_5_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Grand_Creta_2.0_Executive_2022_52722359885_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Grand_Creta_2.0_GLS_2023_53068765567_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Grand_Creta_2.0_SU2_LWB_Polar_White_Test_Vehicle_10_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Grand_Creta_2.0_SU2_LWB_Polar_White_Test_Vehicle_11_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Grand_Creta_2.0_SU2_LWB_Polar_White_Test_Vehicle_12_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Grand_Creta_2.0_SU2_LWB_Polar_White_Test_Vehicle_13_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Grand_Creta_2.0_SU2_LWB_Polar_White_Test_Vehicle_14_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Grand_Creta_2.0_SU2_LWB_Polar_White_Test_Vehicle_15_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Grand_Creta_2.0_SU2_LWB_Polar_White_Test_Vehicle_16_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Grand_Creta_2.0_SU2_LWB_Polar_White_Test_Vehicle_17_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Grand_Creta_2.0_SU2_LWB_Polar_White_Test_Vehicle_18_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Grand_Creta_2.0_SU2_LWB_Polar_White_Test_Vehicle_20_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Grand_Creta_2.0_SU2_LWB_Polar_White_Test_Vehicle_2_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Grand_Creta_2.0_SU2_LWB_Polar_White_Test_Vehicle_3_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Grand_Creta_2.0_SU2_LWB_Polar_White_Test_Vehicle_4_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Grand_Creta_2.0_SU2_LWB_Polar_White_Test_Vehicle_5_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Grand_Creta_2.0_SU2_LWB_Polar_White_Test_Vehicle_6_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Grand_Creta_2.0_SU2_LWB_Polar_White_Test_Vehicle_7_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Grand_Creta_2.0_SU2_LWB_Polar_White_Test_Vehicle_8_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Grand_Creta_2.0_SU2_LWB_Polar_White_Test_Vehicle_9_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Grand_Creta_GLS_2024_54401642316_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Hyundai_Stargazer_X_1.5_GLS_and_Hyundai_Creta_1.5_GLS_2024.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Legacy_SR2_Laksana_Luragung_Termuda.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Moscow_Hyundai_Creta_I_Yandex_streetview_cameramobile_Sept_2025_01.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Moscow_Hyundai_Creta_I_Yandex_streetview_cameramobile_Sept_2025_02.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Moscow_Hyundai_Creta_II_N_line_silver_May_2026_02.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_20151017_Hyundai_Creta_02.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_2018_HYUNDAI_Creta_facelift_1.6_Brunei_Front_seats_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_2018_HYUNDAI_Creta_facelift_1.6_Brunei_front_shot_view_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_2018_HYUNDAI_Creta_facelift_1.6_Brunei_Improved_rim_wheels_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_2018_HYUNDAI_Creta_facelift_1.6_Brunei_Rear_seats_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_2018_HYUNDAI_Creta_facelift_1.6_Brunei_Rear_view_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_2018_HYUNDAI_Creta_facelift_1.6_Brunei_side_view_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_2018_HYUNDAI_Creta_facelift_1.6_Brunei_Trunk_open_view_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_Hyundai_Creta_1.6_GL_2016_51913117142_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_Hyundai_Creta_1.6_GL_2019.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_Hyundai_Creta_2017_48909919206_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_10_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_11_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_12_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_13_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_14_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_15_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_17_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_19_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_21_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_23_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_24_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_27_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_28_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_2_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_30_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_31_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_32_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_33_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_35_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_36_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_37_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_38_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_3_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_4_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_5_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_6_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_7_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_8_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_GS_GC_China_9_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_SU2_China.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_SU2_China_10_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_SU2_China_11_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_SU2_China_12_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_SU2_China_13_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_SU2_China_1_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_SU2_China_2_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_SU2_China_3_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_SU2_China_4_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_SU2_China_5_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_SU2_China_6_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_SU2_China_7_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_SU2_China_8_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_CRETA_iX25_SU2_China_9_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_iX25_GC_China.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_iX25_GC_China_pre_facelift_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_HYUNDAI_iX25_GC_pre_facelift_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_Hyundai_ix25_GC_Shishi_02_2022_06_17.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_Hyundai_ix25_in_China.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "oldgen_Hyundai_ix25_SU2_Shishi_01_2022_10_15.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    }
+  ]
+}

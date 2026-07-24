@@ -1,0 +1,60 @@
+{
+  "subject": "Tata Nexon",
+  "checked": 6,
+  "clean": 4,
+  "quarantined": 0,
+  "results": [
+    {
+      "file": "2020_Tata_Nexon_EV_India_front_view.png",
+      "ok": false,
+      "defects": [
+        "readable_plate"
+      ],
+      "blocking": [
+        "readable_plate"
+      ],
+      "note": "Plate is clearly readable."
+    },
+    {
+      "file": "2023_Tata_Nexon_XZA_front_view.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": ""
+    },
+    {
+      "file": "2023_Tata_Nexon_XZA_rear_view.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": ""
+    },
+    {
+      "file": "Salon_de_l_auto_de_Gen_ve_2014_20140305_Tata_Nexon.jpg",
+      "ok": true,
+      "defects": [
+        "wrong_generation"
+      ],
+      "blocking": [],
+      "note": "This is a concept car, not a production generation of the Tata Nexon. Its design is significantly different from any production model."
+    },
+    {
+      "file": "Tata_Nexon_2023_Rear_View_2.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": ""
+    },
+    {
+      "file": "Tata_Nexon_Blue_Dual_Tone.jpg",
+      "ok": false,
+      "defects": [
+        "readable_plate"
+      ],
+      "blocking": [
+        "readable_plate"
+      ],
+      "note": "Plate is clearly readable."
+    }
+  ]
+}

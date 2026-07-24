@@ -1,0 +1,64 @@
+{
+  "subject": "Mahindra Thar",
+  "checked": 6,
+  "clean": 4,
+  "quarantined": 0,
+  "results": [
+    {
+      "file": "red_thar_front_detail.jpg",
+      "ok": true,
+      "defects": [
+        "wrong_generation"
+      ],
+      "blocking": [],
+      "note": ""
+    },
+    {
+      "file": "red_thar_plateblur.jpg",
+      "ok": true,
+      "defects": [
+        "wrong_generation"
+      ],
+      "blocking": [],
+      "note": ""
+    },
+    {
+      "file": "roxx_dirt_detail.jpg",
+      "ok": false,
+      "defects": [
+        "readable_plate",
+        "wrong_generation"
+      ],
+      "blocking": [
+        "readable_plate"
+      ],
+      "note": ""
+    },
+    {
+      "file": "roxx_dirt_full.jpg",
+      "ok": false,
+      "defects": [
+        "readable_plate",
+        "wrong_generation"
+      ],
+      "blocking": [
+        "readable_plate"
+      ],
+      "note": ""
+    },
+    {
+      "file": "roxx_press_full.png",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": ""
+    },
+    {
+      "file": "roxx_press_grille_detail.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": ""
+    }
+  ]
+}
