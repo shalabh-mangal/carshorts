@@ -418,7 +418,31 @@ RESOLVED 2026-07-24 (owner chose: quarantine the 7 + vet-on-use):
   Remaining 198 Creta stills are unvetted BY DESIGN — vetted lazily the first
   time a render considers them, cached forever after. Daily quota reset
   2026-07-24. Still TODO: migrate google.generativeai -> google.genai (EOL).
-6. [ ] **Fast renderer** (ffmpeg-native; iteration speed = learning speed)
+6. [~] **Fast renderer** — HYBRID shipped behind CARSHORTS_FFBASE=1 (2026-07-24).
+       ffmpeg assembles the base scene (cuts + Ken Burns via zoompan on a 2x
+       canvas + concat), then the IDENTICAL moviepy overlay/audio/music code runs
+       on top — so the tuned overlays are byte-for-byte unchanged (verified by
+       eye: ₹12.06 LAKH card renders exactly as before over the ffmpeg base).
+       adapters/ffrenderer.py; pure filter-graph builder (build_scene_filter) is
+       fully unit-tested (9 tests). Opt-in; only when every section is
+       phrase-synced; any failure falls back to moviepy. Opener no longer
+       darkened, deterministic + vetted.
+
+       HONEST SPEEDUP — MODEST, NOT the 20x the base-scene spike suggested:
+         base scene alone:  ffmpeg 29s vs moviepy (the bulk of the render)
+         END-TO-END Creta:  moviepy 655s -> hybrid 408s  (~1.6x)
+       Why: moviepy's FINAL overlay-composite + re-encode still processes all
+       ~1488 frames in Python (decode base, composite ~19 overlay windows,
+       re-encode). That pass (~370s) is now the bottleneck; the base was only
+       part of the total. The hybrid removed the base cost, not the composite.
+
+       To go bigger WHILE keeping overlays identical (next increment, not yet
+       built): render each overlay as a small transparent clip with its
+       settle/slam animation baked in (cheap — pops are 1-3s, tiny regions),
+       then let ffmpeg do the final overlay+audio composite in one pass. Avoids
+       moviepy touching the full 62s. Est. much faster; more engineering.
+       Full-ffmpeg overlays (option a) would be fastest but loses the exact
+       settle/slam entrance animations — owner chose identical overlays.
 
 ### Next blocker discovered (2026-07-23)
 The heartbeat can now SCRIPT a new car but cannot safely VISUALISE one:

@@ -571,10 +571,39 @@ class MoviePyRenderer(VideoRenderer):
         under the voice."""
         from moviepy import (AudioFileClip, CompositeVideoClip, ImageClip,
                              ImageSequenceClip, VideoFileClip,
-                             concatenate_videoclips)
+                             concatenate_audioclips, concatenate_videoclips)
+
+        # --- FAST PATH (hybrid): let ffmpeg assemble the base scene (cuts + Ken
+        # Burns) in C — ~20x faster than moviepy's per-frame Python compositing —
+        # then run the IDENTICAL overlay/audio/music code below on top of it, so
+        # the tuned overlay look is byte-for-byte unchanged. Opt-in, and only
+        # when every section is phrase-synced (all have timed_cuts); anything
+        # else falls through to the moviepy path untouched. Any failure falls
+        # back too, so a render never dies on the fast path.
+        import os as _os
+        use_ffbase = (_os.environ.get("CARSHORTS_FFBASE") == "1"
+                      and bool(sections) and all(s.timed_cuts for s in sections))
+        video = None
+        if use_ffbase:
+            try:
+                from .ffrenderer import (global_cuts_from_sections,
+                                         render_base_from_cuts)
+                durations = [AudioFileClip(s.audio_path).duration for s in sections]
+                gcuts, total = global_cuts_from_sections(sections, durations)
+                base_path = tempfile.mktemp(suffix="_ffbase.mp4")
+                render_base_from_cuts(gcuts, total, base_path,
+                                      fps=fps, size=self.size)
+                voice = concatenate_audioclips(
+                    [AudioFileClip(s.audio_path) for s in sections])
+                video = VideoFileClip(base_path).with_audio(voice)
+                print(f"     [ffbase] base scene via ffmpeg ({len(gcuts)} cuts, "
+                      f"{total:.1f}s)")
+            except Exception as exc:  # noqa: BLE001 — fall back to moviepy
+                print(f"     [ffbase] failed ({str(exc)[:110]}); moviepy base")
+                video = None
 
         clips = []
-        for idx, section in enumerate(sections):
+        for idx, section in enumerate(sections if video is None else []):
             audio = AudioFileClip(section.audio_path)
             dur = audio.duration
             if section.timed_cuts:
@@ -608,7 +637,8 @@ class MoviePyRenderer(VideoRenderer):
                     scene = base
             clips.append(scene.with_audio(audio))
 
-        video = concatenate_videoclips(clips, method="chain")
+        if video is None:                       # moviepy base path
+            video = concatenate_videoclips(clips, method="chain")
 
         # --- On-screen overlays: keyword pop-ins + staggered callout lines.
         overlays = []
