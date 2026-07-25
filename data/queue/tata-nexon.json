@@ -1,0 +1,11 @@
+{
+  "car": "Tata Nexon",
+  "slug": "tata-nexon",
+  "persona": "deadpan",
+  "language": "english",
+  "script": "scripts\\tata-nexon_deadpan.script.json",
+  "spec": "specs\\tata-nexon.json",
+  "draft": "out\\tata-nexon_draft.mp4",
+  "created": "2026-07-25T08:48:52",
+  "status": "awaiting_approval"
+}

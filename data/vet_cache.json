@@ -253,5 +253,10 @@
     "blocking": [
       "readable_plate"
     ]
+  },
+  "images/Hyundai_Creta_1.5_GL_2023_8_.jpg:524263": {
+    "ok": true,
+    "defects": [],
+    "blocking": []
   }
 }

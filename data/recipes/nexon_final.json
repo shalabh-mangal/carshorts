@@ -16,14 +16,12 @@
   "cut_target_s": null,
   "video_id": "VamhQZHDgSU",
   "metrics": {
-    "views": 26,
+    "views": 27,
     "likes": 0,
     "comments": 1,
     "avg_view_s": 24,
     "avg_view_pct": 47.09,
-    "retention_curve": [],
-    "like_rate": 0.0,
-    "comment_rate": 3.846
+    "retention_curve": []
   },
   "backfilled": true,
   "published_at": "2026-07-19T23:27:34Z",

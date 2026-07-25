@@ -1,0 +1,23 @@
+{
+  "out": "out\\tata-nexon_draft.mp4",
+  "subject": "Tata Nexon",
+  "rendered_at": "2026-07-25T08:48:16",
+  "script_file": "scripts\\tata-nexon_deadpan.script.json",
+  "persona": "deadpan",
+  "voice_engine": "edge",
+  "language": "english",
+  "music": "Balearic Slide - Jeremy Black.mp3",
+  "captions": false,
+  "word_count": 118,
+  "sections": 6,
+  "hook_text": "WARNING: Don't judge the Tata Nexon by its price tag! The base model might just surprise you",
+  "hook_type": "statement",
+  "pool": {
+    "own": 0,
+    "stock": 12,
+    "stills": 4
+  },
+  "cut_target_s": 2.9,
+  "video_id": null,
+  "metrics": null
+}

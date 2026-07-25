@@ -76,6 +76,12 @@ def run_agent(role: str, task: str, max_turns: int = MAX_TURNS) -> dict:
 
     prompt = (role_file.read_text()
               + "\n\n# Task (from the system, automated escalation)\n" + task)
+    # Load .env so a headless ANTHROPIC_API_KEY reaches the claude CLI (the only
+    # auth option in a non-interactive/sandbox host — an interactive /login can't
+    # run here). The subprocess inherits os.environ. If the CLI is instead logged
+    # in interactively, no key is needed and this is a no-op.
+    from .config import load_env
+    load_env()
     try:
         proc = subprocess.run(
             ["claude", "-p", prompt,
@@ -104,6 +110,17 @@ def run_agent(role: str, task: str, max_turns: int = MAX_TURNS) -> dict:
         entry = {"at": started, "role": role, "run_no": run_no, "ok": False,
                  "task": task[:400], "result": f"timed out after {TIMEOUT_S}s"}
         result_text = entry["result"]
+    except (FileNotFoundError, OSError) as exc:
+        # `claude` not installed/on PATH — the whole agent layer is unavailable.
+        # The harness promises never to raise on agent failure, so callers (the
+        # pipeline, rework escalation) stay resilient and fall back to their
+        # non-agent paths.
+        ok = False
+        result_text = ("claude CLI not available (install: npm i -g "
+                       "@anthropic-ai/claude-code, then authenticate) — "
+                       f"{str(exc)[:120]}")
+        entry = {"at": started, "role": role, "run_no": run_no, "ok": False,
+                 "task": task[:400], "result": result_text}
     _journal(entry)
     return {"ok": ok, "result": result_text, "run_no": run_no}
 

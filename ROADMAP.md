@@ -468,7 +468,17 @@ The heartbeat can now SCRIPT a new car but cannot safely VISUALISE one:
   (unlike ingest.py). Fetched Thar stills had readable plates and one was
   wrong-gen + watermarked. So the fallback cannot be trusted to publish.
 => RESOLVED 2026-07-23 (assets half): assetvet.py + wired into produce.py.
-   Still open: the agent layer is dead on Windows (no Node/npm/claude CLI).
+   AGENT LAYER 2026-07-24: Node v24.18 + claude CLI 2.1.218 installed (both on
+   the persistent user PATH, so agent.py's `claude` subprocess resolves for
+   scheduled tasks too). agent.py hardened to degrade gracefully when the CLI is
+   absent/unauthenticated (FileNotFoundError/OSError caught; "Not logged in"
+   already returned ok=False). REMAINING = OWNER STEP: authenticate the CLI once
+   (`claude` -> /login with the owner's Claude account, or set ANTHROPIC_API_KEY).
+   Until then the CLI returns "Not logged in" and the pipeline falls back to the
+   template writer. Once authed, scriptwright can crawl+verify specs and curator
+   can build clean pools for NEW cars — which unblocks Brezza and daily cadence.
+   NOTE what auth enables: headless `claude -p` agents that read/edit code with
+   acceptEdits, run on the owner's Claude subscription, budget-capped 12/day.
 
 ### Asset vet — SHIPPED 2026-07-23 (assetvet.py)
 CLAUDE.md always said "new stock/CC fetches get a visual vet grid before
