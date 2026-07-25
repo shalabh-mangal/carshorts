@@ -20,8 +20,16 @@ ROADMAP.md = what's next. Channel: carshorts (Nexon, Swift, Thar live).
 - specs come from `crawl` (generation-scoped) then VERIFIED against CarDekho.
 - Run `pytest` (offline, 31 tests) before committing; CI runs it on push.
 
-## Key modules
-pipeline (orchestrator+queue) · writescript (variants→judge→editor) ·
-produce (phrase-sync render + QA loop) · qa / vqa · audiopolish · publishkit ·
-publish · analyze (retention→beat) · comments · calendar_plan · ingest ·
-learnings · config (.env)
+## Package structure (src/carshorts/, domain subpackages)
+- `cli.py` — unified entrypoint: `carshorts <command>` (or `python -m carshorts <command>`)
+- `core/` — config, models, learnings
+- `adapters/` — I/O boundaries: llm, tts, renderer, ffrenderer, ffoverlay, footage, stock, music, specsource
+- `writing/` — prompts, draft, writescript, gate1
+- `rendering/` — produce (phrase-sync render + QA loop), audiopolish, thumbnail
+- `quality/` — qa, vqa, assetvet, firstframe
+- `sourcing/` — crawl, newscrawl, ingest
+- `intel/` — analytics, analyze, competitors, engagement, experiments, comments, retention_watch
+- `agents/` — agent (headless claude harness), brain, rework, harness
+- `orchestration/` — pipeline (queue), heartbeat (daily), calendar_plan
+- `publishing/` — publish, publishkit, ytauth
+- `portal/` — review-station FE (server + __main__)

@@ -32,3 +32,8 @@
 {"at": "2026-07-23T15:34:16", "video_id": "VamhQZHDgSU", "subject": "Tata Nexon", "views": 26, "avg_view_pct": 47.09, "curve": "no"}
 {"at": "2026-07-23T15:34:16", "video_id": "f5IAZNafgd0", "subject": "Maruti Suzuki Swift", "views": 467, "avg_view_pct": 42.16, "curve": "no"}
 {"at": "2026-07-23T15:34:16", "video_id": "mPbjAt4kSoE", "subject": "Mahindra Thar", "views": 144, "avg_view_pct": 0, "curve": "no"}
+{"at": "2026-07-25T09:00:02", "video_id": "NXa-7sG13Uw", "subject": "Hyundai Creta", "views": 240, "avg_view_pct": 32.41, "curve": "new", "drop_by_beat": {"hook": 0.5653, "spec": 0.3913, "value": 0.0435, "peak": 0.0434, "cta": 0.0434}, "worst_beat": "hook"}
+{"at": "2026-07-25T09:00:02", "video_id": "EXCHHyUDyyg", "subject": "Mahindra Thar", "views": 117, "avg_view_pct": 41.02, "curve": "new", "drop_by_beat": {"hook": 0.1034, "spec": 0.7931, "value": 0.0689, "peak": 0.0, "cta": 0.0345}, "worst_beat": "spec"}
+{"at": "2026-07-25T09:00:02", "video_id": "VamhQZHDgSU", "subject": "Tata Nexon", "views": 27, "avg_view_pct": 47.09, "curve": "no"}
+{"at": "2026-07-25T09:00:02", "video_id": "f5IAZNafgd0", "subject": "Maruti Suzuki Swift", "views": 471, "avg_view_pct": 131.75, "curve": "new", "note": "curve available but no manifest — beats unmappable"}
+{"at": "2026-07-25T09:00:02", "video_id": "mPbjAt4kSoE", "subject": "Mahindra Thar", "views": 151, "avg_view_pct": 28.04, "curve": "new", "drop_by_beat": {"hook": 0.0345, "spec": 0.8103, "value": 0.207, "peak": 0.0172, "cta": 0.0345}, "worst_beat": "spec"}
