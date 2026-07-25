@@ -94,15 +94,34 @@ PAGE = """<!doctype html><meta charset="utf-8">
    border:1px solid var(--acc);border-radius:12px;padding:12px 22px;font-weight:700;
    opacity:0;pointer-events:none;transition:.25s}.toast.show{opacity:1}
  .empty{color:var(--mut);padding:40px;text-align:center}
+ .nav{display:flex;gap:4px;margin-left:18px}
+ .nav b{font-weight:700;font-size:13px;color:var(--mut);cursor:pointer;padding:5px 12px;
+   border-radius:8px;transition:.12s}
+ .nav b.on{background:var(--panel2);color:var(--acc)}
+ .an{max-width:1100px;margin:0 auto;padding:18px}
+ .an table{width:100%;border-collapse:collapse;font-size:13px}
+ .an th{text-align:left;color:var(--mut);font-size:11px;text-transform:uppercase;
+   letter-spacing:.5px;padding:8px 10px;border-bottom:1px solid var(--line)}
+ .an td{padding:9px 10px;border-bottom:1px solid var(--line)}
+ .an tr:hover td{background:var(--panel)}
+ .an .num{text-align:right;font-variant-numeric:tabular-nums}
+ .an .car{font-weight:700}
+ .an .pill{font-size:10px;padding:1px 7px;border-radius:20px;background:var(--panel2);color:var(--mut)}
+ .an .bad{color:var(--bad)} .an .ok{color:var(--ok)} .an .mut{color:var(--mut)}
+ .an .beatbar{display:inline-block;height:8px;border-radius:4px;background:var(--bad);
+   vertical-align:middle}
+ .an .note{color:var(--mut);font-size:12px;margin:6px 0 16px}
 </style>
 <header><div class="logo">car<em>shorts</em> · review station</div>
+ <span class="nav"><b id="nav-review" class="on" onclick="showView('review')">Review</b><b id="nav-analytics" onclick="showView('analytics')">Analytics</b></span>
  <div class="hint"><kbd>space</kbd> play · <kbd>1–6</kbd> seek beat · <kbd>✎</kbd> edit script ·
   <kbd>a</kbd> approve · <kbd>r</kbd> rework</div></header>
-<div class="wrap">
+<div class="wrap" id="review">
  <div class="list" id="list"></div>
  <div class="stage" id="stage"><div class="empty">Select a draft ←</div></div>
  <div class="beats" id="beats"></div>
 </div>
+<div class="an" id="analytics" style="display:none"></div>
 <div class="toast" id="toast"></div>
 <script>
 const ISSUES=["visual mismatch","weak hook","pacing","joke flat","text on screen","audio",
@@ -217,6 +236,35 @@ document.addEventListener('keydown',e=>{
  if(e.key==='a'&&sel!==null)send(cards[sel].status==='final_review'?'publish':'approve');
  if(e.key==='r'&&sel!==null)send('rework');
 });
+function showView(v){
+ $('review').style.display = v==='review'?'':'none';
+ $('analytics').style.display = v==='analytics'?'block':'none';
+ $('nav-review').classList.toggle('on', v==='review');
+ $('nav-analytics').classList.toggle('on', v==='analytics');
+ if(v==='analytics') loadAnalytics();
+}
+async function loadAnalytics(){
+ const rows = await (await fetch('/api/analytics')).json();
+ const el = $('analytics');
+ if(!rows.length){ el.innerHTML='<div class="note">No linked videos yet. Publish a video (or link a recipe video_id), then metrics appear after YouTube processes them (~24-48h).</div>'; return; }
+ const drops = rows.map(r=> r.drop_by_beat? Math.max(...Object.values(r.drop_by_beat)):0);
+ const maxDrop = Math.max(0.001, ...drops);
+ const num=v=> v==null?'<span class="mut">—</span>':v;
+ let h='<div class="note">Per-video performance from recipe cards (refreshed by the retention watcher). Avg-view% needs ~24-48h and enough views; likes/comments are immediate.</div>';
+ h+='<table><thead><tr><th>Video</th><th>Format</th><th class="num">Views</th><th class="num">Likes</th><th class="num">Cmts</th><th class="num">Avg view %</th><th class="num">Like %</th><th>Weakest beat</th></tr></thead><tbody>';
+ for(const r of rows){
+  const pct=r.avg_view_pct, pc=pct==null?'mut':(pct<50?'bad':'ok');
+  let beat='<span class="mut">—</span>';
+  if(r.worst_beat && r.drop_by_beat){const w=Math.round(90*(r.drop_by_beat[r.worst_beat]||0)/maxDrop);
+   beat=`<span class="beatbar" style="width:${w}px"></span> <b>${r.worst_beat}</b>`;}
+  h+=`<tr><td class="car">${r.subject||'?'}<div class="mut" style="font-size:11px">${r.video_id}</div></td>`
+   +`<td><span class="pill">${r.hook_type||'?'} · ${r.persona||'?'}</span><div class="mut" style="font-size:11px">${r.duration_s?r.duration_s+'s ':''}${r.word_count?'· '+r.word_count+'w':''}</div></td>`
+   +`<td class="num">${num(r.views)}</td><td class="num">${num(r.likes)}</td><td class="num">${num(r.comments)}</td>`
+   +`<td class="num ${pc}">${pct==null?'<span class="mut">—</span>':pct.toFixed(1)+'%'}</td>`
+   +`<td class="num">${r.like_rate==null?'<span class="mut">—</span>':r.like_rate+'%'}</td><td>${beat}</td></tr>`;
+ }
+ el.innerHTML=h+'</tbody></table>';
+}
 load();
 setInterval(async()=>{   // live: reworking/rendering -> fresh video appears by itself
  const fresh=await(await fetch('/api/queue')).json();
@@ -237,6 +285,36 @@ setInterval(async()=>{   // live: reworking/rendering -> fresh video appears by 
 
 
 _healing: set = set()
+
+
+def _analytics() -> list[dict]:
+    """Per-video performance for the analytics tab, read from recipe cards (whose
+    metrics are refreshed by retention_watch/analyze). No live API call on page
+    load — fast, and works offline once metrics have been fetched at least once."""
+    out = []
+    rec_dir = Path("data/recipes")
+    for path in sorted(rec_dir.glob("*.json")) if rec_dir.exists() else []:
+        try:
+            r = json.loads(path.read_text(encoding="utf-8"))
+        except Exception:  # noqa: BLE001
+            continue
+        if not r.get("video_id"):
+            continue
+        m = r.get("metrics") or {}
+        out.append({
+            "subject": r.get("subject"), "video_id": r["video_id"],
+            "published": r.get("published_at") or r.get("rendered_at"),
+            "hook_type": r.get("hook_type"), "persona": r.get("persona"),
+            "word_count": r.get("word_count"), "duration_s": r.get("duration_s"),
+            "views": m.get("views"), "likes": m.get("likes"),
+            "comments": m.get("comments"), "avg_view_pct": m.get("avg_view_pct"),
+            "like_rate": m.get("like_rate"), "comment_rate": m.get("comment_rate"),
+            "worst_beat": m.get("worst_beat"),
+            "drop_by_beat": m.get("drop_by_beat"),
+        })
+    # highest views first; unknown views sink to the bottom
+    out.sort(key=lambda x: (x["views"] is None, -(x["views"] or 0)))
+    return out
 
 
 def _queue_cards() -> list[dict]:
@@ -299,6 +377,8 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, PAGE.encode(), "text/html; charset=utf-8")
         elif self.path.startswith("/api/queue"):
             self._send(200, json.dumps(_queue_cards()).encode())
+        elif self.path.startswith("/api/analytics"):
+            self._send(200, json.dumps(_analytics()).encode())
         elif self.path.startswith("/video"):
             m = re.search(r"p=([^&]+)", self.path)
             from urllib.parse import unquote
