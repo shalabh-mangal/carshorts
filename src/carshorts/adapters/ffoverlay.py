@@ -21,7 +21,7 @@ from __future__ import annotations
 
 import math
 
-from .renderer import (
+from carshorts.adapters.renderer import (
     TEXT_WHITE,
     _countup_frames,
     _lss_strip_png,

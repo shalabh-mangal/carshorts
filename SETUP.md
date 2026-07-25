@@ -50,8 +50,8 @@ daily **cron** jobs. Flags: `--skip-install`, `--skip-cron`, `HEARTBEAT_TIME=08:
      auto-fetching vetted Wikimedia stills).
 4. Confirm it's alive:
    ```
-   .venv\Scripts\python -m carshorts.heartbeat --status      # Windows
-   ./.venv/bin/python  -m carshorts.heartbeat --status       # macOS/Linux
+   .venv\Scripts\python -m carshorts heartbeat --status      # Windows
+   ./.venv/bin/python  -m carshorts heartbeat --status       # macOS/Linux
    ```
 5. Optional — enable the agents (verified specs + auto asset pools for new cars):
    authenticate the CLI (`claude`, then `/login`) **or** set `ANTHROPIC_API_KEY`
@@ -68,7 +68,7 @@ daily **cron** jobs. Flags: `--skip-install`, `--skip-cron`, `HEARTBEAT_TIME=08:
 ## Daily loop
 
 1. The heartbeat leaves a fresh draft in the queue overnight.
-2. You open the review portal — `python -m carshorts.portal` → http://localhost:8787
+2. You open the review portal — `python -m carshorts portal` → http://localhost:8787
    — watch it, tag beats, and **Approve** (premium final) or **Rework**.
 3. After the final's second approval, it publishes. Gates 1 and 2 are always yours.
 

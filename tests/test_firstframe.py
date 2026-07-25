@@ -4,7 +4,7 @@ These metrics are the objective half of first-frame work — they must behave
 predictably on images whose properties we know by construction, otherwise the
 rival benchmark built on top of them means nothing.
 """
-from carshorts.firstframe import KEYS, _aggregate, compare, frame_stats
+from carshorts.quality.firstframe import KEYS, _aggregate, compare, frame_stats
 
 
 def _solid(tmp_path, name, rgb, size=(64, 64)):
@@ -95,7 +95,7 @@ def test_letterbox_crop_takes_the_centre_of_a_16x9_frame():
     the frame. Measuring that fill invalidates any comparison, so it is cropped."""
     from PIL import Image
 
-    from carshorts.firstframe import crop_vertical_content
+    from carshorts.quality.firstframe import crop_vertical_content
     img = Image.new("RGB", (1280, 720), (0, 0, 0))
     out = crop_vertical_content(img)
     assert out.size == (405, 720)                 # 720 * 9/16, centred
@@ -104,7 +104,7 @@ def test_letterbox_crop_takes_the_centre_of_a_16x9_frame():
 def test_letterbox_crop_is_a_noop_on_vertical_frames(tmp_path):
     from PIL import Image
 
-    from carshorts.firstframe import crop_vertical_content
+    from carshorts.quality.firstframe import crop_vertical_content
     img = Image.new("RGB", (1080, 1920), (0, 0, 0))
     assert crop_vertical_content(img).size == (1080, 1920)
 

@@ -17,7 +17,7 @@ from carshorts.adapters.renderer import (
     OPENING_DARKEN,
     MoviePyRenderer,
 )
-from carshorts.firstframe import frame_stats
+from carshorts.quality.firstframe import frame_stats
 
 
 def _source(tmp_path):

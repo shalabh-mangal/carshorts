@@ -31,7 +31,7 @@ import urllib.parse
 import urllib.request
 from abc import ABC, abstractmethod
 
-from ..models import Spec, SpecSheet
+from carshorts.core.models import Spec, SpecSheet
 
 # macOS python.org builds don't wire the system CA store into Python's default
 # SSL context, so HTTPS verification fails with CERTIFICATE_VERIFY_FAILED. Point

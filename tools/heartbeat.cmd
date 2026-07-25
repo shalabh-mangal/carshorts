@@ -10,5 +10,5 @@ cd /d "%~dp0.."
 set PYTHONUTF8=1
 
 if not exist "data\logs" mkdir "data\logs"
-".venv\Scripts\python.exe" -m carshorts.heartbeat >> "data\logs\heartbeat.log" 2>&1
+".venv\Scripts\python.exe" -m carshorts heartbeat >> "data\logs\heartbeat.log" 2>&1
 echo [%date% %time%] exit=%ERRORLEVEL% >> "data\logs\heartbeat.log"

@@ -7,10 +7,10 @@ exactly two gates.
 ## The two commands that matter
 
 ```bash
-python -m carshorts.pipeline "Hyundai Creta"          # or: pipeline --next (calendar)
+python -m carshorts.orchestration.pipeline "Hyundai Creta"          # or: pipeline --next (calendar)
 #  → script (variants→judge→editor) → free draft render → QA + Visual QA
 #  → approval card in data/queue/            ← GATE 1: watch it, edit the script
-python -m carshorts.pipeline --approve hyundai-creta
+python -m carshorts.orchestration.pipeline --approve hyundai-creta
 #  → ElevenLabs final → publish kit → uploaded public → recipe linked
 ```
 

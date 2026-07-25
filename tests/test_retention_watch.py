@@ -6,7 +6,7 @@ would send the writer to rewrite a beat that was doing fine.
 """
 import json
 
-from carshorts.retention_watch import beat_drops
+from carshorts.intel.retention_watch import beat_drops
 
 # hook 0-10s, spec 10-30s, cta 30-40s
 MANIFEST = {

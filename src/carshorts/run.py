@@ -11,10 +11,10 @@ from __future__ import annotations
 
 import argparse
 
-from .adapters.llm import GeminiLLMClient, LLMClient, MockLLMClient
-from .gate1 import render_gate1_report
-from .models import Spec, SpecSheet
-from .stages.pipeline import draft_script, fact_check, structural_citation_check
+from carshorts.adapters.llm import GeminiLLMClient, LLMClient, MockLLMClient
+from carshorts.core.models import Spec, SpecSheet
+from carshorts.writing.draft import draft_script, fact_check, structural_citation_check
+from carshorts.writing.gate1 import render_gate1_report
 
 
 def demo_spec_sheet() -> SpecSheet:

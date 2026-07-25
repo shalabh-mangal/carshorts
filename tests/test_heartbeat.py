@@ -7,7 +7,7 @@ Both failure modes are quiet, so they get tests.
 """
 import json
 
-from carshorts.heartbeat import decide
+from carshorts.orchestration.heartbeat import decide
 
 CLEAR = {"awaiting": 0, "in_flight": 0, "ran_today": False, "has_slot": True, "max_pending": 2}
 
@@ -51,7 +51,7 @@ def test_empty_calendar_is_reported_not_crashed():
 
 
 def test_produced_today_reads_the_journal(tmp_path, monkeypatch):
-    import carshorts.heartbeat as hb
+    import carshorts.orchestration.heartbeat as hb
     journal = tmp_path / "hb.jsonl"
     journal.write_text(
         json.dumps({"at": "2026-07-23T09:00:00", "action": "produce", "ok": True}) + "\n",
@@ -63,7 +63,7 @@ def test_produced_today_reads_the_journal(tmp_path, monkeypatch):
 
 def test_failed_produce_does_not_count_as_done(tmp_path, monkeypatch):
     # a crashed run must not block a retry later the same day
-    import carshorts.heartbeat as hb
+    import carshorts.orchestration.heartbeat as hb
     journal = tmp_path / "hb.jsonl"
     journal.write_text(
         json.dumps({"at": "2026-07-23T09:00:00", "action": "produce", "ok": False}) + "\n",
@@ -73,7 +73,7 @@ def test_failed_produce_does_not_count_as_done(tmp_path, monkeypatch):
 
 
 def test_preflight_clean_when_specs_and_extras_exist(tmp_path, monkeypatch):
-    from carshorts.heartbeat import preflight
+    from carshorts.orchestration.heartbeat import preflight
     monkeypatch.chdir(tmp_path)
     (tmp_path / "specs").mkdir()
     (tmp_path / "specs_extras").mkdir()
@@ -83,7 +83,7 @@ def test_preflight_clean_when_specs_and_extras_exist(tmp_path, monkeypatch):
 
 
 def test_preflight_flags_missing_specs(tmp_path, monkeypatch):
-    from carshorts.heartbeat import preflight
+    from carshorts.orchestration.heartbeat import preflight
     monkeypatch.chdir(tmp_path)
     blockers = preflight("kia-sonet", agents_ok=True)
     assert any("specs/kia-sonet.json" in b for b in blockers)
@@ -93,7 +93,7 @@ def test_preflight_flags_missing_extras_only_without_agents(tmp_path, monkeypatc
     """The scriptwright agent can WRITE extras — so missing extras only blocks
     when the agent layer is unavailable. This is the exact condition that would
     have failed the first real heartbeat run on Windows (no `claude` CLI)."""
-    from carshorts.heartbeat import preflight
+    from carshorts.orchestration.heartbeat import preflight
     monkeypatch.chdir(tmp_path)
     (tmp_path / "specs").mkdir()
     (tmp_path / "specs" / "tata-punch.json").write_text("{}", encoding="utf-8")
@@ -104,7 +104,7 @@ def test_preflight_flags_missing_extras_only_without_agents(tmp_path, monkeypatc
 
 
 def test_corrupt_journal_line_is_survivable(tmp_path, monkeypatch):
-    import carshorts.heartbeat as hb
+    import carshorts.orchestration.heartbeat as hb
     journal = tmp_path / "hb.jsonl"
     journal.write_text("not json\n" + json.dumps(
         {"at": "2026-07-23T09:00:00", "action": "produce", "ok": True}) + "\n",

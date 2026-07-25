@@ -71,12 +71,12 @@ if [ "$SKIP_CRON" = "0" ]; then
   say "Daily cron jobs"
   HH="${HEARTBEAT_TIME%%:*}"; MM="${HEARTBEAT_TIME##*:}"; HH2=$(( (10#$HH + 1) % 24 ))
   VENV="$REPO/.venv/bin/python"; LOGDIR="$REPO/data/logs"; mkdir -p "$LOGDIR"
-  HB="cd '$REPO' && PYTHONUTF8=1 $VENV -m carshorts.heartbeat >> '$LOGDIR/heartbeat.log' 2>&1"
-  RW="cd '$REPO' && PYTHONUTF8=1 $VENV -m carshorts.retention_watch >> '$LOGDIR/retention_watch.log' 2>&1"
-  CRON="$(crontab -l 2>/dev/null | grep -v 'carshorts.heartbeat' | grep -v 'carshorts.retention_watch' || true)"
+  HB="cd '$REPO' && PYTHONUTF8=1 $VENV -m carshorts heartbeat >> '$LOGDIR/heartbeat.log' 2>&1"
+  RW="cd '$REPO' && PYTHONUTF8=1 $VENV -m carshorts retention-watch >> '$LOGDIR/retention_watch.log' 2>&1"
+  CRON="$(crontab -l 2>/dev/null | grep -v 'carshorts heartbeat' | grep -v 'carshorts retention-watch' || true)"
   { printf '%s\n' "$CRON"; \
-    printf '%s %s * * * %s # carshorts.heartbeat\n' "$MM" "$HH" "$HB"; \
-    printf '%s %s * * * %s # carshorts.retention_watch\n' "$MM" "$HH2" "$RW"; } | crontab - \
+    printf '%s %s * * * %s # carshorts heartbeat\n' "$MM" "$HH" "$HB"; \
+    printf '%s %s * * * %s # carshorts retention-watch\n' "$MM" "$HH2" "$RW"; } | crontab - \
     && good "cron: heartbeat $HEARTBEAT_TIME, retention_watch ${HH2}:${MM}" \
     || warn "could not write crontab - add the two jobs above by hand (crontab -e)"
 else
@@ -103,6 +103,6 @@ if [ "${#TODO[@]}" -gt 0 ]; then
   printf '\n  YOUR TO-DO (only you can do these):\n'
   for t in "${TODO[@]}"; do printf '   - %s\n' "$t"; done
 fi
-printf '\n  Verify state:  ./.venv/bin/python -m carshorts.heartbeat --status\n'
-printf '  Review portal: ./.venv/bin/python -m carshorts.portal   (http://localhost:8787)\n\n'
+printf '\n  Verify state:  ./.venv/bin/python -m carshorts heartbeat --status\n'
+printf '  Review portal: ./.venv/bin/python -m carshorts portal   (http://localhost:8787)\n\n'
 exit 0

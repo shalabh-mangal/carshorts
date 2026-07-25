@@ -43,7 +43,7 @@ Requirements:
   files to drop in). Non-zero exit on a hard failure.
 - NEW-LAPTOP path documented in SETUP.md: `git clone` → run setup → drop in
   `.env`, `client_secret.json`, `youtube_token.json`, and the `assets/` pool →
-  `python -m carshorts.heartbeat --status` to confirm.
+  `python -m carshorts heartbeat --status` to confirm.
 - Run `pytest -q` + `ruff check .` at the end as a smoke test.
 
 ### B. Next video (sandbox can do this now)

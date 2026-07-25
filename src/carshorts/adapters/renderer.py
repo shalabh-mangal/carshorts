@@ -571,8 +571,8 @@ class MoviePyRenderer(VideoRenderer):
 
         from moviepy import AudioFileClip
 
-        from . import ffoverlay
-        from .ffrenderer import global_cuts_from_sections, render_base_from_cuts
+        from carshorts.adapters import ffoverlay
+        from carshorts.adapters.ffrenderer import global_cuts_from_sections, render_base_from_cuts
 
         durations = [AudioFileClip(s.audio_path).duration for s in sections]
         gcuts, total = global_cuts_from_sections(sections, durations)
@@ -656,7 +656,10 @@ class MoviePyRenderer(VideoRenderer):
         video = None
         if use_ffbase:
             try:
-                from .ffrenderer import global_cuts_from_sections, render_base_from_cuts
+                from carshorts.adapters.ffrenderer import (
+                    global_cuts_from_sections,
+                    render_base_from_cuts,
+                )
                 durations = [AudioFileClip(s.audio_path).duration for s in sections]
                 gcuts, total = global_cuts_from_sections(sections, durations)
                 base_path = tempfile.mktemp(suffix="_ffbase.mp4")

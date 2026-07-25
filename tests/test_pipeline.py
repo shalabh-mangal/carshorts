@@ -12,8 +12,8 @@ from __future__ import annotations
 import pytest
 
 from carshorts.adapters.llm import MockLLMClient
-from carshorts.models import Script, ScriptSegment, Spec, SpecSheet, Verdict
-from carshorts.stages.pipeline import (
+from carshorts.core.models import Script, ScriptSegment, Spec, SpecSheet, Verdict
+from carshorts.writing.draft import (
     draft_script,
     fact_check,
     rank_stories,
@@ -79,7 +79,7 @@ def test_structural_check_passes_valid_citation(sheet):
 
 
 def test_ranking_sorts_by_virality(sheet):
-    from carshorts.models import NewsItem
+    from carshorts.core.models import NewsItem
     items = [
         NewsItem(title="Boring recall notice", url="https://example.com/1",
                  source_name="X", summary="minor recall"),

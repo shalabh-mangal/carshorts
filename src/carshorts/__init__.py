@@ -1,4 +1,4 @@
 
-from .config import load_env as _load_env
+from carshorts.core.config import load_env as _load_env
 
 _load_env()

@@ -154,7 +154,7 @@ if ($script:todo.Count) {
     foreach ($t in $script:todo) { Write-Host "   - $t" -ForegroundColor Magenta }
 }
 Write-Host ""
-Write-Host "  Verify state:  .\.venv\Scripts\python.exe -m carshorts.heartbeat --status" -ForegroundColor Cyan
+Write-Host "  Verify state:  .\.venv\Scripts\python.exe -m carshorts.orchestration.heartbeat --status" -ForegroundColor Cyan
 Write-Host "  Review portal: .\.venv\Scripts\python.exe -m carshorts.portal   (http://localhost:8787)" -ForegroundColor Cyan
 Write-Host ""
 exit 0   # status is reported above; don't leak a probe's non-zero exit code

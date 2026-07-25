@@ -8,7 +8,7 @@ writer a superstition it then follows forever.
 """
 import pytest
 
-from carshorts.experiments import (
+from carshorts.intel.experiments import (
     evaluate,
     may_become_lesson,
     t_two_tailed_p,
@@ -78,7 +78,7 @@ def test_min_effect_blocks_a_statistically_real_but_trivial_difference():
 
 # --- ledger behaviour -------------------------------------------------------
 def test_a_video_cannot_serve_both_arms(tmp_path, monkeypatch):
-    import carshorts.experiments as ex
+    import carshorts.intel.experiments as ex
     monkeypatch.setattr(ex, "LEDGER", tmp_path / "experiments.json")
     ex.new_experiment("h", "length_s", "avg_view_pct", "58", "35")
     ex.assign("exp-001", "control", "VID1")
@@ -87,7 +87,7 @@ def test_a_video_cannot_serve_both_arms(tmp_path, monkeypatch):
 
 
 def test_assignment_is_idempotent(tmp_path, monkeypatch):
-    import carshorts.experiments as ex
+    import carshorts.intel.experiments as ex
     monkeypatch.setattr(ex, "LEDGER", tmp_path / "experiments.json")
     ex.new_experiment("h", "length_s", "avg_view_pct", "58", "35")
     ex.assign("exp-001", "control", "VID1")
@@ -98,7 +98,7 @@ def test_assignment_is_idempotent(tmp_path, monkeypatch):
 def test_videos_below_the_views_floor_are_excluded(tmp_path, monkeypatch):
     """A metric computed on a handful of views is noise. Our real 42.2% came
     from 7 processed views — exactly what this floor exists to reject."""
-    import carshorts.experiments as ex
+    import carshorts.intel.experiments as ex
     monkeypatch.setattr(ex, "LEDGER", tmp_path / "experiments.json")
     recipes = tmp_path / "recipes"
     recipes.mkdir()

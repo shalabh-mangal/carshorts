@@ -7,7 +7,7 @@ the rival baseline, so the same inputs always yield the same opener.
 """
 from PIL import Image
 
-from carshorts.firstframe import choose_opening_still, rank_opening_stills, score_still
+from carshorts.quality.firstframe import choose_opening_still, rank_opening_stills, score_still
 
 BASE = {"brightness": 117.44, "contrast": 63.45, "colorfulness": 43.6,
         "edge_density": 18.24}

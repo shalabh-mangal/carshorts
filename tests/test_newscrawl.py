@@ -7,7 +7,7 @@ would defeat the number-guard's entire premise.
 """
 import json
 
-from carshorts.newscrawl import (
+from carshorts.sourcing.newscrawl import (
     _car_tokens,
     matches_car,
     parse_feed,
@@ -89,7 +89,7 @@ def test_news_entries_keep_outlet_wording_and_source():
 
 
 def test_merge_never_touches_price_fields(tmp_path, monkeypatch):
-    import carshorts.newscrawl as nc
+    import carshorts.sourcing.newscrawl as nc
     monkeypatch.setattr(nc, "EXTRAS_DIR", tmp_path)
     (tmp_path / "mahindra-thar.json").write_text(json.dumps({
         "price_estimate": "₹10.32 lakh to ₹17.80 lakh",
@@ -110,7 +110,7 @@ def test_merge_never_touches_price_fields(tmp_path, monkeypatch):
 
 
 def test_merge_is_idempotent_on_the_same_source(tmp_path, monkeypatch):
-    import carshorts.newscrawl as nc
+    import carshorts.sourcing.newscrawl as nc
     monkeypatch.setattr(nc, "EXTRAS_DIR", tmp_path)
     story = [{"fact": "S", "source": "https://example.com/a", "date": "July 2026"}]
     nc.merge_into_extras("x", story, write=True)
@@ -119,7 +119,7 @@ def test_merge_is_idempotent_on_the_same_source(tmp_path, monkeypatch):
 
 
 def test_merge_reports_missing_price(tmp_path, monkeypatch):
-    import carshorts.newscrawl as nc
+    import carshorts.sourcing.newscrawl as nc
     monkeypatch.setattr(nc, "EXTRAS_DIR", tmp_path)
     result = nc.merge_into_extras("brand-new-car", [
         {"fact": "S", "source": "https://example.com/z", "date": "July 2026"}

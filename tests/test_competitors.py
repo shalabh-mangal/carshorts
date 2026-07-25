@@ -6,7 +6,7 @@ here should imply we can see them.
 """
 import datetime
 
-from carshorts.competitors import iso_duration_seconds, summarize, title_features
+from carshorts.intel.competitors import iso_duration_seconds, summarize, title_features
 
 
 def _vid(title, views, dur, day):

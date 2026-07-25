@@ -8,7 +8,7 @@ able to overrule it.
 """
 import json
 
-from carshorts.assetvet import (
+from carshorts.quality.assetvet import (
     QUARANTINE,
     decide,
     parse_verdicts,

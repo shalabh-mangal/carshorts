@@ -10,7 +10,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from carshorts.rework import _feedback_is_empty, run
+from carshorts.agents.rework import _feedback_is_empty, run
 
 
 def test_feedback_is_empty_detects_the_empty_case() -> None:
@@ -41,7 +41,7 @@ def test_empty_rework_bounces_without_calling_llm_or_mechanic(
 
     def _boom(*_a, **_k):
         raise AssertionError("empty feedback must NOT invoke the LLM")
-    monkeypatch.setattr("carshorts.rework.make_llm", _boom)
+    monkeypatch.setattr("carshorts.agents.rework.make_llm", _boom)
 
     run("creta")
 

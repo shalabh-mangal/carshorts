@@ -6,7 +6,7 @@ otherwise a disabled comment section would masquerade as an audience that saw
 the CTA and chose not to reply, and we would "learn" from a signal that was
 never possible.
 """
-from carshorts.engagement import rates, summarize_engagement
+from carshorts.intel.engagement import rates, summarize_engagement
 
 
 def _v(views, likes, comments):

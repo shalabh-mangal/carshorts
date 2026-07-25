@@ -8,8 +8,8 @@ cars it exists to unblock.
 """
 import json
 
-from carshorts.models import Spec, SpecSheet
-from carshorts.produce import _apply_extras
+from carshorts.core.models import Spec, SpecSheet
+from carshorts.rendering.produce import _apply_extras
 
 
 def _sheet():

@@ -5,8 +5,8 @@ script but in no spec, and must NOT flag figures that are genuinely sourced. The
 real case that motivated it: a 7B model wrote "₹12.99 lakh" for a car whose spec
 sheet has no price, and the LLM fact-checker missed it.
 """
-from carshorts.models import Script, ScriptSegment, Spec, SpecSheet
-from carshorts.stages.pipeline import unsourced_numbers_check
+from carshorts.core.models import Script, ScriptSegment, Spec, SpecSheet
+from carshorts.writing.draft import unsourced_numbers_check
 
 SHEET = SpecSheet(
     subject="Tata Nexon",
