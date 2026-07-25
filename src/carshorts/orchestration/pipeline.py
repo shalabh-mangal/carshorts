@@ -93,19 +93,39 @@ def draft(car: str, persona: str = "deadpan", language: str = "english",
         sys.exit("draft render failed")
     _run([sys.executable, "-m", "carshorts.quality.vqa", str(draft_out)])
 
+    # Gate on SYSTEMATIC blocking vision issues (plates / wrong-vehicle / logos).
+    # A specific-car draft riddled with the wrong car or legible plates must not
+    # reach the owner dressed up as ready. One stray flag is tolerated (vision
+    # false-positives happen); a pattern holds the draft for better assets.
+    # Subjective flags (clutter, dark) stay advisory and never hold.
+    vqa_file = draft_out.with_suffix(".vqa.json")
+    vqa_res = json.loads(vqa_file.read_text()) if vqa_file.exists() else {}
+    blocking, frames = vqa_res.get("blocking", 0), vqa_res.get("frames", 0)
+    held = blocking >= 3 or (frames and blocking / frames >= 0.25)
+
     QUEUE.mkdir(parents=True, exist_ok=True)
     card = {
         "car": car, "slug": slug, "persona": persona, "language": language,
         "script": str(script), "spec": str(spec), "draft": str(draft_out),
         "created": datetime.datetime.now().isoformat(timespec="seconds"),
-        "status": "awaiting_approval",
+        "status": "needs_assets" if held else "awaiting_approval",
     }
+    if held:
+        card["hold_reason"] = (f"visual QA: {blocking}/{frames} frames with blocking issues "
+                               f"(readable plate / wrong vehicle / watermark)")
     (QUEUE / f"{slug}.json").write_text(json.dumps(card, indent=2))
-    print(f"\n════ GATE 1 — YOUR MOVE ════\n"
-          f"1. Watch the draft: {draft_out}\n"
-          f"2. Edit the script if needed: {script}\n"
-          f"3. Approve: python -m carshorts.orchestration.pipeline --approve {slug}\n"
-          f"   (re-run draft after edits: python -m carshorts.orchestration.pipeline \"{car}\")")
+    if held:
+        print(f"\n════ DRAFT HELD — NOT Gate-1 ready ════\n"
+              f"  {card['hold_reason']}\n"
+              f"  Draft is on disk ({draft_out}) but was NOT parked for approval.\n"
+              f"  Add proper {car} footage (or let the curator agent hunt it), then re-draft:\n"
+              f"    python -m carshorts.orchestration.pipeline \"{car}\"")
+    else:
+        print(f"\n════ GATE 1 — YOUR MOVE ════\n"
+              f"1. Watch the draft: {draft_out}\n"
+              f"2. Edit the script if needed: {script}\n"
+              f"3. Approve: python -m carshorts.orchestration.pipeline --approve {slug}\n"
+              f"   (re-run draft after edits: python -m carshorts.orchestration.pipeline \"{car}\")")
 
 
 def _progress(slug: str, step: str, done: bool = False) -> None:

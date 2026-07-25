@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import datetime
 import json
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -84,9 +85,15 @@ def run_agent(role: str, task: str, max_turns: int = MAX_TURNS) -> dict:
     # in interactively, no key is needed and this is a no-op.
     from carshorts.core.config import load_env
     load_env()
+    # Resolve the CLI to a full path: on Windows `claude` is a `.cmd` shim that a
+    # bare argv[0] won't find (subprocess doesn't apply PATHEXT), which silently
+    # sent every headless run down the "unavailable" fallback. which() returns the
+    # runnable path on every OS; the "claude" fallback keeps the OSError branch
+    # working when the CLI truly isn't installed.
+    claude_bin = shutil.which("claude") or "claude"
     try:
         proc = subprocess.run(
-            ["claude", "-p", prompt,
+            [claude_bin, "-p", prompt,
              "--output-format", "json",
              "--max-turns", str(max_turns),
              "--permission-mode", "acceptEdits",

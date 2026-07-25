@@ -20,6 +20,12 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+# Vision issues split by severity. BLOCKING ones are objective, hard-rule
+# breaches (a legible plate, someone else's logo, the WRONG car) that no amount
+# of owner taste can excuse; the rest (clutter, dark/blur) are judgment calls
+# left advisory so a single vision false-positive never holds a good draft.
+BLOCKING_ISSUES = {"readable_plate", "watermark_or_logo_overlay", "wrong_vehicle_type"}
+
 
 def _extract_frame(video: str, t: float, out_path: str) -> bool:
     proc = subprocess.run(
@@ -100,6 +106,16 @@ def run_vqa(video_path: str, manifest_path: str | None = None,
             fails.append({"t": sm["t"], "asset": sm["asset"], "phrase": sm["phrase"],
                           "issues": v.get("issues", []), "match": v.get("match", True)})
 
+    blocking = [f for f in fails if set(f["issues"]) & BLOCKING_ISSUES]
+    # A machine-readable verdict beside the video so callers (the pipeline) can
+    # gate on it without re-parsing stdout.
+    Path(video_path).with_suffix(".vqa.json").write_text(json.dumps({
+        "video": video_path, "frames": len(frames), "flagged": len(fails),
+        "blocking": len(blocking),
+        "blocking_detail": [{"t": f["t"], "asset": f["asset"], "issues": f["issues"]}
+                            for f in blocking],
+    }, indent=2))
+
     if fails:
         journal = Path("data/failures.jsonl")
         journal.parent.mkdir(parents=True, exist_ok=True)
@@ -109,7 +125,9 @@ def run_vqa(video_path: str, manifest_path: str | None = None,
                     "at": datetime.datetime.now().isoformat(timespec="seconds"),
                     "video": video_path, "check": "visual-qa",
                     "detail": json.dumps(f, ensure_ascii=False), "resolved": False}) + "\n")
-        print(f"     VQA: {len(fails)}/{len(frames)} frames flagged (advisory)")
+        tag = (f", {len(blocking)} with BLOCKING issues (plates/wrong-vehicle/watermark)"
+               if blocking else " (advisory)")
+        print(f"     VQA: {len(fails)}/{len(frames)} frames flagged{tag}")
     else:
         print(f"     VQA: all {len(frames)} frames clean")
     return not fails
