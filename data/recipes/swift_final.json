@@ -2,7 +2,7 @@
   "out": "",
   "subject": "Maruti Suzuki Swift",
   "rendered_at": null,
-  "script_file": "scripts/swift_deadpan.script.json",
+  "script_file": "data/scripts/swift_deadpan.script.json",
   "persona": "deadpan",
   "voice_engine": null,
   "language": "english",

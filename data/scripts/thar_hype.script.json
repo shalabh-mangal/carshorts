@@ -1,0 +1,51 @@
+{
+  "subject": "Mahindra Thar",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Thar's the off-roader that'll leave the Gypsy in the dust!",
+      "cited_spec_names": []
+    },
+    {
+      "role": "spec",
+      "text": "Packing 152 P-S of power, this Thar means business, but the best bit is coming!",
+      "cited_spec_names": [
+        "power"
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "With 320 N-m of torque, you'll be scaling mountains in no time, thanks to its 2-litre engine!",
+      "cited_spec_names": [
+        "torque",
+        "engine_litre"
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "And when things get tough, its 4x4 system's got your back!",
+      "cited_spec_names": [
+        "four_wheel_drive"
+      ]
+    },
+    {
+      "role": "value",
+      "text": "Estimated price? 10.32 to 17.80 lakh, but trust me, the LXT RWD Diesel around ₹12.99 lakh is the sweet spot - you get a 10.25-inch infotainment screen, cruise control, keyless entry, and a rear camera, all without the 4x4 premium!",
+      "cited_spec_names": [
+        "price_estimate",
+        "value_variant",
+        "value_features"
+      ]
+    },
+    {
+      "role": "peak",
+      "text": "The Thar: because who needs a gym when you can just drive up a mountain?",
+      "cited_spec_names": []
+    },
+    {
+      "role": "cta",
+      "text": "Which Thar variant would you choose? Follow for more!",
+      "cited_spec_names": []
+    }
+  ]
+}

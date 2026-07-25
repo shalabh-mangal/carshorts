@@ -4,7 +4,7 @@ Who reads what, and when. Fresh Claude session: read SESSION_HANDOFF.md
 (repo root) first, then follow this map.
 
 ## Layer 1 — LAW (read before any work)
-- `agents/TASTE.md` — owner taste constitution + incident ledger. Read by
+- `charters/TASTE.md` — owner taste constitution + incident ledger. Read by
   every agent charter as a hard first action. Owner rules never deleted.
 
 ## Layer 2 — Live operational state (machine-written, committed)
@@ -15,7 +15,7 @@ Who reads what, and when. Fresh Claude session: read SESSION_HANDOFF.md
 - `data/sound_profiles/` — composer's per-car sound personality
 - `data/supervisor_reports/` — 8-hourly shift reports
 
-## Layer 3 — Role charters (`agents/*.md`)
+## Layer 3 — Role charters (`charters/*.md`)
 scriptwright, curator, composer, analyst, mechanic, supervisor.
 All open with the TASTE.md law + self-verification duty.
 

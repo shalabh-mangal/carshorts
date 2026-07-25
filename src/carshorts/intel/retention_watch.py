@@ -13,7 +13,7 @@ appears it maps the drop-offs onto that video's script BEATS (via the render
 manifest) and journals the finding to data/retention_log.jsonl.
 
 Deliberately does NOT call an LLM. It records evidence; it does not invent
-lessons from a thin sample — that stays a supervisor decision (see agents/
+lessons from a thin sample — that stays a supervisor decision (see charters/
 TASTE.md: "a flagged doubt is worth more than a confident miss").
 """
 from __future__ import annotations
@@ -23,6 +23,7 @@ import datetime
 import json
 from pathlib import Path
 
+from carshorts.core import paths
 from carshorts.intel.analyze import _fetch_metrics
 
 RECIPES = Path("data/recipes")
@@ -41,7 +42,7 @@ def _manifest_for(recipe: dict) -> Path | None:
         beside = Path(out).with_suffix(".manifest.json")
         if beside.exists():
             return beside
-        mirror = Path("context/manifests") / beside.name
+        mirror = paths.MANIFESTS / beside.name
         if mirror.exists():
             return mirror
     return None

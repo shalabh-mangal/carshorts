@@ -2,7 +2,7 @@
   "out": "",
   "subject": "Tata Nexon",
   "rendered_at": null,
-  "script_file": "scripts/nexon_deadpan.script.json",
+  "script_file": "data/scripts/nexon_deadpan.script.json",
   "persona": null,
   "voice_engine": null,
   "language": "english",

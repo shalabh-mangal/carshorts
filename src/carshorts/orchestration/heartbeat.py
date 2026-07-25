@@ -25,7 +25,7 @@ This is that driver, and it is deliberately conservative:
   4. journal + write an owner-facing report
 
 IT NEVER PUBLISHES. Gate 1 (draft approval) and Gate 2 (final watch) belong to
-the owner — see agents/TASTE.md. The heartbeat's whole job is to make sure a
+the owner — see charters/TASTE.md. The heartbeat's whole job is to make sure a
 draft is always WAITING for those gates, never to walk through them.
 """
 from __future__ import annotations

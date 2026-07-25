@@ -31,6 +31,7 @@ from carshorts.adapters.music import generate_beat
 from carshorts.adapters.renderer import MoviePyRenderer, Section
 from carshorts.adapters.stock import PexelsVideoSource
 from carshorts.adapters.tts import make_tts
+from carshorts.core import paths
 from carshorts.core.models import Script, Spec, SpecSheet
 from carshorts.writing.draft import (
     draft_script,
@@ -529,8 +530,8 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
 
     # --- Get a script: either load a saved one (free) or draft one (uses a model).
     if script_file:
-        script = Script.model_validate_json(Path(script_file).read_text())
-        sheet = SpecSheet.model_validate_json(Path(spec_path).read_text()) if spec_path else None
+        script = Script.model_validate_json(paths.resolve(script_file).read_text())
+        sheet = SpecSheet.model_validate_json(paths.resolve(spec_path).read_text()) if spec_path else None
         if sheet is not None:
             _apply_extras(sheet)   # merge sourced price/variant so the guard knows them
         print(f"loaded script from {script_file} ({len(script.segments)} sections)")

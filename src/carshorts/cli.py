@@ -6,14 +6,17 @@ per-domain module CLIs. Each target module keeps its own argparse `main()`, so
 its `__main__` block with the remaining args, the same as `python -m`.
 
   carshorts heartbeat --status
-  carshorts produce --script-file scripts/x.json --spec specs/x.json ...
+  carshorts produce --script-file data/scripts/x.json --spec specs/x.json ...
   carshorts portal
   carshorts competitors --limit 30
 """
 from __future__ import annotations
 
+import os
 import runpy
 import sys
+
+from carshorts.core import paths
 
 # command -> module. Grouped by domain to mirror the package layout.
 COMMANDS: dict[str, str] = {
@@ -60,6 +63,12 @@ def _usage() -> str:
 
 def main(argv: list[str] | None = None) -> None:
     argv = list(sys.argv[1:] if argv is None else argv)
+    # Run from the project root so every path resolves identically regardless of
+    # where `carshorts` was launched from (see carshorts.core.paths).
+    try:
+        os.chdir(paths.ROOT)
+    except OSError:
+        pass
     if not argv or argv[0] in ("-h", "--help", "help"):
         print(_usage())
         return

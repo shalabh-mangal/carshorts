@@ -50,7 +50,7 @@ H. Cadence: daily heartbeat — brain drafts, you approve
 
 Architecture: **deterministic hands, agentic minds.** The tested pipeline
 (produce/QA/VQA/portal/publish) stays the hands. Five Claude-powered minds
-(headless `claude -p`, role charters in agents/, budget-capped, journaled)
+(headless `claude -p`, role charters in charters/, budget-capped, journaled)
 supply the judgment. The interactive supervisor (Claude) audits, corrects,
 and grows the free brain's menu from every escalation.
 
@@ -58,16 +58,16 @@ and grows the free brain's menu from every escalation.
       12 runs/day, 40-turn cap, journal data/agent_log.jsonl), mechanic +
       supervisor charters, rework dead-ends escalate to the mechanic,
       menu-growth inbox (data/brain_inbox.jsonl). Smoke-tested live.
-- [x] **P2 Scriptwright** (live-validated on Creta 2026-07-22) — agents/scriptwright.md: crawl fresh news +
+- [x] **P2 Scriptwright** (live-validated on Creta 2026-07-22) — charters/scriptwright.md: crawl fresh news +
       price/spec data from outlets (free/official), write the script with
       humor that lands + curated pops; output = specs_extras + script JSON
       through the existing number-guard/fact-check gates.
-- [x] **P3 Analyst** — agents/analyst.md: weekly competitor tactic research
+- [x] **P3 Analyst** — charters/analyst.md: weekly competitor tactic research
       (what top car channels do for attention/retention) + own analytics
       (retention curve → beats) → learnings + experiment calendar entries.
-- [x] **P4 Composer** — agents/composer.md: car personality profile →
+- [x] **P4 Composer** — charters/composer.md: car personality profile →
       music mood/beat/SFX choices (extends music_tags.json + generate_beat).
-- [x] **P5 Curator** — agents/curator.md: crawl assets (Wikimedia, official
+- [x] **P5 Curator** — charters/curator.md: crawl assets (Wikimedia, official
       press kits, Pexels) with license checks, build per-car pools, propose
       stitching variety (shot plans) for the renderer.
 - [ ] **P6 Supervisor cadence** — scheduled daily supervisor run (audit
@@ -78,7 +78,7 @@ and grows the free brain's menu from every escalation.
 ## Upgrade ladder (owner-approved 2026-07-22, execute in order)
 
 ### Tier 1 — Agent quality (this week) — IN PROGRESS
-- [x] Taste constitution (agents/TASTE.md): the supervisor's context made
+- [x] Taste constitution (charters/TASTE.md): the supervisor's context made
       portable — owner taste, incidents, house style; every agent reads it
       first; supervisor + scheduled audits keep it current.
 - [x] Mandatory self-verification: any agent whose work changes rendered
@@ -131,7 +131,7 @@ own output, from 5 videos, of which YouTube had processed 4% of views.
 - Cadence stopped after 2026-07-22 despite a daily goal.
 
 ### Organ 1 — EYES (perception). Biggest gap.
-- [ ] **Competitor intel engine.** agents/analyst.md exists as a CHARTER and ran
+- [ ] **Competitor intel engine.** charters/analyst.md exists as a CHARTER and ran
       once (the `[medium][analyst]` entries in learnings.json came from it), but
       there is **no module** and no continuous observation. Need: rival channel
       tracking, format/hook/length/pacing extraction, cadence benchmarks.

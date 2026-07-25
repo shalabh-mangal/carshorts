@@ -1,6 +1,6 @@
 """Publish kit — everything the upload needs, generated per video.
 
-  python -m carshorts.publishing.publishkit --script scripts/thar_deadpan.script.json \
+  python -m carshorts.publishing.publishkit --script data/scripts/thar_deadpan.script.json \
       --spec specs/mahindra-thar.json --provider groq
 
 Writes out/<name>.publish.md: 3 title options (curiosity-gap, keyword-rich),

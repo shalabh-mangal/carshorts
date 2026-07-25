@@ -21,8 +21,8 @@ ROADMAP.md = what's next. Channel: carshorts (Nexon, Swift, Thar live).
 - Run `pytest` (offline, 31 tests) before committing; CI runs it on push.
 
 ## Package structure (src/carshorts/, domain subpackages)
-- `cli.py` — unified entrypoint: `carshorts <command>` (or `python -m carshorts <command>`)
-- `core/` — config, models, learnings
+- `cli.py` — unified entrypoint: `carshorts <command>` (or `python -m carshorts <command>`); chdirs to the project root so paths resolve from anywhere
+- `core/` — config, models, learnings, **paths** (canonical dir layout — one ROOT)
 - `adapters/` — I/O boundaries: llm, tts, renderer, ffrenderer, ffoverlay, footage, stock, music, specsource
 - `writing/` — prompts, draft, writescript, gate1
 - `rendering/` — produce (phrase-sync render + QA loop), audiopolish, thumbnail
@@ -33,3 +33,8 @@ ROADMAP.md = what's next. Channel: carshorts (Nexon, Swift, Thar live).
 - `orchestration/` — pipeline (queue), heartbeat (daily), calendar_plan
 - `publishing/` — publish, publishkit, ytauth
 - `portal/` — review-station FE (server + __main__)
+
+Repo data dirs (all under `core.paths`): `charters/` role charters + `TASTE.md`
+(the LAW; read by `agents/agent.py`), `data/scripts/` locked `.script.json` per
+video, `specs/` + `specs_extras/` fact sheets, `assets/` licensed pool, `out/`
+renders (gitignored), `context/manifests/` curated render-record mirror.

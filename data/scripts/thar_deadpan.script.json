@@ -1,0 +1,95 @@
+{
+  "subject": "Mahindra Thar",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Mahindra just got caught testing the new Thar — and it's wearing the Roxx's face.",
+      "cited_spec_names": [
+        "news_1"
+      ],
+      "pops": [
+        "Roxx's face"
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "The 2026 facelift, spied: flush LED headlamps, C-shaped DRLs, body-colour grille, 19-inch alloys. Inside — a 10.25-inch screen, and Level 2 ADAS is reportedly coming.",
+      "cited_spec_names": [
+        "news_1",
+        "news_2",
+        "news_3"
+      ],
+      "pops": [
+        "Level 2 ADAS",
+        "19-inch alloys",
+        "10.25-inch screen",
+        "flush LED headlamps",
+        "C-shaped DRLs",
+        "body-colour grille"
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "Today's Thar still packs the punch: 2.0-litre turbo-petrol, 152 PS, 320 Nm, proper 4x4.",
+      "cited_spec_names": [
+        "engine_litre",
+        "power",
+        "torque",
+        "four_wheel_drive"
+      ],
+      "pops": [
+        "152 PS",
+        "proper 4x4",
+        "2.0-litre turbo-petrol",
+        "320 Nm"
+      ]
+    },
+    {
+      "role": "value",
+      "text": "Prices run ₹10.32 to ₹17.80 lakh. Smart money's on the LXT RWD Diesel, around ₹12.99 lakh — big screen, cruise, keyless — without the 4x4 premium.",
+      "cited_spec_names": [
+        "price_estimate",
+        "value_variant",
+        "value_features"
+      ],
+      "pops": [
+        {
+          "anchor": "Smart money's on",
+          "show": "₹12.99 lakh",
+          "card": true,
+          "label": "smart money pick"
+        },
+        "LXT RWD Diesel",
+        "₹10.32 to ₹17.80 lakh",
+        "cruise",
+        "keyless",
+        "big screen"
+      ]
+    },
+    {
+      "role": "peak",
+      "text": "Everyone buys the Thar for the mountains. The only summit most will ever see is the mall parking ramp — twice on Sundays.",
+      "cited_spec_names": [],
+      "pops": [
+        {
+          "anchor": "twice on Sundays",
+          "show": "PEAK OFF-ROADING."
+        }
+      ]
+    },
+    {
+      "role": "cta",
+      "text": "The facelift lands festive 2026. Grab today's deal, or wait for the Roxx face? Fight it out in the comments.",
+      "cited_spec_names": [
+        "news_4"
+      ],
+      "pops": [
+        "festive 2026",
+        {
+          "anchor": "Fight it out",
+          "show": "LIKE · SHARE · SUBSCRIBE"
+        }
+      ]
+    }
+  ]
+}

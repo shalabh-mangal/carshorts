@@ -2,7 +2,7 @@
 
   python -m carshorts.writing.writescript --spec specs/tata-nexon.json \
       --persona bhai --language hinglish --variants 3 --provider groq \
-      --out scripts/nexon_bhai.script.json
+      --out data/scripts/nexon_bhai.script.json
 
 Pipeline (script-first — perfect the words before spending render compute):
   1. VARIANTS  — draft N scripts, each from a different opening angle + persona.
@@ -20,6 +20,7 @@ import argparse
 from pathlib import Path
 
 from carshorts.adapters.llm import make_llm
+from carshorts.core import paths
 from carshorts.core.models import SpecSheet
 from carshorts.rendering.produce import _apply_extras, _slug
 from carshorts.writing.draft import (
@@ -90,7 +91,7 @@ def write_premium(spec_path: str, out_path: str, persona: str = "", language: st
 def main() -> None:
     p = argparse.ArgumentParser(description="Generate a premium, fact-checked script.")
     p.add_argument("--spec", required=True, help="Path to a spec-sheet JSON.")
-    p.add_argument("--out", help="Output script JSON (default scripts/<car>_<persona>.script.json).")
+    p.add_argument("--out", help="Output script JSON (default data/scripts/<car>_<persona>.script.json).")
     p.add_argument("--persona", default="", choices=["", "bhai", "deadpan", "hype"],
                    help="Channel voice to write in.")
     p.add_argument("--language", default="english", choices=["english", "hinglish", "hindi"])
@@ -103,7 +104,7 @@ def main() -> None:
     args = p.parse_args()
 
     sheet = SpecSheet.model_validate_json(Path(args.spec).read_text())
-    out = args.out or f"scripts/{_slug(sheet.subject)}_{args.persona or 'default'}.script.json"
+    out = args.out or str(paths.SCRIPTS / f"{_slug(sheet.subject)}_{args.persona or 'default'}.script.json")
     write_premium(args.spec, out, persona=args.persona, language=args.language,
                   variants=args.variants, provider=args.provider, video_format=args.format)
 

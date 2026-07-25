@@ -20,6 +20,7 @@ import sys
 from pathlib import Path
 
 from carshorts.adapters.llm import make_llm
+from carshorts.core import paths
 from carshorts.core.models import Script, SpecSheet
 from carshorts.writing.draft import _rows, unsourced_numbers_check
 
@@ -78,7 +79,7 @@ def _notes_to_actions(card: dict, feedback: dict, llm) -> list[str]:
     notes = (feedback.get("notes") or "").strip()
     if not notes:
         return []
-    script_path = Path(card["script"])
+    script_path = paths.resolve(card["script"])
     script = json.loads(script_path.read_text())
     segments_view = [
         {"index": i, "role": seg["role"], "text": seg["text"],
@@ -137,7 +138,7 @@ def _punch_up_tagged(card: dict, feedback: dict, llm) -> bool:
                if any(x in ("weak hook", "joke flat") for x in t)]
     if not targets:
         return False
-    script_path = Path(card["script"])
+    script_path = paths.resolve(card["script"])
     script = Script.model_validate_json(script_path.read_text())
     sheet = SpecSheet.model_validate_json(Path(card["spec"]).read_text())
     baseline_flags = set(unsourced_numbers_check(script, sheet))

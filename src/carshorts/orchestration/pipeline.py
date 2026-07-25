@@ -23,9 +23,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+from carshorts.core import paths
 from carshorts.rendering.produce import _slug
 
-QUEUE = Path("data/queue")
+QUEUE = paths.QUEUE
 
 
 def _run(cmd: list[str]) -> int:
@@ -42,7 +43,7 @@ def draft(car: str, persona: str = "deadpan", language: str = "english",
         sys.exit(f"missing {spec} — crawl it first:  python -m carshorts.sourcing.crawl \"{car}\" --out specs\n"
                  f"then VERIFY the specs against CarDekho (generation mixing!).")
 
-    script = Path(f"scripts/{slug}_{persona}.script.json")
+    script = paths.SCRIPTS / f"{slug}_{persona}.script.json"
     agent_wrote = False
     if not no_agent:
         # SCRIPTWRIGHT: researches fresh news + prices from real outlets,

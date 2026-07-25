@@ -1,0 +1,52 @@
+{
+  "subject": "Maruti Suzuki Swift",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Tata Tiago, are you watching? The Swift is back!",
+      "cited_spec_names": []
+    },
+    {
+      "role": "spec",
+      "text": "Packing 82 PS of power under the hood, this Swift isn't just fast, it's furious!",
+      "cited_spec_names": [
+        "power"
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "And with 111.7 N-m of torque, you'll be glued to your seat, trust me!",
+      "cited_spec_names": [
+        "torque"
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "All this oomph from a humble 1.2-litre engine - talk about efficient!",
+      "cited_spec_names": [
+        "engine_litre"
+      ]
+    },
+    {
+      "role": "value",
+      "text": "For an estimated 5.79 lakh to 8.80 lakh, the ZXi variant around ₹7.53 lakh is the real MVP - you get LED projector headlamps, 15-inch alloy wheels, a 9-inch touchscreen, and more!",
+      "cited_spec_names": [
+        "price_estimate",
+        "value_variant",
+        "value_features"
+      ]
+    },
+    {
+      "role": "peak",
+      "text": "But let's be real, the real question is: can your current ride give you 25.75 kmpl? Didn't think so!",
+      "cited_spec_names": [
+        "mileage"
+      ]
+    },
+    {
+      "role": "cta",
+      "text": "So, are you ready to level up your drive? Follow for more!",
+      "cited_spec_names": []
+    }
+  ]
+}

@@ -2,7 +2,7 @@
   "out": "out/hyundai-creta_draft.mp4",
   "subject": "Hyundai Creta",
   "rendered_at": "2026-07-23T00:37:19",
-  "script_file": "scripts/hyundai-creta_deadpan.script.json",
+  "script_file": "data/scripts/hyundai-creta_deadpan.script.json",
   "persona": "deadpan",
   "voice_engine": "edge",
   "language": "english",

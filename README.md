@@ -36,7 +36,7 @@ experiment calendar (`calendar_plan.py`) pre-assigns A/Bs so cohorts compare.
 ```
 src/carshorts/       code (adapters/ prompts/ stages/ + one module per stage)
 specs/ specs_extras/ verified spec sheets + human-curated price/news/value
-scripts/             locked .script.json per video
+data/scripts/             locked .script.json per video
 assets/              inbox/ (drop footage) music/ (drop tracks) cars/<slug>/ stock/
 data/                learnings, recipes, calendar, queue, reports, failures
 out/                 renders, manifests, thumbs, publish kits, tts_cache

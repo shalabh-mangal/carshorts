@@ -7,7 +7,7 @@ transcript at ~/.claude/projects/-Users-apple-Github-thrust/<id>.jsonl).
 ## Where things stand
 - 2 videos live: Mahindra Thar (EXCHHyUDyyg), Hyundai Creta (NXa-7sG13Uw).
 - Architecture: deterministic hands (produce/QA/VQA/portal/publish) +
-  agentic minds (agents/*.md charters run headless via src/carshorts/agent.py,
+  agentic minds (charters/*.md charters run headless via src/carshorts/agent.py,
   12 runs/day budget, journaled to data/agent_log.jsonl).
 - Owner reviews at localhost:8787 (python -m carshorts.portal). Two-gate
   approval: draft approve -> premium final -> second approval -> publish.
@@ -16,7 +16,7 @@ transcript at ~/.claude/projects/-Users-apple-Github-thrust/<id>.jsonl).
   'carshorts-supervisor-audit') — heals, folds inbox, ships 1 improvement.
 
 ## Read these before acting (in order)
-1. agents/TASTE.md — owner taste constitution + incident ledger. LAW.
+1. charters/TASTE.md — owner taste constitution + incident ledger. LAW.
 2. ROADMAP.md — tier ladder; Tier 2 (analytics activation) is next.
 3. data/learnings.json, data/brain_inbox.jsonl — live lessons + queued work.
 4. Memory dir (if session runs from ~/Github/thrust it auto-loads):

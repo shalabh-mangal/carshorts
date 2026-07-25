@@ -1,0 +1,51 @@
+{
+  "subject": "Tata Nexon",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Trouble's just 9.9 seconds away with the Tata Nexon - and we're not talking about the in-laws",
+      "cited_spec_names": [
+        "acceleration"
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "Under the hood, it's rocking an 81 kW power punch - no compact SUV is going to bully this one",
+      "cited_spec_names": [
+        "power"
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "And when you need to merge, 245 N⋅m of torque is like having the SUV equivalent of a sharp tongue - it gets you in, no questions asked",
+      "cited_spec_names": [
+        "torque"
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "All this sass from a 1.5-litre engine - who needs a V8 when you can have efficiency and attitude?",
+      "cited_spec_names": [
+        "engine_litre"
+      ]
+    },
+    {
+      "role": "value",
+      "text": "For the best of both worlds, the Creative variant is the sweet spot - with a 360-degree camera, automatic climate control, alloy wheels, and cruise control, you'll be living large, not large-empty",
+      "cited_spec_names": [
+        "value_variant",
+        "value_features"
+      ]
+    },
+    {
+      "role": "peak",
+      "text": "But honestly, the biggest flex is not the car itself, but finding someone who can handle the fact you own one",
+      "cited_spec_names": []
+    },
+    {
+      "role": "cta",
+      "text": "So, are you Team Creative or do you have your eyes on another variant? Sound off in the comments, and don't forget to follow for more auto antics",
+      "cited_spec_names": []
+    }
+  ]
+}

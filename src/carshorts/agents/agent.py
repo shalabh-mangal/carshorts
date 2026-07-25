@@ -4,7 +4,7 @@
   result = run_agent("mechanic", "Owner feedback maps to no action: ...")
 
 Invokes Claude Code headless (`claude -p`) inside this repo with a role
-charter from agents/<role>.md. This is what makes the system smart instead
+charter from charters/<role>.md. This is what makes the system smart instead
 of scripted: the agent can read code, edit it, run tests, re-render — the
 same competency as the interactive supervisor, on demand.
 
@@ -23,7 +23,9 @@ import json
 import subprocess
 from pathlib import Path
 
-AGENTS_DIR = Path("agents")
+from carshorts.core import paths
+
+CHARTERS_DIR = paths.CHARTERS
 BUDGET_FILE = Path("data/agent_budget.json")
 LOG_FILE = Path("data/agent_log.jsonl")
 
@@ -63,7 +65,7 @@ def run_agent(role: str, task: str, max_turns: int = MAX_TURNS) -> dict:
     """Run one headless agent session. Returns {ok, result, ...}; never raises
     on agent failure (journals and reports instead) — callers stay resilient.
     """
-    role_file = AGENTS_DIR / f"{role}.md"
+    role_file = CHARTERS_DIR / f"{role}.md"
     if not role_file.exists():
         return {"ok": False, "result": f"unknown role {role!r}"}
     started = datetime.datetime.now().isoformat(timespec="seconds")
@@ -128,7 +130,7 @@ def run_agent(role: str, task: str, max_turns: int = MAX_TURNS) -> dict:
 def main() -> None:
     import argparse
     ap = argparse.ArgumentParser(description="Run a system agent by role.")
-    ap.add_argument("role", help="agents/<role>.md charter to use")
+    ap.add_argument("role", help="charters/<role>.md charter to use")
     ap.add_argument("task", help="Task text for the agent.")
     args = ap.parse_args()
     out = run_agent(args.role, args.task)

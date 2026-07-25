@@ -2,7 +2,7 @@
   "out": "out/thar_draft.mp4",
   "subject": "Mahindra Thar",
   "rendered_at": "2026-07-22T10:17:32",
-  "script_file": "scripts/thar_deadpan.script.json",
+  "script_file": "data/scripts/thar_deadpan.script.json",
   "persona": "deadpan",
   "voice_engine": "edge",
   "language": "english",
