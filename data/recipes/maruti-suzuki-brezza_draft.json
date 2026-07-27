@@ -1,0 +1,23 @@
+{
+  "out": "out\\maruti-suzuki-brezza_draft.mp4",
+  "subject": "Maruti Suzuki Brezza",
+  "rendered_at": "2026-07-27T09:38:27",
+  "script_file": "data/scripts/maruti-suzuki-brezza_hype.script.json",
+  "persona": "hype",
+  "voice_engine": "edge",
+  "language": "english",
+  "music": "Heaven and Earth - Jeremy Black.mp3",
+  "captions": false,
+  "word_count": 139,
+  "sections": 6,
+  "hook_text": "BREZZA IS BACK: But is the base model the secret to unlocking the ultimate driving experience? The answer might just surprise you!",
+  "hook_type": "news",
+  "pool": {
+    "own": 0,
+    "stock": 2,
+    "stills": 7
+  },
+  "cut_target_s": 4.2,
+  "video_id": null,
+  "metrics": null
+}

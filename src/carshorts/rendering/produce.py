@@ -606,7 +606,17 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         else:
             print(f"3/5  fetching CC car photos -> {img_dir} ...")
             try:
-                images = WikimediaImageSource().fetch(script.subject, img_dir, limit=6)
+                # Wikimedia is the reliable free backbone (angle-broad search);
+                # Openverse is a best-effort bonus for non-Wikimedia sources when
+                # its anonymous rate-limit allows — never required for a render.
+                images = WikimediaImageSource().fetch(script.subject, img_dir, limit=14)
+                try:
+                    from carshorts.adapters.openverse import OpenverseImageSource
+                    images += [e for e in
+                               OpenverseImageSource().fetch(script.subject, img_dir, limit=6)
+                               if e not in images]
+                except Exception:  # noqa: BLE001 — Openverse is a bonus, not a dependency
+                    pass
                 print(f"     {len(images)} images fetched — vetting before use…")
                 # Wikimedia checks the LICENCE, nothing else. Real fetches have
                 # returned readable number plates and third-party watermarks, so

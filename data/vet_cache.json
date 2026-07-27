@@ -258,5 +258,57 @@
     "ok": true,
     "defects": [],
     "blocking": []
+  },
+  "images/2021_Suzuki_Vitara_Brezza_VXI_02.jpg:430284": {
+    "ok": false,
+    "defects": [
+      "readable_plate"
+    ],
+    "blocking": [
+      "readable_plate"
+    ]
+  },
+  "images/2021_Suzuki_Vitara_Brezza_VXI_01.jpg:398077": {
+    "ok": false,
+    "defects": [
+      "readable_plate"
+    ],
+    "blocking": [
+      "readable_plate"
+    ]
+  },
+  "images/ov_Maruti_Suzuki_s_Vitara_Brezza_ZDi_Plus_compact_SUV_Ank_Kumar_Infosys_Limited.jpg:911415": {
+    "ok": false,
+    "defects": [
+      "readable_plate"
+    ],
+    "blocking": [
+      "readable_plate"
+    ]
+  },
+  "images/2021_Maruti_Suzuki_Vitara_Brezza_VXI.jpg:491321": {
+    "ok": true,
+    "defects": [],
+    "blocking": []
+  },
+  "images/Maruti_Suzuki_s_Vitara_Brezza_ZDi_Plus_compact_SUV_rear_.jpg:1595334": {
+    "ok": true,
+    "defects": [],
+    "blocking": []
+  },
+  "images/Maruti_Vitara_Brezza.jpg:3439929": {
+    "ok": true,
+    "defects": [],
+    "blocking": []
+  },
+  "images/Interior_of_Suzuki_Vitara_Brezza.jpg:684450": {
+    "ok": true,
+    "defects": [],
+    "blocking": []
+  },
+  "images/2022_Maruti_Suzuki_Brezza_ZXi_India_interior.png:915152": {
+    "ok": true,
+    "defects": [],
+    "blocking": []
   }
 }

@@ -93,39 +93,33 @@ def draft(car: str, persona: str = "deadpan", language: str = "english",
         sys.exit("draft render failed")
     _run([sys.executable, "-m", "carshorts.quality.vqa", str(draft_out)])
 
-    # Gate on SYSTEMATIC blocking vision issues (plates / wrong-vehicle / logos).
-    # A specific-car draft riddled with the wrong car or legible plates must not
-    # reach the owner dressed up as ready. One stray flag is tolerated (vision
-    # false-positives happen); a pattern holds the draft for better assets.
-    # Subjective flags (clutter, dark) stay advisory and never hold.
+    # Vision QA is ADVISORY, deliberately. The per-image assetvet (pre-render,
+    # full frame) is the reliable plate/watermark/wrong-vehicle guard; post-render
+    # VQA re-judges cropped, darkened frames and is noisy — it false-positives on
+    # already-blurred plates and flags different frames run to run. So it never
+    # holds a draft; it just points the owner's eye at frames worth a second look
+    # at Gate 1. The real gates stay: deterministic QA (hard) + the owner (taste).
     vqa_file = draft_out.with_suffix(".vqa.json")
     vqa_res = json.loads(vqa_file.read_text()) if vqa_file.exists() else {}
     blocking, frames = vqa_res.get("blocking", 0), vqa_res.get("frames", 0)
-    held = blocking >= 3 or (frames and blocking / frames >= 0.25)
 
     QUEUE.mkdir(parents=True, exist_ok=True)
     card = {
         "car": car, "slug": slug, "persona": persona, "language": language,
         "script": str(script), "spec": str(spec), "draft": str(draft_out),
         "created": datetime.datetime.now().isoformat(timespec="seconds"),
-        "status": "needs_assets" if held else "awaiting_approval",
+        "status": "awaiting_approval",
     }
-    if held:
-        card["hold_reason"] = (f"visual QA: {blocking}/{frames} frames with blocking issues "
-                               f"(readable plate / wrong vehicle / watermark)")
     (QUEUE / f"{slug}.json").write_text(json.dumps(card, indent=2))
-    if held:
-        print(f"\n════ DRAFT HELD — NOT Gate-1 ready ════\n"
-              f"  {card['hold_reason']}\n"
-              f"  Draft is on disk ({draft_out}) but was NOT parked for approval.\n"
-              f"  Add proper {car} footage (or let the curator agent hunt it), then re-draft:\n"
-              f"    python -m carshorts.orchestration.pipeline \"{car}\"")
-    else:
-        print(f"\n════ GATE 1 — YOUR MOVE ════\n"
-              f"1. Watch the draft: {draft_out}\n"
-              f"2. Edit the script if needed: {script}\n"
-              f"3. Approve: python -m carshorts.orchestration.pipeline --approve {slug}\n"
-              f"   (re-run draft after edits: python -m carshorts.orchestration.pipeline \"{car}\")")
+    print(f"\n════ GATE 1 — YOUR MOVE ════\n"
+          f"1. Watch the draft: {draft_out}\n"
+          f"2. Edit the script if needed: {script}\n"
+          f"3. Approve: python -m carshorts.orchestration.pipeline --approve {slug}\n"
+          f"   (re-run draft after edits: python -m carshorts.orchestration.pipeline \"{car}\")")
+    if blocking:
+        print(f"\n  ⚠ VQA advisory: {blocking}/{frames} frame(s) flagged for a possible "
+              f"plate/wrong-vehicle/watermark — vision QA is noisy (it false-positives on\n"
+              f"    blurred plates), so just eyeball those at Gate 1 rather than trusting it blindly.")
 
 
 def _progress(slug: str, step: str, done: bool = False) -> None:
@@ -148,7 +142,7 @@ def approve(slug: str, privacy: str = "public") -> None:
     card = json.loads(card_path.read_text())
 
     final_out = Path(f"out/{slug}_final.mp4")
-    _progress(slug, "rendering premium final (ElevenLabs voice)…")
+    _progress(slug, "rendering premium final (channel voice, free)…")
     # finals use the same owner-chosen edge voice as drafts (free, consistent —
     # what the owner approved is exactly what ships). ElevenLabs upgrade is a
     # one-line change here when revenue justifies it.

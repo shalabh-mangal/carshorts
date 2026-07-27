@@ -1,0 +1,147 @@
+{
+  "subject": "Maruti Suzuki Brezza",
+  "checked": 14,
+  "vetted": 14,
+  "unvetted": 0,
+  "clean": 8,
+  "quarantined": 6,
+  "errors": [],
+  "results": [
+    {
+      "file": "2016_Maruti_Suzuki_Vitara_Brezza_with_Sport_Accelerate_Package.jpg",
+      "ok": false,
+      "defects": [
+        "watermark"
+      ],
+      "blocking": [
+        "watermark"
+      ],
+      "note": "",
+      "vetted": true
+    },
+    {
+      "file": "2021_Maruti_Suzuki_Vitara_Brezza_VXI.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "",
+      "vetted": true
+    },
+    {
+      "file": "2021_Suzuki_Vitara_Brezza_VXI_01.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "",
+      "vetted": true
+    },
+    {
+      "file": "2021_Suzuki_Vitara_Brezza_VXI_02.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "",
+      "vetted": true
+    },
+    {
+      "file": "2021_Toyota_Urban_Cruiser_Mid_India_front_view.png",
+      "ok": false,
+      "defects": [
+        "wrong_vehicle"
+      ],
+      "blocking": [
+        "wrong_vehicle"
+      ],
+      "note": "This is a Toyota Urban Cruiser, not a Maruti Suzuki Brezza.",
+      "vetted": true
+    },
+    {
+      "file": "2021_Toyota_Urban_Cruiser_Mid_India_rear_view.png",
+      "ok": false,
+      "defects": [
+        "wrong_vehicle"
+      ],
+      "blocking": [
+        "wrong_vehicle"
+      ],
+      "note": "This is a Toyota Urban Cruiser, not a Maruti Suzuki Brezza.",
+      "vetted": true
+    },
+    {
+      "file": "2022_Maruti_Suzuki_Brezza_ZXi_India_front_view_02.png",
+      "ok": false,
+      "defects": [
+        "readable_plate"
+      ],
+      "blocking": [
+        "readable_plate"
+      ],
+      "note": "",
+      "vetted": true
+    },
+    {
+      "file": "2022_Maruti_Suzuki_Brezza_ZXi_India_front_view_03.png",
+      "ok": false,
+      "defects": [
+        "readable_plate"
+      ],
+      "blocking": [
+        "readable_plate"
+      ],
+      "note": "",
+      "vetted": true
+    },
+    {
+      "file": "2022_Maruti_Suzuki_Brezza_ZXi_India_interior.png",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "",
+      "vetted": true
+    },
+    {
+      "file": "2022_Maruti_Suzuki_Brezza_ZXi_India_rear_view_02.png",
+      "ok": false,
+      "defects": [
+        "readable_plate"
+      ],
+      "blocking": [
+        "readable_plate"
+      ],
+      "note": "",
+      "vetted": true
+    },
+    {
+      "file": "Interior_of_Suzuki_Vitara_Brezza.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "",
+      "vetted": true
+    },
+    {
+      "file": "Maruti_Suzuki_s_Vitara_Brezza_ZDi_Plus_compact_SUV_rear_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "",
+      "vetted": true
+    },
+    {
+      "file": "Maruti_Vitara_Brezza.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "",
+      "vetted": true
+    },
+    {
+      "file": "ov_Maruti_Suzuki_s_Vitara_Brezza_ZDi_Plus_compact_SUV_Ank_Kumar_Infosys_Limited.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "",
+      "vetted": true
+    }
+  ]
+}

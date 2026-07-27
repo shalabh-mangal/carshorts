@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import datetime
 import json
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -91,6 +92,14 @@ def run_agent(role: str, task: str, max_turns: int = MAX_TURNS) -> dict:
     # runnable path on every OS; the "claude" fallback keeps the OSError branch
     # working when the CLI truly isn't installed.
     claude_bin = shutil.which("claude") or "claude"
+    # Auth precedence: a subscription token (CLAUDE_CODE_OAUTH_TOKEN from
+    # `claude setup-token`) bills the owner's existing Pro/Max plan — FREE within
+    # its limits — whereas ANTHROPIC_API_KEY meters pay-as-you-go credits. If both
+    # are set the API key would win and silently charge, so drop it for this spawn
+    # when a subscription token is present. No paid path is ever taken silently.
+    env = os.environ.copy()
+    if env.get("CLAUDE_CODE_OAUTH_TOKEN"):
+        env.pop("ANTHROPIC_API_KEY", None)
     try:
         proc = subprocess.run(
             [claude_bin, "-p", prompt,
@@ -101,7 +110,7 @@ def run_agent(role: str, task: str, max_turns: int = MAX_TURNS) -> dict:
              "Read,Edit,Write,Grep,Glob,WebSearch,WebFetch,"
              "Bash(python*),Bash(pytest*),Bash(ffmpeg*),Bash(ffprobe*),Bash(ls*)"],
             capture_output=True, text=True, timeout=TIMEOUT_S,
-            cwd=str(Path.cwd()))
+            cwd=str(Path.cwd()), env=env)
         payload = {}
         try:
             payload = json.loads(proc.stdout or "{}")

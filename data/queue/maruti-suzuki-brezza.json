@@ -1,0 +1,13 @@
+{
+  "car": "Maruti Suzuki Brezza",
+  "slug": "maruti-suzuki-brezza",
+  "persona": "hype",
+  "language": "english",
+  "script": "D:\\Personal Projects\\carshorts\\data\\scripts\\maruti-suzuki-brezza_hype.script.json",
+  "spec": "specs\\maruti-suzuki-brezza.json",
+  "draft": "out/maruti-suzuki-brezza_draft.mp4",
+  "created": "2026-07-25T14:55:39",
+  "status": "final_review",
+  "final": "out\\maruti-suzuki-brezza_final.mp4",
+  "note": "PREMIUM FINAL ready (channel voice) \u2014 review THIS file; Publish ships it to YouTube untouched."
+}

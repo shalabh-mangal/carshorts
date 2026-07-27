@@ -1,0 +1,51 @@
+{
+  "subject": "Maruti Suzuki Brezza",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "BREZZA IS BACK: But is the base model the secret to unlocking the ultimate driving experience? The answer might just surprise you!",
+      "cited_spec_names": [
+        "news_3"
+      ],
+      "pops": []
+    },
+    {
+      "role": "spec",
+      "text": "Under the hood, the Brezza packs a punch with 109 hp of power - perfect for zipping through city streets and cruising down highways.",
+      "cited_spec_names": [
+        "power"
+      ],
+      "pops": []
+    },
+    {
+      "role": "spec",
+      "text": "And with 170 nm of torque, this compact SUV has the muscle to handle your daily adventures with ease and confidence.",
+      "cited_spec_names": [
+        "torque"
+      ],
+      "pops": []
+    },
+    {
+      "role": "value",
+      "text": "The best part? You get a great balance of features like a turbo-petrol engine and more, all starting from the base model - talk about a smart buy!",
+      "cited_spec_names": [
+        "news_3"
+      ],
+      "pops": []
+    },
+    {
+      "role": "peak",
+      "text": "Maruti's all-in on performance and premiumisation - but can the Brezza really reclaim its throne? The plot thickens...",
+      "cited_spec_names": [
+        "news_2"
+      ],
+      "pops": []
+    },
+    {
+      "role": "cta",
+      "text": "Brezza or Nexon - which team are you on? Let us know in the comments! Don't forget to like, share, and subscribe for the latest updates!",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  ]
+}
