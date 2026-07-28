@@ -15,6 +15,7 @@ import os
 import re
 import ssl
 from abc import ABC, abstractmethod
+from pathlib import Path
 
 # Speech normalization — scripts stay clean ("82 PS", "₹5.79 lakh") but TTS
 # mispronounces acronym units and the ₹ glyph. Fix at synthesis time so every
@@ -198,11 +199,158 @@ class SilentTTSProvider(TTSProvider):
         return out_path
 
 
-def make_tts(engine: str = "edge", persona: str = "", voice: str | None = None) -> TTSProvider:
-    """Build a TTS provider. engine='edge' (free) or 'elevenlabs' (expressive)."""
+# ---------------------------------------------------------------------------
+# Chatterbox: open (MIT), voice-CLONING, 23-language TTS — the channel voice.
+# Free; GPU-fast, CPU-capable. Clones from a short reference clip so the voice is
+# the owner's own, and speaks English / Hindi / Hinglish from ONE model, which is
+# what unlocks the eventual move to Hinglish videos.
+# ---------------------------------------------------------------------------
+
+# script language -> Chatterbox language_id. Hinglish rides the Hindi model
+# (Devanagari Hindi + inline English words is how the scripts are written).
+_LANG_ID = {"english": "en", "en": "en", "hindi": "hi", "hi": "hi",
+            "hinglish": "hi"}
+
+# persona -> (exaggeration, cfg_weight). Higher exaggeration = more energy;
+# lower cfg_weight lets the reference's own cadence come through.
+_CHATTERBOX_PERSONA = {
+    "deadpan": (0.4, 0.5),
+    "hype":    (0.85, 0.35),
+    "bhai":    (0.7, 0.4),
+    "default": (0.5, 0.5),
+}
+
+_CHATTERBOX_MODEL = None   # loaded once per process (heavy: ~few GB)
+_WHISPER_MODEL = None      # faster-whisper aligner, loaded once, optional
+
+
+def _load_chatterbox(device: str):
+    global _CHATTERBOX_MODEL
+    if _CHATTERBOX_MODEL is None:
+        import perth
+
+        # Perth's neural watermarker occasionally fails to initialise its model
+        # and comes back as None. Keep the real one when present (responsible-AI
+        # marking of synthetic speech); otherwise a no-op so synthesis still runs.
+        if getattr(perth, "PerthImplicitWatermarker", None) is None:
+            class _NoWatermark:
+                def apply_watermark(self, wav, sample_rate=None):
+                    return wav
+            perth.PerthImplicitWatermarker = _NoWatermark
+        from chatterbox.mtl_tts import ChatterboxMultilingualTTS
+        _CHATTERBOX_MODEL = ChatterboxMultilingualTTS.from_pretrained(device=device)
+    return _CHATTERBOX_MODEL
+
+
+def _proportional_marks(text: str, duration: float) -> list[dict]:
+    """Word-boundary marks distributed across the clip by word length. Always
+    available (no deps, any language), and good enough to anchor phrase cuts when
+    the whisper aligner isn't installed."""
+    words = text.split()
+    if not words:
+        return []
+    weights = [max(1, len(w)) for w in words]
+    total = sum(weights) or 1
+    marks, acc = [], 0.0
+    for w, wt in zip(words, weights):
+        marks.append({"w": w.strip(".,?!—:;\"'"), "t": round(acc, 3)})
+        acc += duration * wt / total
+    return marks
+
+
+def _whisper_marks(audio_path: str, language_id: str) -> list[dict] | None:
+    """Exact word timings via faster-whisper (optional). Returns None when the
+    package isn't installed so callers fall back to proportional marks."""
+    try:
+        from faster_whisper import WhisperModel
+    except ImportError:
+        return None
+    global _WHISPER_MODEL
+    if _WHISPER_MODEL is None:
+        try:
+            _WHISPER_MODEL = WhisperModel("base", device="auto", compute_type="int8")
+        except Exception:  # noqa: BLE001 — alignment is best-effort
+            return None
+    try:
+        segments, _ = _WHISPER_MODEL.transcribe(audio_path, language=language_id,
+                                                 word_timestamps=True)
+        marks = [{"w": w.word.strip(), "t": round(w.start, 3)}
+                 for seg in segments for w in (seg.words or [])]
+        return marks or None
+    except Exception:  # noqa: BLE001
+        return None
+
+
+class ChatterboxTTSProvider(TTSProvider):
+    """Open, MIT-licensed cloning TTS. Speaks in the OWNER's voice (cloned from a
+    reference clip) across 23 languages incl. Hindi/Hinglish. Reference clip:
+    CARSHORTS_VOICE_REF, else data/voice/owner_reference.wav."""
+
+    def __init__(self, persona: str = "", language: str = "english",
+                 ref_path: str | None = None):
+        import torch  # heavy — kept here so importing tts.py stays light
+        self.language_id = _LANG_ID.get((language or "english").lower(), "en")
+        self.ref_path = ref_path or os.environ.get(
+            "CARSHORTS_VOICE_REF", "data/voice/owner_reference.wav")
+        self.exaggeration, self.cfg_weight = _CHATTERBOX_PERSONA.get(
+            persona, _CHATTERBOX_PERSONA["default"])
+        self._device = "cuda" if torch.cuda.is_available() else "cpu"
+        # cache identity: a voice change (ref/lang/energy) must not reuse audio
+        self.voice = (f"chatterbox:{Path(self.ref_path).stem}:{self.language_id}"
+                      f":{self.exaggeration}")
+
+    def synthesize(self, text: str, out_path: str, marks_path: str | None = None) -> str:
+        import json
+        import subprocess
+        import tempfile
+        import wave
+
+        from carshorts.core import paths
+
+        text_n = normalize_for_speech(text)
+        ref = paths.resolve(self.ref_path)
+        if not ref.exists():
+            raise RuntimeError(
+                f"voice reference clip not found: {ref} — record ~20s and save it "
+                f"there, or set CARSHORTS_VOICE_REF")
+        model = _load_chatterbox(self._device)
+        wav = model.generate(text_n, language_id=self.language_id,
+                             audio_prompt_path=str(ref),
+                             exaggeration=self.exaggeration, cfg_weight=self.cfg_weight)
+        arr = wav.squeeze(0).detach().cpu().numpy()
+        sr = int(model.sr)
+        # int16 PCM -> temp wav -> ffmpeg to whatever out_path implies (usually mp3)
+        pcm = (arr.clip(-1.0, 1.0) * 32767.0).astype("<i2").tobytes()
+        tmp = tempfile.mktemp(suffix=".wav")
+        with wave.open(tmp, "w") as w:
+            w.setnchannels(1)
+            w.setsampwidth(2)
+            w.setframerate(sr)
+            w.writeframes(pcm)
+        subprocess.run(["ffmpeg", "-y", "-i", tmp, "-codec:a", "libmp3lame",
+                        "-q:a", "2", out_path], capture_output=True)
+        os.unlink(tmp)
+        if marks_path:
+            marks = (_whisper_marks(out_path, self.language_id)
+                     or _proportional_marks(text_n, len(arr) / sr))
+            with open(marks_path, "w", encoding="utf-8") as fh:
+                json.dump(marks, fh, ensure_ascii=False)
+        return out_path
+
+
+def make_tts(engine: str = "edge", persona: str = "", voice: str | None = None,
+             language: str = "english") -> TTSProvider:
+    """Build a TTS provider. engine='edge' (free), 'chatterbox' (free, cloned
+    channel voice, multilingual), or 'elevenlabs' (paid). Unavailable open
+    engines fall back to the free edge voice so a render never breaks."""
     if engine == "mock":
         return SilentTTSProvider()
     if engine == "elevenlabs":
         return ElevenLabsTTSProvider()
+    if engine == "chatterbox":
+        try:
+            return ChatterboxTTSProvider(persona=persona, language=language)
+        except Exception as exc:  # noqa: BLE001 — never let voice setup break a render
+            print(f"     chatterbox unavailable ({exc}); using the free edge voice")
     cfg = PERSONA_VOICE.get(persona, PERSONA_VOICE["default"])
     return EdgeTTSProvider(voice=voice or cfg["voice"], rate=cfg["rate"], pitch=cfg["pitch"])

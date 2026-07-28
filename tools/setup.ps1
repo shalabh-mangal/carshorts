@@ -113,7 +113,26 @@ if (-not (Test-Path ".venv\Scripts\python.exe")) {
 $venvPy = ".\.venv\Scripts\python.exe"
 & $venvPy -m pip install --upgrade pip -q
 & $venvPy -m pip install -e ".[dev,video,crawl,publish,real]" -q
-Good "installed carshorts with all extras"
+Good "installed carshorts with core extras"
+
+# --- 4b. voice engine (Chatterbox: open, cloned, multilingual) -------------
+# Heavy (pulls torch); best-effort so a hiccup here never blocks the core stack.
+Say "Voice engine (Chatterbox - your cloned voice, EN/Hindi/Hinglish)"
+& $venvPy -m pip install -e ".[voice]" -q
+if ($LASTEXITCODE -eq 0) { Good "voice extra installed" }
+else { Warn "voice extra failed - retry later: .\.venv\Scripts\python.exe -m pip install -e .[voice]" }
+
+# --- 4c. GPU (CUDA) acceleration for the neural voice/video models ---------
+# The default torch is CPU-only. On an NVIDIA box install the CUDA build; the
+# RTX 50-series (Blackwell, e.g. RTX 5060) needs the cu128 wheels.
+Say "GPU acceleration (CUDA torch)"
+if (Have nvidia-smi) {
+    Write-Host "  NVIDIA GPU detected - installing CUDA torch (cu128, Blackwell-ready)..."
+    & $venvPy -m pip install --upgrade --index-url https://download.pytorch.org/whl/cu128 torch torchaudio -q
+    if ($LASTEXITCODE -eq 0) { Good "CUDA torch installed - the cloned voice runs on the GPU (fast)" }
+    else { Warn "CUDA torch install failed - voice will fall back to CPU (slower but works)" }
+} else { Warn "no NVIDIA GPU detected - the cloned voice runs on CPU (slower)" }
+Warn "voice + whisper models (~few GB) download on FIRST use, not now"
 
 # --- 5. scheduled tasks (the daily heartbeat) ------------------------------
 if (-not $SkipTasks) {
@@ -136,13 +155,12 @@ Write-Host "  pytest: $pt"
 if ($LASTEXITCODE -eq 0) { Good "pytest green" } else { Warn "pytest failed - ensure ffmpeg is on PATH in this shell, then retry" }
 
 # --- 7. what only you can do -----------------------------------------------
-if (-not (Test-Path ".env"))               { $script:todo += "Create .env (copy .env.example): GROQ_API_KEY, GEMINI_API_KEY, PEXELS_API_KEY. Add ANTHROPIC_API_KEY to enable agents." }
-if (-not (Test-Path "client_secret.json")) { $script:todo += "Add client_secret.json + youtube_token.json for uploads/analytics (Google OAuth - see publish.py)." }
+if (-not (Test-Path ".env"))               { $script:todo += "Create .env (copy .env.example): GROQ_API_KEY, GEMINI_API_KEY, PEXELS_API_KEY (all FREE tiers). ELEVENLABS_API_KEY + ANTHROPIC_API_KEY are optional/paid - the pipeline runs fully free without them." }
+$env2 = (Test-Path ".env") -and ((Get-Content ".env" -Raw) -match "CARSHORTS_VOICE_ENGINE")
+if (-not $env2)                            { $script:todo += "Turn on YOUR cloned voice: add 'CARSHORTS_VOICE_ENGINE=chatterbox' to .env (reference clip is committed at data/voice/owner_reference.wav; re-record + replace it any time)." }
+if (-not (Test-Path "client_secret.json")) { $script:todo += "Add client_secret.json + youtube_token.json for uploads/analytics (Google OAuth - see publishing/publish.py)." }
 if (-not (Test-Path "assets\cars"))        { $script:todo += "Populate assets/ (curated car pools, fonts, music) - the render pool is otherwise empty." }
-if (Have claude) {
-    $auth = (& claude -p "PONG" --output-format json --max-turns 1 2>&1 | Out-String)
-    if ($auth -match "Not logged in") { $script:todo += "Authenticate claude ('claude' then /login) OR set ANTHROPIC_API_KEY, to enable the scriptwright/curator agents." }
-}
+$script:todo += "OPTIONAL (agents): the autonomous scriptwright/curator use a free model - see ROADMAP.md. The core render pipeline needs no agent."
 
 Write-Host ""
 Say "SUMMARY"

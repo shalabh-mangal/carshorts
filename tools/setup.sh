@@ -62,7 +62,20 @@ PY="$(command -v python3 || command -v python)"
 if [ ! -x ".venv/bin/python" ]; then "$PY" -m venv .venv && good "created .venv"; else good ".venv already present"; fi
 ./.venv/bin/python -m pip install --upgrade pip -q
 ./.venv/bin/python -m pip install -e ".[dev,video,crawl,publish,real]" -q
-good "installed carshorts with all extras"
+good "installed carshorts with core extras"
+
+# voice engine (Chatterbox: open, cloned, multilingual). Heavy (torch); best-effort.
+say "Voice engine (Chatterbox - your cloned voice, EN/Hindi/Hinglish)"
+if ./.venv/bin/python -m pip install -e ".[voice]" -q; then good "voice extra installed"
+else warn "voice extra failed - retry: ./.venv/bin/python -m pip install -e .[voice]"; fi
+# CUDA torch on Linux+NVIDIA (Blackwell/RTX 50-series needs cu128); macOS uses the
+# default torch (CPU / Apple-Silicon MPS).
+if [ "$OS" = "Linux" ] && have nvidia-smi; then
+  printf '  NVIDIA GPU detected - installing CUDA torch (cu128)...\n'
+  ./.venv/bin/python -m pip install --upgrade --index-url https://download.pytorch.org/whl/cu128 torch torchaudio -q \
+    && good "CUDA torch installed (GPU voice)" || warn "CUDA torch failed - voice on CPU"
+else warn "no NVIDIA CUDA GPU - cloned voice runs on CPU (slower)"; fi
+warn "voice + whisper models (~few GB) download on FIRST use, not now"
 
 # --- 3. daily cron (the heartbeat) -----------------------------------------
 # On Unix, cron is the portable scheduler. macOS launchd is an alternative but
@@ -89,12 +102,11 @@ if ./.venv/bin/python -m ruff check . >/dev/null 2>&1; then good "ruff clean"; e
 if ./.venv/bin/python -m pytest -q >/tmp/carshorts_pytest.txt 2>&1; then good "pytest green ($(tail -1 /tmp/carshorts_pytest.txt))"; else warn "pytest failed - see /tmp/carshorts_pytest.txt (ensure ffmpeg on PATH)"; fi
 
 # --- 5. what only you can do -----------------------------------------------
-[ -f .env ]               || TODO+=("Create .env (copy .env.example): GROQ_API_KEY, GEMINI_API_KEY, PEXELS_API_KEY. Add ANTHROPIC_API_KEY to enable agents.")
-[ -f client_secret.json ] || TODO+=("Add client_secret.json + youtube_token.json for uploads/analytics (Google OAuth - see publish.py).")
+[ -f .env ]               || TODO+=("Create .env (copy .env.example): GROQ_API_KEY, GEMINI_API_KEY, PEXELS_API_KEY (all FREE). ELEVENLABS/ANTHROPIC optional/paid - the pipeline runs fully free without them.")
+{ [ -f .env ] && grep -q CARSHORTS_VOICE_ENGINE .env; } || TODO+=("Turn on YOUR cloned voice: add 'CARSHORTS_VOICE_ENGINE=chatterbox' to .env (reference clip committed at data/voice/owner_reference.wav).")
+[ -f client_secret.json ] || TODO+=("Add client_secret.json + youtube_token.json for uploads/analytics (Google OAuth - see publishing/publish.py).")
 [ -d assets/cars ]        || TODO+=("Populate assets/ (curated car pools, fonts, music) - the render pool is otherwise empty.")
-if have claude && claude -p "PONG" --output-format json --max-turns 1 2>&1 | grep -q "Not logged in"; then
-  TODO+=("Authenticate claude ('claude' then /login) OR set ANTHROPIC_API_KEY, to enable the scriptwright/curator agents.")
-fi
+TODO+=("OPTIONAL (agents): the scriptwright/curator use a free model - see ROADMAP.md. The core render pipeline needs no agent.")
 
 say "SUMMARY"
 printf '  %s step(s) ok, %s warning(s)\n' "${#OK[@]}" "${#WARN[@]}"

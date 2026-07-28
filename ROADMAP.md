@@ -3,6 +3,18 @@
 Goal: a self-correcting, continuously-learning Shorts factory where the human
 does taste (script approval, final watch, footage) and the system does the rest.
 
+## 2026-07-28 — free stack + voice leap (moving to the new laptop)
+The whole pipeline now runs **$0**: GROQ/Gemini free LLMs, free stills
+(Wikimedia broadened+throttled + Openverse), Gemini-free vetting, edge or the
+new cloned voice. **Voice leap shipped:** `ChatterboxTTSProvider` clones the
+owner's voice and speaks EN/Hindi/Hinglish (multilingual), phrase-sync via
+faster-whisper; enable with `CARSHORTS_VOICE_ENGINE=chatterbox`. New handoff:
+**`NEW_LAPTOP.md`**. Next leaps: **Hinglish content layer** (Devanagari
+captions/scripts), **image-to-video "Living Stills"** (LTX-Video on the RTX 5060),
+**agents on a free model** (no paid `claude setup-token`), and — the real
+constraint — **reach**. Post-render VQA is now **advisory** (vision is noisy);
+`assetvet` + deterministic QA + the owner's eye are the gates.
+
 ## Done
 - Fact machine: sourced specs + news, skeptic, number-guard, structural check
 - Script studio: variants → judge → editor; personas; formats; learnings injected

@@ -666,7 +666,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     # video for motion.
     # persona picks voice+energy for English; language picks the voice otherwise.
     voice = voice or (None if persona else VOICE_BY_LANG.get(language, "en-US-GuyNeural"))
-    tts = make_tts(engine=voice_engine, persona=persona, voice=voice)
+    tts = make_tts(engine=voice_engine, persona=persona, voice=voice, language=language)
     print(f"4/5  voicing {len(script.segments)} sections "
           f"(engine={voice_engine}, persona={persona or 'default'})...")
     ai_dir = Path("assets/cars") / _slug(script.subject) / "own"
@@ -699,8 +699,8 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         # re-synthesize when word marks are missing (old cache entries) — free
         # for edge, and marks are what phrase-synced cutting runs on
         needs = not cached.exists()
-        if voice_engine == "edge" and not marks_file.exists():
-            needs = True   # free to regenerate for word marks; NEVER auto-respend paid engines
+        if voice_engine in ("edge", "chatterbox") and not marks_file.exists():
+            needs = True   # free engines: regenerate for word marks; NEVER auto-respend paid ones
         if needs:
             try:
                 tts.synthesize(seg.text, str(cached), marks_path=str(marks_file))
@@ -1191,7 +1191,8 @@ def main() -> None:
                         help="'auto' (generate a beat, default), 'none', or a path to a track.")
     parser.add_argument("--stock", action="store_true", help="Force stock-video b-roll (needs PEXELS_API_KEY).")
     parser.add_argument("--no-stock", action="store_true", help="Disable stock video (stills only).")
-    parser.add_argument("--voice-engine", default="edge", choices=["edge", "elevenlabs"],
+    parser.add_argument("--voice-engine", default=os.environ.get("CARSHORTS_VOICE_ENGINE", "edge"),
+                        choices=["edge", "chatterbox", "elevenlabs"],
                         help="edge (free) or elevenlabs (expressive, needs ELEVENLABS_API_KEY).")
     parser.add_argument("--persona", default="", choices=["", "bhai", "deadpan", "hype"],
                         help="Voice energy profile (edge rate/pitch).")

@@ -15,6 +15,11 @@ real = ["google-generativeai>=0.7"]
 crawl = ["certifi"]
 video = ["edge-tts>=6.1", "moviepy>=2.0", "pillow>=10.0"]
 publish = ["google-api-python-client>=2.0", "google-auth-oauthlib>=1.0", "google-auth-httplib2>=0.2"]
+# Open, free channel voice: Chatterbox clones the owner's voice + speaks Hindi/
+# Hinglish; faster-whisper recovers exact word timings for phrase-sync. Pulls
+# torch — on an NVIDIA box install the CUDA build (setup.ps1 does this; Blackwell
+# / RTX 50-series needs cu128). Models (~few GB) download on first run.
+voice = ["chatterbox-tts", "faster-whisper", "soundfile"]
 dev = ["pytest>=8.0", "ruff>=0.16"]
 
 [build-system]
