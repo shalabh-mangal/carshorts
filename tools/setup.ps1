@@ -157,7 +157,7 @@ if ($LASTEXITCODE -eq 0) { Good "pytest green" } else { Warn "pytest failed - en
 # --- 7. what only you can do -----------------------------------------------
 if (-not (Test-Path ".env"))               { $script:todo += "Create .env (copy .env.example): GROQ_API_KEY, GEMINI_API_KEY, PEXELS_API_KEY (all FREE tiers). ELEVENLABS_API_KEY + ANTHROPIC_API_KEY are optional/paid - the pipeline runs fully free without them." }
 $env2 = (Test-Path ".env") -and ((Get-Content ".env" -Raw) -match "CARSHORTS_VOICE_ENGINE")
-if (-not $env2)                            { $script:todo += "Turn on YOUR cloned voice: add 'CARSHORTS_VOICE_ENGINE=chatterbox' to .env (reference clip is committed at data/voice/owner_reference.wav; re-record + replace it any time)." }
+if (-not $env2)                            { $script:todo += "Turn on YOUR cloned voice: add 'CARSHORTS_VOICE_ENGINE=chatterbox' to .env (reference clip is committed at data/voice/owner_reference.mp3; re-record + replace it any time)." }
 if (-not (Test-Path "client_secret.json")) { $script:todo += "Add client_secret.json + youtube_token.json for uploads/analytics (Google OAuth - see publishing/publish.py)." }
 if (-not (Test-Path "assets\cars"))        { $script:todo += "Populate assets/ (curated car pools, fonts, music) - the render pool is otherwise empty." }
 $script:todo += "OPTIONAL (agents): the autonomous scriptwright/curator use a free model - see ROADMAP.md. The core render pipeline needs no agent."

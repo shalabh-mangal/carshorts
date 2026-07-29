@@ -1,0 +1,27 @@
+{
+  "aliases": ["punch", "tata-punch", "micro-suv", "revotron"],
+  "price_estimate": "₹5.59 lakh onwards",
+  "price_note": "ex-showroom, introductory launch price; on-road varies by city",
+  "price_source": "https://www.v3cars.com/news/2026-tata-punch-facelift-launched-at-rs-5-59-lakh",
+  "value_variant": "",
+  "value_features": "",
+  "value_price": "",
+  "news": [
+    {
+      "fact": "The 2026 Tata Punch facelift launched on 13 January 2026 with a new 1.2-litre turbo-petrol making 118 bhp and 170 Nm, paired with a 6-speed manual",
+      "source": "https://www.zigwheels.com/news-features/general-news/tata-punch-facelift-launched-at-rs-5.59-lakh-bolder-styling-new-interior-turbo-petrol-engine-and-more-features/57535/",
+      "date": "January 2026"
+    },
+    {
+      "fact": "The Tata Punch EV facelift scored a 5-star Bharat NCAP safety rating",
+      "source": "https://www.autocarindia.com/car-news/tata-punch-ev-facelift-scores-5-star-bharat-ncap-rating-440329",
+      "date": "July 2026"
+    }
+  ],
+  "news_callouts": [
+    "New 1.2 turbo — 118 bhp",
+    "170 Nm, 6-speed manual",
+    "From ₹5.59 lakh",
+    "5-star safety"
+  ]
+}

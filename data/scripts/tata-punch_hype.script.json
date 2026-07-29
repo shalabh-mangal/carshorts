@@ -1,0 +1,41 @@
+{
+  "subject": "Tata Punch",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "The tiny Tata Punch just got a TURBO — 118 horsepower of it. Wait... what?!",
+      "cited_spec_names": ["news_1", "turbo_power"],
+      "pops": ["118 horsepower"]
+    },
+    {
+      "role": "spec",
+      "text": "That 1.2 turbo punches out 170 Nm through a slick 6-speed manual — this baby SUV suddenly means business.",
+      "cited_spec_names": ["turbo_torque", "engine"],
+      "pops": ["170 Nm", "6-speed manual"]
+    },
+    {
+      "role": "spec",
+      "text": "And it's tough — a full 5-star Global NCAP safety score, on a car this small and this cheap.",
+      "cited_spec_names": ["safety_rating", "body_type"],
+      "pops": ["5-star Global NCAP"]
+    },
+    {
+      "role": "value",
+      "text": "The kicker? It starts at just ₹5.59 lakh, and hides a massive 366-litre boot. That is serious value.",
+      "cited_spec_names": ["price_estimate", "boot_space"],
+      "pops": ["₹5.59 lakh", "366-litre boot"]
+    },
+    {
+      "role": "peak",
+      "text": "So: turbo power, five-star safety, sub-four-metre size, under six lakh. Tata, how is this even legal?",
+      "cited_spec_names": [],
+      "pops": [{"anchor": "how is this even legal", "show": "HOW?!"}]
+    },
+    {
+      "role": "cta",
+      "text": "Which car next — Nexon or Brezza? Tell us below, and smash that like, share, subscribe!",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  ]
+}

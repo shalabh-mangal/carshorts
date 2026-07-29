@@ -35,6 +35,7 @@ COMMANDS: dict[str, str] = {
     "firstframe": "carshorts.quality.firstframe",
     # sourcing
     "crawl": "carshorts.sourcing.crawl",
+    "research": "carshorts.sourcing.webresearch",
     "newscrawl": "carshorts.sourcing.newscrawl",
     "ingest": "carshorts.sourcing.ingest",
     # intel

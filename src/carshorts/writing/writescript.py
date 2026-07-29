@@ -25,10 +25,12 @@ from carshorts.core.models import SpecSheet
 from carshorts.rendering.produce import _apply_extras, _slug
 from carshorts.writing.draft import (
     draft_script,
+    enforce_length,
     fact_check,
     judge_scripts,
     punch_up_script,
     structural_citation_check,
+    unsourced_features_check,
     unsourced_numbers_check,
 )
 from carshorts.writing.gate1 import render_gate1_report
@@ -68,6 +70,13 @@ def write_premium(spec_path: str, out_path: str, persona: str = "", language: st
     except Exception as exc:  # noqa: BLE001 — keep the judged best if the editor hiccups
         print(f"     editor pass failed ({exc}); keeping the judged best.")
 
+    # Enforce the Shorts length cap at write-time so a wordy draft can't overshoot
+    # 60s and fail the render's length QA (a Punch draft came out ~196 words).
+    before_words = final.approx_word_count()
+    final = enforce_length(final, sheet, llm)
+    if final.approx_word_count() != before_words:
+        print(f"     length: trimmed {before_words} -> {final.approx_word_count()} words (Shorts cap)")
+
     # Save NOW so a later fact-check hiccup can never lose the script.
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -76,12 +85,14 @@ def write_premium(spec_path: str, out_path: str, persona: str = "", language: st
     print("4/4  safety (structural + number-guard + fact-check)...")
     structural = structural_citation_check(final, sheet)
     numbers = unsourced_numbers_check(final, sheet)
+    features = unsourced_features_check(final, sheet)
     try:
         report = fact_check(final, sheet, llm)
-        print("\n" + render_gate1_report(final, sheet, report, structural + numbers) + "\n")
+        print("\n" + render_gate1_report(final, sheet, report,
+                                          structural + numbers + features) + "\n")
     except Exception as exc:  # noqa: BLE001
-        print(f"     fact-check skipped ({exc}); number-guard: "
-              f"{numbers or 'clean'}. Review before publishing.")
+        print(f"     fact-check skipped ({exc}); guards: "
+              f"{(numbers + features) or 'clean'}. Review before publishing.")
 
     print(f"saved premium script -> {out}\nRender it: python -m carshorts.rendering.produce "
           f"--script-file {out} --spec {spec_path} --stock")

@@ -281,17 +281,58 @@ def _whisper_marks(audio_path: str, language_id: str) -> list[dict] | None:
         return None
 
 
+def _take_recall(arr, sr: int, expected_text: str, language_id: str) -> float:
+    """Fraction of the script's content-words heard back in a take (via whisper).
+    Chatterbox sometimes force-cuts a line (dropping end-words) or drifts into a
+    foreign accent; both wreck the transcription, so a LOW recall flags a bad take
+    and the caller re-rolls. Returns 1.0 when whisper is unavailable (can't check
+    -> never block a render). Numbers are ignored (whisper writes them as words)."""
+    import os as _os
+    import re as _re
+    import tempfile
+    import wave
+
+    expected = [w for w in _re.findall(r"[a-z]+", expected_text.lower()) if len(w) > 2]
+    if not expected:
+        return 1.0
+    tmp = tempfile.mktemp(suffix=".wav")
+    try:
+        pcm = (arr.clip(-1.0, 1.0) * 32767.0).astype("<i2").tobytes()
+        with wave.open(tmp, "w") as w:
+            w.setnchannels(1)
+            w.setsampwidth(2)
+            w.setframerate(sr)
+            w.writeframes(pcm)
+        marks = _whisper_marks(tmp, language_id)
+    except Exception:  # noqa: BLE001 — the check must never break a render
+        return 1.0
+    finally:
+        try:
+            _os.unlink(tmp)
+        except OSError:
+            pass
+    if not marks:
+        return 1.0
+    heard = {w for m in marks for w in re.findall(r"[a-z]+", str(m.get("w", "")).lower())}
+    return sum(1 for w in expected if w in heard) / len(expected)
+
+
 class ChatterboxTTSProvider(TTSProvider):
     """Open, MIT-licensed cloning TTS. Speaks in the OWNER's voice (cloned from a
     reference clip) across 23 languages incl. Hindi/Hinglish. Reference clip:
-    CARSHORTS_VOICE_REF, else data/voice/owner_reference.wav."""
+    CARSHORTS_VOICE_REF, else data/voice/owner_reference.mp3."""
+
+    # Voice-QA re-roll: accept a take once this share of content-words survive,
+    # otherwise regenerate (keeping the best) up to _MAX_TAKES.
+    _RECALL_OK = 0.70
+    _MAX_TAKES = 3
 
     def __init__(self, persona: str = "", language: str = "english",
                  ref_path: str | None = None):
         import torch  # heavy — kept here so importing tts.py stays light
         self.language_id = _LANG_ID.get((language or "english").lower(), "en")
         self.ref_path = ref_path or os.environ.get(
-            "CARSHORTS_VOICE_REF", "data/voice/owner_reference.wav")
+            "CARSHORTS_VOICE_REF", "data/voice/owner_reference.mp3")
         self.exaggeration, self.cfg_weight = _CHATTERBOX_PERSONA.get(
             persona, _CHATTERBOX_PERSONA["default"])
         self._device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -314,11 +355,29 @@ class ChatterboxTTSProvider(TTSProvider):
                 f"voice reference clip not found: {ref} — record ~20s and save it "
                 f"there, or set CARSHORTS_VOICE_REF")
         model = _load_chatterbox(self._device)
-        wav = model.generate(text_n, language_id=self.language_id,
-                             audio_prompt_path=str(ref),
-                             exaggeration=self.exaggeration, cfg_weight=self.cfg_weight)
-        arr = wav.squeeze(0).detach().cpu().numpy()
         sr = int(model.sr)
+
+        # VOICE-QA RE-ROLL — the reliability gate for the free clone. Chatterbox
+        # occasionally force-cuts a line (dropping end-words) or drifts accent;
+        # generate up to _MAX_TAKES, score each by how much of the script whisper
+        # actually hears back, and keep the best. Only a clean read reaches render.
+        best_arr, best_recall = None, -1.0
+        for _attempt in range(self._MAX_TAKES):
+            wav = model.generate(text_n, language_id=self.language_id,
+                                 audio_prompt_path=str(ref),
+                                 exaggeration=self.exaggeration,
+                                 cfg_weight=self.cfg_weight)
+            arr = wav.squeeze(0).detach().cpu().numpy()
+            recall = _take_recall(arr, sr, text_n, self.language_id)
+            if recall > best_recall:
+                best_arr, best_recall = arr, recall
+            if recall >= self._RECALL_OK:
+                break
+        arr = best_arr
+        if best_recall < self._RECALL_OK:
+            print(f"     voice: kept best take ({best_recall:.0%} of words clear) "
+                  f"after {self._MAX_TAKES} tries — chatterbox variance")
+
         # int16 PCM -> temp wav -> ffmpeg to whatever out_path implies (usually mp3)
         pcm = (arr.clip(-1.0, 1.0) * 32767.0).astype("<i2").tobytes()
         tmp = tempfile.mktemp(suffix=".wav")
@@ -331,8 +390,15 @@ class ChatterboxTTSProvider(TTSProvider):
                         "-q:a", "2", out_path], capture_output=True)
         os.unlink(tmp)
         if marks_path:
-            marks = (_whisper_marks(out_path, self.language_id)
-                     or _proportional_marks(text_n, len(arr) / sr))
+            # Use PROPORTIONAL (script-token) marks, not whisper. Whisper
+            # transcribes the AUDIO — "118" becomes "one hundred eighteen",
+            # "₹5.59 lakh" becomes "five point five nine lakh" — so every
+            # digit/number pop fails its word-exact match and silently vanishes
+            # (the "text overlay not working" bug). Proportional marks carry the
+            # exact normalized script tokens, so number pops + captions render;
+            # timing is even-by-word-length, close enough for short beats.
+            # (Whisper-timed alignment onto script tokens is a future refinement.)
+            marks = _proportional_marks(text_n, len(arr) / sr)
             with open(marks_path, "w", encoding="utf-8") as fh:
                 json.dump(marks, fh, ensure_ascii=False)
         return out_path

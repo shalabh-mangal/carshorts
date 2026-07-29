@@ -37,6 +37,7 @@ from carshorts.writing.draft import (
     draft_script,
     fact_check,
     structural_citation_check,
+    unsourced_features_check,
     unsourced_numbers_check,
 )
 from carshorts.writing.gate1 import render_gate1_report
@@ -559,9 +560,10 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     if sheet is not None:
         structural = structural_citation_check(script, sheet)
         number_problems = unsourced_numbers_check(script, sheet)
-        if number_problems:
-            print("\n🔴 NUMBER-GUARD — figures NOT found in the spec sheet (do NOT publish):")
-            for problem in number_problems:
+        feature_problems = unsourced_features_check(script, sheet)
+        if number_problems or feature_problems:
+            print("\n🔴 FACT-GUARD — claims NOT found in the spec sheet (do NOT publish):")
+            for problem in number_problems + feature_problems:
                 print(f"     - {problem}")
             print()
 
@@ -571,7 +573,8 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                 print("2/4  fact-checking (separate skeptic pass)...")
                 report = fact_check(script, sheet, llm)
                 print("\n" + render_gate1_report(
-                    script, sheet, report, structural + number_problems) + "\n")
+                    script, sheet, report,
+                    structural + number_problems + feature_problems) + "\n")
             except Exception as exc:
                 if _is_quota_error(exc):
                     print("\n⚠️  LLM FACT-CHECK SKIPPED — model quota exhausted. Video renders "
@@ -1174,6 +1177,11 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
 
 
 def main() -> None:
+    # Load .env BEFORE building the parser so env-backed defaults (e.g.
+    # --voice-engine = CARSHORTS_VOICE_ENGINE) actually see the .env value.
+    # Without this the finalized clone voice is silently ignored (defaults to edge).
+    from carshorts.core.config import load_env
+    load_env()
     parser = argparse.ArgumentParser(description="Spec sheet -> fact-checked, synced video.")
     parser.add_argument("--spec", help="Path to a spec-sheet JSON (to write + fact-check).")
     parser.add_argument("--script-file", help="Render a previously saved script JSON (no model calls).")

@@ -1,10 +1,15 @@
 # Python
 .venv/
+.venv-video/
 venv/
 __pycache__/
 *.pyc
 *.egg-info/
 .pytest_cache/
+
+# AI-generated clips + their provenance ledger (regenerable, can be large)
+assets/gen/
+data/gen_provenance.json
 
 # Secrets — never commit API keys
 .env

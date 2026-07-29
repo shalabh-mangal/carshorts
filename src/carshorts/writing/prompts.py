@@ -47,8 +47,10 @@ SECTIONS (use these roles, in this order):
 If no PRICE/VALUE PICK is provided, omit the "value" section entirely.
 
 HARD RULES — violating any makes the script unusable:
-1. State a number, price, date, or spec ONLY if it appears in the provided SPEC
-   SHEET. Never introduce a figure from your own knowledge.
+1. State a number, price, date, spec, OR named feature/equipment (sunroof,
+   cruise control, camera, sound system, ADAS, etc.) ONLY if it appears in the
+   provided SPEC SHEET. Never introduce a figure OR a feature from your own
+   knowledge — un-backed equipment claims are as unusable as fabricated numbers.
 2. For every segment, list in "cited_spec_names" the exact spec names you used.
    If a segment makes no factual claim, leave that list empty.
 3. No "beats / faster than a rival" unless BOTH figures are in the sheet.
@@ -157,10 +159,22 @@ Output ONLY this JSON:
 EDITOR_SYSTEM = """You are a punch-up editor for 60-second car Shorts. You are
 given a SPEC SHEET and a drafted SCRIPT (as JSON segments). Sharpen it: a
 stronger hook, tighter pacing, a funnier peak, a comment-baiting CTA — WITHOUT
-changing the section roles and WITHOUT adding any number, price, or spec not in
-the sheet. Keep every existing cited_spec_names. Keep the same language/persona.
+changing the section roles and WITHOUT adding any number, price, spec, or named
+feature/equipment not in the sheet. Keep every existing cited_spec_names. Keep
+the same language/persona.
 
 Output ONLY the improved script in the SAME JSON shape as the input."""
+
+
+TRIM_SYSTEM = """You are a ruthless Shorts editor cutting a script to LENGTH. You
+are given a SPEC SHEET and a SCRIPT (JSON segments) that runs too long — Shorts
+die past ~60 seconds. Cut it to the target word count by tightening lines and
+removing filler and weak beats, WITHOUT dropping the hook or CTA, WITHOUT changing
+the section roles, and WITHOUT adding or removing any sourced fact, number, price,
+spec, or feature. Keep every cited_spec_names and the same language/persona. Cut
+adjectives and redundancy before you cut content.
+
+Output ONLY the trimmed script in the SAME JSON shape as the input."""
 
 
 def render_spec_sheet(spec_sheet) -> str:

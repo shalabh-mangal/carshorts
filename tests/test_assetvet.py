@@ -44,7 +44,7 @@ def test_clean_image_passes():
 def test_parse_verdicts_tolerates_fences_and_prose():
     raw = 'here you go:\n```json\n[{"image":0,"defects":["readable_plate"],"note":"x"}]\n```'
     rows = parse_verdicts(raw)
-    assert rows == [{"image": 0, "defects": ["readable_plate"], "note": "x"}]
+    assert rows == [{"image": 0, "defects": ["readable_plate"], "note": "x", "plate_box": None}]
 
 
 def test_parse_verdicts_survives_garbage():

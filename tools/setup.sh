@@ -103,7 +103,7 @@ if ./.venv/bin/python -m pytest -q >/tmp/carshorts_pytest.txt 2>&1; then good "p
 
 # --- 5. what only you can do -----------------------------------------------
 [ -f .env ]               || TODO+=("Create .env (copy .env.example): GROQ_API_KEY, GEMINI_API_KEY, PEXELS_API_KEY (all FREE). ELEVENLABS/ANTHROPIC optional/paid - the pipeline runs fully free without them.")
-{ [ -f .env ] && grep -q CARSHORTS_VOICE_ENGINE .env; } || TODO+=("Turn on YOUR cloned voice: add 'CARSHORTS_VOICE_ENGINE=chatterbox' to .env (reference clip committed at data/voice/owner_reference.wav).")
+{ [ -f .env ] && grep -q CARSHORTS_VOICE_ENGINE .env; } || TODO+=("Turn on YOUR cloned voice: add 'CARSHORTS_VOICE_ENGINE=chatterbox' to .env (reference clip committed at data/voice/owner_reference.mp3).")
 [ -f client_secret.json ] || TODO+=("Add client_secret.json + youtube_token.json for uploads/analytics (Google OAuth - see publishing/publish.py).")
 [ -d assets/cars ]        || TODO+=("Populate assets/ (curated car pools, fonts, music) - the render pool is otherwise empty.")
 TODO+=("OPTIONAL (agents): the scriptwright/curator use a free model - see ROADMAP.md. The core render pipeline needs no agent.")

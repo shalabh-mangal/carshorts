@@ -48,7 +48,11 @@ _PROMPT = (
     "`wrong_vehicle`. Older generations are often used deliberately. "
     "`wrong_vehicle` is reserved for a genuinely different model/brand.\n"
     "Be strict about plates and watermarks — those are hard disqualifiers.\n"
-    'Output ONLY a JSON array: [{"image": 0, "defects": [], "note": ""}]'
+    "When (and ONLY when) you report readable_plate, ALSO give \"plate_box\": "
+    "[x0,y0,x1,y1] as fractions of image width/height (0.0-1.0) tightly around "
+    "the number plate, so it can be blurred and the shot saved.\n"
+    'Output ONLY a JSON array: '
+    '[{"image": 0, "defects": [], "note": "", "plate_box": null}]'
 )
 
 # defects that must never reach a render
@@ -61,6 +65,39 @@ def decide(defects: list[str]) -> tuple[bool, list[str]]:
     """(clean_enough_to_use, blocking_reasons). Advisory defects don't block."""
     blocking = [d for d in defects if d in BLOCKING]
     return (not blocking), blocking
+
+
+def _blur_box(path: str | Path, box: list[float]) -> None:
+    """Pixelate a normalized [x0,y0,x1,y1] region (0-1) with 25% padding, hard
+    enough that any plate characters become illegible."""
+    from PIL import Image, ImageFilter
+    im = Image.open(path).convert("RGB")
+    width, height = im.size
+    x0, y0, x1, y1 = box
+    pad_w, pad_h = (x1 - x0) * 0.25, (y1 - y0) * 0.25
+    left = max(0, int((x0 - pad_w) * width)); top = max(0, int((y0 - pad_h) * height))
+    right = min(width, int((x1 + pad_w) * width)); bot = min(height, int((y1 + pad_h) * height))
+    if right - left < 4 or bot - top < 4:
+        return
+    region = im.crop((left, top, right, bot))
+    small = region.resize((max(1, region.width // 20), max(1, region.height // 8)))
+    im.paste(small.resize(region.size, Image.NEAREST).filter(ImageFilter.GaussianBlur(10)),
+             (left, top, right, bot))
+    im.save(path)
+
+
+def _recover_plate(path: Path, subject: str, box: list[float], vet_fn,
+                   generation: str = "") -> bool:
+    """Blur the detected plate, then CONFIRM with one re-vet that it is now
+    unreadable. Returns True only if the shot is genuinely clean afterwards —
+    a still-readable plate is never kept (the owner rule: plates blurred OR
+    excluded). Any error means 'do not keep' (caller quarantines)."""
+    try:
+        _blur_box(path, box)
+        verdict = (parse_verdicts(vet_fn([path], subject, generation)) or [{}])[0]
+        return "readable_plate" not in (verdict.get("defects") or [])
+    except Exception:  # noqa: BLE001
+        return False
 
 
 def parse_verdicts(raw: str) -> list[dict]:
@@ -77,9 +114,19 @@ def parse_verdicts(raw: str) -> list[dict]:
     out = []
     for row in rows if isinstance(rows, list) else []:
         if isinstance(row, dict) and "image" in row:
+            box = row.get("plate_box")
+            if isinstance(box, (list, tuple)) and len(box) == 4:
+                try:
+                    box = [float(v) for v in box]
+                    if any(v > 1.0 for v in box):   # 0-1000 convention -> 0-1
+                        box = [v / 1000.0 for v in box]
+                except (TypeError, ValueError):
+                    box = None
+            else:
+                box = None
             out.append({"image": row.get("image"),
                         "defects": [str(d) for d in (row.get("defects") or [])],
-                        "note": str(row.get("note", ""))})
+                        "note": str(row.get("note", "")), "plate_box": box})
     return out
 
 
@@ -101,7 +148,11 @@ def _gemini_vet(paths: list[Path], subject: str, generation: str = "") -> str:
     parts = [f"{_PROMPT}\n\n{target}"]
     for i, p in enumerate(paths):
         parts.append(f"Image {i}: filename {p.name}")
-        parts.append(Image.open(p))
+        # copy into memory so the file HANDLE closes immediately — otherwise on
+        # Windows a later shutil.move of a quarantined/recovered image throws
+        # WinError 32 ("file in use by another process").
+        with Image.open(p) as _im:
+            parts.append(_im.convert("RGB").copy())
     resp = model.generate_content(
         parts, generation_config={"response_mime_type": "application/json"})
     return resp.text
@@ -165,27 +216,40 @@ def vet_folder(folder: str | Path, subject: str, apply: bool = False,
             ok, blocking = decide(v["defects"])
             results.append({"file": path.name, "ok": ok, "defects": v["defects"],
                             "blocking": blocking, "note": v.get("note", ""),
-                            "vetted": True})
+                            "plate_box": v.get("plate_box"), "vetted": True})
         if bi + 1 < n_batches:
             _time.sleep(2.0)   # pace calls under the free-tier per-minute limit
 
     quarantined = 0
+    recovered = 0
     if apply:
         qdir = folder / QUARANTINE
         for r in results:
             # only quarantine on an ACTUAL verdict, never on an unvetted image
-            if r.get("vetted") and not r["ok"]:
-                qdir.mkdir(exist_ok=True)
-                src = folder / r["file"]
-                if src.exists():
-                    shutil.move(str(src), str(qdir / r["file"]))
-                    quarantined += 1
+            if not (r.get("vetted") and not r["ok"]):
+                continue
+            src = folder / r["file"]
+            if not src.exists():
+                continue
+            # RECOVER a plated-but-otherwise-good shot by blurring the plate
+            # (confirmed by re-vet) instead of losing it — the exact case that
+            # cost us the two good Tata Punch beauty shots.
+            if r["blocking"] == ["readable_plate"] and r.get("plate_box") and \
+                    _recover_plate(src, subject, r["plate_box"], vet_fn, generation):
+                r["ok"] = True
+                r["blocking"] = []
+                r["note"] = (r.get("note", "") + " [plate blurred, recovered]").strip()
+                recovered += 1
+                continue
+            qdir.mkdir(exist_ok=True)
+            shutil.move(str(src), str(qdir / r["file"]))
+            quarantined += 1
 
     vetted = [r for r in results if r.get("vetted")]
     report = {"subject": subject, "checked": len(results),
               "vetted": len(vetted), "unvetted": len(results) - len(vetted),
               "clean": sum(1 for r in vetted if r["ok"]),
-              "quarantined": quarantined,
+              "quarantined": quarantined, "recovered": recovered,
               "errors": errors[:5], "results": results}
     try:
         (folder / REPORT).write_text(json.dumps(report, indent=2, ensure_ascii=False),

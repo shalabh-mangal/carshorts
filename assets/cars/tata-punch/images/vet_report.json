@@ -1,0 +1,83 @@
+{
+  "subject": "Tata Punch",
+  "checked": 7,
+  "vetted": 7,
+  "unvetted": 0,
+  "clean": 4,
+  "quarantined": 3,
+  "errors": [],
+  "results": [
+    {
+      "file": "2021_Tata_Punch_Creative_India_front_view_01.png",
+      "ok": false,
+      "defects": [
+        "readable_plate"
+      ],
+      "blocking": [
+        "readable_plate"
+      ],
+      "note": "",
+      "vetted": true
+    },
+    {
+      "file": "2021_Tata_Punch_Creative_India_front_view_02.png",
+      "ok": false,
+      "defects": [
+        "readable_plate"
+      ],
+      "blocking": [
+        "readable_plate"
+      ],
+      "note": "",
+      "vetted": true
+    },
+    {
+      "file": "4th_International_Auto_Show_Bangalore_2025_107.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "",
+      "vetted": true
+    },
+    {
+      "file": "Tata_H2X_GIMS_2019_Le_Grand_Saconnex_GIMS0645_.jpg",
+      "ok": true,
+      "defects": [
+        "wrong_generation"
+      ],
+      "blocking": [],
+      "note": "This is the Tata H2X concept car, which was the precursor to the Tata Punch.",
+      "vetted": true
+    },
+    {
+      "file": "Tata_H2X_GIMS_2019_Le_Grand_Saconnex_GIMS0649_.jpg",
+      "ok": true,
+      "defects": [
+        "wrong_generation"
+      ],
+      "blocking": [],
+      "note": "This is the Tata H2X concept car, which was the precursor to the Tata Punch.",
+      "vetted": true
+    },
+    {
+      "file": "Tata_punch.ev.jpg",
+      "ok": false,
+      "defects": [
+        "too_dark_or_blurry"
+      ],
+      "blocking": [
+        "too_dark_or_blurry"
+      ],
+      "note": "",
+      "vetted": true
+    },
+    {
+      "file": "Tata_Punch_Camo_spotted_at_Visakhapatnam.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "",
+      "vetted": true
+    }
+  ]
+}

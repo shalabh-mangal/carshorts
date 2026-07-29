@@ -26,7 +26,7 @@ it, **or** copy the whole `carshorts` folder (incl. `.git`) from the old machine
 from the old machine's folder, do not commit them):
 - `.env` — GROQ/GEMINI/PEXELS keys (+ optional ELEVENLABS). **All free tiers.**
 - `client_secret.json`, `youtube_token.json` — YouTube OAuth (uploads/analytics).
-- (`data/voice/owner_reference.wav` — your voice clone reference — **is** committed, so it comes with the repo.)
+- (`data/voice/owner_reference.mp3` — your voice clone reference — **is** committed, so it comes with the repo.)
 
 **c) Run setup** (installs Python 3.12, ffmpeg, Node, venv + all extras incl. the
 voice engine, CUDA torch for the RTX 5060, scheduled tasks, smoke test):
@@ -112,7 +112,7 @@ src/carshorts/        core/ adapters/ writing/ rendering/ quality/ sourcing/
                       intel/ agents/ orchestration/ publishing/ portal/  + cli.py
 charters/             role charters + TASTE.md (owner taste law)
 data/scripts/         locked .script.json per video
-data/voice/           owner_reference.wav (voice clone reference)
+data/voice/           owner_reference.mp3 (voice clone reference)
 data/queue/           approval cards (Gate 1/2 state)
 assets/cars/<slug>/   per-car stills/press/stock (committed, plate-vetted)
 specs/ specs_extras/  fact sheets (specs crawled + CarDekho-verified; prices manual)

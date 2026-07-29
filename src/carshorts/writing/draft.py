@@ -29,6 +29,7 @@ from carshorts.writing.prompts import (
     LANGUAGE_INSTRUCTIONS,
     PERSONAS,
     RANK_SYSTEM,
+    TRIM_SYSTEM,
     render_spec_sheet,
 )
 
@@ -128,6 +129,32 @@ def punch_up_script(script: Script, spec_sheet: SpecSheet, llm: LLMClient) -> Sc
     return _script_from_data(data, script.subject)
 
 
+def enforce_length(script: Script, spec_sheet: SpecSheet, llm: LLMClient,
+                   max_words: int = 120, tries: int = 2) -> Script:
+    """Keep a script under the Shorts word cap. Overlong scripts run past 60s and
+    fail the render's length QA (a Punch draft came out ~196 words / ~75s), so
+    trim at write-time: ask the editor to cut to length without touching any
+    sourced fact. Returns the shortest valid result; falls back to the input if
+    the model can't help (the render's length QA still guards)."""
+    result = script
+    for _ in range(tries):
+        if result.approx_word_count() <= max_words:
+            break
+        user = (f"{render_spec_sheet(spec_sheet)}\n\n"
+                f"SCRIPT ({result.approx_word_count()} words; target <= {max_words}):\n"
+                f"{result.model_dump_json()}\n\n"
+                f"Trim it to at most {max_words} words now.")
+        try:
+            trimmed = _script_from_data(llm.complete_json(TRIM_SYSTEM, user), result.subject)
+        except Exception:  # noqa: BLE001 — the render's length QA still guards
+            break
+        if trimmed.segments and 0 < trimmed.approx_word_count() < result.approx_word_count():
+            result = trimmed
+        else:
+            break
+    return result
+
+
 # ---------------------------------------------------------------------------
 # Stage 4: fact-check (separate skeptic pass)
 # ---------------------------------------------------------------------------
@@ -206,6 +233,44 @@ def unsourced_numbers_check(script: Script, spec_sheet: SpecSheet) -> list[str]:
                 seen.add(number)
                 problems.append(
                     f'Number "{token}" (in {seg.role}) is NOT in any spec — '
+                    f"possible fabrication."
+                )
+    return problems
+
+
+# Equipment/feature terms a spec sheet either backs or it does not. The
+# number-guard only sees digits, so a fabricated feature ("cruise control",
+# "sunroof") carries no number and sails straight through — the exact hole that
+# let "cruise control" into a Tata Punch draft. This closes it, deterministically.
+_FEATURE_TERMS = (
+    "sunroof", "cruise control", "adaptive cruise", "ventilated seat",
+    "cooled seat", "heated seat", "360 camera", "360-degree camera",
+    "surround camera", "wireless charg", "connected car", "adas",
+    "lane keep", "blind spot", "ambient light", "air purifier", "panoramic",
+    "jbl", "harman", "bose", "subwoofer", "paddle shift", "hill hold",
+    "hill descent", "terrain mode", "ventilated", "digital cluster",
+    "heads-up display", "auto climate", "dual-zone", "electric tailgate",
+    "wireless android auto", "wireless carplay",
+)
+
+
+def unsourced_features_check(script: Script, spec_sheet: SpecSheet) -> list[str]:
+    """Deterministic guard against fabricated EQUIPMENT claims. Any known feature
+    term the script names must also appear somewhere in the spec sheet (a spec
+    value or its source sentence); otherwise it is flagged as a possible
+    fabrication. Same spirit as the number-guard, for claims that carry no digit."""
+    haystack = " ".join(
+        f"{s.name} {s.value} {s.source_sentence}" for s in spec_sheet.specs
+    ).lower()
+    problems: list[str] = []
+    seen: set[str] = set()
+    for seg in script.segments:
+        text = seg.text.lower()
+        for term in _FEATURE_TERMS:
+            if term in text and term not in seen and term not in haystack:
+                seen.add(term)
+                problems.append(
+                    f'Feature "{term}" (in {seg.role}) is NOT in any spec — '
                     f"possible fabrication."
                 )
     return problems
