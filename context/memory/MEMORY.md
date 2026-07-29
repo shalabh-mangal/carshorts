@@ -11,6 +11,7 @@ For full onboarding + roadmap, read **`NEW_LAPTOP.md`** at the repo root first.
 - [Free stack + cloned voice](project_carshorts_free_stack_voice.md) — 100% free/open; Chatterbox cloned multilingual voice shipped; moving to the RTX 5060 laptop; Hinglish next
 - [Brain gaps + build order](project_carshorts_brain_gaps.md) — missing organs (eyes/lab/heartbeat), baseline, plan
 - [Runs in a synced sandbox](project_carshorts_sandbox_env.md) — old host was ephemeral/off-desktop; the new laptop is the real persistent host
+- [Roadmap build: autonomy + AI video](project_carshorts_roadmap_build.md) — feature/length guards, web research, auto plate-blur; LTX-Video humor clips on the 5060; the "car stays real" wall
 
 ## How to work here (feedback)
 - [No commit without permission](feedback_no_commit_without_permission.md) — never git commit/push without the owner's OK

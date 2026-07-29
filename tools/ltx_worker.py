@@ -29,10 +29,10 @@ def main() -> None:
     ap.add_argument("--prompt", required=True)
     ap.add_argument("--image", help="Reference image (required for i2v).")
     ap.add_argument("--out", required=True)
-    ap.add_argument("--width", type=int, default=512)
-    ap.add_argument("--height", type=int, default=320)
-    ap.add_argument("--frames", type=int, default=65)      # must be N*8+1
-    ap.add_argument("--steps", type=int, default=30)
+    ap.add_argument("--width", type=int, default=384)      # 8GB-safe (512 crashes)
+    ap.add_argument("--height", type=int, default=224)
+    ap.add_argument("--frames", type=int, default=25)      # N*8+1; ~1s at 24fps
+    ap.add_argument("--steps", type=int, default=20)
     ap.add_argument("--fps", type=int, default=24)
     ap.add_argument("--seed", type=int, default=0)
     args = ap.parse_args()

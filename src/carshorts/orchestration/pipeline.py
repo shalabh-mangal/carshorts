@@ -40,8 +40,22 @@ def draft(car: str, persona: str = "deadpan", language: str = "english",
     spec = Path(f"specs/{slug}.json")
     extras = Path(f"specs_extras/{slug}.json")
     if not spec.exists():
-        sys.exit(f"missing {spec} — crawl it first:  python -m carshorts.sourcing.crawl \"{car}\" --out specs\n"
-                 f"then VERIFY the specs against CarDekho (generation mixing!).")
+        # SELF-SERVE facts: research the web (rich Wikipedia extraction + a
+        # best-effort price) instead of stopping, so the daily heartbeat can
+        # start a brand-new car on its own. The owner still verifies at Gate 1
+        # (accuracy rule: facts sourced, then CarDekho-checked before publish).
+        print(f"no spec sheet for {car} — researching the web (Wikipedia + price)…")
+        try:
+            from carshorts.sourcing.webresearch import research
+            sheet = research(car, provider="groq")
+        except Exception as exc:  # noqa: BLE001
+            sys.exit(f"auto-research failed ({exc}) — run `carshorts research \"{car}\"` "
+                     f"by hand, then verify against CarDekho.")
+        if not spec.exists() or len(sheet.specs) < 3:
+            sys.exit(f"research produced too few facts for {car} — add specs by hand in "
+                     f"specs/{slug}.json and verify against CarDekho before drafting.")
+        print(f"  researched {len(sheet.specs)} sourced specs — VERIFY against CarDekho "
+              f"before this leaves Gate 1.")
 
     script = paths.SCRIPTS / f"{slug}_{persona}.script.json"
     agent_wrote = False

@@ -525,9 +525,19 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
             captions: bool = False, stock: bool | None = None,
             voice_engine: str = "edge", persona: str = "",
             shots_file: str | None = None, kwcaps: bool = True,
-            polish_audio: bool = True, plan_only: bool = False) -> str:
+            polish_audio: bool = True, plan_only: bool = False,
+            humor: bool | None = None) -> str:
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
+    # Humor layer: flash an AI comedy cutaway on the punchline. Defaults ON when
+    # the video-gen env is present. NEVER touches the car — see the peak-beat
+    # insertion below (mid-video only; the opener/closer stay the real car).
+    if humor is None:
+        try:
+            from carshorts.adapters import videogen
+            humor = videogen.available()
+        except Exception:  # noqa: BLE001
+            humor = False
 
     # --- Get a script: either load a saved one (free) or draft one (uses a model).
     if script_file:
@@ -987,6 +997,24 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                                 break
                         if swapped:
                             break
+        # HUMOR LAYER — one AI comedy flash under the punchline. It is a non-car
+        # editorial joke (provenance-tagged in videogen); the wall holds because
+        # we only insert on the PEAK beat, never the video's first/last cut, so
+        # the opener/closer stay the real subject car (QA still enforces that).
+        if (humor and seg.role == "peak" and timed_cuts
+                and 0 < i < len(script.segments) - 1):
+            try:
+                from carshorts.adapters.humor import joke_for
+                clip = joke_for(seg.text)
+                if clip:
+                    # Replace the peak's LAST cut with the flash (keeps the cut's
+                    # existing timing, so no sub-1s cut is created — QA-safe). The
+                    # joke lands on the punchline; the car bookends (hook/cta)
+                    # are untouched, so the wall holds.
+                    timed_cuts[-1] = (timed_cuts[-1][0], clip)
+                    print(f"     humor: AI comedy flash on the peak beat -> {Path(clip).name}")
+            except Exception as exc:  # noqa: BLE001 — humor is best-effort
+                print(f"     humor skipped ({str(exc)[:70]})")
         sections.append(Section(
             audio_path=audio_paths[i], caption=seg.text, background_pool=visuals,
             timed_cuts=timed_cuts, word_pops=word_pops))
@@ -1209,6 +1237,10 @@ def main() -> None:
     parser.add_argument("--no-polish", action="store_true", help="Skip audio duck/SFX/loudnorm pass.")
     parser.add_argument("--plan-only", action="store_true",
                         help="Stop after writing the manifest (no render) — for tests/planning.")
+    parser.add_argument("--humor", dest="humor", action="store_true", default=None,
+                        help="Flash an AI comedy cutaway on the peak beat (default: on if .venv-video exists).")
+    parser.add_argument("--no-humor", dest="humor", action="store_false",
+                        help="Disable the AI humor layer.")
     args = parser.parse_args()
 
     stock = True if args.stock else (False if args.no_stock else None)
@@ -1218,7 +1250,8 @@ def main() -> None:
                    captions=args.captions, stock=stock,
                    voice_engine=args.voice_engine, persona=args.persona,
                    shots_file=args.shots, kwcaps=not args.no_kwcaps,
-                   polish_audio=not args.no_polish, plan_only=args.plan_only)
+                   polish_audio=not args.no_polish, plan_only=args.plan_only,
+                   humor=args.humor)
     print(f"\nDone -> {path}")
 
 

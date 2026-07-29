@@ -43,16 +43,18 @@ JOKE_CONCEPTS: list[tuple[str, str, str]] = [
 
 
 def joke_for(text: str) -> str | None:
-    """A cached comedic clip for the first concept `text` hits, or None (no match
-    / no video env). Each concept is generated once and reused (joke_<concept>.mp4)."""
-    if not text or not videogen.available():
+    """A PRE-BUILT comedic clip for the first concept `text` hits, or None.
+
+    Cached-only ON PURPOSE: never generate during a render — the GPU worker would
+    contend with the loaded voice model and can OOM the 8GB card. The library is
+    built once offline (prebuild / `carshorts jokes`); renders only look it up."""
+    if not text:
         return None
     low = text.lower()
-    for concept, trigger, prompt in JOKE_CONCEPTS:
+    for concept, trigger, _prompt in JOKE_CONCEPTS:
         if re.search(trigger, low):
-            return videogen.generate(
-                prompt, mode="t2v",
-                out_path=str(videogen.GEN_DIR / f"joke_{concept}.mp4"))
+            path = videogen.GEN_DIR / f"joke_{concept}.mp4"
+            return str(path) if path.exists() else None
     return None
 
 
@@ -65,3 +67,21 @@ def prebuild(concepts: list[str] | None = None) -> dict[str, str | None]:
         out[concept] = videogen.generate(
             prompt, mode="t2v", out_path=str(videogen.GEN_DIR / f"joke_{concept}.mp4"))
     return out
+
+
+def main() -> None:
+    import argparse
+    import json
+    ap = argparse.ArgumentParser(description="Pre-build the reusable AI joke-clip library (one-time).")
+    ap.add_argument("--concepts", nargs="*", help="Subset of concepts (default: all).")
+    args = ap.parse_args()
+    if not videogen.available():
+        print("video env not found (.venv-video) — run tools/setup for the LTX stack first.")
+        return
+    result = prebuild(args.concepts)
+    for concept, path in result.items():
+        print(f"  {concept:12} {'-> ' + path if path else 'FAILED'}")
+
+
+if __name__ == "__main__":
+    main()

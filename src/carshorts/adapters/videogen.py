@@ -60,8 +60,8 @@ def _record(clip_path: str, kind: str, prompt: str, source_image: str | None) ->
 
 
 def generate(prompt: str, mode: str = "t2v", image: str | Path | None = None,
-             out_path: str | None = None, width: int = 512, height: int = 320,
-             frames: int = 65, steps: int = 30, fps: int = 24, seed: int = 0,
+             out_path: str | None = None, width: int = 384, height: int = 224,
+             frames: int = 25, steps: int = 20, fps: int = 24, seed: int = 0,
              timeout: int = 1200) -> str | None:
     """Generate one clip via the isolated LTX worker. Returns the clip path (and
     records provenance), or None on any failure so callers fall back cleanly.
