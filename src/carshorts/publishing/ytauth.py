@@ -18,6 +18,7 @@ TOKEN = "youtube_token.json"
 
 
 def credentials():
+    from google.auth.exceptions import RefreshError
     from google.auth.transport.requests import Request
     from google.oauth2.credentials import Credentials
     from google_auth_oauthlib.flow import InstalledAppFlow
@@ -25,17 +26,31 @@ def credentials():
     creds = None
     if Path(TOKEN).exists():
         creds = Credentials.from_authorized_user_file(TOKEN, SCOPES)
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
+    if creds and creds.valid:
+        return creds
+
+    # Try a silent refresh first. A "Testing"-mode OAuth app has its refresh
+    # token REVOKED by Google after ~7 days, so refresh raises invalid_grant —
+    # in that case drop the dead token and fall through to a fresh browser
+    # consent rather than crashing the publish/analytics run.
+    if creds and creds.expired and creds.refresh_token:
+        try:
             creds.refresh(Request())
-        else:
-            if not Path(CLIENT_SECRET).exists():
-                raise SystemExit(
-                    f"Missing {CLIENT_SECRET}. Follow the one-time Google Cloud "
-                    "OAuth setup documented at the top of publish.py.")
-            flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRET, SCOPES)
-            creds = flow.run_local_server(port=0)
-        Path(TOKEN).write_text(creds.to_json())
+            Path(TOKEN).write_text(creds.to_json())
+            return creds
+        except RefreshError:
+            Path(TOKEN).unlink(missing_ok=True)
+            creds = None
+
+    if not Path(CLIENT_SECRET).exists():
+        raise SystemExit(
+            f"Missing {CLIENT_SECRET}. Follow the one-time Google Cloud "
+            "OAuth setup documented at the top of publish.py.")
+    # Opens a browser for the OWNER to sign in + consent. Interactive by design —
+    # never run this from an unattended/background job; re-auth is a human step.
+    flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRET, SCOPES)
+    creds = flow.run_local_server(port=0)
+    Path(TOKEN).write_text(creds.to_json())
     return creds
 
 
