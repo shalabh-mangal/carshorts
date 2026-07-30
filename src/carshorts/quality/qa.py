@@ -71,7 +71,10 @@ def run_qa(video_path: str, manifest_path: str | None = None,
     check("duration ≈ plan", abs(actual - planned) < 1.6,
           f"video {actual:.1f}s vs plan {planned:.1f}s (+loop flash)")
 
-    check("runtime ≤ 63s (Shorts sweet spot)", actual <= 63.0, f"{actual:.1f}s")
+    # Tight-Shorts target ~35s (retention data: 63s held ~32%, 46s looped at
+    # 130%). 48s is the hard ceiling — a longer runtime means the writer let a
+    # beat balloon; re-trim rather than ship it.
+    check("runtime ≤ 48s (tight-Shorts, target ~35s)", actual <= 48.0, f"{actual:.1f}s")
 
     lufs, tp = _loudness(video_path)
     check("loudness -14 LUFS ±2", -16.0 <= lufs <= -12.0, f"{lufs:.1f} LUFS")

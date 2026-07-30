@@ -130,12 +130,13 @@ def punch_up_script(script: Script, spec_sheet: SpecSheet, llm: LLMClient) -> Sc
 
 
 def enforce_length(script: Script, spec_sheet: SpecSheet, llm: LLMClient,
-                   max_words: int = 120, tries: int = 2) -> Script:
-    """Keep a script under the Shorts word cap. Overlong scripts run past 60s and
-    fail the render's length QA (a Punch draft came out ~196 words / ~75s), so
-    trim at write-time: ask the editor to cut to length without touching any
-    sourced fact. Returns the shortest valid result; falls back to the input if
-    the model can't help (the render's length QA still guards)."""
+                   max_words: int = 80, tries: int = 2) -> Script:
+    """Keep a script under the Shorts word cap. We now TARGET ~35s (~80 words):
+    retention data shows a 63s video held ~32% of viewers while a 46s cut held
+    130% and looped, so shorter is the winning shape — trim at write-time, asking
+    the editor to cut to length without touching any sourced fact. Returns the
+    shortest valid result; falls back to the input if the model can't help (the
+    render's length QA still guards)."""
     result = script
     for _ in range(tries):
         if result.approx_word_count() <= max_words:
