@@ -1,0 +1,27 @@
+{
+  "aliases": ["sonet", "kia-sonet", "sub-4m suv", "subcompact suv"],
+  "price_estimate": "₹7.40 lakh onwards",
+  "price_note": "ex-showroom, 2026 range; turbo iMT entry ~₹7.4 lakh, on-road varies by city — estimate, verify at CarDekho",
+  "price_source": "https://www.cardekho.com/kia/sonet",
+  "value_variant": "",
+  "value_features": "",
+  "value_price": "",
+  "news": [
+    {
+      "fact": "The 2026 Kia Sonet added new variants that make the turbo-petrol DCT and diesel automatic more accessible — the turbo DCT now starts from the lower HTK (O) trim, priced Rs 2.63 lakh less than before",
+      "source": "https://www.cardekho.com/india-car-news/2026-kia-sonet-gets-new-variants-diesel-and-turbopetrol-automatic-options-get-more-accessible-35759.htm",
+      "date": "2026"
+    },
+    {
+      "fact": "The 2026 Sonet gets a new red shade named Magma Red",
+      "source": "https://www.cardekho.com/india-car-news/2026-kia-sonet-gets-new-variants-diesel-and-turbopetrol-automatic-options-get-more-accessible-35759.htm",
+      "date": "2026"
+    }
+  ],
+  "news_callouts": [
+    "120 PS 1.0 turbo",
+    "172 Nm · 6-iMT/7-DCT",
+    "Turbo DCT now cheaper",
+    "From ₹7.40 lakh"
+  ]
+}

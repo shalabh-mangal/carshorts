@@ -273,6 +273,39 @@ _POP_GAP = 0.15
 _LSS_RE = re.compile(r"\blike\W+share\W+subscribe\b", re.I)
 
 
+def _clip_brightness(path: str) -> float:
+    """Score a clip's ACTUAL first frame by brightness × contrast — used to pick
+    the opener from motion clips. Sampling frame 0 (what the feed-norm QA sees)
+    and weighting contrast rejects BOTH a dark interior AND a blown-out/blank
+    transition frame (bright but flat), either of which fails the QA and makes a
+    poor thumbnail. Best-effort: 0.0 if it can't be read."""
+    import os as _os
+    import subprocess as _sp
+    import tempfile
+
+    from PIL import Image
+    tmp = tempfile.mktemp(suffix=".jpg")
+    try:
+        _sp.run(["ffmpeg", "-y", "-i", path, "-frames:v", "1",
+                 "-vf", "scale=64:-1", tmp], capture_output=True)
+        if not _os.path.exists(tmp):
+            return 0.0
+        with Image.open(tmp) as im:
+            data = list(im.convert("L").getdata())
+        if not data:
+            return 0.0
+        mean = sum(data) / len(data)
+        std = (sum((d - mean) ** 2 for d in data) / len(data)) ** 0.5
+        return mean * std            # bright AND contrasty (not blank, not dark)
+    except Exception:  # noqa: BLE001 — brightness is a hint, never a hard dependency
+        return 0.0
+    finally:
+        try:
+            _os.unlink(tmp)
+        except OSError:
+            pass
+
+
 def _subject_families(subject: str) -> set[str]:
     """Name tokens that identify THIS car in asset filenames (plus curated
     aliases from specs_extras, e.g. Thar -> roxx). Used by the edge-beat
@@ -900,8 +933,11 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         subj = [a for a in pool if _is_subject_asset(a)
                 and not Path(a).name.lower().startswith("oldgen_")]
         if subj:
-            opening_pick = subj[0]
-            print(f"     opener (subject-motion fallback): {Path(opening_pick).name}")
+            # Pick the BRIGHTEST subject clip, not just the first — a dark interior
+            # opener fails the first-frame feed-norm QA (and makes a weak thumbnail);
+            # the well-lit exterior/showroom clips win.
+            opening_pick = max(subj, key=_clip_brightness)
+            print(f"     opener (brightest subject clip): {Path(opening_pick).name}")
 
     sections = []
     manifest_sections: list[dict] = []

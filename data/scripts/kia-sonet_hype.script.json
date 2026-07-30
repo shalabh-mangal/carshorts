@@ -1,0 +1,35 @@
+{
+  "subject": "Kia Sonet",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Kia crammed a 120 PS turbo into a sub-four-metre SUV. Wait... how?!",
+      "cited_spec_names": ["turbo_power", "length"],
+      "pops": ["120 PS turbo"]
+    },
+    {
+      "role": "spec",
+      "text": "That little 1.0 turbo fires 172 Nm through a slick 7-speed DCT — genuinely quick.",
+      "cited_spec_names": ["turbo_torque", "transmission", "engine"],
+      "pops": ["172 Nm", "7-speed DCT"]
+    },
+    {
+      "role": "value",
+      "text": "And it's properly loaded — sunroof, ventilated seats, even ADAS — from just ₹7.40 lakh.",
+      "cited_spec_names": ["features", "price_estimate"],
+      "pops": ["ventilated seats", "₹7.40 lakh"]
+    },
+    {
+      "role": "peak",
+      "text": "A turbo automatic Kia for under eight lakh? Somewhere, a Nexon just started sweating.",
+      "cited_spec_names": [],
+      "pops": [{"anchor": "a Nexon just started sweating", "show": "👀 SWEATING"}]
+    },
+    {
+      "role": "cta",
+      "text": "Sonet or Nexon — which one wins? Comment 1 or 2! And like, share, subscribe.",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  ]
+}

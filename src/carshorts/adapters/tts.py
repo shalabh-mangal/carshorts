@@ -31,6 +31,7 @@ _SPEECH_SUBS = [
     (re.compile(r"\bNCAP\b", re.I), "N-cap"),        # safety body, spoken "en-cap"
     (re.compile(r"\bDCT\b"), "D-C-T"),               # gearbox acronym
     (re.compile(r"\biMT\b"), "i-M-T"),               # clutchless manual acronym
+    (re.compile(r"\bADAS\b"), "driver assist"),      # spoken plain — clone mangles the acronym
     # Indian trim codes (ZXi, VXi, LXi, ZXi+ ...) — spell the letters so TTS
     # doesn't mangle them ("ZXi" -> "Z-X-i").
     (re.compile(r"\b([A-Z])(X)(i)(\+?)\b"),

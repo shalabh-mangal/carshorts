@@ -1,0 +1,76 @@
+{
+  "subject": "Kia Sonet",
+  "specs": [
+    {
+      "name": "turbo_power",
+      "value": "120 PS (118 bhp)",
+      "source_url": "https://www.cardekho.com/india-car-news/2026-kia-sonet-gets-new-variants-diesel-and-turbopetrol-automatic-options-get-more-accessible-35759.htm",
+      "source_sentence": "The Kia Sonet's 1.0-litre T-GDi turbo-petrol produces 120 PS of power and 172 Nm of torque.",
+      "confidence": 0.9
+    },
+    {
+      "name": "turbo_torque",
+      "value": "172 Nm",
+      "source_url": "https://www.cardekho.com/india-car-news/2026-kia-sonet-gets-new-variants-diesel-and-turbopetrol-automatic-options-get-more-accessible-35759.htm",
+      "source_sentence": "The 1.0 turbo-petrol makes 172 Nm, paired with a 6-speed iMT or a 7-speed DCT.",
+      "confidence": 0.9
+    },
+    {
+      "name": "engine",
+      "value": "1.0L T-GDi turbo-petrol",
+      "source_url": "https://www.cardekho.com/kia/sonet/specs",
+      "source_sentence": "The Kia Sonet is offered with a 998 cc 1.0-litre T-GDi turbo-petrol, a 1.2-litre petrol and a 1.5-litre CRDi diesel.",
+      "confidence": 0.9
+    },
+    {
+      "name": "transmission",
+      "value": "6-speed iMT / 7-speed DCT",
+      "source_url": "https://www.cardekho.com/india-car-news/2026-kia-sonet-gets-new-variants-diesel-and-turbopetrol-automatic-options-get-more-accessible-35759.htm",
+      "source_sentence": "The 1.0-litre turbo-petrol comes mated to either a 6-speed iMT or a 7-speed DCT automatic.",
+      "confidence": 0.9
+    },
+    {
+      "name": "mileage",
+      "value": "18.4 kmpl",
+      "source_url": "https://www.cardekho.com/kia/sonet/specs",
+      "source_sentence": "The mileage of the Kia Sonet HTK (O) Turbo iMT is 18.4 kmpl.",
+      "confidence": 0.85
+    },
+    {
+      "name": "boot_space",
+      "value": "385 litres",
+      "source_url": "https://www.cardekho.com/kia/sonet/specs",
+      "source_sentence": "The Kia Sonet offers a boot space of 385 litres.",
+      "confidence": 0.85
+    },
+    {
+      "name": "length",
+      "value": "3,995 mm (sub-4m)",
+      "source_url": "https://www.cardekho.com/kia/sonet/specs",
+      "source_sentence": "The Kia Sonet is a sub-four-metre SUV at 3,995 mm long.",
+      "confidence": 0.9
+    },
+    {
+      "name": "body_type",
+      "value": "sub-4m subcompact SUV",
+      "source_url": "https://www.cardekho.com/kia/sonet",
+      "source_sentence": "The Kia Sonet is a sub-4-metre subcompact SUV.",
+      "confidence": 0.9
+    },
+    {
+      "name": "features",
+      "value": "electric sunroof, ventilated front seats, ADAS Level 1 (10 features), 360-degree camera, Bose 7-speaker, 10.25\" digital cluster",
+      "source_url": "https://www.kia.com/in/our-vehicles/sonet/specs.html",
+      "source_sentence": "The Kia Sonet is offered with an electric sunroof, front ventilated seats, ADAS Level 1 with 10 autonomous features, a 360-degree camera, a BOSE premium 7-speaker system and a full digital cluster with a 26.04 cm (10.25 inch) colour LCD.",
+      "confidence": 0.95
+    },
+    {
+      "name": "dimensions",
+      "value": "3,995 mm L / 1,790 mm W / 2,500 mm wheelbase",
+      "source_url": "https://www.kia.com/in/our-vehicles/sonet/specs.html",
+      "source_sentence": "The Kia Sonet measures 3,995 mm long and 1,790 mm wide, with a 2,500 mm wheelbase.",
+      "confidence": 0.95
+    }
+  ],
+  "_source_note": "India-market facts from CarDekho (2026 Sonet). Wikipedia's Mexico-spec 113 hp / 144 Nm was rejected. Owner CarDekho-verifies power/price at Gate 1."
+}
