@@ -28,6 +28,7 @@ COMMANDS: dict[str, str] = {
     "produce": "carshorts.rendering.produce",
     "thumbnail": "carshorts.rendering.thumbnail",
     "jokes": "carshorts.adapters.humor",
+    "liven": "carshorts.rendering.liven",
     "writescript": "carshorts.writing.writescript",
     # quality
     "qa": "carshorts.quality.qa",

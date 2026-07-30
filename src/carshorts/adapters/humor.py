@@ -42,19 +42,24 @@ JOKE_CONCEPTS: list[tuple[str, str, str]] = [
 ]
 
 
-def joke_for(text: str) -> str | None:
-    """A PRE-BUILT comedic clip for the first concept `text` hits, or None.
+def joke_for(text: str, avoid: set[str] | None = None) -> tuple[str, str] | None:
+    """(clip_path, concept) for the first UNUSED concept `text` hits, else None.
 
-    Cached-only ON PURPOSE: never generate during a render — the GPU worker would
-    contend with the loaded voice model and can OOM the 8GB card. The library is
-    built once offline (prebuild / `carshorts jokes`); renders only look it up."""
+    `avoid` = concepts already used in this video, so each humor beat lands a
+    DIFFERENT joke (varied, not repeated). Cached-only ON PURPOSE: never generate
+    during a render — the GPU worker would contend with the loaded voice model
+    and can OOM the 8GB card. The library is built once offline (`carshorts
+    jokes`); renders only look it up."""
     if not text:
         return None
+    avoid = avoid or set()
     low = text.lower()
     for concept, trigger, _prompt in JOKE_CONCEPTS:
+        if concept in avoid:
+            continue
         if re.search(trigger, low):
             path = videogen.GEN_DIR / f"joke_{concept}.mp4"
-            return str(path) if path.exists() else None
+            return (str(path), concept) if path.exists() else None
     return None
 
 

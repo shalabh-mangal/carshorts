@@ -535,7 +535,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     if humor is None:
         try:
             from carshorts.adapters import videogen
-            humor = videogen.available()
+            humor = videogen.available() and not plan_only
         except Exception:  # noqa: BLE001
             humor = False
 
@@ -742,6 +742,13 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         durations.append(_Audio(str(audio_paths[-1])).duration)
 
     user_clips = sorted(str(p) for p in ai_dir.glob("*.mp4"))
+    # Living Stills: a "living_<stem>.mp4" in own/ is the i2v-animated version of
+    # a still (see rendering/liven.py) — prefer the motion clip and drop the
+    # matching static still, so animated REAL footage replaces the slideshow.
+    livened_stems = {Path(c).stem[len("living_"):] for c in user_clips
+                     if Path(c).stem.startswith("living_")}
+    if livened_stems:
+        images = [im for im in images if Path(im).stem not in livened_stems]
 
     # Order the pool so visually-similar shots never sit adjacent: bucket by
     # look (pool_NN_<category> prefix for own clips, query name for stock),
@@ -880,9 +887,21 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     except Exception as exc:  # noqa: BLE001 — never block a render on this
         print(f"     opener scoring skipped ({str(exc)[:80]})")
 
+    if opening_pick is None:
+        # No static subject still (e.g. every still was livened into a clip) —
+        # open on a subject MOTION clip (a Living Still of the car) so the
+        # opens-on-subject-car QA holds and frame 1 is the real car, not stock.
+        subj = [a for a in pool if _is_subject_asset(a)
+                and not Path(a).name.lower().startswith("oldgen_")]
+        if subj:
+            opening_pick = subj[0]
+            print(f"     opener (subject-motion fallback): {Path(opening_pick).name}")
+
     sections = []
     manifest_sections: list[dict] = []
     prev_last_bucket = ""
+    humor_concepts_used: set[str] = set()   # AI comedy concepts used so far
+    _HUMOR_MAX = 3                          # a lively few, not a meme every beat
     for i, seg in enumerate(script.segments):
         chunks = max(1, round(durations[i] / target))
         visuals: list[str] = []
@@ -997,22 +1016,22 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                                 break
                         if swapped:
                             break
-        # HUMOR LAYER — one AI comedy flash under the punchline. It is a non-car
-        # editorial joke (provenance-tagged in videogen); the wall holds because
-        # we only insert on the PEAK beat, never the video's first/last cut, so
-        # the opener/closer stay the real subject car (QA still enforces that).
-        if (humor and seg.role == "peak" and timed_cuts
-                and 0 < i < len(script.segments) - 1):
+        # HUMOR LAYER — flash AI comedy cutaways under the punchlines. Each is a
+        # non-car editorial joke (provenance-tagged); the wall holds because we
+        # only touch NON-EDGE beats (never the video's first/last cut), so the
+        # opener/closer stay the real subject car (QA still enforces that). We
+        # REPLACE a beat's last cut (keeps timing -> no sub-1s cut, QA-safe), cap
+        # the total and never repeat a concept, so it stays lively, not spammy.
+        if (humor and timed_cuts and 0 < i < len(script.segments) - 1
+                and len(humor_concepts_used) < _HUMOR_MAX):
             try:
                 from carshorts.adapters.humor import joke_for
-                clip = joke_for(seg.text)
-                if clip:
-                    # Replace the peak's LAST cut with the flash (keeps the cut's
-                    # existing timing, so no sub-1s cut is created — QA-safe). The
-                    # joke lands on the punchline; the car bookends (hook/cta)
-                    # are untouched, so the wall holds.
+                result = joke_for(seg.text, avoid=humor_concepts_used)
+                if result:
+                    clip, concept = result
                     timed_cuts[-1] = (timed_cuts[-1][0], clip)
-                    print(f"     humor: AI comedy flash on the peak beat -> {Path(clip).name}")
+                    humor_concepts_used.add(concept)
+                    print(f"     humor: AI comedy flash [{seg.role}] {concept} -> {Path(clip).name}")
             except Exception as exc:  # noqa: BLE001 — humor is best-effort
                 print(f"     humor skipped ({str(exc)[:70]})")
         sections.append(Section(

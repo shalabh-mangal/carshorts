@@ -148,3 +148,5 @@
 {"at": "2026-07-27T09:55:25", "video": "out\\maruti-suzuki-brezza_final.mp4", "check": "visual-qa", "detail": "{\"t\": 36.46, \"asset\": \"2022_Maruti_Suzuki_Brezza_ZXi_India_interior.png\", \"phrase\": \"Let us know in the comments!\", \"issues\": [\"too_dark_or_blurry\"], \"match\": true}", "resolved": false}
 {"at": "2026-07-27T09:55:25", "video": "out\\maruti-suzuki-brezza_final.mp4", "check": "visual-qa", "detail": "{\"t\": 38.15, \"asset\": \"Interior_of_Suzuki_Vitara_Brezza.jpg\", \"phrase\": \"Don't forget to like, share,\", \"issues\": [\"too_dark_or_blurry\"], \"match\": true}", "resolved": false}
 {"at": "2026-07-29T21:59:16", "video": "out\\tata-punch_humor.mp4", "check": "no cut shorter than ~1s", "detail": "", "resolved": false}
+{"at": "2026-07-30T08:18:06", "video": "out\\tata-punch_final.mp4", "check": "opens on subject car", "detail": "car_speedometer_closeup_5777431.mp4", "resolved": false}
+{"at": "2026-07-30T08:18:06", "video": "out\\tata-punch_final.mp4", "check": "opening frame vs feed norm", "detail": "brightness 0.41x; edge_density 0.14x (advisory)", "resolved": false}
