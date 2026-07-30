@@ -317,6 +317,47 @@ def _take_recall(arr, sr: int, expected_text: str, language_id: str) -> float:
     return sum(1 for w in expected if w in heard) / len(expected)
 
 
+def _speak_numbers(text: str) -> str:
+    """Convert digit numbers to spoken words so the TTS actually pronounces them.
+    Chatterbox mumbles or skips raw digits ("118", "1.2", "170"); words are
+    reliable. Decimals are read digit-by-digit after the point ("5.59" -> "five
+    point five nine"), which is how prices/specs are said aloud."""
+    try:
+        from num2words import num2words
+    except ImportError:
+        return text
+
+    def repl(m):
+        raw = m.group(0).replace(",", "")
+        try:
+            if "." in raw:
+                head, frac = raw.split(".", 1)
+                words = num2words(int(head)) if head else "zero"
+                return words + " point " + " ".join(num2words(int(d)) for d in frac)
+            return num2words(int(raw))
+        except Exception:  # noqa: BLE001 — leave an odd token as-is
+            return m.group(0)
+
+    return re.sub(r"\d[\d,]*(?:\.\d+)?", repl, text)
+
+
+def _spoken_weighted_marks(orig_text: str, duration: float) -> list[dict]:
+    """Word marks that keep the ORIGINAL tokens (so number pops still match
+    "118"/"5.59") but weight each by how long it is SPOKEN — "118" (voiced "one
+    hundred eighteen") gets a proportionally longer slot, so the pop lands on the
+    right beat even though the audio speaks the number in full."""
+    words = orig_text.split()
+    if not words:
+        return []
+    weights = [max(1, len(_speak_numbers(w))) for w in words]
+    total = sum(weights) or 1
+    marks, acc = [], 0.0
+    for word, weight in zip(words, weights):
+        marks.append({"w": word.strip(".,?!—:;\"'"), "t": round(acc, 3)})
+        acc += duration * weight / total
+    return marks
+
+
 class ChatterboxTTSProvider(TTSProvider):
     """Open, MIT-licensed cloning TTS. Speaks in the OWNER's voice (cloned from a
     reference clip) across 23 languages incl. Hindi/Hinglish. Reference clip:
@@ -349,6 +390,7 @@ class ChatterboxTTSProvider(TTSProvider):
         from carshorts.core import paths
 
         text_n = normalize_for_speech(text)
+        speech_text = _speak_numbers(text_n)   # audio says numbers as WORDS
         ref = paths.resolve(self.ref_path)
         if not ref.exists():
             raise RuntimeError(
@@ -363,7 +405,7 @@ class ChatterboxTTSProvider(TTSProvider):
         # actually hears back, and keep the best. Only a clean read reaches render.
         best_arr, best_recall = None, -1.0
         for _attempt in range(self._MAX_TAKES):
-            wav = model.generate(text_n, language_id=self.language_id,
+            wav = model.generate(speech_text, language_id=self.language_id,
                                  audio_prompt_path=str(ref),
                                  exaggeration=self.exaggeration,
                                  cfg_weight=self.cfg_weight)
@@ -390,15 +432,11 @@ class ChatterboxTTSProvider(TTSProvider):
                         "-q:a", "2", out_path], capture_output=True)
         os.unlink(tmp)
         if marks_path:
-            # Use PROPORTIONAL (script-token) marks, not whisper. Whisper
-            # transcribes the AUDIO — "118" becomes "one hundred eighteen",
-            # "₹5.59 lakh" becomes "five point five nine lakh" — so every
-            # digit/number pop fails its word-exact match and silently vanishes
-            # (the "text overlay not working" bug). Proportional marks carry the
-            # exact normalized script tokens, so number pops + captions render;
-            # timing is even-by-word-length, close enough for short beats.
-            # (Whisper-timed alignment onto script tokens is a future refinement.)
-            marks = _proportional_marks(text_n, len(arr) / sr)
+            # Marks keep the ORIGINAL script tokens ("118", "₹5.59") so number
+            # pops word-match, but are weighted by SPOKEN length so timing tracks
+            # the audio (which says "one hundred eighteen"). Not whisper: it would
+            # transcribe the spoken words and break the digit pops.
+            marks = _spoken_weighted_marks(text_n, len(arr) / sr)
             with open(marks_path, "w", encoding="utf-8") as fh:
                 json.dump(marks, fh, ensure_ascii=False)
         return out_path
