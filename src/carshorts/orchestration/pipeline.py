@@ -12,7 +12,7 @@ DRAFT stage (fully automatic):
 
 APPROVE stage (after you review draft + optionally edit the script):
   5. renders the final (ElevenLabs, cached where possible)
-  6. generates the publish kit, uploads public, links the recipe
+  6. generates the publish kit, uploads UNLISTED (you flip to public), links the recipe
 """
 from __future__ import annotations
 
@@ -174,14 +174,19 @@ def approve(slug: str, privacy: str = "public") -> None:
     card["status"] = "final_review"
     card["final"] = str(final_out)
     card["note"] = ("PREMIUM FINAL ready (channel voice) — review THIS file; "
-                    "Publish ships it to YouTube untouched.")
+                    "Publish uploads it UNLISTED, then you flip it to Public on "
+                    "YouTube after a last look.")
     card_path.write_text(json.dumps(card, indent=2))
     _progress(slug, "", done=True)
     print(f"final ready for second approval -> {final_out}")
 
 
-def publish(slug: str, privacy: str = "public") -> None:
-    """Second approval given on the FINAL -> publish kit + YouTube upload."""
+def publish(slug: str, privacy: str = "unlisted") -> None:
+    """Second approval given on the FINAL -> publish kit + YouTube upload.
+
+    Uploads UNLISTED by default so the owner takes a last look on YouTube (the
+    real player, mobile feed, thumbnail) and flips it to Public themselves —
+    the safe side of Gate 2. Pass --privacy public to ship straight to public."""
     card_path = QUEUE / f"{slug}.json"
     card = json.loads(card_path.read_text())
     final_out = Path(card.get("final") or f"out/{slug}_final.mp4")
@@ -253,7 +258,8 @@ def main() -> None:
                     help="Approve a queued draft -> premium final -> back to portal for 2nd approval.")
     ap.add_argument("--publish", metavar="SLUG",
                     help="Second approval on the final -> publish kit + YouTube upload.")
-    ap.add_argument("--privacy", default="public", choices=["public", "unlisted", "private"])
+    ap.add_argument("--privacy", default="unlisted", choices=["public", "unlisted", "private"],
+                    help="Upload visibility (default unlisted — owner flips to public after a last look).")
     ap.add_argument("--no-agent", action="store_true",
                     help="Skip the scriptwright agent (template writer only).")
     ap.add_argument("--queue", action="store_true", help="Show the approval queue.")
