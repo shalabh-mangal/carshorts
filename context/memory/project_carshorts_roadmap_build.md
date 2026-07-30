@@ -52,11 +52,36 @@ static still, and the opener falls back to a subject MOTION clip so the car open
 + closes on animated real footage. Humor now inserts up to 3 VARIED flashes per
 video (joke_for(avoid=) → next unused concept). Validated on Punch, QA-green.
 
+## Voice numbers + HQ Living Stills + heartbeat self-enhance (2026-07-30, commit 531bbf3)
+- **Numbers finally clean.** `tts._speak_numbers` speaks digits as words; the
+  slur fix that made it land: drop British "and", COMMA-PAD multi-word numbers so
+  chatterbox pauses/enunciates ("one hundred seventy," not a mushy "7070"), and
+  spell acronyms it mangles (SUV→S-U-V, NCAP→N-cap). Whisper now hears clean
+  digits (118, 1.2, 170, 5.59, 366) where it heard garbage.
+- **THE cache trap (cost 2 wasted re-renders):** produce's TTS cache keyed on the
+  RAW script line, so a voice-logic change silently reused stale audio — the
+  transcript was byte-identical across "re-renders". Fixed: key on the SPOKEN text
+  `_speak_numbers(normalize_for_speech(seg.text))`, so any speech-norm change
+  self-busts. When a voice fix "doesn't take", suspect this cache first.
+- **HQ Living Stills config VALIDATED** on the RTX 5060 8GB: **448×256, 73 frames
+  @ 24fps (~3.0s), 40 steps** → smooth dolly push-in, stable, NO warp (the old
+  384×224×25×20 was the janky version). Locked in `liven._HQ`; comedy flashes stay
+  on the fast lo-fi default. Prompt = MOTION + quality bar only (car identity comes
+  from the anchor photo). ~5 min/clip, pre-gen overnight so renders never wait.
+- **Heartbeat self-enhances** (`heartbeat._ai_enhance`): at the END of a successful
+  daily draft it ensures the joke library, livens THAT car's stills at HQ, and
+  re-renders so the Gate-1 draft carries humor + Living Stills. No-op without
+  `.venv-video`; never breaks the day.
+
 ## Still open (next)
-- AI‑clip quality is lo‑fi/janky at 8GB (fine for a 0.5–1s flash); tune steps/res
-  and consider PORTRAIT dims so clips fit the vertical frame without heavy crop.
+- **Thin visual pool** is now the #1 gap: Punch has only ~4 assets (2 Living
+  Stills + a generic speedo stock + a wintry NON-Indian forest dashcam), so the
+  middle repeats and looks off-brand. Biggest quality lever = fetch + vet more
+  REAL Punch b-roll (or more stills to liven). QA passes but variety is weak.
+- Minor clone slips remain on normal words ("kicker"→"KIGA", "Nexon or"→"Next on
+  our") — within re-roll recall tolerance; owner judges by ear at Gate 1.
 - Price‑search is best‑effort (DDG can be blocked); owner adds price when missing.
-- LTX default 384x224x25 is 8GB-safe; 512x320 crashes over the VRAM edge.
+- Consider PORTRAIT i2v dims so Living Stills fit the vertical frame without crop.
 
 Related: [[project_carshorts_free_stack_voice]] (voice finalized: chatterbox
 `hype` 0.85/0.35, re‑roll gate, proportional pop marks) · [[project-carshorts-brain-gaps]]
