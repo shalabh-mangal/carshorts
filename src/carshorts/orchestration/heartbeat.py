@@ -132,6 +132,37 @@ def _journal(entry: dict) -> None:
         fh.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
+def _ai_enhance(slug: str) -> dict:
+    """At the END of a successful draft, add the AI layer: ensure the joke
+    library, liven THIS car's vetted stills (i2v Living Stills), and re-render so
+    the draft the owner reviews carries the humor flashes + animated real footage.
+    GPU-heavy — which is exactly why it lives in the daily heartbeat and never
+    mid-render. A safe no-op when the video env (.venv-video) is absent."""
+    from carshorts.adapters import videogen
+    if not videogen.available():
+        return {"ai_enhance": "skipped (no .venv-video)"}
+    card_path = QUEUE / f"{slug}.json"
+    if not card_path.exists():
+        return {"ai_enhance": "skipped (no queue card)"}
+    card = json.loads(card_path.read_text(encoding="utf-8"))
+    try:
+        from carshorts.adapters.humor import prebuild
+        prebuild()                                    # joke library (cached)
+    except Exception:  # noqa: BLE001 — best-effort
+        pass
+    try:
+        from carshorts.rendering.liven import liven
+        liven(card.get("car", slug))                  # Living Stills for this car
+    except Exception:  # noqa: BLE001 — best-effort
+        pass
+    cmd = [sys.executable, "-m", "carshorts.rendering.produce",
+           "--script-file", card["script"], "--spec", card["spec"],
+           "--skip-factcheck", "--persona", card.get("persona", "deadpan"),
+           "--humor", "--out", card["draft"]]
+    proc = subprocess.run(cmd, capture_output=True, text=True)
+    return {"ai_enhance": "ok" if proc.returncode == 0 else f"failed (exit {proc.returncode})"}
+
+
 def run(dry_run: bool = False, no_agent: bool = False, max_pending: int = 2,
         status_only: bool = False) -> dict:
     now = datetime.datetime.now().isoformat(timespec="seconds")
@@ -206,6 +237,17 @@ def run(dry_run: bool = False, no_agent: bool = False, max_pending: int = 2,
     if not result["ok"]:
         print(f"  ⚠ produce failed (exit {proc.returncode})")
         result["stderr"] = (proc.stderr or "")[-400:]
+
+    # At the END: add the AI layer (joke library + Living Stills) and re-render,
+    # so the draft awaiting Gate 1 has humor + animated real footage.
+    if result["ok"] and slot:
+        try:
+            from carshorts.rendering.produce import _slug
+            enh = _ai_enhance(_slug(slot["car"]))
+            result.update(enh)
+            print(f"  ai-enhance   : {enh.get('ai_enhance')}")
+        except Exception as exc:  # noqa: BLE001 — never let enhancement break the day
+            print(f"  ai-enhance skipped ({str(exc)[:80]})")
 
     _journal(result)
     _write_report(result, queue_state(), slot)

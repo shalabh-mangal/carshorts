@@ -688,10 +688,15 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     # visual POOL across fast sub-scenes (~2.8s cuts). Every asset is used at
     # most once across the whole video (repeats read as cheap), interleaving
     # the user's real clips with stock motion and stills for variety.
-    # TTS cache: keyed by engine+voice+text, so re-renders (music/visual tweaks)
-    # never re-spend paid voice credits on unchanged lines.
+    # TTS cache: keyed by engine+voice+SPOKEN-text, so re-renders (music/visual
+    # tweaks) never re-spend paid voice credits on unchanged lines — but a change
+    # to the speech normalization (number enunciation, acronym spelling) DOES bust
+    # the key, because we hash the exact string the model will speak, not the raw
+    # script. (A stale cache once silently reused old audio after a number fix.)
     import hashlib
 
+    from carshorts.adapters.tts import _speak_numbers as _spk
+    from carshorts.adapters.tts import normalize_for_speech as _norm
     from moviepy import AudioFileClip as _Audio
     cache_dir = Path("out/tts_cache") / voice_engine
     cache_dir.mkdir(parents=True, exist_ok=True)
@@ -706,7 +711,8 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                            or getattr(tts, "voice", None) or voice)
         effective_voice = (f"{effective_voice}"
                            f"|{getattr(tts, 'rate', '')}|{getattr(tts, 'pitch', '')}")
-        key = hashlib.md5(f"{voice_engine}|{effective_voice}|{persona}|{seg.text}".encode()).hexdigest()[:16]
+        speech_sig = _spk(_norm(seg.text))   # what the model ACTUALLY speaks
+        key = hashlib.md5(f"{voice_engine}|{effective_voice}|{persona}|{speech_sig}".encode()).hexdigest()[:16]
         cached = cache_dir / f"{key}.mp3"
         marks_file = cache_dir / f"{key}.marks.json"
         # re-synthesize when word marks are missing (old cache entries) — free

@@ -27,6 +27,8 @@ _SPEECH_SUBS = [
     (re.compile(r"\bPS\b"), "P-S"),                  # metric horsepower
     (re.compile(r"\bbhp\b", re.I), "B-H-P"),
     (re.compile(r"\bkW\b"), "k-W"),
+    (re.compile(r"\bSUV\b"), "S-U-V"),               # clone reads "SUV" as "surf"
+    (re.compile(r"\bNCAP\b", re.I), "N-cap"),        # safety body, spoken "en-cap"
     # Indian trim codes (ZXi, VXi, LXi, ZXi+ ...) — spell the letters so TTS
     # doesn't mangle them ("ZXi" -> "Z-X-i").
     (re.compile(r"\b([A-Z])(X)(i)(\+?)\b"),
@@ -333,10 +335,18 @@ def _speak_numbers(text: str) -> str:
             if "." in raw:
                 head, frac = raw.split(".", 1)
                 words = num2words(int(head)) if head else "zero"
-                return words + " point " + " ".join(num2words(int(d)) for d in frac)
-            return num2words(int(raw))
+                spoken = words + " point " + " ".join(num2words(int(d)) for d in frac)
+            else:
+                spoken = num2words(int(raw))
         except Exception:  # noqa: BLE001 — leave an odd token as-is
             return m.group(0)
+        # Drop the British "and" ("one hundred and eighteen" -> "one hundred
+        # eighteen") — cleaner for the clone — and comma-pad MULTI-WORD numbers so
+        # chatterbox pauses and enunciates them (it slows at punctuation) instead
+        # of slurring "one hundred seventy" into "7070". Short numbers (five,
+        # twenty-one) stay inline so the read still flows.
+        spoken = spoken.replace(" and ", " ")
+        return spoken + "," if " " in spoken else spoken
 
     return re.sub(r"\d[\d,]*(?:\.\d+)?", repl, text)
 

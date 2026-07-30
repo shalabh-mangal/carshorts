@@ -18,8 +18,18 @@ from pathlib import Path
 from carshorts.adapters import videogen
 from carshorts.core import paths
 
-_PROMPT = ("subtle realistic camera motion on a parked car, slow cinematic "
-           "push-in with gentle parallax, photographic, sharp, no distortion")
+# The car identity comes from the ANCHOR PHOTO (i2v), so the prompt only needs to
+# describe MOTION + a quality bar — generic across cars on purpose.
+_PROMPT = ("Cinematic slow dolly push-in on a parked car, smooth steady camera "
+           "glide forward, gentle parallax, soft natural daylight, shallow depth "
+           "of field, photorealistic, sharp, stable, high detail, no warping, no "
+           "melting, no distortion")
+
+# HQ Living-Stills config, validated on the RTX 5060 8GB (2026-07-30): 448×256,
+# 73 frames @ 24fps (~3.0s), 40 steps → smooth, stable, no warp. ~2× the lo-fi
+# comedy default, but the REAL car is on-screen for seconds so it earns the cost.
+# Pre-generated once per car (never mid-render), so the minutes are free overnight.
+_HQ = dict(width=448, height=256, frames=73, steps=40)
 
 
 def _slug(name: str) -> str:
@@ -45,7 +55,7 @@ def liven(car: str, limit: int = 8) -> dict[str, str | None]:
     for still in stills:
         dest = own_dir / f"living_{still.stem}.mp4"
         clip = videogen.generate(_PROMPT, mode="i2v", image=str(still),
-                                 out_path=str(dest))
+                                 out_path=str(dest), **_HQ)
         out[still.name] = clip
         print(f"  {still.name[:42]:44} {'-> ' + Path(clip).name if clip else 'FAILED'}")
     done = sum(1 for v in out.values() if v)
