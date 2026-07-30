@@ -45,12 +45,18 @@ in commit `d353589` on `main`, 169 tests green.
   QA's opens/closes‑on‑subject‑car keeps the real car bookending; AI use gets
   disclosed. NEVER text‑to‑video the car itself.
 
+## Living Stills WIRED (2026-07-30, commit 98cb204)
+`carshorts liven <car>` pre-generates i2v clips for the car's vetted photos into
+`own/` (gitignored, regenerable); produce prefers them and drops the matching
+static still, and the opener falls back to a subject MOTION clip so the car opens
++ closes on animated real footage. Humor now inserts up to 3 VARIED flashes per
+video (joke_for(avoid=) → next unused concept). Validated on Punch, QA-green.
+
 ## Still open (next)
-- Wire **i2v Living Stills** into `produce` (animate the real car stills — the
-  capability exists in videogen/worker; not yet inserted into the render).
 - AI‑clip quality is lo‑fi/janky at 8GB (fine for a 0.5–1s flash); tune steps/res
-  and consider portrait dims so clips fit the vertical frame without heavy crop.
+  and consider PORTRAIT dims so clips fit the vertical frame without heavy crop.
 - Price‑search is best‑effort (DDG can be blocked); owner adds price when missing.
+- LTX default 384x224x25 is 8GB-safe; 512x320 crashes over the VRAM edge.
 
 Related: [[project_carshorts_free_stack_voice]] (voice finalized: chatterbox
 `hype` 0.85/0.35, re‑roll gate, proportional pop marks) · [[project-carshorts-brain-gaps]]
