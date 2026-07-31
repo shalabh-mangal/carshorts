@@ -7,7 +7,9 @@
   "spec": "specs/kia-sonet.json",
   "draft": "out/kia-sonet_draft.mp4",
   "created": "2026-07-31T04:00:00",
-  "status": "awaiting_approval",
-  "voice": "3 — calm/deadpan (chatterbox 0.4/0.5)",
-  "note": "Tight 35s format test (29s). India-sourced facts (CarDekho + Kia India: 120 PS / 172 Nm / 7-DCT / 385L / from Rs 7.40L). ALL REAL footage — owner-provided Sonet clips + money-rain + Tesla-rocket gag; no AI animation. Verify power/price at CarDekho before public."
+  "status": "published",
+  "voice": "3 \u2014 calm/deadpan (chatterbox 0.4/0.5)",
+  "note": "PREMIUM FINAL ready (channel voice) \u2014 review THIS file; Publish uploads it UNLISTED, then you flip it to Public on YouTube after a last look.",
+  "final": "out\\kia-sonet_final.mp4",
+  "published_at": "2026-07-31T04:06:58"
 }

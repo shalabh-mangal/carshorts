@@ -1,0 +1,23 @@
+{
+  "out": "out\\kia-sonet_draft.mp4",
+  "subject": "Kia Sonet",
+  "rendered_at": "2026-07-31T04:00:23",
+  "script_file": "data/scripts/kia-sonet_hype.script.json",
+  "persona": "deadpan",
+  "voice_engine": "chatterbox",
+  "language": "english",
+  "music": "Balearic Slide - Jeremy Black.mp3",
+  "captions": false,
+  "word_count": 71,
+  "sections": 5,
+  "hook_text": "Kia crammed a 120 PS turbo into a sub-four-metre SUV. Wait... how?!",
+  "hook_type": "question",
+  "pool": {
+    "own": 11,
+    "stock": 2,
+    "stills": 0
+  },
+  "cut_target_s": 2.3,
+  "video_id": null,
+  "metrics": null
+}

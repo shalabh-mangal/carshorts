@@ -1,7 +1,7 @@
 {
   "out": "out\\tata-punch_final.mp4",
   "subject": "Tata Punch",
-  "rendered_at": "2026-07-30T08:20:52",
+  "rendered_at": "2026-07-30T14:07:40",
   "script_file": "data/scripts/tata-punch_hype.script.json",
   "persona": "hype",
   "voice_engine": "chatterbox",
@@ -10,7 +10,7 @@
   "captions": false,
   "word_count": 103,
   "sections": 6,
-  "hook_text": "The tiny Tata Punch just got a TURBO \u2014 118 horsepower of it. Wait... what?!",
+  "hook_text": "The tiny Tata Punch just got a TURBO — 118 horsepower of it. Wait... what?!",
   "hook_type": "news",
   "pool": {
     "own": 2,
@@ -18,6 +18,6 @@
     "stills": 0
   },
   "cut_target_s": 4.2,
-  "video_id": null,
+  "video_id": "a67JmPlBTZk",
   "metrics": null
 }

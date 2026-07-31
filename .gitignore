@@ -37,6 +37,12 @@ data/logs/
 **/_quarantine/
 **/_quarantine_plated/
 
+# Inbox is a transient drop/working area — ingest moves good files into the pool
+assets/inbox/
+# Rejected third-party/ripped content (e.g. brand ad rips) — kept locally for
+# reference, NEVER committed (copyright)
+assets/inbox_rejected/
+
 # Editor
 .idea/
 .vscode/

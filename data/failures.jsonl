@@ -150,3 +150,8 @@
 {"at": "2026-07-29T21:59:16", "video": "out\\tata-punch_humor.mp4", "check": "no cut shorter than ~1s", "detail": "", "resolved": false}
 {"at": "2026-07-30T08:18:06", "video": "out\\tata-punch_final.mp4", "check": "opens on subject car", "detail": "car_speedometer_closeup_5777431.mp4", "resolved": false}
 {"at": "2026-07-30T08:18:06", "video": "out\\tata-punch_final.mp4", "check": "opening frame vs feed norm", "detail": "brightness 0.41x; edge_density 0.14x (advisory)", "resolved": false}
+{"at": "2026-07-31T03:50:03", "video": "out\\kia-sonet_draft.mp4", "check": "opening frame vs feed norm", "detail": "brightness 0.25x; edge_density 0.08x (advisory)", "resolved": false}
+{"at": "2026-07-31T03:55:36", "video": "out\\kia-sonet_draft.mp4", "check": "opening frame vs feed norm", "detail": "contrast 0.00x, colorfulness 0.04x; edge_density 0.04x (advisory)", "resolved": false}
+{"at": "2026-07-31T04:05:31", "video": "out\\kia-sonet_final.mp4", "check": "visual-qa", "detail": "{\"t\": 8.46, \"asset\": \"joke_rocket.mp4\", \"phrase\": \"That little 1.0 turbo fires 172 N-m through a slick 7-speed D-C-T \u2014 genuinely quick.\", \"issues\": [\"wrong_vehicle_type\"], \"match\": false}", "resolved": false}
+{"at": "2026-07-31T04:05:31", "video": "out\\kia-sonet_final.mp4", "check": "visual-qa", "detail": "{\"t\": 16.91, \"asset\": \"joke_money.mp4\", \"phrase\": \"from just 7.40 lakh.\", \"issues\": [], \"match\": false}", "resolved": false}
+{"at": "2026-07-31T04:05:31", "video": "out\\kia-sonet_final.mp4", "check": "visual-qa", "detail": "{\"t\": 23.15, \"asset\": \"pool_03_console.mp4\", \"phrase\": \"a Nexon just started sweating.\", \"issues\": [], \"match\": false}", "resolved": false}

@@ -7,6 +7,8 @@
   "spec": "specs/tata-punch.json",
   "draft": "out/tata-punch_draft.mp4",
   "created": "2026-07-29T12:30:00",
-  "status": "awaiting_approval",
-  "note": "2026 turbo facelift, English, cloned voice. Facts sourced (verify power/torque/mileage/clearance + price at gate). Visuals: 2 pre-facelift Punch stills (plates blurred) + stock — replace with facelift press images for the final."
+  "status": "published",
+  "note": "\u26a0 upload failed \u2014 final kept on disk, publish again to retry",
+  "final": "out\\tata-punch_final.mp4",
+  "published_at": "2026-07-30T14:34:13"
 }

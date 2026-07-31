@@ -1,0 +1,255 @@
+{
+  "subject": "Kia Sonet",
+  "checked": 20,
+  "vetted": 20,
+  "unvetted": 0,
+  "clean": 13,
+  "quarantined": 7,
+  "recovered": 0,
+  "errors": [],
+  "results": [
+    {
+      "file": "2021_Kia_Sonet_1.5_Premiere_GIIAS_Special_Edition_Indonesia_interior.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "",
+      "plate_box": null,
+      "vetted": true
+    },
+    {
+      "file": "2021_Kia_Sonet_1.5_Premiere_Indonesia_front_view_02.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "",
+      "plate_box": null,
+      "vetted": true
+    },
+    {
+      "file": "2021_Kia_Sonet_7_1.5_Premiere_Indonesia_interior.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "",
+      "plate_box": null,
+      "vetted": true
+    },
+    {
+      "file": "2021_Kia_Sonet_GL_1.5AT_gold_interior_view_in_Brunei.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "",
+      "plate_box": null,
+      "vetted": true
+    },
+    {
+      "file": "2022_Kia_Sonet_GL_1.5AT_gray_interior_view_in_Brunei.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "",
+      "plate_box": null,
+      "vetted": true
+    },
+    {
+      "file": "2022_Kia_Sonet_GL_1.5MT_blue_interior_view_in_Brunei.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "",
+      "plate_box": null,
+      "vetted": true
+    },
+    {
+      "file": "2022_Kia_Sonet_GLS_1.5AT_red_and_black_interior_view_in_Brunei.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "",
+      "plate_box": null,
+      "vetted": true
+    },
+    {
+      "file": "2022_Kia_Sonet_GLS_1.5AT_silver_and_black_interior_view_in_Brunei.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "",
+      "plate_box": null,
+      "vetted": true
+    },
+    {
+      "file": "2022_Kia_Sonet_GLS_1.5AT_silver_and_black_rear_view_in_Brunei.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "",
+      "plate_box": null,
+      "vetted": true
+    },
+    {
+      "file": "2024_Kia_Sonet_Zenith_Colombia_front_view.png",
+      "ok": false,
+      "defects": [
+        "readable_plate"
+      ],
+      "blocking": [
+        "readable_plate"
+      ],
+      "note": "",
+      "plate_box": [
+        0.551,
+        0.456,
+        0.709,
+        0.542
+      ],
+      "vetted": true
+    },
+    {
+      "file": "2024_Kia_Sonet_Zenith_Colombia_rear_view_01.png",
+      "ok": false,
+      "defects": [
+        "readable_plate"
+      ],
+      "blocking": [
+        "readable_plate"
+      ],
+      "note": "",
+      "plate_box": [
+        0.555,
+        0.654,
+        0.722,
+        0.741
+      ],
+      "vetted": true
+    },
+    {
+      "file": "2025_Kia_Sonet_1.5_EX_dashboard_07_19_2024.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "",
+      "plate_box": null,
+      "vetted": true
+    },
+    {
+      "file": "Kia_Sonet_front_view_India_01.png",
+      "ok": false,
+      "defects": [
+        "readable_plate"
+      ],
+      "blocking": [
+        "readable_plate"
+      ],
+      "note": "",
+      "plate_box": [
+        0.495,
+        0.485,
+        0.702,
+        0.548
+      ],
+      "vetted": true
+    },
+    {
+      "file": "Kia_Sonet_rear_view_India_.png",
+      "ok": false,
+      "defects": [
+        "readable_plate"
+      ],
+      "blocking": [
+        "readable_plate"
+      ],
+      "note": "",
+      "plate_box": [
+        0.536,
+        0.697,
+        0.742,
+        0.761
+      ],
+      "vetted": true
+    },
+    {
+      "file": "ov_2021_Kia_Sonet_1.5_Premiere_GIIAS_Special_Edition_Indonesia_interior.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "Interior shot of Kia Sonet.",
+      "plate_box": null,
+      "vetted": true
+    },
+    {
+      "file": "ov_2021_Kia_Sonet_1.5_Premiere_Indonesia_front_view_02.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "Front view of Kia Sonet with masked plate.",
+      "plate_box": null,
+      "vetted": true
+    },
+    {
+      "file": "ov_2022_Kia_Sonet_GL_1.5AT_gray_engine_view_in_Brunei.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "Engine bay of Kia Sonet.",
+      "plate_box": null,
+      "vetted": true
+    },
+    {
+      "file": "ov_2024_Kia_Sonet_Zenith_Colombia_front_view.png",
+      "ok": false,
+      "defects": [
+        "readable_plate"
+      ],
+      "blocking": [
+        "readable_plate"
+      ],
+      "note": "Front view of Kia Sonet with readable plate.",
+      "plate_box": [
+        0.481,
+        0.548,
+        0.706,
+        0.631
+      ],
+      "vetted": true
+    },
+    {
+      "file": "ov_Kia_Sonet_front_view_India_01.png",
+      "ok": false,
+      "defects": [
+        "readable_plate"
+      ],
+      "blocking": [
+        "readable_plate"
+      ],
+      "note": "Front view of Kia Sonet with readable plate.",
+      "plate_box": [
+        0.58,
+        0.58,
+        0.763,
+        0.646
+      ],
+      "vetted": true
+    },
+    {
+      "file": "ov_Kia_Sonet_rear_view_India_.png",
+      "ok": false,
+      "defects": [
+        "readable_plate"
+      ],
+      "blocking": [
+        "readable_plate"
+      ],
+      "note": "Rear view of Kia Sonet with readable plate.",
+      "plate_box": [
+        0.546,
+        0.578,
+        0.725,
+        0.646
+      ],
+      "vetted": true
+    }
+  ]
+}
