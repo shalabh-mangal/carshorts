@@ -35,11 +35,12 @@ import datetime
 import json
 import subprocess
 import sys
-from pathlib import Path
 
-QUEUE = Path("data/queue")
-JOURNAL = Path("data/heartbeat_log.jsonl")
-REPORTS = Path("data/reports")
+from carshorts.core import paths
+
+QUEUE = paths.QUEUE
+JOURNAL = paths.HEARTBEAT_LOG
+REPORTS = paths.REPORTS
 
 # statuses that mean the owner must act before more work is useful
 AWAITING_OWNER = {"awaiting_approval", "final_review"}
@@ -97,9 +98,9 @@ def preflight(slug: str, agents_ok: bool) -> list[str]:
     missing extras file. A system that fails at 3am should be able to say why.
     """
     blockers: list[str] = []
-    if not Path(f"specs/{slug}.json").exists():
+    if not (paths.SPECS / f"{slug}.json").exists():
         blockers.append(f"specs/{slug}.json missing — crawl it first")
-    if not Path(f"specs_extras/{slug}.json").exists() and not agents_ok:
+    if not (paths.SPECS_EXTRAS / f"{slug}.json").exists() and not agents_ok:
         blockers.append(
             f"specs_extras/{slug}.json missing AND the scriptwright agent is "
             f"unavailable (no `claude` CLI) — nothing can supply price/news")

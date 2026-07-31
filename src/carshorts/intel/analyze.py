@@ -16,6 +16,7 @@ import json
 from pathlib import Path
 
 from carshorts.adapters.llm import make_llm
+from carshorts.core import paths
 from carshorts.writing.draft import _rows
 
 
@@ -56,7 +57,7 @@ def _fetch_metrics(video_id: str) -> dict | None:
 
 def run(provider: str | None = None) -> None:
     recipes = []
-    for path in sorted(Path("data/recipes").glob("*.json")):
+    for path in sorted(paths.RECIPES.glob("*.json")):
         r = json.loads(path.read_text())
         if r.get("video_id"):
             m = _fetch_metrics(r["video_id"])
@@ -97,7 +98,7 @@ def run(provider: str | None = None) -> None:
         return
 
     failures = []
-    fj = Path("data/failures.jsonl")
+    fj = paths.FAILURES
     if fj.exists():
         failures = [json.loads(l) for l in fj.read_text().splitlines() if l.strip()][-20:]
 
@@ -112,7 +113,7 @@ def run(provider: str | None = None) -> None:
     payload = json.dumps({"recipes": with_data, "qa_failures": failures}, ensure_ascii=False)
     rows = _rows(llm.complete_json(system, payload))
 
-    ldata = json.loads(Path("data/learnings.json").read_text())
+    ldata = json.loads(paths.LEARNINGS.read_text())
     added = 0
     for row in rows:
         text = row.get("learning", "").strip()
@@ -123,9 +124,9 @@ def run(provider: str | None = None) -> None:
                 added += 1
     ldata["data_learnings"] = ldata["data_learnings"][-12:]
     ldata["updated"] = datetime.date.today().isoformat()
-    Path("data/learnings.json").write_text(json.dumps(ldata, indent=2, ensure_ascii=False))
+    paths.LEARNINGS.write_text(json.dumps(ldata, indent=2, ensure_ascii=False))
 
-    report_dir = Path("data/reports"); report_dir.mkdir(parents=True, exist_ok=True)
+    report_dir = paths.REPORTS; report_dir.mkdir(parents=True, exist_ok=True)
     lines = [f"# Analyst report — {datetime.date.today()}", ""]
     for r in with_data:
         m = r["metrics"]

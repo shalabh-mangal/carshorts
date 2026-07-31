@@ -29,7 +29,11 @@ def test_empty_rework_bounces_without_calling_llm_or_mechanic(
         tmp_path: Path, monkeypatch) -> None:
     """No LLM. No render. No mechanic. Card flips to awaiting_approval
     with a note asking the owner to be specific."""
+    from carshorts.core import paths
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(paths, "QUEUE", tmp_path / "data" / "queue")
+    monkeypatch.setattr(paths, "FEEDBACK", tmp_path / "data" / "feedback")
+    monkeypatch.setattr(paths, "BRAIN_LOG", tmp_path / "data" / "brain_log.jsonl")
     (tmp_path / "data" / "queue").mkdir(parents=True)
     (tmp_path / "data" / "feedback").mkdir(parents=True)
     (tmp_path / "data" / "queue" / "creta.json").write_text(json.dumps({

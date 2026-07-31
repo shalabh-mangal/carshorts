@@ -385,8 +385,9 @@ class ChatterboxTTSProvider(TTSProvider):
                  ref_path: str | None = None):
         import torch  # heavy — kept here so importing tts.py stays light
         self.language_id = _LANG_ID.get((language or "english").lower(), "en")
+        from carshorts.core import paths
         self.ref_path = ref_path or os.environ.get(
-            "CARSHORTS_VOICE_REF", "data/voice/owner_reference.mp3")
+            "CARSHORTS_VOICE_REF", str(paths.VOICE_REF))
         self.exaggeration, self.cfg_weight = _CHATTERBOX_PERSONA.get(
             persona, _CHATTERBOX_PERSONA["default"])
         self._device = "cuda" if torch.cuda.is_available() else "cpu"

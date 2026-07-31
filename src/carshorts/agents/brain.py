@@ -16,14 +16,15 @@ import json
 from pathlib import Path
 
 from carshorts.adapters.llm import make_llm
+from carshorts.core import paths
 from carshorts.writing.draft import _rows
 
-LOG = Path("data/brain_log.jsonl")
+LOG = paths.BRAIN_LOG
 
 
 def _constitution() -> str:
     parts = []
-    for f in (Path("claude.md"), Path("data/learnings.json")):
+    for f in (paths.ROOT / "CLAUDE.md", paths.LEARNINGS):
         if f.exists():
             parts.append(f.read_text()[:4000])
     return "\n\n".join(parts)
@@ -38,7 +39,7 @@ def _journal(kind: str, decision: dict) -> None:
 
 def triage(provider: str | None = None) -> None:
     """Classify unresolved failures: auto-fixable pattern, needs-code, needs-human."""
-    fj = Path("data/failures.jsonl")
+    fj = paths.FAILURES
     if not fj.exists():
         print("no failures journaled")
         return
@@ -96,14 +97,13 @@ def vet(asset: str, provider: str | None = None) -> None:
 def strategy(provider: str | None = None) -> None:
     """Weekly strategy note: reads ALL system data, writes one honest page."""
     blob = {}
-    for name, path in (("learnings", "data/learnings.json"),
-                       ("calendar", "data/calendar.json"),
-                       ("topic_ideas", "data/topic_ideas.json")):
-        p = Path(path)
+    for name, p in (("learnings", paths.LEARNINGS),
+                    ("calendar", paths.CALENDAR),
+                    ("topic_ideas", paths.TOPIC_IDEAS)):
         if p.exists():
             blob[name] = json.loads(p.read_text())
     blob["recipes"] = [json.loads(p.read_text())
-                       for p in sorted(Path("data/recipes").glob("*.json"))]
+                       for p in sorted(paths.RECIPES.glob("*.json"))]
     llm = make_llm(provider)
     note = llm.complete(
         "You are the strategy brain of a car-Shorts channel. Constitution:\n"
@@ -113,7 +113,7 @@ def strategy(provider: str | None = None) -> None:
         "reorder and why, what the owner should film. Be concrete, humble "
         "about small samples, no fluff.",
         json.dumps(blob, ensure_ascii=False)[:20000])
-    out = Path("data/reports") / f"strategy-{datetime.date.today()}.md"
+    out = paths.REPORTS / f"strategy-{datetime.date.today()}.md"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(note)
     _journal("strategy", {"report": str(out)})

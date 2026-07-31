@@ -14,9 +14,9 @@ from __future__ import annotations
 
 import datetime
 import json
-from pathlib import Path
 
 from carshorts.adapters.llm import make_llm
+from carshorts.core import paths
 
 
 def _fetch_comments(video_id: str, limit: int = 50) -> list[dict]:
@@ -40,7 +40,7 @@ def _fetch_comments(video_id: str, limit: int = 50) -> list[dict]:
 
 def run(provider: str | None = None) -> None:
     videos = []
-    for path in sorted(Path("data/recipes").glob("*.json")):
+    for path in sorted(paths.RECIPES.glob("*.json")):
         r = json.loads(path.read_text())
         if r.get("video_id"):
             videos.append((r["subject"], r["video_id"]))
@@ -72,14 +72,14 @@ def run(provider: str | None = None) -> None:
     if isinstance(data, list):
         data = data[0] if data else {}
 
-    ideas_path = Path("data/topic_ideas.json")
+    ideas_path = paths.TOPIC_IDEAS
     existing = json.loads(ideas_path.read_text()) if ideas_path.exists() else []
     for idea in data.get("topic_ideas", []):
         if idea and idea not in existing:
             existing.append(idea)
     ideas_path.write_text(json.dumps(existing, indent=2, ensure_ascii=False))
 
-    report_dir = Path("data/comments"); report_dir.mkdir(parents=True, exist_ok=True)
+    report_dir = paths.COMMENTS; report_dir.mkdir(parents=True, exist_ok=True)
     lines = [f"# Comment mining — {datetime.date.today()}", "",
              f"Sentiment: {data.get('sentiment', '?')}", "", "## Questions asked"]
     lines += [f"- {q}" for q in data.get("questions", [])] or ["- (none)"]

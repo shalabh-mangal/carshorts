@@ -28,8 +28,8 @@ from pathlib import Path
 from carshorts.core import paths
 
 CHARTERS_DIR = paths.CHARTERS
-BUDGET_FILE = Path("data/agent_budget.json")
-LOG_FILE = Path("data/agent_log.jsonl")
+BUDGET_FILE = paths.AGENT_BUDGET
+LOG_FILE = paths.AGENT_LOG
 
 DAILY_RUN_CAP = 12          # escalations per day, shared across roles
 MAX_TURNS = 60              # per-run agentic turn cap (40 proved tight for edit+render+verify)

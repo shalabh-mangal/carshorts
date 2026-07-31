@@ -14,9 +14,10 @@ import argparse
 import datetime
 import itertools
 import json
-from pathlib import Path
 
-CALENDAR = Path("data/calendar.json")
+from carshorts.core import paths
+
+CALENDAR = paths.CALENDAR
 
 CARS = ["Hyundai Creta", "Maruti Suzuki Brezza", "Tata Punch", "Kia Sonet",
         "Mahindra Scorpio", "Toyota Fortuner", "Maruti Suzuki Fronx", "Tata Tiago"]

@@ -26,9 +26,9 @@ from pathlib import Path
 from carshorts.core import paths
 from carshorts.intel.analyze import _fetch_metrics
 
-RECIPES = Path("data/recipes")
-JOURNAL = Path("data/retention_log.jsonl")
-REPORTS = Path("data/reports")
+RECIPES = paths.RECIPES
+JOURNAL = paths.RETENTION_LOG
+REPORTS = paths.REPORTS
 
 
 def _manifest_for(recipe: dict) -> Path | None:

@@ -37,8 +37,8 @@ def _run(cmd: list[str]) -> int:
 def draft(car: str, persona: str = "deadpan", language: str = "english",
           video_format: str = "spotlight", no_agent: bool = False) -> None:
     slug = _slug(car)
-    spec = Path(f"specs/{slug}.json")
-    extras = Path(f"specs_extras/{slug}.json")
+    spec = paths.SPECS / f"{slug}.json"
+    extras = paths.SPECS_EXTRAS / f"{slug}.json"
     if not spec.exists():
         # SELF-SERVE facts: research the web (rich Wikipedia extraction + a
         # best-effort price) instead of stopping, so the daily heartbeat can
@@ -76,15 +76,15 @@ def draft(car: str, persona: str = "deadpan", language: str = "english",
                    f"falling back to the template writer")
     # CURATOR: thin visual pool -> the asset hunter fills it (license-clean)
     if not no_agent:
-        pool_count = (len(list(Path(f"assets/cars/{slug}/images").glob("*")))
-                      + len(list(Path(f"assets/cars/{slug}/stock").glob("*.mp4"))))
+        pool_count = (len(list((paths.car_dir(slug) / "images").glob("*")))
+                      + len(list((paths.car_dir(slug) / "stock").glob("*.mp4"))))
         if pool_count < 12:
             from carshorts.agents.agent import run_agent
             print(f"visual pool thin ({pool_count}) — curator agent hunting assets…")
             run_agent("curator", f"Car: {car}\nSlug: {slug}\n"
                                  f"Pool root: assets/cars/{slug}/")
     # COMPOSER: one-time per-car sound profile (cached forever after)
-    if not no_agent and not Path(f"data/sound_profiles/{slug}.json").exists():
+    if not no_agent and not (paths.SOUND_PROFILES / f"{slug}.json").exists():
         from carshorts.agents.agent import run_agent
         print("composer agent profiling the car's sound…")
         run_agent("composer", f"Car: {car}\nSlug: {slug}\n"
@@ -100,7 +100,7 @@ def draft(car: str, persona: str = "deadpan", language: str = "english",
                  "--variants", "3", "--provider", "groq", "--out", str(script)]) != 0:
             sys.exit("script stage failed")
 
-    draft_out = Path(f"out/{slug}_draft.mp4")
+    draft_out = paths.OUT / f"{slug}_draft.mp4"
     if _run([sys.executable, "-m", "carshorts.rendering.produce", "--script-file", str(script),
              "--spec", str(spec), "--skip-factcheck", "--persona", persona,
              "--provider", "groq", "--out", str(draft_out)]) != 0:
@@ -155,7 +155,7 @@ def approve(slug: str, privacy: str = "public") -> None:
         sys.exit(f"nothing queued for {slug!r} — run the draft stage first.")
     card = json.loads(card_path.read_text())
 
-    final_out = Path(f"out/{slug}_final.mp4")
+    final_out = paths.OUT / f"{slug}_final.mp4"
     _progress(slug, "rendering premium final (channel voice, free)…")
     # finals use the same owner-chosen edge voice as drafts (free, consistent —
     # what the owner approved is exactly what ships). ElevenLabs upgrade is a

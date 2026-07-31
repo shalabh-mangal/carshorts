@@ -26,7 +26,7 @@ from carshorts.writing.draft import _rows, unsourced_numbers_check
 
 
 def _latest_feedback(slug: str) -> dict | None:
-    files = sorted(Path("data/feedback").glob(f"{slug}-*.json"))
+    files = sorted(paths.FEEDBACK.glob(f"{slug}-*.json"))
     return json.loads(files[-1].read_text()) if files else None
 
 
@@ -53,7 +53,7 @@ def _fold_learnings(feedback: dict, llm) -> list[str]:
         'into a "keep doing X" lesson. Prefix nothing; '
         'output ONLY JSON: [{"lesson": "..."}]',
         json.dumps(feedback, ensure_ascii=False)))
-    ldata = json.loads(Path("data/learnings.json").read_text())
+    ldata = json.loads(paths.LEARNINGS.read_text())
     added = []
     for row in rows:
         lesson = f"[high][owner-feedback] {row.get('lesson','').strip()}"
@@ -61,7 +61,7 @@ def _fold_learnings(feedback: dict, llm) -> list[str]:
             ldata["data_learnings"].append(lesson)
             added.append(lesson)
     ldata["data_learnings"] = ldata["data_learnings"][-12:]
-    Path("data/learnings.json").write_text(json.dumps(ldata, indent=2, ensure_ascii=False))
+    paths.LEARNINGS.write_text(json.dumps(ldata, indent=2, ensure_ascii=False))
     return added
 
 
@@ -168,7 +168,7 @@ def _punch_up_tagged(card: dict, feedback: dict, llm) -> bool:
 
 
 def _progress(slug: str, step: str, done: bool = False) -> None:
-    pf = Path("data/queue") / f"{slug}.progress.json"
+    pf = paths.QUEUE / f"{slug}.progress.json"
     if done:
         pf.unlink(missing_ok=True)
         return
@@ -188,7 +188,7 @@ def _feedback_is_empty(feedback: dict) -> bool:
 
 
 def run(slug: str) -> None:
-    card_path = Path("data/queue") / f"{slug}.json"
+    card_path = paths.QUEUE / f"{slug}.json"
     if not card_path.exists():
         sys.exit(f"no queue card for {slug}")
     card = json.loads(card_path.read_text())
@@ -204,7 +204,7 @@ def run(slug: str) -> None:
                         f"you want fixed, then click Needs rework again.")
         card_path.write_text(json.dumps(card, indent=2))
         _progress(slug, "", done=True)
-        log = Path("data/brain_log.jsonl")
+        log = paths.BRAIN_LOG
         with log.open("a") as fh:
             fh.write(json.dumps({"at": datetime.datetime.now().isoformat(timespec="seconds"),
                                  "kind": "rework_empty", "slug": slug}) + "\n")
@@ -262,7 +262,7 @@ def run(slug: str) -> None:
                             f"give a concrete instruction.")
         card_path.write_text(json.dumps(card, indent=2))
         _progress(slug, "", done=True)
-        log = Path("data/brain_log.jsonl")
+        log = paths.BRAIN_LOG
         with log.open("a") as fh:
             fh.write(json.dumps({"at": datetime.datetime.now().isoformat(timespec="seconds"),
                                  "kind": "escalation", "slug": slug,
@@ -300,7 +300,7 @@ def run(slug: str) -> None:
     card_path.write_text(json.dumps(card, indent=2))
     _progress(slug, "", done=True)
 
-    log = Path("data/brain_log.jsonl")
+    log = paths.BRAIN_LOG
     with log.open("a") as fh:
         fh.write(json.dumps({"at": datetime.datetime.now().isoformat(timespec="seconds"),
                              "kind": "rework", "slug": slug, "ok": ok,

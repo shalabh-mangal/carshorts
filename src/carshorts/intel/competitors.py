@@ -29,11 +29,12 @@ import datetime
 import json
 import re
 import statistics
-from pathlib import Path
 
-WATCHLIST = Path("data/competitors.json")
-INTEL = Path("data/competitor_intel.json")
-REPORTS = Path("data/reports")
+from carshorts.core import paths
+
+WATCHLIST = paths.COMPETITORS
+INTEL = paths.COMPETITOR_INTEL
+REPORTS = paths.REPORTS
 
 # Seed list — the owner curates this. Handles that don't resolve are reported,
 # never silently dropped.

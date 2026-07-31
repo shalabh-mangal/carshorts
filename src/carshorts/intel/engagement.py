@@ -29,11 +29,12 @@ import argparse
 import datetime
 import json
 import statistics
-from pathlib import Path
 
-RECIPES = Path("data/recipes")
-REPORTS = Path("data/reports")
-OUT = Path("data/engagement.json")
+from carshorts.core import paths
+
+RECIPES = paths.RECIPES
+REPORTS = paths.REPORTS
+OUT = paths.ENGAGEMENT
 
 
 def rates(video: dict) -> dict:

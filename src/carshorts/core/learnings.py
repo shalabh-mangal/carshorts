@@ -12,9 +12,10 @@ script is written with everything the channel has learned so far.
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
-LEARNINGS = Path("data/learnings.json")
+from carshorts.core import paths
+
+LEARNINGS = paths.LEARNINGS
 
 
 def load_learnings_guidance(max_items: int = 14) -> str:

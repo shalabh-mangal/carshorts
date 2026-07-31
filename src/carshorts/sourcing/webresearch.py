@@ -21,7 +21,6 @@ import json
 import re
 import urllib.parse
 import urllib.request
-from pathlib import Path
 
 from carshorts.adapters.llm import make_llm
 from carshorts.core import paths

@@ -728,9 +728,10 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     # script. (A stale cache once silently reused old audio after a number fix.)
     import hashlib
 
+    from moviepy import AudioFileClip as _Audio
+
     from carshorts.adapters.tts import _speak_numbers as _spk
     from carshorts.adapters.tts import normalize_for_speech as _norm
-    from moviepy import AudioFileClip as _Audio
     cache_dir = Path("out/tts_cache") / voice_engine
     cache_dir.mkdir(parents=True, exist_ok=True)
 

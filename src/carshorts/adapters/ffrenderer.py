@@ -23,6 +23,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from carshorts.core import paths
+
 VERTICAL = (1080, 1920)
 _VIDEO_EXT = (".mp4", ".mov", ".m4v", ".webm")
 
@@ -142,17 +144,15 @@ def global_cuts_from_manifest(manifest: dict) -> tuple[list, float]:
     + its local t. Returns (cuts, total_duration) resolving asset FILENAMES to
     real paths under the car's pools.
     """
-    from pathlib import Path as _P
-
     subject = manifest.get("subject", "")
     slug = ""
     if subject:
         import re
         slug = re.sub(r"[^a-z0-9]+", "-", subject.lower()).strip("-")
+    car = paths.car_dir(slug)
     search_dirs = [
-        _P(f"assets/cars/{slug}/images"), _P(f"assets/cars/{slug}/press"),
-        _P(f"assets/cars/{slug}/stock"), _P(f"assets/cars/{slug}/own"),
-        _P("assets/stock"),
+        car / "images", car / "press", car / "stock", car / "own",
+        paths.STOCK,
     ]
     by_name: dict[str, str] = {}
     for d in search_dirs:

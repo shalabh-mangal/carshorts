@@ -73,8 +73,10 @@ def test_failed_produce_does_not_count_as_done(tmp_path, monkeypatch):
 
 
 def test_preflight_clean_when_specs_and_extras_exist(tmp_path, monkeypatch):
+    from carshorts.core import paths
     from carshorts.orchestration.heartbeat import preflight
-    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(paths, "SPECS", tmp_path / "specs")
+    monkeypatch.setattr(paths, "SPECS_EXTRAS", tmp_path / "specs_extras")
     (tmp_path / "specs").mkdir()
     (tmp_path / "specs_extras").mkdir()
     (tmp_path / "specs" / "tata-punch.json").write_text("{}", encoding="utf-8")
@@ -83,8 +85,10 @@ def test_preflight_clean_when_specs_and_extras_exist(tmp_path, monkeypatch):
 
 
 def test_preflight_flags_missing_specs(tmp_path, monkeypatch):
+    from carshorts.core import paths
     from carshorts.orchestration.heartbeat import preflight
-    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(paths, "SPECS", tmp_path / "specs")
+    monkeypatch.setattr(paths, "SPECS_EXTRAS", tmp_path / "specs_extras")
     blockers = preflight("kia-sonet", agents_ok=True)
     assert any("specs/kia-sonet.json" in b for b in blockers)
 
@@ -93,8 +97,10 @@ def test_preflight_flags_missing_extras_only_without_agents(tmp_path, monkeypatc
     """The scriptwright agent can WRITE extras — so missing extras only blocks
     when the agent layer is unavailable. This is the exact condition that would
     have failed the first real heartbeat run on Windows (no `claude` CLI)."""
+    from carshorts.core import paths
     from carshorts.orchestration.heartbeat import preflight
-    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(paths, "SPECS", tmp_path / "specs")
+    monkeypatch.setattr(paths, "SPECS_EXTRAS", tmp_path / "specs_extras")
     (tmp_path / "specs").mkdir()
     (tmp_path / "specs" / "tata-punch.json").write_text("{}", encoding="utf-8")
 

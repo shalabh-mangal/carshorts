@@ -16,7 +16,8 @@ from __future__ import annotations
 import os
 import tempfile
 from abc import ABC, abstractmethod
-from pathlib import Path
+
+from carshorts.core import paths
 
 VERTICAL = (1080, 1920)
 
@@ -128,7 +129,7 @@ class Section:
 
 
 _HEAVY_FONTS = [
-    str(Path(__file__).resolve().parents[3] / "assets" / "fonts" / "Montserrat-Black.ttf"),
+    str(paths.FONTS / "Montserrat-Black.ttf"),
     "assets/fonts/Montserrat-Black.ttf",                     # cwd-relative fallback
     r"C:\Windows\Fonts\Montserrat-Black.ttf",               # Windows: if user-installed
     "/System/Library/Fonts/SFCompactRounded.ttf",

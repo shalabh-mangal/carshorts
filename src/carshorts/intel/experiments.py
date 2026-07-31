@@ -30,10 +30,11 @@ import datetime
 import json
 import math
 import statistics
-from pathlib import Path
 
-LEDGER = Path("data/experiments.json")
-RECIPES = Path("data/recipes")
+from carshorts.core import paths
+
+LEDGER = paths.EXPERIMENTS
+RECIPES = paths.RECIPES
 
 # Defaults chosen to be conservative. The analyst prompt already treats <500
 # views as a weak signal; a metric computed on a handful of views is noise.
