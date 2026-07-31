@@ -27,6 +27,7 @@ import os
 from pathlib import Path
 
 ROOT = Path(os.environ.get("CARSHORTS_ROOT") or Path(__file__).resolve().parents[3])
+WORKSPACE = ROOT / "workspace"        # all generated/regenerable artifacts (gitignored)
 
 # ======================================================================
 # KNOWLEDGE — human-curated inputs, committed, stay in the source tree
@@ -45,28 +46,31 @@ FONTS = ASSETS / "fonts"
 MUSIC = ASSETS / "music"
 BROLL = ASSETS / "broll"              # reusable real b-roll pool
 
-# Curated KNOWLEDGE currently living under data/ (human-tuned, not machine state).
-DATA = ROOT / "data"
-LEARNINGS = DATA / "learnings.json"          # the craft/data playbook
-CALENDAR = DATA / "calendar.json"            # experiment calendar
-TOPIC_IDEAS = DATA / "topic_ideas.json"
-COMPETITORS = DATA / "competitors.json"      # watchlist (handles/IDs)
-NEWS_SOURCES = DATA / "news_sources.json"
-MUSIC_TAGS = DATA / "music_tags.json"
-SOUND_PROFILES = DATA / "sound_profiles"     # per-car mix profiles
-VOICE = DATA / "voice"                        # owner reference clip(s) — curated
+# Curated KNOWLEDGE — human-tuned inputs, split OUT of data/ into knowledge/
+# (committed; the "knowledge" half of the data/ split).
+KNOWLEDGE = ROOT / "knowledge"
+LEARNINGS = KNOWLEDGE / "learnings.json"      # the craft/data playbook
+CALENDAR = KNOWLEDGE / "calendar.json"        # experiment calendar
+TOPIC_IDEAS = KNOWLEDGE / "topic_ideas.json"
+COMPETITORS = KNOWLEDGE / "competitors.json"  # watchlist (handles/IDs)
+NEWS_SOURCES = KNOWLEDGE / "news_sources.json"
+MUSIC_TAGS = KNOWLEDGE / "music_tags.json"
+FIRSTFRAME_BASELINE = KNOWLEDGE / "firstframe_baseline.json"  # learned feed norm
+SOUND_PROFILES = KNOWLEDGE / "sound_profiles"  # per-car mix profiles
+VOICE = KNOWLEDGE / "voice"                   # owner reference clip(s) — curated
 VOICE_REF = VOICE / "owner_reference.mp3"
 
 # ======================================================================
-# RUNTIME — machine-written operational state (destined for workspace/)
+# RUNTIME — machine-written operational state (the "runtime" half of data/)
 # ======================================================================
+DATA = ROOT / "data"
 SCRIPTS = DATA / "scripts"            # locked .script.json per video
 QUEUE = DATA / "queue"                # review/approval cards
 RECIPES = DATA / "recipes"            # render-record cards
 REPORTS = DATA / "reports"            # generated markdown reports
 FEEDBACK = DATA / "feedback"          # owner Gate-1/2 feedback
 COMMENTS = DATA / "comments"          # harvested comment reports
-LOGS = DATA / "logs"                  # scheduled-task stdout
+LOGS = WORKSPACE / "logs"             # scheduled-task stdout (regenerable)
 
 # Runtime ledgers / caches (single files).
 AGENT_BUDGET = DATA / "agent_budget.json"
@@ -81,17 +85,21 @@ ENGAGEMENT = DATA / "engagement.json"
 COMPETITOR_INTEL = DATA / "competitor_intel.json"
 VET_CACHE = DATA / "vet_cache.json"
 GEN_PROVENANCE = DATA / "gen_provenance.json"   # AI-clip provenance ledger
-FIRSTFRAME_BASELINE = DATA / "firstframe_baseline.json"
 
 # Transient ingest drop zone (gitignored working area, not a curated pool).
 INBOX = ASSETS / "inbox"
 
 # ======================================================================
-# OUTPUT — generated media, regenerable, gitignored (destined for workspace/)
+# WORKSPACE — generated/regenerable artifacts, gitignored, OUT of the source tree
 # ======================================================================
-OUT = ROOT / "out"                    # rendered videos + kits
-GEN = ASSETS / "gen"                  # AI-generated clips (jokes / living stills)
-TTS_CACHE = OUT / "tts_cache"         # synthesized voice cache
+GEN = WORKSPACE / "generated"         # AI-generated clips (jokes / living stills)
+CACHE = WORKSPACE / "cache"
+TTS_CACHE = CACHE / "tts"             # synthesized voice cache
+
+# OUTPUT — final deliverables (renders + publish kits). Kept at out/ because live
+# queue cards store "out/<slug>..." paths; relocating to workspace/renders is a
+# ranked future step (needs a card-path migration). Already dedicated + gitignored.
+OUT = ROOT / "out"
 VOICE_OPTIONS = OUT / "voice_options" # per-video voice samples for owner pick
 
 

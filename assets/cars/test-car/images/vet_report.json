@@ -1,0 +1,135 @@
+{
+  "subject": "Test Car",
+  "checked": 15,
+  "vetted": 0,
+  "unvetted": 15,
+  "clean": 0,
+  "quarantined": 0,
+  "recovered": 0,
+  "errors": [
+    "\n  No API_KEY or ADC found. Please either:\n    - Set the `GOOGLE_API_KEY` environment variable.\n    - Manually pass the ",
+    "\n  No API_KEY or ADC found. Please either:\n    - Set the `GOOGLE_API_KEY` environment variable.\n    - Manually pass the "
+  ],
+  "results": [
+    {
+      "file": "Car_2_interior_of_CR400BF_G_0051_20260724130402_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Car_3_interior_of_CR400BF_G_0051_20260724130345_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Car_8_second_class_interior_of_CR400BF_G_0051_20260724130759_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Ctrl_testing_300kmh_Class_373_lab_car.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "First_of_New_R211_Subway_Cars_Arrive_for_Testing_51282649577_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "First_of_New_R211_Subway_Cars_Arrive_for_Testing_51283396696_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "First_of_New_R211_Subway_Cars_Arrive_for_Testing_51283396806_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "First_of_New_R211_Subway_Cars_Arrive_for_Testing_51283569723_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "First_of_New_R211_Subway_Cars_Arrive_for_Testing_51283569918_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "First_of_New_R211_Subway_Cars_Arrive_for_Testing_51284120994_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "First_of_New_R211_Subway_Cars_Arrive_for_Testing_51284420090_.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "Interior_of_Kawasaki_m9_rail_car_being_tested.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "ov_111_Heavy_tank_Test_car_20131004.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "ov_grenadier_testing_car.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    },
+    {
+      "file": "ov_Scale_test_car_CN_52285.jpg",
+      "ok": true,
+      "defects": [],
+      "blocking": [],
+      "note": "unvetted (batch error)",
+      "vetted": false
+    }
+  ]
+}

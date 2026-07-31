@@ -385,5 +385,169 @@
     "ok": true,
     "defects": [],
     "blocking": []
+  },
+  "images/First_of_New_R211_Subway_Cars_Arrive_for_Testing_51284120994_.jpg:3138389": {
+    "ok": false,
+    "defects": [
+      "wrong_vehicle"
+    ],
+    "blocking": [
+      "wrong_vehicle"
+    ]
+  },
+  "images/First_of_New_R211_Subway_Cars_Arrive_for_Testing_51283569918_.jpg:3018420": {
+    "ok": false,
+    "defects": [
+      "wrong_vehicle"
+    ],
+    "blocking": [
+      "wrong_vehicle"
+    ]
+  },
+  "images/ov_Scale_test_car_CN_52285.jpg:100073": {
+    "ok": false,
+    "defects": [
+      "wrong_vehicle"
+    ],
+    "blocking": [
+      "wrong_vehicle"
+    ]
+  },
+  "images/First_of_New_R211_Subway_Cars_Arrive_for_Testing_51283569723_.jpg:3844882": {
+    "ok": false,
+    "defects": [
+      "wrong_vehicle"
+    ],
+    "blocking": [
+      "wrong_vehicle"
+    ]
+  },
+  "images/First_of_New_R211_Subway_Cars_Arrive_for_Testing_51283396806_.jpg:2880405": {
+    "ok": false,
+    "defects": [
+      "wrong_vehicle"
+    ],
+    "blocking": [
+      "wrong_vehicle"
+    ]
+  },
+  "images/ov_111_Heavy_tank_Test_car_20131004.jpg:3806607": {
+    "ok": false,
+    "defects": [
+      "wrong_vehicle"
+    ],
+    "blocking": [
+      "wrong_vehicle"
+    ]
+  },
+  "images/First_of_New_R211_Subway_Cars_Arrive_for_Testing_51284420090_.jpg:2730356": {
+    "ok": false,
+    "defects": [
+      "wrong_vehicle"
+    ],
+    "blocking": [
+      "wrong_vehicle"
+    ]
+  },
+  "images/First_of_New_R211_Subway_Cars_Arrive_for_Testing_51282649577_.jpg:2584156": {
+    "ok": false,
+    "defects": [
+      "wrong_vehicle"
+    ],
+    "blocking": [
+      "wrong_vehicle"
+    ]
+  },
+  "images/First_of_New_R211_Subway_Cars_Arrive_for_Testing_51283396696_.jpg:3581976": {
+    "ok": false,
+    "defects": [
+      "wrong_vehicle"
+    ],
+    "blocking": [
+      "wrong_vehicle"
+    ]
+  },
+  "images/ov_grenadier_testing_car.jpg:180369": {
+    "ok": false,
+    "defects": [
+      "wrong_vehicle",
+      "watermark"
+    ],
+    "blocking": [
+      "wrong_vehicle",
+      "watermark"
+    ]
+  },
+  "images/Car_3_interior_of_CR400BF_G_0051_20260724130345_.jpg:8383475": {
+    "ok": false,
+    "defects": [
+      "wrong_vehicle"
+    ],
+    "blocking": [
+      "wrong_vehicle"
+    ]
+  },
+  "images/Ctrl_testing_300kmh_Class_373_lab_car.jpg:893757": {
+    "ok": false,
+    "defects": [
+      "wrong_vehicle"
+    ],
+    "blocking": [
+      "wrong_vehicle"
+    ]
+  },
+  "images/testcar_view5.jpg:15028": {
+    "ok": false,
+    "defects": [
+      "too_dark_or_blurry"
+    ],
+    "blocking": [
+      "too_dark_or_blurry"
+    ]
+  },
+  "images/testcar_view4.jpg:15028": {
+    "ok": false,
+    "defects": [
+      "too_dark_or_blurry"
+    ],
+    "blocking": [
+      "too_dark_or_blurry"
+    ]
+  },
+  "images/testcar_view3.jpg:15028": {
+    "ok": false,
+    "defects": [
+      "too_dark_or_blurry"
+    ],
+    "blocking": [
+      "too_dark_or_blurry"
+    ]
+  },
+  "images/testcar_view0.jpg:15028": {
+    "ok": false,
+    "defects": [
+      "too_dark_or_blurry"
+    ],
+    "blocking": [
+      "too_dark_or_blurry"
+    ]
+  },
+  "images/testcar_view1.jpg:15028": {
+    "ok": false,
+    "defects": [
+      "too_dark_or_blurry"
+    ],
+    "blocking": [
+      "too_dark_or_blurry"
+    ]
+  },
+  "images/testcar_view2.jpg:15027": {
+    "ok": false,
+    "defects": [
+      "too_dark_or_blurry"
+    ],
+    "blocking": [
+      "too_dark_or_blurry"
+    ]
   }
 }

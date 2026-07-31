@@ -1,0 +1,40 @@
+{
+  "Give It To Me Straight - Jeremy Black.mp3": {
+    "mood": "confident groove",
+    "energy": "mid",
+    "fits": [
+      "deadpan",
+      "bhai"
+    ]
+  },
+  "Above The Clouds - Jeremy Black.mp3": {
+    "mood": "uplifting airy",
+    "energy": "mid",
+    "fits": [
+      "bhai",
+      "default"
+    ]
+  },
+  "Balearic Slide - Jeremy Black.mp3": {
+    "mood": "laid-back sunny",
+    "energy": "low",
+    "fits": [
+      "deadpan"
+    ]
+  },
+  "Heaven and Earth - Jeremy Black.mp3": {
+    "mood": "epic adventurous",
+    "energy": "high",
+    "fits": [
+      "hype"
+    ]
+  },
+  "Sunset 52 - Jeremy Black.mp3": {
+    "mood": "warm chill",
+    "energy": "low",
+    "fits": [
+      "deadpan",
+      "default"
+    ]
+  }
+}

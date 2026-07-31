@@ -7,8 +7,10 @@ __pycache__/
 *.egg-info/
 .pytest_cache/
 
-# AI-generated clips + their provenance ledger (regenerable, can be large)
-assets/gen/
+# Workspace — ALL generated/regenerable artifacts (AI clips, voice cache, logs).
+# Sprint 0 moved assets/gen/, data/logs/, out/tts_cache/ under here.
+workspace/
+# provenance ledger (record of what's AI-generated) stays in data/ but gitignored
 data/gen_provenance.json
 # AI-generated Living Stills (regenerable via `carshorts liven`; tracked in the
 # provenance ledger, not the committed real-asset pool)
