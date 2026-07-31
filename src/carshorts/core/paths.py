@@ -1,12 +1,25 @@
-"""Canonical filesystem layout — one ROOT, every data dir hangs off it.
+"""Canonical filesystem layout — one ROOT, every path hangs off it.
 
-Historically the tool hardcoded cwd-relative strings (``Path("scripts/…")``,
-``Path("agents")``, ``Path("out/…")``) and so only ran from the repo root. This
-module makes the layout explicit and absolute: ROOT is derived from this file's
-location (``<root>/src/carshorts/core/paths.py``), overridable with the
-``CARSHORTS_ROOT`` env var for unusual deployments. The CLI chdirs to ROOT at
-startup (see ``carshorts.cli``), so legacy relative literals still resolve while
-they are migrated onto these constants.
+Historically the tool hardcoded cwd-relative strings (``Path("data/…")``,
+``Path("out/…")``) and so only ran from the repo root, with the layout implicit
+and scattered across ~15 modules. This module makes the layout explicit and
+absolute: ROOT is derived from this file's location
+(``<root>/src/carshorts/core/paths.py``), overridable with ``CARSHORTS_ROOT``.
+The CLI chdirs to ROOT at startup (see ``carshorts.cli``) so any not-yet-migrated
+relative literal still resolves.
+
+The constants are grouped by RESPONSIBILITY, which is the seam the AI-Media-OS
+Sprint 0 reorg cuts along:
+
+  * KNOWLEDGE  — human-curated inputs, committed (specs, charters, assets, the
+                 curated data/* knowledge files). These stay in the source tree.
+  * RUNTIME    — machine-written operational state (queue, ledgers, reports,
+                 caches). Regenerable-ish; destined for ``workspace/``.
+  * OUTPUT     — generated media (renders, generated clips). Gitignored; destined
+                 for ``workspace/``.
+
+Because every module reads its paths from HERE, relocating a directory to
+``workspace/`` later is a one-line edit in this file — no module changes.
 """
 from __future__ import annotations
 
@@ -15,24 +28,72 @@ from pathlib import Path
 
 ROOT = Path(os.environ.get("CARSHORTS_ROOT") or Path(__file__).resolve().parents[3])
 
-# --- Knowledge / inputs (committed) --------------------------------------
-CHARTERS = ROOT / "charters"        # role charters + TASTE.md (was ./agents)
+# ======================================================================
+# KNOWLEDGE — human-curated inputs, committed, stay in the source tree
+# ======================================================================
+CHARTERS = ROOT / "charters"          # role charters + TASTE.md (the LAW)
 CONTEXT = ROOT / "context"
-MANIFESTS = CONTEXT / "manifests"   # curated render-record mirror
-SPECS = ROOT / "specs"
-SPECS_EXTRAS = ROOT / "specs_extras"
-ASSETS = ROOT / "assets"
+MANIFESTS = CONTEXT / "manifests"     # curated render-record mirror
+SPECS = ROOT / "specs"                # sourced fact sheets
+SPECS_EXTRAS = ROOT / "specs_extras"  # price/news extras
+ASSETS = ROOT / "assets"              # curated licensed media pool (committed)
 
-# --- Operational state (machine-written) ---------------------------------
+# Curated asset sub-pools (real, licensed footage/stills/fonts/music) — SOURCE.
+CARS = ASSETS / "cars"                # per-car vetted pools (images/press/own/stock)
+STOCK = ASSETS / "stock"              # generic vetted stock
+FONTS = ASSETS / "fonts"
+MUSIC = ASSETS / "music"
+BROLL = ASSETS / "broll"              # reusable real b-roll pool
+
+# Curated KNOWLEDGE currently living under data/ (human-tuned, not machine state).
 DATA = ROOT / "data"
-SCRIPTS = DATA / "scripts"          # locked .script.json per video (was ./scripts)
-QUEUE = DATA / "queue"
-RECIPES = DATA / "recipes"
-REPORTS = DATA / "reports"
-LOGS = DATA / "logs"
+LEARNINGS = DATA / "learnings.json"          # the craft/data playbook
+CALENDAR = DATA / "calendar.json"            # experiment calendar
+TOPIC_IDEAS = DATA / "topic_ideas.json"
+COMPETITORS = DATA / "competitors.json"      # watchlist (handles/IDs)
+NEWS_SOURCES = DATA / "news_sources.json"
+MUSIC_TAGS = DATA / "music_tags.json"
+SOUND_PROFILES = DATA / "sound_profiles"     # per-car mix profiles
+VOICE = DATA / "voice"                        # owner reference clip(s) — curated
+VOICE_REF = VOICE / "owner_reference.mp3"
 
-# --- Outputs (regenerable, gitignored) -----------------------------------
-OUT = ROOT / "out"
+# ======================================================================
+# RUNTIME — machine-written operational state (destined for workspace/)
+# ======================================================================
+SCRIPTS = DATA / "scripts"            # locked .script.json per video
+QUEUE = DATA / "queue"                # review/approval cards
+RECIPES = DATA / "recipes"            # render-record cards
+REPORTS = DATA / "reports"            # generated markdown reports
+FEEDBACK = DATA / "feedback"          # owner Gate-1/2 feedback
+COMMENTS = DATA / "comments"          # harvested comment reports
+LOGS = DATA / "logs"                  # scheduled-task stdout
+
+# Runtime ledgers / caches (single files).
+AGENT_BUDGET = DATA / "agent_budget.json"
+AGENT_LOG = DATA / "agent_log.jsonl"
+BRAIN_LOG = DATA / "brain_log.jsonl"
+BRAIN_INBOX = DATA / "brain_inbox.jsonl"
+FAILURES = DATA / "failures.jsonl"
+HEARTBEAT_LOG = DATA / "heartbeat_log.jsonl"
+RETENTION_LOG = DATA / "retention_log.jsonl"
+EXPERIMENTS = DATA / "experiments.json"
+ENGAGEMENT = DATA / "engagement.json"
+COMPETITOR_INTEL = DATA / "competitor_intel.json"
+VET_CACHE = DATA / "vet_cache.json"
+GEN_PROVENANCE = DATA / "gen_provenance.json"   # AI-clip provenance ledger
+
+# ======================================================================
+# OUTPUT — generated media, regenerable, gitignored (destined for workspace/)
+# ======================================================================
+OUT = ROOT / "out"                    # rendered videos + kits
+GEN = ASSETS / "gen"                  # AI-generated clips (jokes / living stills)
+TTS_CACHE = OUT / "tts_cache"         # synthesized voice cache
+VOICE_OPTIONS = OUT / "voice_options" # per-video voice samples for owner pick
+
+
+def car_dir(slug: str) -> Path:
+    """The curated asset pool for one car: <ASSETS>/cars/<slug>."""
+    return CARS / slug
 
 
 def resolve(p: str | os.PathLike) -> Path:
