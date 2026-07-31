@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 
 from carshorts.adapters.renderer import _cover_crop, _load_font
+from carshorts.core import paths
 
 SIZE = (1080, 1920)
 YELLOW = (255, 214, 10)
@@ -112,7 +113,7 @@ def main() -> None:
     p.add_argument("--headline", required=True)
     p.add_argument("--price", default="")
     p.add_argument("--features", default="")
-    p.add_argument("--out", default="out/thumb.png")
+    p.add_argument("--out", default=str(paths.OUT / "thumb.png"))
     args = p.parse_args()
     path = generate_thumbnail(args.image, args.out, args.headline, args.price, args.features)
     print(f"Done -> {path}")

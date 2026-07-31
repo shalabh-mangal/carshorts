@@ -20,6 +20,8 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from carshorts.core import paths
+
 # Vision issues split by severity. BLOCKING ones are objective, hard-rule
 # breaches (a legible plate, someone else's logo, the WRONG car) that no amount
 # of owner taste can excuse; the rest (clutter, dark/blur) are judgment calls
@@ -117,7 +119,7 @@ def run_vqa(video_path: str, manifest_path: str | None = None,
     }, indent=2))
 
     if fails:
-        journal = Path("data/failures.jsonl")
+        journal = paths.FAILURES
         journal.parent.mkdir(parents=True, exist_ok=True)
         with journal.open("a") as fh:
             for f in fails:

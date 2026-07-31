@@ -195,7 +195,7 @@ def publish(slug: str, privacy: str = "unlisted") -> None:
     _progress(slug, "writing title/description kit…")
     _run([sys.executable, "-m", "carshorts.publishing.publishkit", "--script", card["script"],
           "--spec", card["spec"], "--provider", "groq"])
-    kit = Path("out") / (Path(card["script"]).stem.replace(".script", "") + ".publish.md")
+    kit = paths.OUT / (Path(card["script"]).stem.replace(".script", "") + ".publish.md")
     title, desc_lines, in_desc = "", [], False
     for line in kit.read_text().splitlines():
         if line.startswith("1. "):
@@ -207,7 +207,7 @@ def publish(slug: str, privacy: str = "unlisted") -> None:
         if in_desc and not line.startswith("## "):
             desc_lines.append(line)
     hashtags = [l for l in kit.read_text().splitlines() if l.startswith("#")]
-    desc_file = Path(f"out/{slug}_upload_desc.txt")
+    desc_file = paths.OUT / f"{slug}_upload_desc.txt"
     desc_file.write_text("\n".join(desc_lines).strip() + "\n\n" + (hashtags[-1] if hashtags else ""))
 
     _progress(slug, "uploading to YouTube…")
@@ -218,8 +218,8 @@ def publish(slug: str, privacy: str = "unlisted") -> None:
                    "--title", title, "--description-file", str(desc_file),
                    "--privacy", privacy]
     for ext in ("jpg", "png"):
-        thumb = Path(f"out/{slug.split('-')[-1]}_thumb.{ext}")
-        thumb2 = Path(f"out/{slug}_thumb.{ext}")
+        thumb = paths.OUT / f"{slug.split('-')[-1]}_thumb.{ext}"
+        thumb2 = paths.OUT / f"{slug}_thumb.{ext}"
         pick = thumb2 if thumb2.exists() else thumb if thumb.exists() else None
         if pick:
             publish_cmd += ["--thumbnail", str(pick)]

@@ -634,7 +634,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     # when it's empty (fetched images must then be vetted — old-gen/plates).
     images: list[str] = []
     if footage:
-        car_root = Path("assets/cars") / _slug(script.subject)
+        car_root = paths.car_dir(_slug(script.subject))
         img_dir = str(car_root / "images")
         # OFFICIAL PRESS outranks everything among stills (highest quality,
         # correct generation, no plates) — then the vetted image folder.
@@ -692,9 +692,9 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     stock_videos: list[str] = []
     use_stock = stock if stock is not None else True
     if use_stock:
-        car_stock_dir = Path("assets/cars") / _slug(script.subject) / "stock"
+        car_stock_dir = paths.car_dir(_slug(script.subject)) / "stock"
         car_stock = sorted(str(p) for p in car_stock_dir.glob("*.mp4"))
-        generic_stock = sorted(str(p) for p in Path("assets/stock").glob("*.mp4"))
+        generic_stock = sorted(str(p) for p in paths.STOCK.glob("*.mp4"))
         stock_videos = car_stock + generic_stock
         if stock_videos:
             print(f"     using {len(car_stock)} car-scoped + {len(generic_stock)} "
@@ -702,7 +702,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         elif os.environ.get("PEXELS_API_KEY"):
             print("     fetching stock car b-roll (Pexels) for motion...")
             try:
-                stock_videos = PexelsVideoSource().fetch("assets/stock", limit=4)
+                stock_videos = PexelsVideoSource().fetch(str(paths.STOCK), limit=4)
                 print(f"     {len(stock_videos)} stock clips (VET THESE — check each)")
             except Exception as exc:  # noqa: BLE001 — fall back to stills
                 print(f"     stock fetch failed ({exc}); stills only.")
@@ -715,7 +715,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     tts = make_tts(engine=voice_engine, persona=persona, voice=voice, language=language)
     print(f"4/5  voicing {len(script.segments)} sections "
           f"(engine={voice_engine}, persona={persona or 'default'})...")
-    ai_dir = Path("assets/cars") / _slug(script.subject) / "own"
+    ai_dir = paths.car_dir(_slug(script.subject)) / "own"
 
     # --- Voice all sections first so we know each duration, then distribute a
     # visual POOL across fast sub-scenes (~2.8s cuts). Every asset is used at
@@ -732,7 +732,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
 
     from carshorts.adapters.tts import _speak_numbers as _spk
     from carshorts.adapters.tts import normalize_for_speech as _norm
-    cache_dir = Path("out/tts_cache") / voice_engine
+    cache_dir = paths.TTS_CACHE / voice_engine
     cache_dir.mkdir(parents=True, exist_ok=True)
 
     audio_paths, durations, marks_paths = [], [], []
@@ -1112,18 +1112,18 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     # outranks the persona default: the CAR's personality picks the sound.
     music_path: str | None = None
     sound_profile: dict = {}
-    profile_file = Path("data/sound_profiles") / f"{_slug(script.subject)}.json"
+    profile_file = paths.SOUND_PROFILES / f"{_slug(script.subject)}.json"
     if profile_file.exists():
         try:
             sound_profile = json.loads(profile_file.read_text())
         except Exception:  # noqa: BLE001
             pass
     if music == "auto":
-        library = sorted(Path("assets/music").glob("*.mp3")) + sorted(Path("assets/music").glob("*.wav"))
+        library = sorted(paths.MUSIC.glob("*.mp3")) + sorted(paths.MUSIC.glob("*.wav"))
         if library:
             # mood-match: composer mood first, then persona (data/music_tags.json)
             choice = library[0]
-            tags_file = Path("data/music_tags.json")
+            tags_file = paths.MUSIC_TAGS
             if tags_file.exists():
                 try:
                     tags = json.loads(tags_file.read_text())
@@ -1185,7 +1185,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     # becomes a learning the writer/pipeline sees next time.
     try:
         from carshorts.quality.qa import run_qa
-        journal = Path("data/failures.jsonl")
+        journal = paths.FAILURES
         journal.parent.mkdir(parents=True, exist_ok=True)
         qa_ok, fails = run_qa(str(out), str(manifest_path), details=True)
         attempts = 0
@@ -1215,12 +1215,12 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                                          "video": str(out), "check": name,
                                          "detail": "auto-repolish", "resolved": True}) + "\n")
             try:   # a resolved failure becomes a standing lesson (deduped)
-                ldata = json.loads(Path("data/learnings.json").read_text())
+                ldata = json.loads(paths.LEARNINGS.read_text())
                 lesson = f"QA auto-fix works for {'/'.join(sorted(set(auto_fixed)))} via re-polish with extra headroom; keep gains conservative on punchy voices."
                 if lesson not in ldata.get("data_learnings", []):
                     ldata.setdefault("data_learnings", []).append(lesson)
                     ldata["data_learnings"] = ldata["data_learnings"][-10:]
-                    Path("data/learnings.json").write_text(json.dumps(ldata, indent=2, ensure_ascii=False))
+                    paths.LEARNINGS.write_text(json.dumps(ldata, indent=2, ensure_ascii=False))
             except Exception:  # noqa: BLE001
                 pass
         if not qa_ok:
@@ -1249,7 +1249,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
             "cut_target_s": round(target, 2),
             "video_id": None, "metrics": None
         }
-        rp = Path("data/recipes") / (out.stem + ".json")
+        rp = paths.RECIPES / (out.stem + ".json")
         rp.parent.mkdir(parents=True, exist_ok=True)
         rp.write_text(json.dumps(recipe, indent=2))
         print(f"     recipe card -> {rp}")

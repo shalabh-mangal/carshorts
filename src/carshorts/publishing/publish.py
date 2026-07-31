@@ -28,6 +28,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from carshorts.core import paths
 from carshorts.publishing.ytauth import service as _yt_service
 
 
@@ -68,7 +69,7 @@ def upload(video_path: str, title: str, description: str = "", tags=None,
             print(f"   thumbnail not set ({exc}); set it in the mobile app")
     try:   # link the upload to its recipe card so the analyst can join metrics
         import json as _json
-        rp = Path("data/recipes") / (Path(video_path).stem + ".json")
+        rp = paths.RECIPES / (Path(video_path).stem + ".json")
         if rp.exists():
             rec = _json.loads(rp.read_text())
             rec["video_id"] = video_id

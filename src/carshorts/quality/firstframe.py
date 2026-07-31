@@ -33,8 +33,10 @@ import tempfile
 import urllib.request
 from pathlib import Path
 
-REPORTS = Path("data/reports")
-BASELINE = Path("data/firstframe_baseline.json")
+from carshorts.core import paths
+
+REPORTS = paths.REPORTS
+BASELINE = paths.FIRSTFRAME_BASELINE
 _UA = "carshorts/0.1"
 
 
@@ -280,9 +282,10 @@ def rank_opening_stills(candidates, baseline: dict, limit: int = 250) -> list:
 
 
 def load_baseline() -> dict:
-    if BASELINE.exists():
+    base = paths.FIRSTFRAME_BASELINE          # read at call time (not import) so a
+    if base.exists():                          # re-rooted/patched path is honoured
         try:
-            return json.loads(BASELINE.read_text(encoding="utf-8"))
+            return json.loads(base.read_text(encoding="utf-8"))
         except Exception:  # noqa: BLE001
             pass
     return {}

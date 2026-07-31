@@ -25,6 +25,8 @@ import json
 import shutil
 from pathlib import Path
 
+from carshorts.core import paths
+
 QUARANTINE = "_quarantine"
 REPORT = "vet_report.json"
 
@@ -267,7 +269,7 @@ def vet_folder(folder: str | Path, subject: str, apply: bool = False,
 # FOREVER, so no image is ever vetted twice. Over a few renders every
 # commonly-used image gets vetted, and free quota is never exceeded.
 # --------------------------------------------------------------------------
-CACHE = Path("data/vet_cache.json")
+CACHE = paths.VET_CACHE
 
 
 def _file_key(path: str | Path) -> str:
@@ -295,7 +297,7 @@ def save_cache(cache: dict, cache_path: Path = CACHE) -> None:
     cache_path.write_text(json.dumps(cache, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
-def seed_cache_from_reports(root: str | Path = "assets/cars",
+def seed_cache_from_reports(root: str | Path = paths.CARS,
                             cache_path: Path = CACHE) -> int:
     """Ingest every existing vet_report.json into the cache — so all vetting
     already paid for (report-only runs included) is preserved, not repeated."""

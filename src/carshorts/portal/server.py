@@ -21,8 +21,10 @@ import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-QUEUE = Path("data/queue")
-FEEDBACK = Path("data/feedback")
+from carshorts.core import paths
+
+QUEUE = paths.QUEUE
+FEEDBACK = paths.FEEDBACK
 
 PAGE = """<!doctype html><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -292,7 +294,7 @@ def _analytics() -> list[dict]:
     metrics are refreshed by retention_watch/analyze). No live API call on page
     load — fast, and works offline once metrics have been fetched at least once."""
     out = []
-    rec_dir = Path("data/recipes")
+    rec_dir = paths.RECIPES
     for path in sorted(rec_dir.glob("*.json")) if rec_dir.exists() else []:
         try:
             r = json.loads(path.read_text(encoding="utf-8"))

@@ -14,6 +14,7 @@ from pathlib import Path
 
 from carshorts.adapters.footage import attribution_lines
 from carshorts.adapters.llm import make_llm
+from carshorts.core import paths
 from carshorts.core.models import Script, SpecSheet
 from carshorts.rendering.produce import _apply_extras, _slug
 from carshorts.writing.draft import _rows
@@ -62,10 +63,10 @@ def build(script_path: str, spec_path: str | None, provider: str | None) -> str:
     # credit ONLY the assets the FINAL actually uses (the folder may hold
     # hundreds of fetched files — crediting them all once produced a 37k-char
     # description; YouTube's hard cap is 5,000)
-    credits = attribution_lines(f"assets/cars/{slug}/images")
+    credits = attribution_lines(str(paths.car_dir(slug) / "images"))
     used_assets: set[str] = set()
-    for manifest in (Path(f"out/{slug}_final.manifest.json"),
-                     Path(f"out/{slug}_draft.manifest.json")):
+    for manifest in (paths.OUT / f"{slug}_final.manifest.json",
+                     paths.OUT / f"{slug}_draft.manifest.json"):
         if manifest.exists():
             import json as _json
             m = _json.loads(manifest.read_text())
@@ -79,7 +80,8 @@ def build(script_path: str, spec_path: str | None, provider: str | None) -> str:
             return any(base[:40] in a or a.rsplit(".", 1)[0][:40] in line.replace(" ", "_")
                        for a in used_assets)
         credits = [c for c in credits if _used(c)]
-    press = list(Path(f"assets/cars/{slug}/press").glob("*")) if Path(f"assets/cars/{slug}/press").exists() else []
+    press_dir = paths.car_dir(slug) / "press"
+    press = list(press_dir.glob("*")) if press_dir.exists() else []
 
     lines = [f"# Publish kit — {script.subject}", "", "## Title options"]
     lines += [f"{i+1}. {t}" for i, t in enumerate(data.get("titles", []))]
@@ -100,7 +102,7 @@ def build(script_path: str, spec_path: str | None, provider: str | None) -> str:
     lines.append("• B-roll: Pexels • Music: YouTube Audio Library • SFX: original")
     lines += ["", "## Hashtags", " ".join(data.get("hashtags", []))]
 
-    out = Path("out") / f"{Path(script_path).stem.replace('.script','')}.publish.md"
+    out = paths.OUT / f"{Path(script_path).stem.replace('.script','')}.publish.md"
     out.write_text("\n".join(lines))
     print(f"publish kit -> {out}")
     return str(out)

@@ -21,6 +21,20 @@ CAR_FAMILIES = {"roxx", "red", "thar", "pool", "testcar"}
 def fixture_tree(tmp_path, monkeypatch):
     """A minimal project tree: spec sheet, script, 6 'car' images, 2 stock mp4s."""
     monkeypatch.chdir(tmp_path)
+    # produce & friends read every dir from core.paths (ROOT-anchored). Re-root
+    # that layout onto this fixture tree so the render sees the fixture's
+    # assets/specs/out, not the real repo's.
+    import carshorts.core.paths as _paths
+    _orig_root = _paths.ROOT               # save before patching ROOT below
+    for _name in dir(_paths):
+        _val = getattr(_paths, _name)
+        if _name.isupper() and isinstance(_val, Path):
+            try:
+                _rel = _val.relative_to(_orig_root)
+            except ValueError:
+                continue
+            monkeypatch.setattr(_paths, _name, tmp_path / _rel)
+    monkeypatch.setattr(_paths, "ROOT", tmp_path)
     (tmp_path / "specs").mkdir()
     sheet = {
         "subject": "Test Car",

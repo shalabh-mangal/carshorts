@@ -38,6 +38,8 @@ import urllib.robotparser
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+from carshorts.core import paths
+
 try:
     import certifi
 
@@ -46,7 +48,7 @@ except ImportError:
     _SSL = None
 
 _UA = "carshorts/0.1 (car-shorts factory; RSS reader; contact: repo owner)"
-SOURCES_FILE = Path("data/news_sources.json")
+SOURCES_FILE = paths.NEWS_SOURCES
 EXTRAS_DIR = Path("specs_extras")
 
 # Indian car-news outlets that publish RSS. Overridable via data/news_sources.json

@@ -23,9 +23,10 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from carshorts.core import paths
 from carshorts.rendering.produce import _slug
 
-INBOX = Path("assets/inbox")
+INBOX = paths.INBOX
 VIDEO_EXT = {".mp4", ".mov", ".m4v", ".webm"}
 IMAGE_EXT = {".jpg", ".jpeg", ".png"}
 
@@ -88,8 +89,8 @@ def run(car: str, dry: bool = False) -> None:
     print(f"ingesting {len(files)} file(s) for {car}...")
     verdicts = {v.get("item"): v for v in _classify(files)}
 
-    own_dir = Path(f"assets/cars/{slug}/own")
-    img_dir = Path(f"assets/cars/{slug}/images")
+    own_dir = paths.car_dir(slug) / "own"
+    img_dir = paths.car_dir(slug) / "images"
     review = INBOX / "review"
     for d in (own_dir, img_dir, review):
         d.mkdir(parents=True, exist_ok=True)

@@ -81,6 +81,10 @@ ENGAGEMENT = DATA / "engagement.json"
 COMPETITOR_INTEL = DATA / "competitor_intel.json"
 VET_CACHE = DATA / "vet_cache.json"
 GEN_PROVENANCE = DATA / "gen_provenance.json"   # AI-clip provenance ledger
+FIRSTFRAME_BASELINE = DATA / "firstframe_baseline.json"
+
+# Transient ingest drop zone (gitignored working area, not a curated pool).
+INBOX = ASSETS / "inbox"
 
 # ======================================================================
 # OUTPUT — generated media, regenerable, gitignored (destined for workspace/)
