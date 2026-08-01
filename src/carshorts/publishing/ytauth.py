@@ -12,6 +12,9 @@ SCOPES = [
     "https://www.googleapis.com/auth/youtube.upload",
     "https://www.googleapis.com/auth/youtube.readonly",
     "https://www.googleapis.com/auth/yt-analytics.readonly",
+    # post the auto poll-comment on our own uploads (commentThreads.insert).
+    # NOTE: adding a scope invalidates the cached token — re-auth once.
+    "https://www.googleapis.com/auth/youtube.force-ssl",
 ]
 CLIENT_SECRET = "client_secret.json"
 TOKEN = "youtube_token.json"

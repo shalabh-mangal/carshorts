@@ -32,9 +32,30 @@ from carshorts.core import paths
 from carshorts.publishing.ytauth import service as _yt_service
 
 
+def post_comment(video_id: str, text: str) -> str | None:
+    """Post a top-level comment on our own upload — the auto poll-comment that
+    seeds engagement. Returns the comment id, or None on failure. Needs the
+    youtube.force-ssl scope (re-auth once after it was added). NOTE: the API
+    cannot PIN a comment — the owner pins it in Studio (one tap)."""
+    from googleapiclient.errors import HttpError
+    try:
+        service = _yt_service("youtube", "v3")
+        r = service.commentThreads().insert(
+            part="snippet",
+            body={"snippet": {"videoId": video_id,
+                              "topLevelComment": {"snippet": {"textOriginal": text}}}},
+        ).execute()
+        print(f"   poll comment posted (pin it in Studio): {r['id']}")
+        return r["id"]
+    except HttpError as exc:  # noqa: BLE001 — never let a comment failure break publish
+        print(f"   poll comment NOT posted ({str(exc)[:120]}); re-auth for youtube.force-ssl")
+        return None
+
+
 def upload(video_path: str, title: str, description: str = "", tags=None,
            privacy: str = "private", made_for_kids: bool = False,
-           category_id: str = "2", thumbnail: str | None = None) -> str:
+           category_id: str = "2", thumbnail: str | None = None,
+           poll_comment: str | None = None) -> str:
     """Upload a video; return the new video id. category 2 = Autos & Vehicles."""
     from googleapiclient.http import MediaFileUpload
 
@@ -77,6 +98,8 @@ def upload(video_path: str, title: str, description: str = "", tags=None,
             print(f"   recipe linked: {rp.name}")
     except Exception:  # noqa: BLE001
         pass
+    if poll_comment:
+        post_comment(video_id, poll_comment)
     print(f"Done -> https://youtube.com/watch?v={video_id}  (privacy={privacy})")
     return video_id
 
@@ -91,6 +114,7 @@ def main() -> None:
     p.add_argument("--privacy", default="private", choices=["private", "unlisted", "public"])
     p.add_argument("--made-for-kids", action="store_true")
     p.add_argument("--thumbnail", help="PNG/JPG to set as the video thumbnail.")
+    p.add_argument("--poll-comment", help="Auto-post this comment on the upload (seed engagement).")
     args = p.parse_args()
 
     description = (Path(args.description_file).read_text() if args.description_file
@@ -101,7 +125,7 @@ def main() -> None:
     description = description.replace("<", "(").replace(">", ")")  # forbidden chars
     tags = [t.strip() for t in args.tags.split(",") if t.strip()]
     upload(args.video, args.title, description, tags, args.privacy, args.made_for_kids,
-           thumbnail=args.thumbnail)
+           thumbnail=args.thumbnail, poll_comment=args.poll_comment)
 
 
 if __name__ == "__main__":

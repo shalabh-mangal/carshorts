@@ -210,6 +210,19 @@ def publish(slug: str, privacy: str = "unlisted") -> None:
     desc_file = paths.OUT / f"{slug}_upload_desc.txt"
     desc_file.write_text("\n".join(desc_lines).strip() + "\n\n" + (hashtags[-1] if hashtags else ""))
 
+    # Auto poll-comment (seeds engagement — the channel gets ~0 comments). A short,
+    # funny either-or rivalry the owner then pins in Studio (API can't pin).
+    poll = None
+    try:
+        from carshorts.adapters.llm import make_llm
+        poll = make_llm("groq").complete(
+            "Write ONE short, FUNNY YouTube poll comment (max 140 chars) to pin under a "
+            "car Short for an Indian audience. A cheeky either-or rivalry that makes people "
+            "reply with their pick (end with 'Comment 1 or 2'). 1-2 emoji max, no hashtags, "
+            "no surrounding quotes.", f"Video title: {title}").strip().strip('"').strip()
+    except Exception:  # noqa: BLE001 — a missing poll must never block the upload
+        poll = None
+
     _progress(slug, "uploading to YouTube…")
     # pass a thumbnail when one exists (out/<slug>_thumb.jpg|png). Shorts
     # ignore custom thumbs in the feed (frame 1 is the thumb there — QA
@@ -217,6 +230,8 @@ def publish(slug: str, privacy: str = "unlisted") -> None:
     publish_cmd = [sys.executable, "-m", "carshorts.publishing.publish", str(final_out),
                    "--title", title, "--description-file", str(desc_file),
                    "--privacy", privacy]
+    if poll:
+        publish_cmd += ["--poll-comment", poll]
     for ext in ("jpg", "png"):
         thumb = paths.OUT / f"{slug.split('-')[-1]}_thumb.{ext}"
         thumb2 = paths.OUT / f"{slug}_thumb.{ext}"
