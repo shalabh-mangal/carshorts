@@ -147,9 +147,32 @@ function renderList(){
     ${c.note&&['awaiting_approval','final_review'].includes(c.status)?`<div style="margin-top:8px;font-size:11px;color:var(--ok)">${c.note.slice(0,90)}</div>`:''}
    </div>`).join('')||'<div class="empty">Queue empty.<br>Run <code>pipeline --next</code></div>';
 }
+function renderReview(c){
+ const opts=(c.options||[]).map((o,oi)=>`
+  <div class="opt"><div class="opthd"><b>${o.label}</b>
+   <button class="approve" onclick="pickChoice('${c.slug}','script',${oi})">Choose this script</button></div>
+   ${o.beats.map(b=>`<div class="rvbeat"><span class="role">${b.role}</span> ${b.text}</div>`).join('')}
+  </div>`).join('');
+ const voices=(c.voice_options||[]).map((v,vi)=>`
+  <div class="opt"><b>Voice ${vi+1}: ${v.label}</b><br>
+   <audio controls src="/video?p=${encodeURIComponent(v.file)}"></audio>
+   <button class="approve" onclick="pickChoice('${c.slug}','voice',${vi})">Use this voice</button>
+  </div>`).join('');
+ $('stage').innerHTML=`<h3>Pick a script</h3>${opts||'<div class="empty">No script options.</div>'}
+  <h3 style="margin-top:14px">Pick a voice</h3>${voices||'<div class="empty">No voice samples yet.</div>'}
+  <div class="note" style="margin-top:10px">Chosen — script: <b>${c.script_choice||'—'}</b> · voice: <b>${c.voice||'—'}</b></div>`;
+}
+async function pickChoice(slug,kind,idx){
+ const c=cards.find(x=>x.slug===slug);
+ const item=(kind==='script'?c.options:c.voice_options)[idx];
+ await fetch('/api/pick',{method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({slug,kind,choice:item.file,label:item.label||('Voice '+(idx+1))})});
+ toast(kind+' chosen ✓');load();
+}
 function pick(i){
  sel=i;rating=4;edits={};renderList();const c=cards[i];
  selWasBusy=BUSY(c.status);
+ if(c.status==='script_review'){renderReview(c);$('beats').innerHTML='';return;}
  if(selWasBusy){
   $('stage').innerHTML=`<div class="busy"><span class="gear">⚙️</span>
    <div class="step">${c.progress?c.progress.step:'working…'}</div>
@@ -359,6 +382,24 @@ def _queue_cards() -> list[dict]:
                               "start": round(cursor, 2), "dur": round(sec["duration"], 2)})
                 cursor += sec["duration"]
         card["beats"] = beats
+        # script_review: attach the 3 script options + any voice samples so the
+        # owner can pick both from the portal before we produce.
+        if card.get("status") == "script_review":
+            opts = []
+            for sp in sorted(paths.SCRIPTS.glob(f"{card.get('slug','')}_opt*.script.json")):
+                try:
+                    d = json.loads(sp.read_text(encoding="utf-8"))
+                except Exception:  # noqa: BLE001
+                    continue
+                opts.append({"file": str(sp), "label": d.get("_angle", sp.stem),
+                             "beats": [{"role": s.get("role", ""), "text": s.get("text", "")}
+                                       for s in d.get("segments", [])]})
+            card["options"] = opts
+            vopts = []
+            if paths.VOICE_OPTIONS.exists():
+                for vp in sorted(paths.VOICE_OPTIONS.glob(f"{card.get('slug','')}_*.mp3")):
+                    vopts.append({"file": str(vp), "label": vp.stem.split("_")[-1]})
+            card["voice_options"] = vopts
         cards.append(card)
     return cards
 
@@ -385,29 +426,47 @@ class Handler(BaseHTTPRequestHandler):
             m = re.search(r"p=([^&]+)", self.path)
             from urllib.parse import unquote
             fp = Path(unquote(m.group(1))) if m else None
-            if not fp or not fp.exists() or fp.suffix != ".mp4" or ".." in str(fp):
+            if not fp or not fp.exists() or fp.suffix not in (".mp4", ".mp3") or ".." in str(fp):
                 self._send(404, b"{}")
                 return
             data = fp.read_bytes()
+            ctype = "audio/mpeg" if fp.suffix == ".mp3" else "video/mp4"
             rng = self.headers.get("Range")
-            if rng:
+            if rng and fp.suffix == ".mp4":          # range only for the video player
                 m2 = re.match(r"bytes=(\d+)-(\d*)", rng)
                 start = int(m2.group(1))
                 end = int(m2.group(2)) if m2.group(2) else len(data) - 1
                 chunk = data[start:end + 1]
                 self.send_response(206)
-                self.send_header("Content-Type", "video/mp4")
+                self.send_header("Content-Type", ctype)
                 self.send_header("Content-Range", f"bytes {start}-{end}/{len(data)}")
                 self.send_header("Content-Length", str(len(chunk)))
                 self.send_header("Accept-Ranges", "bytes")
                 self.end_headers()
                 self.wfile.write(chunk)
             else:
-                self._send(200, data, "video/mp4")
+                self._send(200, data, ctype)
         else:
             self._send(404, b"{}")
 
     def do_POST(self):
+        if self.path.startswith("/api/pick"):
+            length = int(self.headers.get("Content-Length", 0))
+            body = json.loads(self.rfile.read(length))
+            card_path = QUEUE / f"{body['slug']}.json"
+            if not card_path.exists():
+                self._send(404, b"{}")
+                return
+            card = json.loads(card_path.read_text())
+            if body.get("kind") == "script":
+                card["script"] = body["choice"]            # chosen option becomes the script
+                card["script_choice"] = body.get("label", "")
+            elif body.get("kind") == "voice":
+                card["voice"] = body.get("label", body["choice"])
+                card["voice_file"] = body["choice"]
+            card_path.write_text(json.dumps(card, indent=2))
+            self._send(200, b'{"ok": true}')
+            return
         if self.path.startswith("/api/script"):
             length = int(self.headers.get("Content-Length", 0))
             body = json.loads(self.rfile.read(length))

@@ -3,11 +3,11 @@
   "slug": "mahindra-scorpio-n",
   "persona": "deadpan",
   "language": "english",
-  "script": "data/scripts/mahindra-scorpio-n_hype.script.json",
+  "script": "data/scripts/mahindra-scorpio-n_opt1.script.json",
   "spec": "specs/mahindra-scorpio-n.json",
   "draft": "out/mahindra-scorpio-n_draft.mp4",
   "created": "2026-08-01T00:00:00",
   "status": "script_review",
-  "note": "SCRIPT + HUMOR JOKES proposed — awaiting owner approval + footage before production. India facts sourced (CarDekho): 203 PS / 400 Nm diesel / 4XPLOR 4x4 / Level 2 ADAS / from ₹13.49 lakh. Target: 2k views, comments (rivalry CTA), 10 likes, +subs.",
+  "note": "Pick a SCRIPT (3 options) and a VOICE (3 samples) from the portal. India facts sourced (CarDekho): 203 PS / 400 Nm diesel / four-wheel-drive / driver-assist / from ₹13.49 lakh. Then drop footage — target: 2k views, comments (rivalry CTA), 10 likes, +subs.",
   "target": {"views": 2000, "likes": 10, "comments": ">0", "subs": "increase"}
 }

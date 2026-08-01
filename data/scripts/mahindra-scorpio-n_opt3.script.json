@@ -1,0 +1,11 @@
+{
+  "subject": "Mahindra Scorpio-N",
+  "_angle": "Option 3 — Value shock (how much you get + Creta rivalry)",
+  "segments": [
+    {"role": "hook", "text": "For what some pay for a fancy hatchback, the Scorpio-N hands you 203 horses and seven seats.", "cited_spec_names": ["power_petrol", "seating"], "pops": ["203 hp · 7 seats"]},
+    {"role": "spec", "text": "The diesel four-by-four twists out 400 Newton-metres — enough to tow your problems clean away.", "cited_spec_names": ["torque_diesel", "drivetrain"], "pops": ["400 Nm", "4x4"]},
+    {"role": "value", "text": "It opens near thirteen-and-a-half lakh and climbs to a loaded, twelve-speaker, driver-assist top model — still a bargain.", "cited_spec_names": ["price_estimate", "audio", "adas"], "pops": ["From ₹13.49L", "12-speaker Sony"]},
+    {"role": "peak", "text": "More muscle, more seats, more toys, less money — maths this good should come with a warning. Hit like if you're sold.", "cited_spec_names": [], "pops": [{"anchor": "Hit like if you're sold", "show": "LIKE!"}]},
+    {"role": "cta", "text": "Scorpio-N or Creta — sensible or serious? Comment 1 or 2. Like, share, subscribe. Hatchback money, remember?", "cited_spec_names": [], "pops": []}
+  ]
+}

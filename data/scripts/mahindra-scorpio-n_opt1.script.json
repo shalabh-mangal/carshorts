@@ -1,0 +1,11 @@
+{
+  "subject": "Mahindra Scorpio-N",
+  "_angle": "Option 1 — Tank with a brain (rugged + tech)",
+  "segments": [
+    {"role": "hook", "text": "Mahindra gave a body-on-frame tank 203 horsepower — then taught it to brake for you. A tank with a brain?!", "cited_spec_names": ["power_petrol", "adas", "body_type"], "pops": ["203 horsepower", "self-braking"]},
+    {"role": "spec", "text": "The diesel four-by-four makes 400 Newton-metres — enough to bully a speed breaker into apologising.", "cited_spec_names": ["torque_diesel", "drivetrain"], "pops": ["400 Nm", "4x4"]},
+    {"role": "value", "text": "It starts near thirteen-and-a-half lakh; the top one adds a twelve-speaker Sony — your whole street hears it.", "cited_spec_names": ["price_estimate", "audio"], "pops": ["From ₹13.49L", "12-speaker Sony"]},
+    {"role": "peak", "text": "Tough, loaded, smart, cheaper than you'd guess — the overachiever cousin at every family wedding. Hit like if you'd buy it.", "cited_spec_names": [], "pops": [{"anchor": "Hit like if you'd buy it", "show": "LIKE!"}]},
+    {"role": "cta", "text": "Scorpio-N or Fortuner — who wins the driveway? Comment 1 or 2. Like, share, subscribe. A tank with a brain?", "cited_spec_names": [], "pops": []}
+  ]
+}

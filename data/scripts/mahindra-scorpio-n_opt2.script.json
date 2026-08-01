@@ -1,0 +1,11 @@
+{
+  "subject": "Mahindra Scorpio-N",
+  "_angle": "Option 2 — Road presence (attitude + Thar rivalry)",
+  "segments": [
+    {"role": "hook", "text": "Some cars ask for space on the road. The Scorpio-N, with 203 horsepower, just takes it.", "cited_spec_names": ["power_petrol", "body_type"], "pops": ["203 horsepower"]},
+    {"role": "spec", "text": "Pick the diesel four-by-four and 400 Newton-metres turn every pothole into a rounding error.", "cited_spec_names": ["torque_diesel", "drivetrain"], "pops": ["400 Nm", "4x4"]},
+    {"role": "value", "text": "From near thirteen-and-a-half lakh, the top one adds a twelve-speaker Sony and driver-assist that watches the road for you.", "cited_spec_names": ["price_estimate", "audio", "adas"], "pops": ["12-speaker Sony", "driver-assist"]},
+    {"role": "peak", "text": "It's the big cousin who shows up uninvited and still runs the whole party. Tap like if that's your energy.", "cited_spec_names": [], "pops": [{"anchor": "Tap like if that's your energy", "show": "LIKE!"}]},
+    {"role": "cta", "text": "Scorpio-N or Thar — which Mahindra would you park outside? Comment 1 or 2. Like, share, subscribe. The road's already yours.", "cited_spec_names": [], "pops": []}
+  ]
+}
