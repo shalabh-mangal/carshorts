@@ -79,7 +79,16 @@ CRAFT (what makes it premium — do all of these):
   reveal the specs after you've hooked them.
 - PACING: short, punchy lines. One idea per beat. Cut every filler word.
 - Plant a RETENTION tease early ("but the best bit is coming") so they stay.
-- Vary the humour — specific analogies/roasts, not the same slang word repeated.
+- FRESH HUMOR EVERY TIME: never recycle a joke or catchphrase across videos.
+  BANNED as overused/degrading: "how is this even legal", "<rival> owners are
+  sweating", "means business", "game-changer". Each video gets its OWN specific
+  jokes — relatable Indian situations (potholes, speed breakers, family weddings,
+  the neighbour, EMIs), fresh analogies, a new roast. Repetition kills quality.
+- VOICE-FRIENDLY (this is a spoken TTS voiceover): every line must be EASY to
+  PRONOUNCE and UNDERSTAND. Do NOT put acronyms/jargon in the SPOKEN text — say
+  "driver-assist" (not ADAS), "four-wheel-drive" (not 4XPLOR), "low-range" (not
+  4-Low), "Newton-metres" (not Nm). Short, plain sentences; no dense technical
+  strings. On-screen POPS may still show the short form/acronym (read, not spoken).
 - ENGAGEMENT (the channel gets ~0 comments and ~0 subs — this must change):
   the CTA question must be a RIVALRY people take sides on ("X or Y? Comment 1
   or 2"), never a bland "what next". Ask for the LIKE at the peak (right after

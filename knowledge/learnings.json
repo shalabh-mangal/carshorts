@@ -10,7 +10,9 @@
     "One idea per beat; cut visuals every 2-3 seconds; open on motion or high-contrast frame.",
     "End with a question that begs a comment + a loop-friendly closer (last line can feed the first).",
     "Hook and content must match; clickbait mismatch kills retention and trust.",
-    "Front-load value beats: price/verdict by the midpoint, never last."
+    "Front-load value beats: price/verdict by the midpoint, never last.",
+    "NEVER recycle a joke or catchphrase across videos — banned as overused: 'how is this even legal', '<rival> owners are sweating', 'means business', 'game-changer'. Each video needs its OWN fresh, specific, Indian-relatable humor (potholes, speed breakers, family weddings, the neighbour, EMIs).",
+    "Write for the SPOKEN voiceover: say 'driver-assist' not ADAS, 'four-wheel-drive' not 4XPLOR, 'low-range' not 4-Low, 'Newton-metres' not Nm. Short, easy-to-pronounce, easy-to-understand lines — no dense technical strings. Acronyms/short forms belong ONLY in on-screen pops (read, not spoken)."
   ],
   "data_learnings": [
     "[medium][analyst] five_things: put numbered chips ①-⑤ on-screen synced to each item's phrase and persist an 'N/5' counter through the beat — CarWale + MotorOctane converge on this; our five_things renders lack the persistent counter that acts as a visible progress bar and lifts completion.",
