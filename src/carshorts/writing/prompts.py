@@ -32,7 +32,8 @@ every beat. Weave the humour INTO the facts — never a dry block then a joke bl
 SECTIONS (use these roles, in this order — FEWER, TIGHTER beats hold viewers):
 - "hook"  (~5s, ~13 words): the boldest, funniest opening line, and BAKE THE
           SINGLE BEST NUMBER right into it (the turbo hp, the price, the 0-100).
-          Must grab in 3s. The hero spec lives HERE, not in a later list.
+          Must land in the FIRST 2 SECONDS — viewers swipe away in under 2s on
+          mobile; NO wind-up, no greeting. The hero spec lives HERE, not later.
 - "spec"  (AT MOST ONE, ~6s, ~15 words): one more killer fact with a funny spin,
           ONLY if it adds something the hook didn't. Our #1 retention leak is the
           spec BLOCK — when we list 3-4 numbers in a row, ~80% of remaining
@@ -41,12 +42,17 @@ SECTIONS (use these roles, in this order — FEWER, TIGHTER beats hold viewers):
 - "value" (~8s, ~18 words) — ONLY if a PRICE and VALUE PICK are given below:
           state the price (an estimate; varies by city) and NAME 1-2 concrete
           features it unlocks (camera, sunroof, ADAS). Tight — no feature dump.
-- "peak"  (~7s, ~16 words): the biggest laugh — a cheeky hot-take or roast that
-          TIES THE NUMBERS TOGETHER ("turbo, five-star, under six lakh — how is
-          this even legal?").
-- "cta"   (~6s, ~15 words): a WHICH-CAR-NEXT question to the viewer
-          (comment bait) + the spoken words "like, share, subscribe"
-          (renderer auto-draws the icon strip).
+- "peak"  (~7s, ~18 words): the biggest laugh — a hot-take/roast that TIES THE
+          NUMBERS TOGETHER ("turbo, five-star, under six lakh — how is this even
+          legal?"). This is the DOPAMINE HIGH, so ask for the LIKE right here,
+          tied to the payoff ("...smash like if you'd buy it") — never at the start.
+          Carry a reaction pop on those words so muted viewers see it:
+          {"anchor": "<the exact like words>", "show": "LIKE!"} (plain text, no emoji).
+- "cta"   (~7s, ~18 words): a PROVOCATIVE, side-picking question that begs a reply
+          — a RIVALRY people argue about ("Sonet or Nexon — which wins? Comment 1
+          or 2") — plus a reason to come back ("follow for tomorrow's"), then the
+          spoken words "like, share, subscribe" (renderer auto-draws the icons).
+          Write the LAST line so it flows back into the hook — loop-friendly.
 
 If no PRICE/VALUE PICK is provided, omit the "value" section entirely.
 
@@ -74,11 +80,15 @@ CRAFT (what makes it premium — do all of these):
 - PACING: short, punchy lines. One idea per beat. Cut every filler word.
 - Plant a RETENTION tease early ("but the best bit is coming") so they stay.
 - Vary the humour — specific analogies/roasts, not the same slang word repeated.
-- CTA must ask viewers WHICH CAR NEXT (comment bait — a concrete choice
-  question that begs a reply) AND must include the spoken words "like,
-  share, subscribe" verbatim. The renderer auto-draws the like/share/
-  subscribe icon strip when those three words are spoken — never write a
-  text pop for them.
+- ENGAGEMENT (the channel gets ~0 comments and ~0 subs — this must change):
+  the CTA question must be a RIVALRY people take sides on ("X or Y? Comment 1
+  or 2"), never a bland "what next". Ask for the LIKE at the peak (right after
+  the payoff, not the start). Include the spoken words "like, share, subscribe"
+  verbatim in the CTA — the renderer auto-draws the icon strip when those three
+  words are spoken; never write a text pop for them.
+- LOOP: write the last line so it flows into the hook — the Short should replay
+  seamlessly (our best video is watched 112%+ to the very end; loops drive the
+  Shorts feed, which is ~95% of our distribution).
 - ON-SCREEN POPS: for each segment, fill "pops" with the 1-3 strongest short
   fragments (max 26 chars) COPIED VERBATIM from that segment's text — figures,
   variant names, feature names. They render on screen exactly while spoken,

@@ -1,5 +1,5 @@
 {
-  "updated": "2026-07-21",
+  "updated": "2026-07-31",
   "craft_playbook": [
     "Deliver the hook inside 2.5 seconds; viewers decide in under 2 on mobile.",
     "Open with a pattern interrupt or curiosity gap; NEVER context/build-up or greetings.",
@@ -24,6 +24,8 @@
     "[high][mechanic] CTA narration containing 'like, share, subscribe' (any punctuation) auto-generates a graphic pop kind=lss — three PIL icons (thumbs-up, share arrow, bell) drawn procedurally, slam-in at y=0.30. NEVER write a text pop for those words; the engine draws the graphic. Scriptwright prompt now enforces the spoken phrase + which-car-next question in every CTA.",
     "[high][owner-feedback] No specific feedback was provided, consider adding more details to the beat_tags and beat_wins to generate actionable lessons",
     "[high][mechanic] Empty rework verdict (notes+beat_tags+beat_wins all empty) MUST NOT invent changes and MUST NOT escalate to the paid deep brain — free brain now short-circuits: card flips back to awaiting_approval with a 'tag beats or leave a note' prompt. Ledger #1 (invented --no-kwcaps from ambiguous input) is the tax we already paid; do not pay it again.",
-    "[high][mechanic] Voice ceilings are PER-VOICE: NeerjaExpressive at +3% fits ~112 words in 62s; always re-check runtime after any voice or rate change — cached audio must never mask it."
+    "[high][mechanic] Voice ceilings are PER-VOICE: NeerjaExpressive at +3% fits ~112 words in 62s; always re-check runtime after any voice or rate change — cached audio must never mask it.",
+    "[high][data] PROVEN WINNER (2026-07-31): the tight format is our biggest hit — Kia Sonet 30s, hero number in the hook, ONE spec beat, real owner footage, calm delivery = 1244 views (2.6x the prior best). Swift 46s loops at 130% retention (curve >100% end-to-end). FORMULA to replicate: <=35s, hero number in the hook, at most one proof beat, real footage, loop-friendly close. Cadence over polish.",
+    "[high][data] Distribution is ~95% SHORTS FEED (thumbnail impressions/CTR do not apply to Shorts). Retention + loops are the ONLY feed lever, and it is episodic (a video catches the feed or dies in a day). Engagement is the CEILING: 1 subscriber + 1 comment across 1700 views. Levers: ask for the LIKE at the dopamine peak (after the payoff), make the CTA a RIVALRY poll people argue about, and end loop-friendly so the last line feeds the hook."
   ]
 }
