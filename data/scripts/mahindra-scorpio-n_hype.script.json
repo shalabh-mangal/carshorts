@@ -1,0 +1,35 @@
+{
+  "subject": "Mahindra Scorpio-N",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "The Scorpio-N makes 203 horsepower — and on the top model, full Level 2 ADAS. A body-on-frame tank that thinks?!",
+      "cited_spec_names": ["power_petrol", "adas", "body_type"],
+      "pops": ["203 horsepower", "Level 2 ADAS"]
+    },
+    {
+      "role": "spec",
+      "text": "Go diesel 4x4 and it twists out 400 Nm through 4XPLOR terrain modes with real 4-Low. This tank means business.",
+      "cited_spec_names": ["torque_diesel", "drivetrain"],
+      "pops": ["400 Nm", "4XPLOR 4x4"]
+    },
+    {
+      "role": "value",
+      "text": "The range runs ₹13.49 to 24.95 lakh — and the loaded Z8L throws in a Sony 12-speaker and six airbags.",
+      "cited_spec_names": ["price_estimate", "audio", "airbags"],
+      "pops": ["₹13.49–24.95 lakh", "Sony 12-speaker"]
+    },
+    {
+      "role": "peak",
+      "text": "Body-on-frame, 4x4, Level-2 ADAS — Mahindra, how is this even legal? Fortuner owners are sweating. Smash like if you'd buy it.",
+      "cited_spec_names": [],
+      "pops": [{"anchor": "Smash like if you'd buy it", "show": "LIKE!"}]
+    },
+    {
+      "role": "cta",
+      "text": "Scorpio-N or Fortuner — which one wins? Comment 1 or 2! Like, share, subscribe. Still think a tank can't think?",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  ]
+}

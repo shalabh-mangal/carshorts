@@ -1,0 +1,76 @@
+{
+  "subject": "Mahindra Scorpio-N",
+  "specs": [
+    {
+      "name": "power_petrol",
+      "value": "203 PS",
+      "source_url": "https://www.cardekho.com/mahindra/scorpio-n",
+      "source_sentence": "The Scorpio-N's 2.0-litre turbo-petrol makes 203 PS of power and 370 Nm (MT) / 380 Nm (AT).",
+      "confidence": 0.9
+    },
+    {
+      "name": "power_diesel",
+      "value": "175 PS",
+      "source_url": "https://www.cardekho.com/mahindra/scorpio-n",
+      "source_sentence": "The 2.2-litre mHawk diesel makes up to 175 PS.",
+      "confidence": 0.9
+    },
+    {
+      "name": "torque_diesel",
+      "value": "400 Nm (diesel AT)",
+      "source_url": "https://www.cardekho.com/mahindra/scorpio-n",
+      "source_sentence": "The 2.2-litre diesel produces 370 Nm (MT) / 400 Nm (AT) of torque.",
+      "confidence": 0.9
+    },
+    {
+      "name": "drivetrain",
+      "value": "4XPLOR 4WD (4-Low/4-High)",
+      "source_url": "https://www.cardekho.com/mahindra/scorpio-n",
+      "source_sentence": "The Scorpio-N offers 4XPLOR four-wheel drive with 4-Low and 4-High and terrain modes for snow, sand and mud.",
+      "confidence": 0.9
+    },
+    {
+      "name": "adas",
+      "value": "Level 2 ADAS (Z8L)",
+      "source_url": "https://www.cardekho.com/mahindra/scorpio-n",
+      "source_sentence": "The top Z8L variant gets full Level 2 ADAS.",
+      "confidence": 0.85
+    },
+    {
+      "name": "audio",
+      "value": "Sony 3D 12-speaker",
+      "source_url": "https://www.cardekho.com/mahindra/scorpio-n",
+      "source_sentence": "The Z8L features a Sony 3D 12-speaker audio system.",
+      "confidence": 0.9
+    },
+    {
+      "name": "airbags",
+      "value": "6 airbags (Z8S onwards)",
+      "source_url": "https://www.cardekho.com/mahindra/scorpio-n",
+      "source_sentence": "Six airbags are offered from the Z8S variant onwards.",
+      "confidence": 0.85
+    },
+    {
+      "name": "seating",
+      "value": "6 or 7 seats",
+      "source_url": "https://www.cardekho.com/mahindra/scorpio-n",
+      "source_sentence": "The Scorpio-N is available in 6- and 7-seat configurations.",
+      "confidence": 0.9
+    },
+    {
+      "name": "mileage",
+      "value": "12.12–15.94 kmpl",
+      "source_url": "https://www.cardekho.com/mahindra/scorpio-n",
+      "source_sentence": "Claimed mileage ranges from 12.12 to 15.94 kmpl across variants.",
+      "confidence": 0.8
+    },
+    {
+      "name": "body_type",
+      "value": "body-on-frame SUV",
+      "source_url": "https://www.cardekho.com/mahindra/scorpio-n",
+      "source_sentence": "The Scorpio-N is a body-on-frame (ladder-frame) SUV.",
+      "confidence": 0.85
+    }
+  ],
+  "_source_note": "India facts from CarDekho + Mahindra. Owner CarDekho-verifies power/price at Gate 1. ADAS/Sony/6-airbags are TOP-variant (Z8L/Z8S) — do not imply they exist on the base."
+}
