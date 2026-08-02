@@ -613,24 +613,31 @@ def _queue_cards() -> list[dict]:
         pf = path.with_name(path.stem + ".progress.json")
         if pf.exists():
             card["progress"] = json.loads(pf.read_text())
-        # a render lock (draft OR final) overrides everything: file mid-write
-        draft = Path(card.get("draft", ""))
-        final = Path(card.get("final") or f"out/{card.get('slug','')}_final.mp4")
-        if draft.with_suffix(".lock").exists() or final.with_suffix(".lock").exists():
+        # a render lock (draft OR final) overrides everything: file mid-write.
+        # NB: a fresh card (script_review) has NO draft/final yet — treat empty
+        # as None, never Path("") (which is Path('.') and blows up .with_suffix,
+        # crashing the WHOLE queue for every card).
+        def _pathy(v):
+            return Path(v) if v else None
+        draft = _pathy(card.get("draft"))
+        final = _pathy(card.get("final") or f"out/{card.get('slug','')}_final.mp4")
+
+        def _lock_held(p):
+            return p is not None and p.name != "" and p.with_suffix(".lock").exists()
+        if _lock_held(draft) or _lock_held(final):
             card["status"] = "rendering"
             card.setdefault("progress", {"step": "encoding video…", "at": ""})
         # play the FINAL whenever it exists and is the freshest render — a
-        # finished render must ALWAYS load, regardless of the card's status
-        # label. (A card left at 'awaiting_approval' once fell back to an empty
-        # draft path and blanked the player even though the final was ready.)
+        # finished render must ALWAYS load, regardless of the card's status label.
         # Fall back to the draft only when there's no final, or the draft is newer.
-        if final.exists() and (not draft.exists()
-                               or final.stat().st_mtime >= draft.stat().st_mtime):
+        if final is not None and final.exists() and (
+                draft is None or not draft.exists()
+                or final.stat().st_mtime >= draft.stat().st_mtime):
             card["play"] = str(final)
         else:
             card["play"] = card.get("draft", "")
-        play = Path(card["play"])
-        card["draft_v"] = int(play.stat().st_mtime) if play.exists() else 0
+        play = _pathy(card["play"])
+        card["draft_v"] = int(play.stat().st_mtime) if (play and play.exists()) else 0
         # SELF-HEAL: a card stuck in legacy 'rework' (submitted to an old
         # server process) gets its worker spawned right here
         if card.get("status") == "rework" and card["slug"] not in _healing:
@@ -640,9 +647,10 @@ def _queue_cards() -> list[dict]:
                 _write_card(path, card)
             subprocess.Popen([sys.executable, "-m", "carshorts.agents.rework",
                               card["slug"]], start_new_session=True)
-        manifest = Path(card.get("play") or card.get("draft", "")).with_suffix(".manifest.json")
+        _mp = card.get("play") or card.get("draft") or ""
+        manifest = Path(_mp).with_suffix(".manifest.json") if _mp else None
         beats, cursor = [], 0.0
-        if manifest.exists():
+        if manifest and manifest.exists():
             for sec in json.loads(manifest.read_text()).get("sections", []):
                 beats.append({"role": sec["role"], "text": sec["text"],
                               "start": round(cursor, 2), "dur": round(sec["duration"], 2)})
