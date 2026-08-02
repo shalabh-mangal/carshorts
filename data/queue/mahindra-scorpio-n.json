@@ -7,57 +7,17 @@
   "spec": "specs/mahindra-scorpio-n.json",
   "draft": "out/mahindra-scorpio-n_draft.mp4",
   "created": "2026-08-01T00:00:00",
-  "status": "final_review",
-  "note": "Final ready (36s, 15 distinct clips, zero repeats/loops, all overlays aligned). Watch & approve \u2014 Gate 2.",
+  "status": "published",
+  "note": "Published 2026-08-02 \u2014 36s, 15 distinct clips, zero repeats/loops, all overlays aligned.",
   "target": {
     "views": 2000,
     "likes": 10,
     "comments": ">0",
     "subs": "increase"
   },
-  "script_build": {
-    "hook": {
-      "role": "hook",
-      "text": "Twenty-three lakhs for a Scorpio-N with four-wheel-drive and Level 2 driver-assist? Someone's having a laugh.",
-      "cited_spec_names": [
-        "price_estimate",
-        "drivetrain",
-        "adas"
-      ],
-      "pops": []
-    },
-    "value": {
-      "role": "value",
-      "text": "For that price, you get the Z8L Diesel 4x4 variant with a Sony 3D 12-speaker system, six airbags, and a sunroof.",
-      "cited_spec_names": [
-        "value_features"
-      ],
-      "pops": []
-    },
-    "peak": {
-      "role": "peak",
-      "text": "Smash like if you'd buy it, this SUV's a steal at this price with these features!",
-      "cited_spec_names": [],
-      "pops": []
-    },
-    "cta": {
-      "role": "cta",
-      "text": "Thar or Scorpio-N, which is the better off-roader? Comment 1 or 2. Follow for tomorrow's review, like, share, subscribe.",
-      "cited_spec_names": [],
-      "pops": []
-    },
-    "spec": {
-      "role": "spec",
-      "text": "It packs a 203 PS petrol or 175 PS diesel punch",
-      "cited_spec_names": [
-        "power_petrol",
-        "power_diesel"
-      ],
-      "pops": []
-    }
-  },
   "voice": "own",
   "voice_file": "D:\\Personal Projects\\carshorts\\out\\voice_options\\mahindra-scorpio-n_own.mp3",
   "script_choice": "custom mix",
-  "final": "D:\\Personal Projects\\carshorts\\out\\mahindra-scorpio-n_final.mp4"
+  "final": "D:\\Personal Projects\\carshorts\\out\\mahindra-scorpio-n_final.mp4",
+  "published_at": "2026-08-02T11:32:08"
 }

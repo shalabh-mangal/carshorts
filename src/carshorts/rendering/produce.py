@@ -361,6 +361,35 @@ def _pop_candidates(seg, sheet) -> list[dict]:
     return out
 
 
+_VID_DUR_CACHE: dict[str, float | None] = {}
+_VIDEO_EXTS = (".mp4", ".mov", ".m4v", ".webm", ".mkv")
+
+
+def _video_duration(path: str) -> float | None:
+    """Native duration of a VIDEO clip (None for stills / probe errors).
+
+    Used to catch the owner's #1 defect BEFORE the render ships: the renderer
+    loops any clip shorter than its on-screen cut (`-stream_loop -1`), which
+    reads as repeated footage. Stills legitimately fill any duration, so they
+    return None and are never flagged. Cached — a pool clip is probed once.
+    """
+    if not str(path).lower().endswith(_VIDEO_EXTS):
+        return None
+    if path in _VID_DUR_CACHE:
+        return _VID_DUR_CACHE[path]
+    d: float | None
+    try:
+        import subprocess as _sp
+        out = _sp.run(["ffprobe", "-v", "error", "-show_entries",
+                       "format=duration", "-of", "csv=p=0", str(path)],
+                      capture_output=True, text=True)
+        d = float(out.stdout.strip())
+    except Exception:  # noqa: BLE001 — probe best-effort; unknown ⇒ no loop flag
+        d = None
+    _VID_DUR_CACHE[path] = d
+    return d
+
+
 def _word_pops(seg, marks_file: str | None, dur: float,
                sheet=None) -> list[tuple]:
     """WORD-SYNCED HIGHLIGHT POPS — the single on-screen text engine.
@@ -977,6 +1006,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
 
     sections = []
     manifest_sections: list[dict] = []
+    quality_warnings: list[str] = []   # loops + dropped overlays → QA gate
     prev_last_bucket = ""
     humor_concepts_used: set[str] = set()   # AI comedy concepts used so far
     _HUMOR_MAX = 3                          # a lively few, not a meme every beat
@@ -1088,6 +1118,18 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                 prev_asset = pick
         sec_phrases = phrase_map[i]
         word_pops = _word_pops(seg, marks_paths[i], durations[i], sheet) if kwcaps else []
+        # SILENT-DROP GUARD: a scripted overlay is dropped whenever its anchor
+        # isn't spoken clearly or it lands past the beat end. That used to vanish
+        # unnoticed (the missing SUNROOF / SUBSCRIBE). Flag every scripted pop
+        # that didn't make it so QA turns red instead of the owner spotting it.
+        if kwcaps and getattr(seg, "pops", None):
+            got = {str(p[2]).strip().lower() for p in word_pops}
+            for sp in seg.pops:
+                show = (sp.get("show") if isinstance(sp, dict) else sp) or ""
+                if show and str(show).strip().lower() not in got:
+                    quality_warnings.append(
+                        f"DROPPED overlay '{show}' in beat {i} ({seg.role}) — "
+                        "anchor not spoken clearly, or lands past the beat end")
         # the very last thing on screen must be the subject car
         if i == len(script.segments) - 1 and timed_cuts:
             if not _is_subject_asset(timed_cuts[-1][1]):
@@ -1135,14 +1177,35 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         sections.append(Section(
             audio_path=audio_paths[i], caption=seg.text, background_pool=visuals,
             timed_cuts=timed_cuts, word_pops=word_pops))
+        # LOOP GUARD: record each cut's on-screen span + the clip's native
+        # length. A video cut whose span exceeds its clip loops (repeats) — the
+        # owner's #1 defect. Flag it here so QA gates on it, not the owner.
+        cut_rows = []
+        for ci, (t, a) in enumerate(timed_cuts):
+            nxt = timed_cuts[ci + 1][0] if ci + 1 < len(timed_cuts) else durations[i]
+            span = nxt - t
+            row = {"t": round(t, 3), "asset": Path(a).name}
+            clen = _video_duration(a)
+            if clen is not None:
+                row["clip_len"] = round(clen, 2)
+                if span > clen + 0.2:
+                    quality_warnings.append(
+                        f"LOOP: '{Path(a).name}' plays {span:.1f}s in beat {i} "
+                        f"({seg.role}) but is only {clen:.1f}s — footage repeats")
+            cut_rows.append(row)
         manifest_sections.append({
             "index": i, "role": seg.role, "duration": round(durations[i], 3),
             "text": seg.text,
             "phrases": [{"t": round(t, 3), "text": txt} for t, txt in sec_phrases],
-            "cuts": [{"t": round(t, 3), "asset": Path(a).name} for t, a in timed_cuts],
+            "cuts": cut_rows,
             "pops": [{"start": round(p[0], 3), "dur": round(p[1], 3),
                       "text": p[2], "kind": p[3]} for p in word_pops],
         })
+
+    if quality_warnings:
+        print("     ⚠ QUALITY WARNINGS (QA will flag these — fix before publish):")
+        for w in quality_warnings:
+            print(f"       - {w}")
 
     manifest_path = out.with_suffix(".manifest.json")
     # subject families: QA's opens/closes-on-car checks must know THIS car's
@@ -1153,6 +1216,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         "pool_size": len(pool),
         "subject": script.subject,
         "subject_families": sorted(families),
+        "quality_warnings": quality_warnings,
     }, indent=2, ensure_ascii=False))
     if plan_only:
         print(f"     plan-only: manifest -> {manifest_path}")

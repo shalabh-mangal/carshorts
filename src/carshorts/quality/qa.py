@@ -183,6 +183,18 @@ def run_qa(video_path: str, manifest_path: str | None = None,
         check("text pops voice-synced & uncrowded", pop_ok,
               pop_detail or f"{total_pops} pops total")
 
+        # owner's #1 rule, gated: no clip may loop (a video cut longer than its
+        # source) and no scripted overlay may silently drop. produce records
+        # both in the manifest; a red here means the render repeats footage or
+        # is missing a requested overlay — never let that reach the owner.
+        warns = manifest.get("quality_warnings", [])
+        loops = [w for w in warns if w.startswith("LOOP")]
+        drops = [w for w in warns if w.startswith("DROPPED")]
+        check("no looped/repeated footage", not loops,
+              f"{len(loops)} looping cut(s): {loops[0]}" if loops else "")
+        check("no dropped overlays", not drops,
+              f"{len(drops)} dropped: {drops[0]}" if drops else "")
+
     print("     ── RENDER QA ──")
     for name, ok, det in checks:
         print(f"     {'✅' if ok else '🔴'} {name}" + (f"  ({det})" if det else ""))

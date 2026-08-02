@@ -582,7 +582,7 @@ def _analytics() -> list[dict]:
     for path in sorted(rec_dir.glob("*.json")) if rec_dir.exists() else []:
         try:
             r = json.loads(path.read_text(encoding="utf-8"))
-        except Exception:
+        except Exception:  # noqa: BLE001 — skip an unreadable record, never crash the portal
             continue
         if not r.get("video_id"):
             continue
@@ -619,9 +619,13 @@ def _queue_cards() -> list[dict]:
         if draft.with_suffix(".lock").exists() or final.with_suffix(".lock").exists():
             card["status"] = "rendering"
             card.setdefault("progress", {"step": "encoding video…", "at": ""})
-        # the portal plays the FINAL once it exists and the card is past draft
-        if card.get("status") in ("final_review", "publishing", "published") \
-                and final.exists():
+        # play the FINAL whenever it exists and is the freshest render — a
+        # finished render must ALWAYS load, regardless of the card's status
+        # label. (A card left at 'awaiting_approval' once fell back to an empty
+        # draft path and blanked the player even though the final was ready.)
+        # Fall back to the draft only when there's no final, or the draft is newer.
+        if final.exists() and (not draft.exists()
+                               or final.stat().st_mtime >= draft.stat().st_mtime):
             card["play"] = str(final)
         else:
             card["play"] = card.get("draft", "")
@@ -651,7 +655,7 @@ def _queue_cards() -> list[dict]:
             for sp in sorted(paths.SCRIPTS.glob(f"{card.get('slug','')}_opt*.script.json")):
                 try:
                     d = json.loads(sp.read_text(encoding="utf-8"))
-                except Exception:
+                except Exception:  # noqa: BLE001 — skip an unreadable option file
                     continue
                 opts.append({"file": str(sp), "label": d.get("_angle", sp.stem),
                              "beats": [{"role": s.get("role", ""), "text": s.get("text", ""),

@@ -245,6 +245,46 @@ def test_plan_manifest_no_kwcaps(fixture_tree, monkeypatch):
         assert sec["pops"] == []
 
 
+def test_dropped_overlay_is_flagged(fixture_tree, monkeypatch):
+    """A scripted overlay whose anchor is never spoken must surface as a
+    'DROPPED' quality warning (so QA turns red) — never vanish silently. This
+    is the guard for the missed SUNROOF / SUBSCRIBE class of defect."""
+    for key in ("GROQ_API_KEY", "PEXELS_API_KEY", "GEMINI_API_KEY", "ELEVENLABS_API_KEY"):
+        monkeypatch.delenv(key, raising=False)
+    monkeypatch.setenv("CARSHORTS_LLM", "ollama")
+    from carshorts.rendering.produce import produce
+
+    script = {
+        "subject": "Test Car",
+        "segments": [
+            {"role": "hook", "text": "Is the Test Car the smart buy this year, or a trap?",
+             "cited_spec_names": [], "pops": []},
+            {"role": "spec", "text": "It makes 100 PS of power, and 200 Nm of torque, which is plenty.",
+             "cited_spec_names": ["power", "torque"],
+             "pops": [{"anchor": "sunroof", "show": "SUNROOF"}]},   # 'sunroof' never spoken
+            {"role": "cta", "text": "Would you take one home? Say it in the comments, and follow.",
+             "cited_spec_names": [], "pops": []},
+        ],
+    }
+    Path("script_drop.json").write_text(json.dumps(script))
+    manifest_path = produce(
+        spec_path="specs/test-car.json", out_path="out/test_drop.mp4",
+        script_file="script_drop.json", skip_factcheck=True, voice_engine="mock",
+        provider=None, plan_only=True, music="none", stock=False,
+    )
+    warns = json.loads(Path(manifest_path).read_text()).get("quality_warnings", [])
+    assert any(w.startswith("DROPPED") and "SUNROOF" in w for w in warns), warns
+
+
+def test_stills_never_flagged_as_loops():
+    """Loop detection must ignore stills (a still legitimately fills any cut) —
+    only real video clips shorter than their cut count as looped footage. This
+    is why the still-based golden fixtures don't trip the loop gate."""
+    from carshorts.rendering.produce import _video_duration
+    assert _video_duration("assets/foo.jpg") is None
+    assert _video_duration("assets/bar.png") is None
+
+
 def test_phrase_times_monotonic(fixture_tree):
     from carshorts.adapters.tts import SilentTTSProvider
     from carshorts.rendering.produce import _phrases_with_times
