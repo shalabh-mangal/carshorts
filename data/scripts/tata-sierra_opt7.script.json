@@ -1,0 +1,36 @@
+{
+  "subject": "Tata Sierra",
+  "_angle": "★ WINNER FORMULA — hero# hook · 1 spec beat · ~30s · calm",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Eleven and a half lakh, ex-showroom — but is the reborn Sierra actually worth it?",
+      "cited_spec_names": ["price_estimate"],
+      "pops": [{"anchor": "lakh", "show": "₹11.49L · EX-SHOWROOM", "card": true}]
+    },
+    {
+      "role": "spec",
+      "text": "It gets one-sixty turbo horses, and Level-two driver assist that watches the road for you.",
+      "cited_spec_names": ["power_petrol_turbo", "adas"],
+      "pops": [{"anchor": "horses", "show": "160 PS TURBO"}, {"anchor": "assist", "show": "LEVEL 2 ADAS"}]
+    },
+    {
+      "role": "value",
+      "text": "There's a panoramic sunroof up top, and Dolby sound inside — properly loaded.",
+      "cited_spec_names": ["sunroof", "audio"],
+      "pops": [{"anchor": "sunroof", "show": "PANORAMIC SUNROOF"}]
+    },
+    {
+      "role": "peak",
+      "text": "For this money? Honestly, it's a straight-up steal. Smash like if you'd buy one.",
+      "cited_spec_names": ["body_type"],
+      "pops": [{"anchor": "steal", "show": "STEAL!"}, {"anchor": "like", "show": "LIKE"}]
+    },
+    {
+      "role": "cta",
+      "text": "So — Sierra, or Creta? Comment one or two. Like, share, and subscribe.",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  ]
+}
