@@ -1,0 +1,16 @@
+{
+  "car": "Tata Sierra",
+  "slug": "tata-sierra",
+  "persona": "deadpan",
+  "language": "english",
+  "spec": "specs/tata-sierra.json",
+  "created": "2026-08-02T12:00:00",
+  "status": "script_review",
+  "note": "Gate 1 — 3 script angles + 3 voice samples ready. Mix beats, pick a voice, then drop your footage/jokes. Sierra is FWD (not 4x4) — keep that honest.",
+  "target": {
+    "views": 2000,
+    "likes": 10,
+    "comments": ">0",
+    "subs": "increase"
+  }
+}

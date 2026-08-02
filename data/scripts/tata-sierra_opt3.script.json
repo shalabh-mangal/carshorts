@@ -1,0 +1,42 @@
+{
+  "subject": "Tata Sierra",
+  "_angle": "Honest Take (skeptic hook vs rivals)",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Everyone's hyping the new Tata Sierra. Is it actually worth it?",
+      "cited_spec_names": [],
+      "pops": []
+    },
+    {
+      "role": "spec",
+      "text": "Real talk — it's front-wheel drive, not a hardcore off-roader.",
+      "cited_spec_names": ["drivetrain"],
+      "pops": [{"anchor": "drive", "show": "FWD — NOT 4X4"}]
+    },
+    {
+      "role": "spec",
+      "text": "But on the road, one-sixty turbo horses feel genuinely quick.",
+      "cited_spec_names": ["power_petrol_turbo"],
+      "pops": [{"anchor": "horses", "show": "160 PS TURBO"}]
+    },
+    {
+      "role": "value",
+      "text": "You still get Level-two driver assist, and a panoramic sunroof.",
+      "cited_spec_names": ["adas", "sunroof"],
+      "pops": [{"anchor": "assist", "show": "LEVEL 2 ADAS"}, {"anchor": "sunroof", "show": "PANORAMIC SUNROOF"}]
+    },
+    {
+      "role": "peak",
+      "text": "From eleven and a half lakh, the icon is a genuinely smart buy.",
+      "cited_spec_names": ["price_estimate"],
+      "pops": [{"anchor": "lakh", "show": "₹11.49 LAKH", "card": true}]
+    },
+    {
+      "role": "cta",
+      "text": "Would you pick the Sierra over a Creta? Comment one or two. Like, share, and subscribe.",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  ]
+}
