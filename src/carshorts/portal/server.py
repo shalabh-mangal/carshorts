@@ -112,7 +112,8 @@ PAGE = """<!doctype html><meta charset="utf-8">
  .pill.rework_failed{background:#4a1d1d;color:var(--red)}
  .stage{overflow-y:auto;padding-right:4px;scrollbar-gutter:stable}
  .rail{position:sticky;top:0;align-self:start;max-height:calc(100vh - 98px);overflow-y:auto;padding-right:4px}
- video{width:100%;border-radius:16px;background:#000;border:1px solid var(--line);
+ video{display:block;margin:2px auto;height:min(80vh,calc(100vh - 120px));width:auto;max-width:100%;
+   aspect-ratio:9/16;object-fit:contain;border-radius:16px;background:#000;border:1px solid var(--line);
    box-shadow:0 0 0 1px #ffffff12,0 0 44px #8b5cf61f,0 18px 50px #0009}
  .busy{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;
    gap:14px;text-align:center}
@@ -439,6 +440,7 @@ function renderReview(c){
   <textarea id="notes" rows="3" placeholder="what worked / what didn't…"></textarea>
   <div class="savebar" id="savebar"><button onclick="saveScript()">💾 Save script &amp; re-render</button></div>
   <div class="actions">
+   ${!isFinal?`<button class="mini" onclick="reopen()">← Change script / voice</button>`:""}
    <button class="rework" onclick="send('rework')">⟳ Needs rework</button>
    ${isFinal?`<button class="publish" onclick="send('publish')">🚀 Publish to YouTube</button>`
             :`<button class="approve" onclick="send('approve')">✓ Approve → premium final</button>`}</div>`;
@@ -492,6 +494,13 @@ function reRender(){
  fetch("/api/build/lock",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({slug:c.slug})})
   .then(r=>{if(!r.ok)throw 0;toast("re-rendering with your footage + fresh B-roll ⟳");})
   .catch(()=>toast("re-render failed — see portal.log"));
+}
+function reopen(){    // back to the script + voice builder, keeping the current mix
+ const c=cards[sel];
+ fetch("/api/reopen",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({slug:c.slug})})
+  .then(r=>{if(!r.ok)throw 0;toast("back to script & voice — your mix is preserved ✎");
+            load().then(()=>{if(sel!==null)pick(sel);});})
+  .catch(()=>toast("couldn't reopen — see portal.log"));
 }
 function pick(i){
  sel=i;rating=4;edits={};editing=null;build={};renderList();const c=cards[i];
@@ -857,6 +866,23 @@ class Handler(BaseHTTPRequestHandler):
                     indent=2, ensure_ascii=False), encoding="utf-8")
             self._send(200, json.dumps({"ok": True, "saved": saved,
                                         "skipped": skipped, "notes_saved": bool(notes)}).encode())
+            return
+        if self.path.startswith("/api/reopen"):     # back to the script/voice builder
+            body = read_json()
+            if not body:
+                self._send(400, b'{"error":"bad json"}')
+                return
+            card_path = QUEUE / f"{body['slug']}.json"
+            if not card_path.exists():
+                self._send(404, b"{}")
+                return
+            with _card_lock(body["slug"]):
+                card = json.loads(card_path.read_text())
+                card["status"] = "script_review"
+                card["note"] = "reopened — change the script mix or voice, then lock again"
+                _write_card(card_path, card)
+            (QUEUE / f"{body['slug']}.progress.json").unlink(missing_ok=True)
+            self._send(200, b'{"ok": true}')
             return
         if self.path.startswith("/api/pick"):
             body = read_json()
