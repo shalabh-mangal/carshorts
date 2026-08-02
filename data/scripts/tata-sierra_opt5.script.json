@@ -1,0 +1,45 @@
+{
+  "subject": "Tata Sierra",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "160 PS in a midsize SUV for under 21 lakh - is Tata pulling our leg?",
+      "cited_spec_names": [
+        "power_petrol_turbo",
+        "price_estimate"
+      ],
+      "pops": []
+    },
+    {
+      "role": "spec",
+      "text": "That turbo-petrol packs 255 Newton-metres of torque, by the way",
+      "cited_spec_names": [
+        "torque_petrol_turbo"
+      ],
+      "pops": []
+    },
+    {
+      "role": "value",
+      "text": "For around 20 lakh, the top Accomplished Plus variant gives you a panoramic sunroof and Level 2 driver-assist",
+      "cited_spec_names": [
+        "price_estimate",
+        "sunroof",
+        "adas"
+      ],
+      "pops": []
+    },
+    {
+      "role": "peak",
+      "text": "Turbo power, six airbags, Level 2 driver-assist, under 21 lakh - smash like if you'd buy it",
+      "cited_spec_names": ["airbags", "adas"],
+      "pops": []
+    },
+    {
+      "role": "cta",
+      "text": "Sierra or Nexon - which midsize SUV wins? Comment 1 or 2, like, share, subscribe",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  ],
+  "_angle": "Option 5 — fresh take"
+}

@@ -16,9 +16,9 @@
     },
     {
       "role": "value",
-      "text": "Top trims add Level-two driver assist with twenty-two features, a panoramic sunroof, and a twelve-speaker Dolby system.",
+      "text": "Top trims add Level-two driver assist with twenty-two features, a panoramic sunroof, and a thirteen-speaker Dolby system.",
       "cited_spec_names": ["adas", "sunroof", "audio"],
-      "pops": [{"anchor": "assist", "show": "LEVEL 2 ADAS"}, {"anchor": "sunroof", "show": "PANORAMIC SUNROOF"}, {"anchor": "Dolby", "show": "12-SPKR DOLBY"}]
+      "pops": [{"anchor": "assist", "show": "LEVEL 2 ADAS"}, {"anchor": "sunroof", "show": "PANORAMIC SUNROOF"}, {"anchor": "Dolby", "show": "13-SPKR DOLBY"}]
     },
     {
       "role": "peak",

@@ -73,10 +73,10 @@
     },
     {
       "name": "audio",
-      "value": "JBL 12-speaker with Dolby Atmos",
-      "source_url": "https://www.cardekho.com/tata/sierra/specs",
-      "source_sentence": "Top variants feature a JBL 12-speaker system with Dolby Atmos.",
-      "confidence": 0.8
+      "value": "JBL 13-speaker with Dolby Atmos (Accomplished+)",
+      "source_url": "https://cars.tatamotors.com/sierra/ice.html",
+      "source_sentence": "The Accomplished+ has 13 JBL Black speakers with SonicShaft Soundbar and Dolby Atmos (official Tata site).",
+      "confidence": 0.9
     },
     {
       "name": "airbags",

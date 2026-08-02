@@ -16,9 +16,9 @@
     },
     {
       "role": "value",
-      "text": "Inside — a twelve-point-three-inch screen, twelve speakers, and Level-two driver assist that reads the road for you.",
+      "text": "Inside — a twelve-point-three-inch screen, thirteen speakers, and Level-two driver assist that reads the road for you.",
       "cited_spec_names": ["touchscreen", "audio", "adas"],
-      "pops": [{"anchor": "screen", "show": "12.3-INCH SCREEN"}, {"anchor": "speakers", "show": "12 SPEAKERS"}, {"anchor": "assist", "show": "LEVEL 2 ADAS"}]
+      "pops": [{"anchor": "screen", "show": "12.3-INCH SCREEN"}, {"anchor": "speakers", "show": "13 JBL SPEAKERS"}, {"anchor": "assist", "show": "LEVEL 2 ADAS"}]
     },
     {
       "role": "peak",

@@ -22,9 +22,9 @@
     },
     {
       "role": "peak",
-      "text": "Add six airbags, a twelve-speaker Dolby system, and a six-twenty-litre boot — that's genuinely loaded.",
+      "text": "Add six airbags, a thirteen-speaker Dolby system, and a six-twenty-litre boot — that's genuinely loaded.",
       "cited_spec_names": ["airbags", "audio", "boot_space"],
-      "pops": [{"anchor": "airbags", "show": "6 AIRBAGS"}, {"anchor": "Dolby", "show": "12-SPKR DOLBY"}, {"anchor": "boot", "show": "622L BOOT"}]
+      "pops": [{"anchor": "airbags", "show": "6 AIRBAGS"}, {"anchor": "Dolby", "show": "13-SPKR DOLBY"}, {"anchor": "boot", "show": "622L BOOT"}]
     },
     {
       "role": "cta",
