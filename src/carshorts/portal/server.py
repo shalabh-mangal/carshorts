@@ -389,14 +389,16 @@ function renderBuilder(c){
  </div>`+contentDropHTML(c,"builder");
 }
 function pickBeat(role,oi,bi,editIt){
- const c=cards[sel];const b=c.options[oi].beats[bi];
- if(editIt){editing=role+":"+oi+":"+b.role;renderBuilder(c);const ta=$("ce-"+role);if(ta)ta.focus();return;}
+ const c=cards[sel];const b=c.options[oi].beats.filter(x=>x.role===role)[bi];
+ if(!b)return;
+ if(editIt){editing=role+":"+oi+":"+bi;renderBuilder(c);const ta=$("ce-"+role);if(ta)ta.focus();return;}
  editing=null;
  build[b.role]={role:b.role,text:b.text,cited_spec_names:b.cited_spec_names||[],pops:b.pops||[]};
  persistBuild(b.role);renderBuilder(c);
 }
 function saveBeat(role,oi,bi){
- const c=cards[sel];const b=c.options[oi].beats[bi];const ta=$("ce-"+role);
+ const c=cards[sel];const b=c.options[oi].beats.filter(x=>x.role===role)[bi];const ta=$("ce-"+role);
+ if(!b)return;
  build[b.role]={role:b.role,text:ta?ta.value.trim():b.text,cited_spec_names:b.cited_spec_names||[],pops:b.pops||[]};
  editing=null;persistBuild(b.role);renderBuilder(c);toast("beat edited ✓");
 }
