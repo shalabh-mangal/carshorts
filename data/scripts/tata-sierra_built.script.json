@@ -3,14 +3,14 @@
   "segments": [
     {
       "role": "hook",
-      "text": "Eleven lakh — for an SUV with a panoramic sunroof and Dolby sound?",
+      "text": "Eleven and a half lakh, ex-showroom — for an SUV with a panoramic sunroof and Dolby sound?",
       "cited_spec_names": [
         "price_estimate"
       ],
       "pops": [
         {
           "anchor": "lakh",
-          "show": "₹11.49 LAKH",
+          "show": "₹11.49L · EX-SHOWROOM",
           "card": true
         }
       ]

@@ -3,7 +3,7 @@
   "segments": [
     {
       "role": "hook",
-      "text": "160 PS in a midsize SUV for under 21 lakh - is Tata pulling our leg?",
+      "text": "160 PS in a midsize SUV for under 21 lakh, ex-showroom - is Tata pulling our leg?",
       "cited_spec_names": [
         "power_petrol_turbo",
         "price_estimate"
@@ -20,7 +20,7 @@
     },
     {
       "role": "value",
-      "text": "For around 20 lakh, the top Accomplished Plus variant gives you a panoramic sunroof and Level 2 driver-assist",
+      "text": "For around 20 lakh ex-showroom, the top Accomplished Plus variant gives you a panoramic sunroof and Level 2 driver-assist",
       "cited_spec_names": [
         "price_estimate",
         "sunroof",
@@ -30,7 +30,7 @@
     },
     {
       "role": "peak",
-      "text": "Turbo power, six airbags, Level 2 driver-assist, under 21 lakh - smash like if you'd buy it",
+      "text": "Turbo power, six airbags, Level 2 driver-assist, under 21 lakh ex-showroom - smash like if you'd buy it",
       "cited_spec_names": ["airbags", "adas"],
       "pops": []
     },

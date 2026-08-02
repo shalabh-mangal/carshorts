@@ -1,0 +1,45 @@
+{
+  "subject": "Tata Sierra",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "160 PS turbo-petrol for under 21 lakh, ex-showroom - is the top-end Sierra the smartest buy?",
+      "cited_spec_names": [
+        "power_petrol_turbo",
+        "price_estimate"
+      ],
+      "pops": []
+    },
+    {
+      "role": "spec",
+      "text": "With 255 Newton-metres of torque, this turbo-petrol packs a punch",
+      "cited_spec_names": [
+        "torque_petrol_turbo"
+      ],
+      "pops": []
+    },
+    {
+      "role": "value",
+      "text": "The Accomplished Plus variant, around 20 lakh ex-showroom, unlocks a panoramic sunroof and Level 2 driver-assist",
+      "cited_spec_names": [
+        "price_estimate",
+        "sunroof",
+        "adas"
+      ],
+      "pops": []
+    },
+    {
+      "role": "peak",
+      "text": "Smash like if you'd buy the Sierra over a rival SUV, it's a bold choice",
+      "cited_spec_names": [],
+      "pops": []
+    },
+    {
+      "role": "cta",
+      "text": "Nexon or Sierra - which midsize SUV wins? Comment 1 or 2, like, share, subscribe, and we'll see you in the next one",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  ],
+  "_angle": "Option 6 — fresh take"
+}

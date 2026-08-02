@@ -4,9 +4,9 @@
   "segments": [
     {
       "role": "hook",
-      "text": "Everyone's hyping the Tata Sierra's comeback. At eleven and a half lakh, is it actually worth it?",
+      "text": "Everyone's hyping the Tata Sierra's comeback. At eleven and a half lakh, ex-showroom, is it actually worth it?",
       "cited_spec_names": ["price_estimate"],
-      "pops": [{"anchor": "lakh", "show": "₹11.49 LAKH", "card": true}]
+      "pops": [{"anchor": "lakh", "show": "₹11.49L · EX-SHOWROOM", "card": true}]
     },
     {
       "role": "spec",
@@ -28,7 +28,7 @@
     },
     {
       "role": "cta",
-      "text": "So from eleven and a half lakh, the icon is a seriously smart buy. Sierra or Creta? Comment one or two, then like, share, and subscribe.",
+      "text": "So — genuinely, the icon is a seriously smart buy. Sierra or Creta? Comment one or two, then like, share, and subscribe.",
       "cited_spec_names": [],
       "pops": []
     }
