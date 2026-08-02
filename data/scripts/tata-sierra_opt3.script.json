@@ -10,15 +10,9 @@
     },
     {
       "role": "spec",
-      "text": "Real talk — it's front-wheel drive, not a hardcore off-roader.",
-      "cited_spec_names": ["drivetrain"],
-      "pops": [{"anchor": "drive", "show": "FWD — NOT 4X4"}]
-    },
-    {
-      "role": "spec",
-      "text": "But on the road, one-sixty turbo horses feel genuinely quick.",
-      "cited_spec_names": ["power_petrol_turbo"],
-      "pops": [{"anchor": "horses", "show": "160 PS TURBO"}]
+      "text": "Real talk — it's front-wheel drive, but one-sixty turbo horses feel quick.",
+      "cited_spec_names": ["drivetrain", "power_petrol_turbo"],
+      "pops": [{"anchor": "drive", "show": "FWD — NOT 4X4"}, {"anchor": "horses", "show": "160 PS TURBO"}]
     },
     {
       "role": "value",

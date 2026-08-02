@@ -15,22 +15,16 @@
       "pops": [{"anchor": "horsepower", "show": "160 PS TURBO"}, {"anchor": "diesel", "show": "280 NM DIESEL"}]
     },
     {
-      "role": "spec",
-      "text": "It reads the road for you now — with Level-two driver assist.",
-      "cited_spec_names": ["adas"],
-      "pops": [{"anchor": "assist", "show": "LEVEL 2 ADAS"}]
-    },
-    {
       "role": "value",
-      "text": "Slide open the panoramic sunroof, and turn up the Dolby sound.",
-      "cited_spec_names": ["sunroof", "audio"],
-      "pops": [{"anchor": "sunroof", "show": "PANORAMIC SUNROOF"}, {"anchor": "Dolby", "show": "12-SPKR DOLBY"}]
+      "text": "Slide open the panoramic sunroof, with Level-two driver assist watching the road.",
+      "cited_spec_names": ["sunroof", "adas"],
+      "pops": [{"anchor": "sunroof", "show": "PANORAMIC SUNROOF"}, {"anchor": "assist", "show": "LEVEL 2 ADAS"}]
     },
     {
       "role": "peak",
-      "text": "Six airbags, a massive six-twenty-litre boot — the icon finally grew up.",
-      "cited_spec_names": ["airbags", "boot_space"],
-      "pops": [{"anchor": "airbags", "show": "6 AIRBAGS"}, {"anchor": "boot", "show": "622L BOOT"}]
+      "text": "Six airbags, twelve-speaker Dolby sound — the icon finally grew up.",
+      "cited_spec_names": ["airbags", "audio"],
+      "pops": [{"anchor": "airbags", "show": "6 AIRBAGS"}, {"anchor": "Dolby", "show": "12-SPKR DOLBY"}]
     },
     {
       "role": "cta",

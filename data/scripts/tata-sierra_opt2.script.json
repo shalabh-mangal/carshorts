@@ -9,22 +9,16 @@
       "pops": [{"anchor": "lakh", "show": "₹11.49 LAKH", "card": true}]
     },
     {
-      "role": "value",
-      "text": "You get twelve speakers, and a huge twelve-point-three-inch screen.",
-      "cited_spec_names": ["audio", "touchscreen"],
-      "pops": [{"anchor": "speakers", "show": "12 SPEAKERS"}, {"anchor": "screen", "show": "12.3-INCH SCREEN"}]
-    },
-    {
-      "role": "spec",
-      "text": "Six airbags come standard, with Level-two driver assist up top.",
-      "cited_spec_names": ["airbags", "adas"],
-      "pops": [{"anchor": "airbags", "show": "6 AIRBAGS"}, {"anchor": "assist", "show": "LEVEL 2 ADAS"}]
-    },
-    {
       "role": "spec",
       "text": "Under the bonnet — one-sixty turbo horses, or a torquey diesel.",
       "cited_spec_names": ["power_petrol_turbo", "torque_diesel"],
       "pops": [{"anchor": "horses", "show": "160 PS TURBO"}, {"anchor": "diesel", "show": "280 NM DIESEL"}]
+    },
+    {
+      "role": "value",
+      "text": "Twelve speakers, a huge twelve-point-three-inch screen, and six airbags standard.",
+      "cited_spec_names": ["audio", "touchscreen", "airbags"],
+      "pops": [{"anchor": "speakers", "show": "12 SPEAKERS"}, {"anchor": "airbags", "show": "6 AIRBAGS"}]
     },
     {
       "role": "peak",

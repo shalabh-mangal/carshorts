@@ -78,6 +78,15 @@ Gates 1 and 6 are the owner's, always. Never auto-publish.
 
 ---
 
+## Portal builder contract (script options)
+The `script_review` beat-mixer has exactly **5 role slots: hook · spec · value ·
+peak · cta**. Every `<slug>_opt*.script.json` must have **exactly one beat per
+role** (5 beats). Two beats sharing a role (e.g. two `spec`) pile into that
+slot's library and render as duplicates ("everything twice"). Pack multiple
+facts into one beat via multiple `pops` instead of adding a second same-role
+beat. (Direct-render scripts like `<slug>_built.script.json` may have more
+beats — this contract is only for builder-facing option files.)
+
 ## Working discipline (how we avoid re-iteration)
 - **Staged, per car:** finalize script → voice → then video. Never overwrite a
   locked script.
