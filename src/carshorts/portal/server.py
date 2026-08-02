@@ -1074,10 +1074,23 @@ class Handler(BaseHTTPRequestHandler):
             pf = QUEUE / f"{body['slug']}.progress.json"
             pf.write_text(json.dumps({"step": "re-rendering your edited script",
                                       "at": datetime.datetime.now().isoformat(timespec='seconds')}))
+            # same render contract as lock/final: cloned voice + picked persona,
+            # own footage + shot-plan when present, no injected humor.
+            _v2p = {"calm": "deadpan", "natural": "", "hype": "hype", "bhai": "bhai"}
+            _persona = _v2p.get(card.get("voice", ""), card.get("persona", "deadpan"))
+            _engine = "chatterbox" if card.get("voice") else "edge"
+            from carshorts.core import paths as _pp
+            _ownd = _pp.car_dir(body["slug"]) / "own"
+            _ownclips = list(_ownd.glob("*.mp4")) if _ownd.exists() else []
+            _shotsf = _pp.SCRIPTS / f"{body['slug']}.shots.json"
+            _foot = (["--no-footage"] + (["--shots", str(_shotsf)] if _shotsf.exists() else [])) \
+                if _ownclips else ["--stock"]
+            _draft_out = card.get("draft") or f"out/{body['slug']}_draft.mp4"
             _spawn_worker(body["slug"], (
                 f"r=subprocess.run([sys.executable,'-m','carshorts.rendering.produce','--script-file',{card['script']!r},"
-                f"'--spec',{card['spec']!r},'--skip-factcheck','--persona',{card.get('persona','deadpan')!r},"
-                f"'--out',{card['draft']!r}]+{card.get('render_flags', [])!r},"
+                f"'--spec',{card['spec']!r},'--skip-factcheck','--no-humor',"
+                f"'--voice-engine',{_engine!r},'--language',{card.get('language','english')!r},"
+                f"'--persona',{_persona!r},'--out',{_draft_out!r}]+{_foot!r}+{card.get('render_flags', [])!r},"
                 "capture_output=True,text=True);"
                 f"cp=pathlib.Path({str(card_path)!r});c=json.loads(cp.read_text());"
                 "c['status']='awaiting_approval' if r.returncode==0 else 'rework_failed';"

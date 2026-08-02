@@ -156,14 +156,23 @@ def approve(slug: str, privacy: str = "public") -> None:
     card = json.loads(card_path.read_text())
 
     final_out = paths.OUT / f"{slug}_final.mp4"
-    _progress(slug, "rendering premium final (channel voice, free)…")
-    # finals use the same owner-chosen edge voice as drafts (free, consistent —
-    # what the owner approved is exactly what ships). ElevenLabs upgrade is a
-    # one-line change here when revenue justifies it.
+    _progress(slug, "rendering premium final (cloned voice, free)…")
+    # The final MUST match the approved draft exactly (owner rule: what shipped is
+    # what was approved). Mirror the portal draft path: cloned voice + the picked
+    # persona, the owner's own footage + shot-plan when present (else stock), no
+    # injected humor. ElevenLabs upgrade is a one-line change here later.
+    _v2p = {"calm": "deadpan", "natural": "", "hype": "hype", "bhai": "bhai"}
+    _persona = _v2p.get(card.get("voice", ""), card.get("persona", "deadpan"))
+    _engine = "chatterbox" if card.get("voice") else "edge"
+    _ownd = paths.car_dir(slug) / "own"
+    _ownclips = list(_ownd.glob("*.mp4")) if _ownd.exists() else []
+    _shotsf = paths.SCRIPTS / f"{slug}.shots.json"
+    _foot = (["--no-footage"] + (["--shots", str(_shotsf)] if _shotsf.exists() else [])) \
+        if _ownclips else ["--stock"]
     if _run([sys.executable, "-m", "carshorts.rendering.produce", "--script-file", card["script"],
-             "--spec", card["spec"], "--skip-factcheck",
-             "--persona", card.get("persona", "deadpan"),
-             "--provider", "groq", "--out", str(final_out)]) != 0:
+             "--spec", card["spec"], "--skip-factcheck", "--no-humor",
+             "--voice-engine", _engine, "--language", card.get("language", "english"),
+             "--persona", _persona, "--provider", "groq", "--out", str(final_out)] + _foot) != 0:
         card["status"] = "final_failed"
         card_path.write_text(json.dumps(card, indent=2))
         _progress(slug, "", done=True)
