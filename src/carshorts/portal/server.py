@@ -407,6 +407,7 @@ function addCustom(role){
  build[role]={role,text:t,cited_spec_names:[],pops:[]};editing=null;persistBuild(role);renderBuilder(cards[sel]);
 }
 function clearRole(role){delete build[role];editing=null;persistBuild(role);renderBuilder(cards[sel]);}
+function cancelEdit(){editing=null;renderBuilder(cards[sel]);}
 function useWhole(oi){
  const c=cards[sel];editing=null;
  c.options[oi].beats.forEach(b=>{build[b.role]={role:b.role,text:b.text,cited_spec_names:b.cited_spec_names||[],pops:b.pops||[]};});
