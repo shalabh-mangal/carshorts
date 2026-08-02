@@ -1,0 +1,23 @@
+{
+  "out": "out\\tata-sierra_draft.mp4",
+  "subject": "Tata Sierra",
+  "rendered_at": "2026-08-02T13:13:39",
+  "script_file": "D:\\Personal Projects\\carshorts\\data\\scripts\\tata-sierra_built.script.json",
+  "persona": "hype",
+  "voice_engine": "chatterbox",
+  "language": "english",
+  "music": "Heaven and Earth - Jeremy Black.mp3",
+  "captions": false,
+  "word_count": 65,
+  "sections": 5,
+  "hook_text": "Eleven lakh \u2014 for an SUV with a panoramic sunroof and Dolby sound?",
+  "hook_type": "question",
+  "pool": {
+    "own": 0,
+    "stock": 2,
+    "stills": 14
+  },
+  "cut_target_s": 2.3,
+  "video_id": null,
+  "metrics": null
+}
