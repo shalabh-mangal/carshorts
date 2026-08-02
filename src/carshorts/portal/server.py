@@ -423,9 +423,12 @@ function lockScript(){
 }
 function pickVoice(vi){
  const c=cards[sel];const v=c.voice_options[vi];
+ c.voice=v.label;c.voice_file=v.file;      // optimistic: reflect in the panel instantly
+ renderBuilder(c);                          // (load() only refreshes the LEFT list, not this panel)
  fetch("/api/pick",{method:"POST",headers:{"Content-Type":"application/json"},
   body:JSON.stringify({slug:c.slug,kind:"voice",choice:v.file,label:v.label})})
-  .then(()=>{toast("voice chosen ✓");load();});
+  .then(r=>{if(!r.ok)throw 0;toast("voice chosen ✓");})
+  .catch(()=>toast("voice save failed — see portal.log"));
 }
 /* ================= VIDEO REVIEW ================= */
 function renderReview(c){
@@ -552,7 +555,7 @@ async function loadAnalytics(){
 load();
 setInterval(async()=>{   // live: reworking/rendering -> fresh video/options appear by itself
  const fresh=await(await fetch("/api/queue")).json();
- const sig=x=>JSON.stringify(x.map(c=>[c.status,c.progress&&c.progress.step,c.draft_v,(c.options||[]).length]));
+ const sig=x=>JSON.stringify(x.map(c=>[c.status,c.progress&&c.progress.step,c.draft_v,(c.options||[]).length,c.voice||"",c.script_choice||""]));
  if(sig(fresh)!==sig(cards)){
   const prevV=sel!==null&&cards[sel]?cards[sel].draft_v:null;
   const wasBuilder=sel!==null&&cards[sel].status==="script_review";
