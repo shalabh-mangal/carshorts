@@ -380,7 +380,7 @@ function renderBuilder(c){
   :`<div class="empty">No voice samples yet — generating.</div>`}
   <button class="mini full" onclick="moreOpts()">↻ Generate 3 more options</button>
   <button class="lock ${canLock()?"":"off"}" onclick="lockScript()">🔒 Lock &amp; produce draft${canLock()?"":` (${5-filled()} beats left)`}</button>
- </div>`;
+ </div>`+contentDropHTML(c,"builder");
 }
 function pickBeat(role,oi,bi,editIt){
  const c=cards[sel];const b=c.options[oi].beats[bi];
@@ -456,7 +456,7 @@ function renderReview(c){
      <span class="lbl"></span>${WINS.map(t=>
      `<span class="chip win" data-beat="${bi}" data-tag="${t}"
         onclick="event.stopPropagation();this.classList.toggle('on')">${t}</span>`).join("")}</div>
-   </div>`).join("")+"</div>"+contentDropHTML(c);
+   </div>`).join("")+"</div>"+contentDropHTML(c,"review");
  (c.beats||[]).forEach((b,bi)=>{const el=$("btxt"+bi);if(el)el.textContent=b.text;});
  drawStars();
  const v=$("vid");
@@ -465,17 +465,20 @@ function renderReview(c){
    if(el)el.classList.toggle("live",v.currentTime>=b.start&&v.currentTime<b.start+b.dur);});});
 }
 /* ============ CONTENT DROP (owner footage + jokes) ============ */
-function contentDropHTML(c){
+function contentDropHTML(c,mode){
  const clips=c.own_clips||[];
+ const rerender=(mode!=="builder")
+   ?`<button class="lock" style="flex:1;min-width:180px" onclick="reRender()">🔒 Re-render with my footage + fresh B-roll</button>`
+   :`<span class="mut" style="font-size:11.5px;align-self:center">used automatically when you Lock ↓</span>`;
  return `<div class="railcard" style="margin-top:12px">
    <h3>🎬 Your footage &amp; jokes</h3>
-   <div class="mut" style="font-size:12px;margin-bottom:8px">Drop real ${esc(c.car)} clips (mp4/mov) — they auto-fit vertical and replace stock. Jokes/notes guide the edit.</div>
-   <div id="ownlist" style="font-size:12px;margin-bottom:8px">${clips.length?clips.map(f=>`<span class="cc fact">🎞 ${esc(f)}</span>`).join(" "):'<i class="mut">no clips yet — the render is using stock B-roll</i>'}</div>
+   <div class="mut" style="font-size:12px;margin-bottom:8px">Drop real ${esc(c.car)} clips (mp4/mov) at any step — they auto-fit vertical and replace stock. Jokes/notes guide the edit.</div>
+   <div id="ownlist" style="font-size:12px;margin-bottom:8px">${clips.length?clips.map(f=>`<span class="cc fact">🎞 ${esc(f)}</span>`).join(" "):'<i class="mut">no clips yet — stock B-roll will be used</i>'}</div>
    <input id="dropfiles" type="file" accept="video/*" multiple style="display:block;margin-bottom:8px;font-size:12px">
    <textarea id="dropnotes" rows="3" placeholder="jokes / notes / what to emphasise…">${esc(c.content_notes||"")}</textarea>
    <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
     <button class="mini ok" onclick="uploadContent()">⬆ Upload</button>
-    <button class="lock" style="flex:1;min-width:180px" onclick="reRender()">🔒 Re-render with my footage + fresh B-roll</button>
+    ${rerender}
    </div>
  </div>`;
 }
