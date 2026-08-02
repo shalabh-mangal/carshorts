@@ -806,14 +806,20 @@ class Handler(BaseHTTPRequestHandler):
                 card["status"] = "rendering"
                 card["note"] = "your mix locked — producing the free draft"
                 _write_card(card_path, card)
+            # Render with the owner's CLONED voice and the persona they PICKED in
+            # the portal (voice label → chatterbox persona), never the generic
+            # edge fallback. calm→deadpan, natural→default(""), hype→hype.
+            _voice2persona = {"calm": "deadpan", "natural": "", "hype": "hype", "bhai": "bhai"}
+            _persona = _voice2persona.get(card.get("voice", ""), card.get("persona", "deadpan"))
             pf = QUEUE / f"{body['slug']}.progress.json"
-            pf.write_text(json.dumps({"step": "rendering your mix (edge voice, free)…",
+            pf.write_text(json.dumps({"step": "rendering your mix (cloned voice, free)…",
                                       "at": datetime.datetime.now().isoformat(timespec="seconds")}))
             draft_out = card.get("draft") or f"out/{body['slug']}_draft.mp4"
             _spawn_worker(body["slug"], (
                 f"r=subprocess.run([sys.executable,'-m','carshorts.rendering.produce',"
                 f"'--script-file',{str(out)!r},'--spec',{card['spec']!r},'--skip-factcheck',"
-                f"'--persona',{card.get('persona','deadpan')!r},'--out',{draft_out!r}]"
+                f"'--voice-engine','chatterbox','--language',{card.get('language','english')!r},"
+                f"'--persona',{_persona!r},'--out',{draft_out!r}]"
                 f"+{card.get('render_flags', [])!r},capture_output=True,text=True);"
                 f"cp=pathlib.Path({str(card_path)!r});c=json.loads(cp.read_text());"
                 "c['status']='awaiting_approval' if r.returncode==0 else 'rework_failed';"
