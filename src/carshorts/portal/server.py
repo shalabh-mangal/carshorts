@@ -132,6 +132,11 @@ PAGE = """<!doctype html><meta charset="utf-8">
  .dropzone.over{border-color:var(--acc);background:#ffd60a14;color:#fff}
  .dropzone b{color:#e5e7eb}
  .dzlink{color:var(--acc);text-decoration:underline}
+ .insights{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+ .ins{background:#151a24;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13px}
+ .insh{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+ .playbook{background:#12161f;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:13px}
+ .playbook ul{margin:8px 0 0;padding-left:18px}.playbook li{margin:4px 0}
  button{border:0;border-radius:11px;padding:12px 14px;font-weight:800;font-size:13px;
    cursor:pointer;transition:.15s;font-family:inherit}
  button:hover{transform:translateY(-1px);filter:brightness(1.07)}
@@ -599,7 +604,31 @@ async function loadAnalytics(){
  const drops=rows.map(r=>r.drop_by_beat?Math.max(...Object.values(r.drop_by_beat)):0);
  const maxDrop=Math.max(0.001,...drops);
  const num=v=>v==null?'<span class="mut">—</span>':v;
- let h='<div class="note">Per-video performance from recipe cards (refreshed by the retention watcher). Avg-view% needs ~24-48h and enough views; likes/comments are immediate.</div>';
+ const wd=rows.filter(r=>r.views!=null);
+ let ins='';
+ if(wd.length){
+  const top=[...wd].sort((a,b)=>(b.views||0)-(a.views||0))[0];
+  const rets=wd.filter(r=>r.avg_view_pct!=null);
+  const avgRet=rets.length?Math.round(rets.reduce((s,r)=>s+r.avg_view_pct,0)/rets.length):null;
+  const totL=wd.reduce((s,r)=>s+(r.likes||0),0), totC=wd.reduce((s,r)=>s+(r.comments||0),0), totV=wd.reduce((s,r)=>s+(r.views||0),0);
+  const avgV=a=>a.length?Math.round(a.reduce((s,r)=>s+(r.views||0),0)/a.length):null;
+  const shortW=wd.filter(r=>r.word_count&&r.word_count<=100), longW=wd.filter(r=>r.word_count&&r.word_count>100);
+  const byHook={}; wd.forEach(r=>{const k=r.hook_type||'?';(byHook[k]=byHook[k]||[]).push(r.views||0);});
+  const hookRank=Object.entries(byHook).map(([k,v])=>[k,Math.round(v.reduce((a,b)=>a+b,0)/v.length)]).sort((a,b)=>b[1]-a[1]);
+  ins=`<div class="insights">
+    <div class="ins"><div class="insh">🏆 Top performer</div><b>${esc(top.subject||'?')}</b> · ${top.views} views${top.avg_view_pct!=null?' · '+top.avg_view_pct.toFixed(0)+'% avg-view':''}<div class="mut">${top.word_count||'?'}w · ${esc(top.hook_type||'?')} hook · ${esc(top.persona||'?')}</div></div>
+    <div class="ins"><div class="insh">📉 Engagement gap</div><b>${totL}</b> likes · <b>${totC}</b> comments<div class="mut">across ${totV} views — CTAs barely convert; #1 fixable lever</div></div>
+    <div class="ins"><div class="insh">⏱ Length → reach</div>≤100w: <b>${avgV(shortW)??'—'}</b> · &gt;100w: <b>${avgV(longW)??'—'}</b><div class="mut">avg views — shorter reaches further</div></div>
+    <div class="ins"><div class="insh">🪝 Hook type (avg views)</div>${hookRank.map(([k,v])=>esc(k)+': <b>'+v+'</b>').join(' · ')||'—'}<div class="mut">avg retention ${avgRet!=null?avgRet+'%':'—'}</div></div>
+   </div>
+   <div class="playbook"><b>▶ Playbook from the data</b><ul>
+    <li>Target <b>~90 words / ~35s</b> — the top video's length; longer scripts lose reach.</li>
+    <li>Open on a <b>curiosity / question hook</b> in the first 2s, not a flat news line.</li>
+    <li><b>Loop-back close</b> to drive replays (the top video passed 100% avg-view).</li>
+    <li>Attack the <b>engagement gap</b>: like-at-peak pop + a binary poll comment.</li>
+   </ul></div>`;
+ }
+ let h='<div class="note">Per-video performance from recipe cards (refreshed by the retention watcher). Avg-view% needs ~24-48h + enough views; likes/comments are immediate.</div>'+ins;
  h+='<table><thead><tr><th>Video</th><th>Format</th><th class="num">Views</th><th class="num">Likes</th><th class="num">Cmts</th><th class="num">Avg view %</th><th class="num">Like %</th><th>Weakest beat</th></tr></thead><tbody>';
  for(const r of rows){
   const pct=r.avg_view_pct,pc=pct==null?"mut":(pct<50?"bad":"ok");
