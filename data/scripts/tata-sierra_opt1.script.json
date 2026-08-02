@@ -4,33 +4,33 @@
   "segments": [
     {
       "role": "hook",
-      "text": "The Tata Sierra is back — and it starts at just eleven and a half lakh.",
+      "text": "The nineties icon is back — the Tata Sierra, starting at just eleven and a half lakh.",
       "cited_spec_names": ["price_estimate"],
       "pops": [{"anchor": "lakh", "show": "₹11.49 LAKH", "card": true}]
     },
     {
       "role": "spec",
-      "text": "Pick your punch — a one-sixty horsepower turbo-petrol, or a torquey diesel.",
-      "cited_spec_names": ["power_petrol_turbo", "torque_diesel"],
-      "pops": [{"anchor": "horsepower", "show": "160 PS TURBO"}, {"anchor": "diesel", "show": "280 NM DIESEL"}]
+      "text": "Under the bonnet — a one-sixty horsepower turbo-petrol with two-fifty-five newtons of torque, or a punchy diesel.",
+      "cited_spec_names": ["power_petrol_turbo", "torque_petrol_turbo", "power_diesel"],
+      "pops": [{"anchor": "horsepower", "show": "160 PS TURBO"}, {"anchor": "torque", "show": "255 NM"}]
     },
     {
       "role": "value",
-      "text": "Slide open the panoramic sunroof, with Level-two driver assist watching the road.",
-      "cited_spec_names": ["sunroof", "adas"],
-      "pops": [{"anchor": "sunroof", "show": "PANORAMIC SUNROOF"}, {"anchor": "assist", "show": "LEVEL 2 ADAS"}]
+      "text": "Top trims add Level-two driver assist with twenty-two features, a panoramic sunroof, and a twelve-speaker Dolby system.",
+      "cited_spec_names": ["adas", "sunroof", "audio"],
+      "pops": [{"anchor": "assist", "show": "LEVEL 2 ADAS"}, {"anchor": "sunroof", "show": "PANORAMIC SUNROOF"}, {"anchor": "Dolby", "show": "12-SPKR DOLBY"}]
     },
     {
       "role": "peak",
-      "text": "Six airbags, twelve-speaker Dolby sound — the icon finally grew up.",
-      "cited_spec_names": ["airbags", "audio"],
-      "pops": [{"anchor": "airbags", "show": "6 AIRBAGS"}, {"anchor": "Dolby", "show": "12-SPKR DOLBY"}]
+      "text": "Six airbags, a huge six-twenty-litre boot, a twelve-point-three-inch screen — the icon properly grew up.",
+      "cited_spec_names": ["airbags", "boot_space", "touchscreen"],
+      "pops": [{"anchor": "airbags", "show": "6 AIRBAGS"}, {"anchor": "boot", "show": "622L BOOT"}]
     },
     {
       "role": "cta",
-      "text": "Sierra or Creta — which would you park outside? Comment one or two. Like, share, and subscribe.",
-      "cited_spec_names": [],
-      "pops": []
+      "text": "But remember, it's front-wheel drive, not a hardcore off-roader. Sierra or Creta? Comment one or two, then like, share, and subscribe.",
+      "cited_spec_names": ["drivetrain"],
+      "pops": [{"anchor": "drive", "show": "FWD — NOT 4X4"}]
     }
   ]
 }
