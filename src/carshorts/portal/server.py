@@ -126,6 +126,12 @@ PAGE = """<!doctype html><meta charset="utf-8">
  .stars span{color:#3a4256;transition:.12s;text-shadow:0 0 0 transparent}
  .stars span.on{color:var(--acc);text-shadow:0 0 18px #ffd60a66}
  .actions{display:flex;gap:10px;margin-top:10px}
+ .dropzone{border:2px dashed #3a4256;border-radius:12px;padding:16px;text-align:center;font-size:13px;
+   color:var(--mut);cursor:pointer;transition:.15s;margin-bottom:8px}
+ .dropzone:hover{border-color:#55607a}
+ .dropzone.over{border-color:var(--acc);background:#ffd60a14;color:#fff}
+ .dropzone b{color:#e5e7eb}
+ .dzlink{color:var(--acc);text-decoration:underline}
  button{border:0;border-radius:11px;padding:12px 14px;font-weight:800;font-size:13px;
    cursor:pointer;transition:.15s;font-family:inherit}
  button:hover{transform:translateY(-1px);filter:brightness(1.07)}
@@ -472,23 +478,33 @@ function contentDropHTML(c,mode){
    :`<span class="mut" style="font-size:11.5px;align-self:center">used automatically when you Lock ↓</span>`;
  return `<div class="railcard" style="margin-top:12px">
    <h3>🎬 Your footage &amp; jokes</h3>
-   <div class="mut" style="font-size:12px;margin-bottom:8px">Drop real ${esc(c.car)} clips (mp4/mov) at any step — they auto-fit vertical and replace stock. Jokes/notes guide the edit.</div>
+   <div class="mut" style="font-size:12px;margin-bottom:8px">Add real ${esc(c.car)} clips at any step — they auto-fit vertical and replace stock. Jokes/notes guide the edit.</div>
    <div id="ownlist" style="font-size:12px;margin-bottom:8px">${clips.length?clips.map(f=>`<span class="cc fact">🎞 ${esc(f)}</span>`).join(" "):'<i class="mut">no clips yet — stock B-roll will be used</i>'}</div>
-   <input id="dropfiles" type="file" accept="video/*" multiple style="display:block;margin-bottom:8px;font-size:12px">
+   <div id="dropzone" class="dropzone" onclick="document.getElementById('dropfiles').click()"
+        ondragover="dzOver(event)" ondragleave="dzLeave(event)" ondrop="dzDrop(event)">
+     ⬇ <b>Drag &amp; drop clips here</b> — or <span class="dzlink">browse</span><br>
+     <span class="mut" style="font-size:11px">mp4 / mov / webm · multiple at once</span>
+     <input id="dropfiles" type="file" accept="video/*,.mp4,.mov,.m4v,.webm,.mkv" multiple style="display:none" onchange="uploadFiles(this.files)">
+   </div>
    <textarea id="dropnotes" rows="3" placeholder="jokes / notes / what to emphasise…">${esc(c.content_notes||"")}</textarea>
    <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
-    <button class="mini ok" onclick="uploadContent()">⬆ Upload</button>
+    <button class="mini ok" onclick="uploadFiles([])">💬 Save notes</button>
     ${rerender}
    </div>
  </div>`;
 }
-function uploadContent(){
- const c=cards[sel];const fi=$("dropfiles");const fd=new FormData();
+function dzOver(e){e.preventDefault();e.currentTarget.classList.add("over");}
+function dzLeave(e){e.currentTarget.classList.remove("over");}
+function dzDrop(e){e.preventDefault();e.currentTarget.classList.remove("over");
+ uploadFiles((e.dataTransfer&&e.dataTransfer.files)||[]);}
+function uploadFiles(fileList){       // drag-drop OR browse OR notes-only; multiple OK
+ const c=cards[sel];const fd=new FormData();
  fd.append("slug",c.slug);fd.append("notes",($("dropnotes")?$("dropnotes").value:"")||"");
- let n=0;if(fi&&fi.files){for(const f of fi.files){fd.append("files",f);n++;}}
+ let n=0;for(const f of (fileList||[])){fd.append("files",f);n++;}
  toast(n?("uploading "+n+" clip(s)…"):"saving notes…");
  fetch("/api/upload",{method:"POST",body:fd}).then(r=>r.json()).then(j=>{
-  toast((j.saved&&j.saved.length)?("added "+j.saved.length+" clip(s) ✓"):"notes saved ✓");
+  const s=(j.saved||[]).length, sk=(j.skipped||[]).length;
+  toast(s?("added "+s+" clip(s) ✓"+(sk?(" · "+sk+" skipped (not video)"):"")):"notes saved ✓");
   load().then(()=>{if(sel!==null)pick(sel);});
  }).catch(()=>toast("upload failed — see portal.log"));
 }
