@@ -454,13 +454,44 @@ function renderReview(c){
      <span class="lbl"></span>${WINS.map(t=>
      `<span class="chip win" data-beat="${bi}" data-tag="${t}"
         onclick="event.stopPropagation();this.classList.toggle('on')">${t}</span>`).join("")}</div>
-   </div>`).join("")+"</div>";
+   </div>`).join("")+"</div>"+contentDropHTML(c);
  (c.beats||[]).forEach((b,bi)=>{const el=$("btxt"+bi);if(el)el.textContent=b.text;});
  drawStars();
  const v=$("vid");
  if(v)v.addEventListener("timeupdate",()=>{
   (c.beats||[]).forEach((b,bi)=>{const el=$("beat"+bi);
    if(el)el.classList.toggle("live",v.currentTime>=b.start&&v.currentTime<b.start+b.dur);});});
+}
+/* ============ CONTENT DROP (owner footage + jokes) ============ */
+function contentDropHTML(c){
+ const clips=c.own_clips||[];
+ return `<div class="railcard" style="margin-top:12px">
+   <h3>🎬 Your footage &amp; jokes</h3>
+   <div class="mut" style="font-size:12px;margin-bottom:8px">Drop real ${esc(c.car)} clips (mp4/mov) — they auto-fit vertical and replace stock. Jokes/notes guide the edit.</div>
+   <div id="ownlist" style="font-size:12px;margin-bottom:8px">${clips.length?clips.map(f=>`<span class="cc fact">🎞 ${esc(f)}</span>`).join(" "):'<i class="mut">no clips yet — the render is using stock B-roll</i>'}</div>
+   <input id="dropfiles" type="file" accept="video/*" multiple style="display:block;margin-bottom:8px;font-size:12px">
+   <textarea id="dropnotes" rows="3" placeholder="jokes / notes / what to emphasise…">${esc(c.content_notes||"")}</textarea>
+   <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+    <button class="mini ok" onclick="uploadContent()">⬆ Upload</button>
+    <button class="lock" style="flex:1;min-width:180px" onclick="reRender()">🔒 Re-render with my footage + fresh B-roll</button>
+   </div>
+ </div>`;
+}
+function uploadContent(){
+ const c=cards[sel];const fi=$("dropfiles");const fd=new FormData();
+ fd.append("slug",c.slug);fd.append("notes",($("dropnotes")?$("dropnotes").value:"")||"");
+ let n=0;if(fi&&fi.files){for(const f of fi.files){fd.append("files",f);n++;}}
+ toast(n?("uploading "+n+" clip(s)…"):"saving notes…");
+ fetch("/api/upload",{method:"POST",body:fd}).then(r=>r.json()).then(j=>{
+  toast((j.saved&&j.saved.length)?("added "+j.saved.length+" clip(s) ✓"):"notes saved ✓");
+  load().then(()=>{if(sel!==null)pick(sel);});
+ }).catch(()=>toast("upload failed — see portal.log"));
+}
+function reRender(){
+ const c=cards[sel];
+ fetch("/api/build/lock",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({slug:c.slug})})
+  .then(r=>{if(!r.ok)throw 0;toast("re-rendering with your footage + fresh B-roll ⟳");})
+  .catch(()=>toast("re-render failed — see portal.log"));
 }
 function pick(i){
  sel=i;rating=4;edits={};editing=null;build={};renderList();const c=cards[i];
@@ -622,7 +653,7 @@ def _queue_cards() -> list[dict]:
         # crashing the WHOLE queue for every card).
         def _pathy(v):
             return Path(v) if v else None
-        draft = _pathy(card.get("draft"))
+        draft = _pathy(card.get("draft") or f"out/{card.get('slug','')}_draft.mp4")
         final = _pathy(card.get("final") or f"out/{card.get('slug','')}_final.mp4")
 
         def _lock_held(p):
@@ -638,7 +669,7 @@ def _queue_cards() -> list[dict]:
                 or final.stat().st_mtime >= draft.stat().st_mtime):
             card["play"] = str(final)
         else:
-            card["play"] = card.get("draft", "")
+            card["play"] = str(draft) if (draft and draft.exists()) else ""
         play = _pathy(card["play"])
         card["draft_v"] = int(play.stat().st_mtime) if (play and play.exists()) else 0
         # SELF-HEAL: a card stuck in legacy 'rework' (submitted to an old
@@ -679,6 +710,18 @@ def _queue_cards() -> list[dict]:
                 for vp in sorted(paths.VOICE_OPTIONS.glob(f"{card.get('slug','')}_*.mp3")):
                     vopts.append({"file": str(vp), "label": vp.stem.split("_")[-1]})
             card["voice_options"] = vopts
+        # owner-dropped footage + notes (content-drop), so the FE can show what's
+        # in the pool and the render can use it.
+        try:
+            _own = paths.car_dir(card.get("slug", "")) / "own"
+            card["own_clips"] = sorted(p.name for p in _own.glob("*.mp4")) if _own.exists() else []
+        except Exception:  # noqa: BLE001 — never let a listing error break the queue
+            card["own_clips"] = []
+        _cn = paths.DATA / "content" / f"{card.get('slug', '')}.json"
+        try:
+            card["content_notes"] = json.loads(_cn.read_text()).get("notes", "") if _cn.exists() else ""
+        except Exception:  # noqa: BLE001
+            card["content_notes"] = ""
         cards.append(card)
     return cards
 
@@ -759,6 +802,62 @@ class Handler(BaseHTTPRequestHandler):
                 return json.loads(self.rfile.read(length))
             except (ValueError, UnicodeDecodeError):
                 return None
+        if self.path.startswith("/api/upload"):     # owner drops footage + jokes
+            ctype = self.headers.get("Content-Type", "")
+            length = int(self.headers.get("Content-Length", 0) or 0)
+            raw = self.rfile.read(length) if length else b""
+            if "multipart/form-data" not in ctype or "boundary=" not in ctype:
+                self._send(400, b'{"error":"expected multipart form"}')
+                return
+            boundary = ctype.split("boundary=", 1)[1].strip().strip('"').encode()
+            fields, files = {}, []
+            for part in raw.split(b"--" + boundary):
+                if b"\r\n\r\n" not in part:
+                    continue
+                head, body = part.split(b"\r\n\r\n", 1)
+                if body.endswith(b"\r\n"):
+                    body = body[:-2]
+                hs = head.decode("utf-8", "ignore")
+                mn = re.search(r'name="([^"]+)"', hs)
+                if not mn:
+                    continue
+                fn = re.search(r'filename="([^"]*)"', hs)
+                if fn and fn.group(1):
+                    files.append((os.path.basename(fn.group(1)), body))
+                else:
+                    fields[mn.group(1)] = body.decode("utf-8", "ignore").strip()
+            slug = fields.get("slug", "")
+            if not slug or not (QUEUE / f"{slug}.json").exists():
+                self._send(400, b'{"error":"unknown slug"}')
+                return
+            from carshorts.core import paths as _p
+            own = _p.car_dir(slug) / "own"
+            own.mkdir(parents=True, exist_ok=True)
+            vids = (".mp4", ".mov", ".m4v", ".webm", ".mkv")
+            saved, skipped = [], []
+            for fname, data in files:
+                safe = re.sub(r"[^A-Za-z0-9._-]", "_", fname) or "clip.mp4"
+                if not safe.lower().endswith(vids):
+                    skipped.append(safe)
+                    continue                     # only video clips join the pool
+                dest = own / safe
+                k = 1
+                while dest.exists():
+                    dest = own / f"{dest.stem}_{k}{dest.suffix}"
+                    k += 1
+                dest.write_bytes(data)
+                saved.append(dest.name)
+            notes = fields.get("notes", "")
+            if notes:
+                cdir = _p.DATA / "content"
+                cdir.mkdir(parents=True, exist_ok=True)
+                (cdir / f"{slug}.json").write_text(json.dumps(
+                    {"slug": slug, "notes": notes,
+                     "updated": datetime.datetime.now().isoformat(timespec="seconds")},
+                    indent=2, ensure_ascii=False), encoding="utf-8")
+            self._send(200, json.dumps({"ok": True, "saved": saved,
+                                        "skipped": skipped, "notes_saved": bool(notes)}).encode())
+            return
         if self.path.startswith("/api/pick"):
             body = read_json()
             if not body:
@@ -817,7 +916,7 @@ class Handler(BaseHTTPRequestHandler):
             draft_out = card.get("draft") or f"out/{body['slug']}_draft.mp4"
             _spawn_worker(body["slug"], (
                 f"r=subprocess.run([sys.executable,'-m','carshorts.rendering.produce',"
-                f"'--script-file',{str(out)!r},'--spec',{card['spec']!r},'--skip-factcheck',"
+                f"'--script-file',{str(out)!r},'--spec',{card['spec']!r},'--skip-factcheck','--stock',"
                 f"'--voice-engine','chatterbox','--language',{card.get('language','english')!r},"
                 f"'--persona',{_persona!r},'--out',{draft_out!r}]"
                 f"+{card.get('render_flags', [])!r},capture_output=True,text=True);"
