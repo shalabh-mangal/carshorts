@@ -3,7 +3,7 @@
   "segments": [
     {
       "role": "hook",
-      "text": "Eleven and a half lakh, ex-showroom — for an SUV with a panoramic sunroof and Dolby sound?",
+      "text": "Eleven and a half lakh, ex-showroom — but is the reborn Sierra actually worth it?",
       "cited_spec_names": [
         "price_estimate"
       ],
@@ -17,10 +17,10 @@
     },
     {
       "role": "spec",
-      "text": "Under the bonnet — one-sixty turbo horses, or a torquey diesel.",
+      "text": "It gets one-sixty turbo horses, and Level-two driver assist that watches the road for you.",
       "cited_spec_names": [
         "power_petrol_turbo",
-        "torque_diesel"
+        "adas"
       ],
       "pops": [
         {
@@ -28,34 +28,31 @@
           "show": "160 PS TURBO"
         },
         {
-          "anchor": "diesel",
-          "show": "280 NM DIESEL"
+          "anchor": "assist",
+          "show": "LEVEL 2 ADAS"
         }
       ]
     },
     {
       "role": "value",
-      "text": "Thirteen speakers, a huge twelve-point-three-inch screen, and six airbags standard.",
+      "text": "There's a panoramic sunroof up top, and Dolby sound inside — properly loaded.",
       "cited_spec_names": [
-        "audio",
-        "touchscreen",
-        "airbags"
+        "sunroof",
+        "audio"
       ],
       "pops": [
         {
-          "anchor": "speakers",
-          "show": "13 JBL SPEAKERS"
-        },
-        {
-          "anchor": "airbags",
-          "show": "6 AIRBAGS"
+          "anchor": "sunroof",
+          "show": "PANORAMIC SUNROOF"
         }
       ]
     },
     {
       "role": "peak",
-      "text": "This much kit, this cheap — honestly, a steal. Tap like if you agree.",
-      "cited_spec_names": [],
+      "text": "For this money? Honestly, it's a straight-up steal. Smash like if you'd buy one.",
+      "cited_spec_names": [
+        "body_type"
+      ],
       "pops": [
         {
           "anchor": "steal",
@@ -69,7 +66,7 @@
     },
     {
       "role": "cta",
-      "text": "Sierra or Creta — which is the smarter buy? Comment one or two. Like, share, and subscribe.",
+      "text": "Like, share, and subscribe — then tell me: Sierra, or Creta? Comment one or two.",
       "cited_spec_names": [],
       "pops": []
     }

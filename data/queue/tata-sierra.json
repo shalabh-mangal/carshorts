@@ -5,12 +5,87 @@
   "language": "english",
   "spec": "specs/tata-sierra.json",
   "created": "2026-08-02T12:00:00",
-  "status": "script_review",
-  "note": "Gate 1 — 3 script angles + 3 voice samples ready. Mix beats, pick a voice, then drop your footage/jokes. Sierra is FWD (not 4x4) — keep that honest.",
+  "status": "awaiting_approval",
+  "note": "your mix rendered \u2014 watch the draft",
   "target": {
     "views": 2000,
     "likes": 10,
     "comments": ">0",
     "subs": "increase"
-  }
+  },
+  "voice": "calm",
+  "voice_file": "D:\\Personal Projects\\carshorts\\out\\voice_options\\tata-sierra_calm.mp3",
+  "script_build": {
+    "hook": {
+      "role": "hook",
+      "text": "Eleven and a half lakh, ex-showroom \u2014 but is the reborn Sierra actually worth it?",
+      "cited_spec_names": [
+        "price_estimate"
+      ],
+      "pops": [
+        {
+          "anchor": "lakh",
+          "show": "\u20b911.49L \u00b7 EX-SHOWROOM",
+          "card": true
+        }
+      ]
+    },
+    "spec": {
+      "role": "spec",
+      "text": "It gets one-sixty turbo horses, and Level-two driver assist that watches the road for you.",
+      "cited_spec_names": [
+        "power_petrol_turbo",
+        "adas"
+      ],
+      "pops": [
+        {
+          "anchor": "horses",
+          "show": "160 PS TURBO"
+        },
+        {
+          "anchor": "assist",
+          "show": "LEVEL 2 ADAS"
+        }
+      ]
+    },
+    "value": {
+      "role": "value",
+      "text": "There's a panoramic sunroof up top, and Dolby sound inside \u2014 properly loaded.",
+      "cited_spec_names": [
+        "sunroof",
+        "audio"
+      ],
+      "pops": [
+        {
+          "anchor": "sunroof",
+          "show": "PANORAMIC SUNROOF"
+        }
+      ]
+    },
+    "peak": {
+      "role": "peak",
+      "text": "For this money? Honestly, it's a straight-up steal. Smash like if you'd buy one.",
+      "cited_spec_names": [
+        "body_type"
+      ],
+      "pops": [
+        {
+          "anchor": "steal",
+          "show": "STEAL!"
+        },
+        {
+          "anchor": "like",
+          "show": "LIKE"
+        }
+      ]
+    },
+    "cta": {
+      "role": "cta",
+      "text": "Like, share, and subscribe \u2014 then tell me: Sierra, or Creta? Comment one or two.",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  },
+  "script": "D:\\Personal Projects\\carshorts\\data\\scripts\\tata-sierra_built.script.json",
+  "script_choice": "custom mix"
 }
