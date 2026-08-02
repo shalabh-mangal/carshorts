@@ -19,5 +19,12 @@
   },
   "cut_target_s": 2.3,
   "video_id": "SAFLrk6y8lM",
-  "metrics": null
+  "metrics": {
+    "views": 79,
+    "likes": 1,
+    "comments": 1,
+    "avg_view_s": 0,
+    "avg_view_pct": 0,
+    "retention_curve": []
+  }
 }
