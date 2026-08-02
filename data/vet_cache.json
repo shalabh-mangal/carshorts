@@ -549,5 +549,14 @@
     "blocking": [
       "too_dark_or_blurry"
     ]
+  },
+  "images/scorpio_n_grey_front.jpg:380471": {
+    "ok": false,
+    "defects": [
+      "readable_plate"
+    ],
+    "blocking": [
+      "readable_plate"
+    ]
   }
 }

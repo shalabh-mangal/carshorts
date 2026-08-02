@@ -1,0 +1,29 @@
+{
+  "subject": "Mahindra Scorpio-N",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "203 PS for under 25 lakh?",
+      "cited_spec_names": [
+        "power_petrol",
+        "price_estimate"
+      ],
+      "pops": []
+    },
+    {
+      "role": "spec",
+      "text": "400 Nm torque in diesel AT",
+      "cited_spec_names": [
+        "torque_diesel"
+      ],
+      "pops": []
+    },
+    {
+      "role": "cta",
+      "text": "Thar or Scorpio-N? Comment, like, share, subscribe",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  ],
+  "_angle": "Option 6 — fresh take"
+}

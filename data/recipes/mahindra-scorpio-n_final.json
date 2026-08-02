@@ -1,0 +1,23 @@
+{
+  "out": "out\\mahindra-scorpio-n_final.mp4",
+  "subject": "Mahindra Scorpio-N",
+  "rendered_at": "2026-08-02T11:23:21",
+  "script_file": "data/scripts/mahindra-scorpio-n_built.script.json",
+  "persona": "default",
+  "voice_engine": "chatterbox",
+  "language": "english",
+  "music": "Above The Clouds - Jeremy Black.mp3",
+  "captions": false,
+  "word_count": 108,
+  "sections": 7,
+  "hook_text": "Twenty-three lakh rupees \u2014 for an SUV this size, this loaded? Mahindra's clearly not playing fair.",
+  "hook_type": "question",
+  "pool": {
+    "own": 15,
+    "stock": 2,
+    "stills": 0
+  },
+  "cut_target_s": 2.3,
+  "video_id": null,
+  "metrics": null
+}

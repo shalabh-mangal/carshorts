@@ -40,6 +40,23 @@ def _cover_scale_crop(w: int, h: int) -> str:
             f"crop={w}:{h}")
 
 
+def _blurpad_landscape(w: int, h: int, label: str, lift: bool = False) -> str:
+    """Landscape footage in a vertical frame: blurred cover-fill background with
+    the FULL clip visible, centered. The classic Shorts treatment — cover-crop
+    alone keeps only the middle band, blowing the subject up huge.
+    Returns a complete multi-chain graph ending at [label]."""
+    fg_scale = f"scale={w}:{h}:force_original_aspect_ratio=decrease"
+    # The bg fill is never darkened: eq brightness is an ADDITIVE shift, so it
+    # clips already-dim source rows (dusk skies etc.) to black. `lift` (opener
+    # only) is a gentle exposure+saturation boost so frame 0 reaches the feed
+    # norm — the QA gate treats exposure as ours to control.
+    bg_fx = ",eq=brightness=0.09:saturation=1.25" if lift else ""
+    return (f"split[bgb][fg];"
+            f"[bgb]{_cover_scale_crop(w, h)},boxblur=24:2{bg_fx}[bgb];"
+            f"[fg]{fg_scale},setsar=1[fg];"
+            f"[bgb][fg]overlay=(W-w)/2:(H-h)/2,setsar=1[{label}]")
+
+
 def _kenburns_still(idx: int, frames: int, w: int, h: int, fps: int,
                     darken: float) -> str:
     """Ken Burns for one still, chosen by cut index exactly as _sub_visual does:
@@ -78,9 +95,17 @@ def _kenburns_still(idx: int, frames: int, w: int, h: int, fps: int,
     return chain
 
 
-def _video_cut(w: int, h: int, dur: float, speed_ramp: bool) -> str:
-    """A stock/own video cut: cover-crop, silence handled at stream level,
-    optional 1.15x speed ramp (every 3rd cut in the moviepy path)."""
+def _video_cut(w: int, h: int, dur: float, speed_ramp: bool,
+               landscape: bool = False, lift: bool = False) -> str:
+    """A stock/own video cut: cover-crop, or blur-pad for landscape footage so
+    the whole clip is visible (no giant middle crop); silence handled at stream
+    level; optional 1.15x speed ramp (every 3rd cut in the moviepy path).
+
+    Returns the chain from the cut's input stream up to (not including) the
+    output label — the caller appends [label] and the trim/fps stages.
+    For blur-pad the chain itself terminates the graph at [bp]."""
+    if landscape:
+        return _blurpad_landscape(w, h, "bp", lift=lift)
     chain = _cover_scale_crop(w, h)
     if speed_ramp:
         chain += ",setpts=PTS/1.15"
@@ -90,15 +115,19 @@ def _video_cut(w: int, h: int, dur: float, speed_ramp: bool) -> str:
 
 def build_scene_filter(cuts: list[tuple[float, str]], total: float,
                        size: tuple[int, int] = VERTICAL, fps: int = 24,
-                       no_darken=frozenset({0})) -> dict:
+                       no_darken=frozenset({0}),
+                       landscape_paths: frozenset[str] | None = None) -> dict:
     """Build the filter_complex for a base scene from timed cuts.
 
     cuts = [(start_seconds, asset_path), ...] on the GLOBAL timeline; total is
     the video duration. `no_darken` is the set of cut indices to leave at full
     brightness — the opener (0) always, plus the loop-close flash if appended,
-    so the flash matches the opener it loops back to. Returns everything the
-    caller needs to run ffmpeg, but runs no ffmpeg.
+    so the flash matches the opener it loops back to. `landscape_paths` marks
+    clips wider than the frame (e.g. 16:9 phone footage) to be blur-padded
+    instead of cover-cropped. Returns everything the caller needs to run
+    ffmpeg, but runs no ffmpeg.
     """
+    landscape = landscape_paths or frozenset()
     w, h = size
     if not cuts:
         return {"inputs": [], "filter": "", "map": "", "durations": []}
@@ -117,10 +146,16 @@ def build_scene_filter(cuts: list[tuple[float, str]], total: float,
         if _is_video(path):
             # loop a short clip to fill the cut; trim to exact frames
             inputs.append(path)
-            chain = _video_cut(w, h, dur, speed_ramp=(j % 3 == 2))
-            # trim to duration and normalise timebase/fps
-            parts.append(f"[{j}:v]{chain},trim=duration={dur:.3f},fps={fps},"
-                         f"setpts=PTS-STARTPTS[v{j}]")
+            if path in landscape:
+                graph = f"[{j}:v]"
+                graph += _video_cut(w, h, dur, speed_ramp=False,
+                                    landscape=True, lift=(j in no_darken))
+                parts.append(f"{graph};[bp]trim=duration={dur:.3f},fps={fps},"
+                             f"setpts=PTS-STARTPTS[v{j}]")
+            else:
+                chain = _video_cut(w, h, dur, speed_ramp=(j % 3 == 2))
+                parts.append(f"[{j}:v]{chain},trim=duration={dur:.3f},fps={fps},"
+                             f"setpts=PTS-STARTPTS[v{j}]")
         else:
             inputs.append(path)
             # opener (and the loop-close flash) are not darkened
@@ -190,6 +225,31 @@ def global_cuts_from_sections(sections, durations) -> tuple[list, float]:
     return cuts, offset
 
 
+def _probe_landscape(paths_list: list[str], frame_w: int, frame_h: int) -> frozenset[str]:
+    """Return the subset of clip paths wider than the target frame (16:9 phone
+    footage etc.) — those get blur-padded instead of cover-cropped. Probes once
+    per unique video with ffprobe; unknown sources are treated as portrait."""
+    import json
+    import subprocess
+
+    landscape: set[str] = set()
+    for p in dict.fromkeys(paths_list):
+        if not _is_video(p):
+            continue
+        try:
+            out = subprocess.run(
+                ["ffprobe", "-v", "error", "-select_streams", "v:0",
+                 "-show_entries", "stream=width,height",
+                 "-of", "json", p], capture_output=True, text=True, timeout=20)
+            st = json.loads(out.stdout).get("streams", [{}])[0]
+            w, h = int(st.get("width", 0)), int(st.get("height", 0))
+            if w and h and w / h > frame_w / frame_h:
+                landscape.add(p)
+        except Exception:
+            continue
+    return frozenset(landscape)
+
+
 def render_base_from_cuts(cuts, total: float, out_path: str, fps: int = 24,
                           size=VERTICAL, threads: int | None = None,
                           no_darken=frozenset({0})) -> str:
@@ -198,7 +258,10 @@ def render_base_from_cuts(cuts, total: float, out_path: str, fps: int = 24,
     import os
     import subprocess
 
-    graph = build_scene_filter(cuts, total, size=size, fps=fps, no_darken=no_darken)
+    landscape = _probe_landscape([p for _, p in cuts], *size)
+    graph = build_scene_filter(cuts, total, size=size, fps=fps,
+                               no_darken=no_darken,
+                               landscape_paths=landscape)
     if not graph["inputs"]:
         raise RuntimeError("no resolvable cuts to render")
     cmd = ["ffmpeg", "-y", *input_args(graph["inputs"]),

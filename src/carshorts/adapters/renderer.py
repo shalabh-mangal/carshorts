@@ -287,9 +287,12 @@ def _wipe_bar_frames(full_width: int, tdir: str, tag: str) -> list[str]:
 
 
 def _lss_strip_png(out_path: str, icon_size: int = 116,
-                   strip_width: int = 640) -> str:
-    """Like/Share/Subscribe strip — three filled white icons with a dilated
+                   strip_width: int = 640, active: int = 3) -> str:
+    """Like/Share/Subscribe strip — filled white icons with a dilated
     black outline (same visual language as the text stroke) + small labels.
+    `active` draws only the first N icons (1 = thumb, 2 = +share, 3 = +bell)
+    at FIXED positions, so the three word-synced pops in a render form one
+    cumulative reveal: each word adds its icon without shifting the others.
     Drawn procedurally with Pillow; no emoji fonts, no downloads."""
     from PIL import Image, ImageDraw, ImageFilter
 
@@ -358,9 +361,9 @@ def _lss_strip_png(out_path: str, icon_size: int = 116,
         d.ellipse([cx - s_ * 0.06, cy - s_ * 0.52,
                    cx + s_ * 0.06, cy - s_ * 0.40], fill=W)
 
-    for draw_icon, cx in zip((thumb, share, bell), centers):
+    for draw_icon, cx in zip((thumb, share, bell)[:active], centers[:active]):
         draw_icon(cx)
-    for label, cx in zip(("LIKE", "SHARE", "SUBSCRIBE"), centers):
+    for label, cx in zip(("LIKE", "SHARE", "SUBSCRIBE")[:active], centers[:active]):
         lw = d.textlength(label, font=label_font)
         d.text((cx - lw / 2, pad + icon_size + 14), label,
                font=label_font, fill=W)
@@ -549,14 +552,29 @@ class MoviePyRenderer(VideoRenderer):
                 return CompositeVideoClip([moving], size=self.size).with_duration(chunk)
 
     def _video_scene(self, path: str, dur: float, VideoFileClip, concatenate_videoclips):
-        """A stock clip, cover-cropped to the vertical frame, silenced, and
-        looped or trimmed to exactly `dur` (so it matches its section's voice)."""
+        """A stock/own clip, silenced, and looped or trimmed to exactly `dur`
+        (so it matches its section's voice). Portrait/vertical clips are
+        cover-cropped to the frame; LANDSCAPE clips (16:9 phone footage) are
+        blur-padded — blurred cover-fill behind the full clip centered — so the
+        whole shot is visible instead of one huge middle band."""
         width, height = self.size
         clip = VideoFileClip(path).without_audio()
-        scale = max(width / clip.w, height / clip.h)
-        clip = clip.resized(scale)
-        clip = clip.cropped(width=width, height=height,
-                            x_center=clip.w / 2, y_center=clip.h / 2)
+        if clip.w / clip.h > width / height:          # landscape source
+            bg = clip.resized(max(width / clip.w, height / clip.h))
+            bg = bg.cropped(width=width, height=height,
+                            x_center=bg.w / 2, y_center=bg.h / 2)
+            # cheap gaussian-ish blur: heavy downscale + upscale (moviepy has
+            # no blur fx) — hides detail so the full clip pops on top
+            bg = bg.resized(1 / 24).resized((width, height))
+            fg = clip.resized(min(width / clip.w, height / clip.h))
+            from moviepy import CompositeVideoClip
+            clip = CompositeVideoClip(
+                [bg, fg.with_position("center")], size=self.size)
+        else:
+            scale = max(width / clip.w, height / clip.h)
+            clip = clip.resized(scale)
+            clip = clip.cropped(width=width, height=height,
+                                x_center=clip.w / 2, y_center=clip.h / 2)
         if clip.duration >= dur:
             return clip.subclipped(0, dur)
         reps = int(dur / clip.duration) + 1
@@ -651,7 +669,7 @@ class MoviePyRenderer(VideoRenderer):
             try:
                 return self._render_ffmpeg_full(sections, out_path, music_path,
                                                  fps, loop_close)
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 print(f"     [fffull] failed ({str(exc)[:140]}); "
                       f"falling back to hybrid/moviepy")
         video = None
@@ -671,7 +689,7 @@ class MoviePyRenderer(VideoRenderer):
                 video = VideoFileClip(base_path).with_audio(voice)
                 print(f"     [ffbase] base scene via ffmpeg ({len(gcuts)} cuts, "
                       f"{total:.1f}s)")
-            except Exception as exc:  # noqa: BLE001 — fall back to moviepy
+            except Exception as exc:
                 print(f"     [ffbase] failed ({str(exc)[:110]}); moviepy base")
                 video = None
 
@@ -755,10 +773,12 @@ class MoviePyRenderer(VideoRenderer):
                             .with_position(("center", int(height * 0.30))))
                     overlays.append(clip)
                 elif kind == "lss":
-                    # like/share/subscribe icon strip — three procedural PIL
-                    # icons (thumbs-up, share arrow, bell). Slams in like a
+                    # like/share/subscribe icon strip — procedural PIL icons
+                    # (thumbs-up, share arrow, bell), drawn progressively per
+                    # pop (label = how many are active). Slams in like a
                     # reaction, own slot at y=0.30, holds through the beat.
-                    png = _lss_strip_png(f"{tdir}/lss_{k}_{pi}.png")
+                    png = _lss_strip_png(f"{tdir}/lss_{k}_{pi}.png",
+                                         active=int(label) if label.isdigit() else 3)
                     clip = (ImageClip(png, transparent=True)
                             .with_start(start_abs)
                             .with_duration(show_dur)

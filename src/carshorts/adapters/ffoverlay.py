@@ -118,7 +118,8 @@ def build_layers(sections, durations, size, fps: int, tdir: str) -> list[dict]:
                     src = _overlay_png(pop_text.upper(), 110, TEXT_WHITE,
                                        f"{tdir}/rx_{tag}.png", fit_one_line=True)
                 else:
-                    src = _lss_strip_png(f"{tdir}/lss_{tag}.png")
+                    src = _lss_strip_png(f"{tdir}/lss_{tag}.png",
+                                         active=int(label) if label.isdigit() else 3)
                 layers.append(_anim_layer(src, _slam_scale, SLAM_DUR, y_top,
                                           size, fps, tdir, tag, start))
                 hold = _static_layer(src, 1.0, y_top, size, tdir, tag,

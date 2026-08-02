@@ -51,6 +51,13 @@
       "confidence": 0.85
     },
     {
+      "name": "sunroof",
+      "value": "single-pane sunroof",
+      "source_url": "https://www.cardekho.com/mahindra/scorpio-n",
+      "source_sentence": "The Scorpio-N is offered with a single-pane sunroof.",
+      "confidence": 0.8
+    },
+    {
       "name": "seating",
       "value": "6 or 7 seats",
       "source_url": "https://www.cardekho.com/mahindra/scorpio-n",

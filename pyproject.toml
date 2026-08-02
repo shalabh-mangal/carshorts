@@ -48,6 +48,8 @@ select = ["E", "F", "W", "I", "UP", "B", "BLE", "C4", "SIM", "PIE", "PERF", "RUF
 ignore = [
     "E501",     # long lines are almost all research/rationale comments — kept
     "RUF001",   # "ambiguous" unicode is deliberate: N⋅m, en-dashes, ₹
+    "RUF002",   # (same, in docstrings)
+    "RUF003",   # (same, in comments)
     "E731",     # small motion lambdas read fine as assignments
     "E741",     # single-letter `l`/`n` locals are fine in tight comprehensions
     "E702",     # a few compact `a; b` statements are intentional

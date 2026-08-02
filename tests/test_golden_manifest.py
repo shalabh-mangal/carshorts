@@ -211,9 +211,14 @@ def test_lss_graphic_generated_from_cta(fixture_tree, monkeypatch):
     cta_pops = sections[-1]["pops"]
     kinds = [p["kind"] for p in cta_pops]
     assert "lss" in kinds, f"lss pop missing from CTA — got {cta_pops}"
-    lss = next(p for p in cta_pops if p["kind"] == "lss")
-    assert lss["dur"] >= 0.9
-    assert lss["start"] > 0.0
+    lss = [p for p in cta_pops if p["kind"] == "lss"]
+    # the strip is revealed word-by-word: LIKE -> SHARE -> SUBSCRIBE pops,
+    # each timed to its spoken word, later starts strictly after earlier ones
+    assert [p["text"] for p in lss] == ["LIKE", "SHARE", "SUBSCRIBE"], lss
+    starts = [p["start"] for p in lss]
+    assert starts == sorted(starts) and len(set(starts)) == 3
+    assert lss[0]["start"] > 0.0
+    assert all(p["dur"] >= 0.3 for p in lss)
 
 
 def test_plan_manifest_no_kwcaps(fixture_tree, monkeypatch):

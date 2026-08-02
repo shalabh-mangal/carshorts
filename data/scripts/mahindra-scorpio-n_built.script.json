@@ -1,0 +1,113 @@
+{
+  "subject": "Mahindra Scorpio-N",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Twenty-three lakh rupees — for an SUV this size, this loaded? Mahindra's clearly not playing fair.",
+      "cited_spec_names": [
+        "price_estimate"
+      ],
+      "pops": [
+        {
+          "anchor": "lakh",
+          "show": "₹23 LAKH",
+          "card": true
+        }
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "Pick your engine: a two-hundred-three horsepower turbo-petrol, or a diesel making a hundred seventy-five.",
+      "cited_spec_names": [
+        "power_petrol",
+        "power_diesel"
+      ],
+      "pops": [
+        {
+          "anchor": "horsepower",
+          "show": "203 PS PETROL"
+        },
+        {
+          "anchor": "diesel",
+          "show": "175 PS DIESEL"
+        }
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "This is real four-wheel-drive — with proper low range for when the tarmac ends.",
+      "cited_spec_names": [
+        "drivetrain"
+      ],
+      "pops": [
+        {
+          "anchor": "real",
+          "show": "4X4"
+        }
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "The top model even reads the road ahead for you — full Level-two driver assist.",
+      "cited_spec_names": [
+        "adas"
+      ],
+      "pops": [
+        {
+          "anchor": "top",
+          "show": "Z8L DIESEL"
+        },
+        {
+          "anchor": "assist",
+          "show": "LEVEL 2 ADAS"
+        }
+      ]
+    },
+    {
+      "role": "value",
+      "text": "Inside? A twelve-speaker Sony system. Six airbags. And a sunroof to top it off.",
+      "cited_spec_names": [
+        "audio",
+        "airbags",
+        "sunroof"
+      ],
+      "pops": [
+        {
+          "anchor": "Sony",
+          "show": "12 SPEAKERS"
+        },
+        {
+          "anchor": "airbags",
+          "show": "6 AIRBAGS"
+        },
+        {
+          "anchor": "sunroof",
+          "show": "SUNROOF"
+        }
+      ]
+    },
+    {
+      "role": "peak",
+      "text": "A body-on-frame beast, fully loaded, for hatchback money — honestly, that's a straight-up heist. Smash like if you'd buy it.",
+      "cited_spec_names": [
+        "body_type"
+      ],
+      "pops": [
+        {
+          "anchor": "money",
+          "show": "STEAL!"
+        },
+        {
+          "anchor": "like",
+          "show": "LIKE"
+        }
+      ]
+    },
+    {
+      "role": "cta",
+      "text": "Like, share, and subscribe — then settle it: Thar or Scorpio-N? Comment one or two.",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  ]
+}

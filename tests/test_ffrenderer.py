@@ -51,6 +51,27 @@ def test_video_cut_uses_cover_crop_not_zoompan():
     assert "crop=1080:1920" in chains[1]
 
 
+def test_landscape_video_cut_gets_blurpad_not_cover_crop():
+    cuts = [(0.0, "a.jpg"), (2.0, "phone_16x9.mp4")]
+    g = build_scene_filter(cuts, total=4.0,
+                           landscape_paths=frozenset({"phone_16x9.mp4"}))
+    chains = g["filter"].split(";")
+    video = " ".join(chains)
+    assert "boxblur" in video
+    assert "overlay=(W-w)/2:(H-h)/2" in video
+    assert "force_original_aspect_ratio=decrease" in video
+    # the full-clip foreground must stay, not a middle-only crop
+    assert "[bp]trim=duration=2.000" in video
+
+
+def test_portrait_video_cut_stays_cover_crop():
+    cuts = [(0.0, "portrait.mp4")]
+    g = build_scene_filter(cuts, total=4.0,
+                           landscape_paths=frozenset({"phone_16x9.mp4"}))
+    assert "boxblur" not in g["filter"]
+    assert "crop=1080:1920" in g["filter"]
+
+
 def test_every_third_video_cut_speed_ramps():
     # j==2 is the 3rd cut -> speed ramp in the moviepy path
     cuts = [(0.0, "a.mp4"), (2.0, "b.mp4"), (4.0, "c.mp4"), (6.0, "d.mp4")]

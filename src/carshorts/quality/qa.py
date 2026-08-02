@@ -168,7 +168,12 @@ def run_qa(video_path: str, manifest_path: str | None = None,
                 own_slot = pop.get("kind") in ("reaction", "card", "lss")
                 if not own_slot and pop["start"] < prev_end + 0.04:
                     pop_ok, pop_detail = False, f"pops overlap in sec {sec['index']}"
-                if pop["dur"] < 0.45:
+                # own-slot pops (LSS word flashes, cards, reactions) are timed to
+                # their spoken word's span — 0.3s of LIKE before SHARE says is
+                # right, not a defect; only regular text pops need the 0.45s read
+                # time. Keep a 0.25s sanity floor so a flash still registers.
+                min_dur = 0.25 if own_slot else 0.45
+                if pop["dur"] < min_dur:
                     pop_ok, pop_detail = False, f"pop under 0.5s in sec {sec['index']}"
                 past_end_limit = dur - 0.35 if own_slot else dur - 0.5
                 if pop["start"] > past_end_limit:

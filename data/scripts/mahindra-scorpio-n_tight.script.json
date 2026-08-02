@@ -1,0 +1,47 @@
+{
+  "subject": "Mahindra Scorpio-N",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Twenty-three lakh, for a loaded Scorpio-N?",
+      "cited_spec_names": ["price_estimate"],
+      "pops": [{"anchor": "lakh", "show": "₹23 LAKH", "card": true}]
+    },
+    {
+      "role": "spec",
+      "text": "Two-oh-three petrol horses, and real four-wheel drive.",
+      "cited_spec_names": ["power_petrol", "drivetrain"],
+      "pops": [{"anchor": "horses", "show": "203 PS PETROL"}, {"anchor": "real", "show": "4X4"}]
+    },
+    {
+      "role": "spec",
+      "text": "Plus level-two driver assist.",
+      "cited_spec_names": ["adas"],
+      "pops": [{"anchor": "assist", "show": "LEVEL 2 ADAS"}]
+    },
+    {
+      "role": "spec",
+      "text": "Twelve Sony speakers.",
+      "cited_spec_names": ["audio"],
+      "pops": [{"anchor": "Sony", "show": "12 SPEAKERS"}]
+    },
+    {
+      "role": "rival",
+      "text": "Forget the Thar.",
+      "cited_spec_names": [],
+      "pops": []
+    },
+    {
+      "role": "peak",
+      "text": "Honestly, a steal.",
+      "cited_spec_names": ["body_type"],
+      "pops": [{"anchor": "steal", "show": "STEAL!"}]
+    },
+    {
+      "role": "cta",
+      "text": "Like, share, subscribe — comment one or two.",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  ]
+}

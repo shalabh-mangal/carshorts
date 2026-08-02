@@ -191,10 +191,23 @@ def merge_attributions(out_dir: str, new_entries: list[dict]) -> None:
 
 
 def attribution_lines(out_dir: str) -> list[str]:
-    """Read attributions.json and format credit lines for a video description."""
+    """Read attributions.json and format credit lines for a video description.
+    Entries whose file no longer exists under `out_dir` (moved, quarantined,
+    deleted) are skipped — a credit must correspond to something actually in
+    the pool."""
     path = Path(out_dir) / "attributions.json"
     if not path.exists():
         return []
     data = json.loads(path.read_text())
-    return [f'{a["title"]} by {a["artist"]} ({a["license"]}) — {a["source_url"]}'
-            for a in data]
+    lines = []
+    for a in data:
+        rel = a.get("file", "")
+        if not rel:
+            continue
+        f = Path(rel)
+        if not f.is_absolute():
+            f = Path(out_dir) / f.name
+        if not f.exists():
+            continue
+        lines.append(f'{a["title"]} by {a["artist"]} ({a["license"]}) — {a["source_url"]}')
+    return lines

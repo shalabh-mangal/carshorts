@@ -15,16 +15,17 @@ from __future__ import annotations
 import re
 
 from carshorts.adapters import videogen
+from carshorts.core import paths
 
 # (concept, trigger regex, t2v prompt). First match wins — order strongest first.
 JOKE_CONCEPTS: list[tuple[str, str, str]] = [
     ("rocket",
-     r"\bturbo\b|horsepower|\bbhp\b|\bnm\b|torque|\bfast\b|\bpower|rocket|flies?|blazing|quick",
+     r"\bturbo\b|horsepower|\bbhp\b|\bnm\b|torque|\bfast\b|\bpower|punch|rocket|flies?|blazing|quick",
      "a cute cartoon rocket ship blasting off fast into a bright blue sky with a "
      "big whoosh of orange flames, comic-book style, bold saturated colors, "
      "dynamic fast motion, clean simple shapes"),
     ("money",
-     r"value|paisa|worth|\bcheap\b|\blakh\b|price|budget|save|money|afford",
+     r"value|paisa|worth|\bcheap\b|\blakh\b|price|budget|save|money|afford|\bsteal\b|bargain",
      "a happy cartoon shower of gold coins and banknotes raining down over a "
      "smiling wallet, comic-book style, bright celebratory colors, dynamic motion"),
     ("shield",
@@ -46,10 +47,12 @@ def joke_for(text: str, avoid: set[str] | None = None) -> tuple[str, str] | None
     """(clip_path, concept) for the first UNUSED concept `text` hits, else None.
 
     `avoid` = concepts already used in this video, so each humor beat lands a
-    DIFFERENT joke (varied, not repeated). Cached-only ON PURPOSE: never generate
-    during a render — the GPU worker would contend with the loaded voice model
-    and can OOM the 8GB card. The library is built once offline (`carshorts
-    jokes`); renders only look it up."""
+    DIFFERENT joke (varied, not repeated). REAL clips the owner drops into the
+    inbox as joke_<concept>.mp4 win over the AI library for the same concept —
+    they are real, funny, and vetted by the owner. AI clips are cached-only ON
+    PURPOSE: never generate during a render — the GPU worker would contend with
+    the loaded voice model and can OOM the 8GB card. The library is built once
+    offline (`carshorts jokes`); renders only look it up."""
     if not text:
         return None
     avoid = avoid or set()
@@ -58,8 +61,21 @@ def joke_for(text: str, avoid: set[str] | None = None) -> tuple[str, str] | None
         if concept in avoid:
             continue
         if re.search(trigger, low):
+            real = _real_clip(concept)
+            if real is not None:
+                return (real, concept)
             path = videogen.GEN_DIR / f"joke_{concept}.mp4"
             return (str(path), concept) if path.exists() else None
+    return None
+
+
+def _real_clip(concept: str) -> str | None:
+    """A real joke clip the owner dropped into the inbox: joke_<concept>.mp4.
+    Nothing else in the inbox matches, so normal footage is never hijacked."""
+    for pattern in (f"joke_{concept}.*", f"*_{concept}.*"):
+        hits = sorted(paths.INBOX.glob(pattern)) if paths.INBOX.exists() else []
+        if hits:
+            return str(hits[0])
     return None
 
 

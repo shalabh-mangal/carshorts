@@ -1,0 +1,168 @@
+{
+  "subject": "Mahindra Scorpio-N",
+  "checked": 9,
+  "vetted": 9,
+  "unvetted": 0,
+  "clean": 2,
+  "quarantined": 7,
+  "recovered": 0,
+  "errors": [],
+  "results": [
+    {
+      "file": "2024_Mahindra_Scorpio_Z8L_front.jpg",
+      "ok": false,
+      "defects": [
+        "readable_plate"
+      ],
+      "blocking": [
+        "readable_plate"
+      ],
+      "note": "Modern Scorpio-N, good quality.",
+      "plate_box": [
+        0.79,
+        0.74,
+        0.89,
+        0.77
+      ],
+      "vetted": true
+    },
+    {
+      "file": "Indian_army_mahindra_scorpio.jpg",
+      "ok": false,
+      "defects": [
+        "readable_plate",
+        "wrong_generation"
+      ],
+      "blocking": [
+        "readable_plate"
+      ],
+      "note": "Older generation Mahindra Scorpio in military livery.",
+      "plate_box": [
+        0.38,
+        0.64,
+        0.61,
+        0.67
+      ],
+      "vetted": true
+    },
+    {
+      "file": "Mahindra_Scorpio_2014.JPG",
+      "ok": true,
+      "defects": [
+        "wrong_generation"
+      ],
+      "blocking": [],
+      "note": "Older generation Mahindra Scorpio.",
+      "plate_box": null,
+      "vetted": true
+    },
+    {
+      "file": "Mahindra_Scorpio_GEN_I_Service_Vehicle.JPG",
+      "ok": false,
+      "defects": [
+        "readable_plate",
+        "wrong_generation"
+      ],
+      "blocking": [
+        "readable_plate"
+      ],
+      "note": "First generation Mahindra Scorpio, service vehicle livery. Rear car's plate is readable.",
+      "plate_box": [
+        0.25,
+        0.75,
+        0.37,
+        0.77
+      ],
+      "vetted": true
+    },
+    {
+      "file": "Mahindra_Scorpio_Pik_Up_001.jpg",
+      "ok": false,
+      "defects": [
+        "readable_plate",
+        "wrong_vehicle"
+      ],
+      "blocking": [
+        "readable_plate",
+        "wrong_vehicle"
+      ],
+      "note": "Mahindra Scorpio Pik Up (pickup truck variant), not the Scorpio-N SUV.",
+      "plate_box": [
+        0.43,
+        0.8,
+        0.54,
+        0.82
+      ],
+      "vetted": true
+    },
+    {
+      "file": "Mahindra_Scorpio_Pik_Up_2.2CRDe_S4_2010_53509406897_.jpg",
+      "ok": false,
+      "defects": [
+        "readable_plate",
+        "wrong_vehicle"
+      ],
+      "blocking": [
+        "readable_plate",
+        "wrong_vehicle"
+      ],
+      "note": "Mahindra Scorpio Pik Up (pickup truck variant) with motion blur.",
+      "plate_box": [
+        0.67,
+        0.84,
+        0.74,
+        0.87
+      ],
+      "vetted": true
+    },
+    {
+      "file": "Mahindra_Scorpio_zipping_by.jpg",
+      "ok": true,
+      "defects": [
+        "wrong_generation"
+      ],
+      "blocking": [],
+      "note": "Older generation Mahindra Scorpio SUV in motion.",
+      "plate_box": null,
+      "vetted": true
+    },
+    {
+      "file": "My_Scorpio.jpg",
+      "ok": false,
+      "defects": [
+        "readable_plate",
+        "wrong_generation"
+      ],
+      "blocking": [
+        "readable_plate"
+      ],
+      "note": "Older generation Mahindra Scorpio SUV with artistic processing.",
+      "plate_box": [
+        0.43,
+        0.8,
+        0.64,
+        0.83
+      ],
+      "vetted": true
+    },
+    {
+      "file": "Traffic_near_the_Rohtang_pass_3802993045_.jpg",
+      "ok": false,
+      "defects": [
+        "readable_plate",
+        "wrong_generation"
+      ],
+      "blocking": [
+        "readable_plate"
+      ],
+      "note": "Older generation Mahindra Scorpio SUV in a mountainous setting.",
+      "plate_box": [
+        0.86,
+        0.92,
+        0.94,
+        0.95
+      ],
+      "vetted": true
+    }
+  ]
+}

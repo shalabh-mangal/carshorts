@@ -67,7 +67,7 @@ def write_premium(spec_path: str, out_path: str, persona: str = "", language: st
     final = best
     try:
         final = punch_up_script(best, sheet, llm)
-    except Exception as exc:  # noqa: BLE001 — keep the judged best if the editor hiccups
+    except Exception as exc:
         print(f"     editor pass failed ({exc}); keeping the judged best.")
 
     # Enforce the Shorts length cap at write-time so a wordy draft can't overshoot
@@ -90,13 +90,53 @@ def write_premium(spec_path: str, out_path: str, persona: str = "", language: st
         report = fact_check(final, sheet, llm)
         print("\n" + render_gate1_report(final, sheet, report,
                                           structural + numbers + features) + "\n")
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         print(f"     fact-check skipped ({exc}); guards: "
               f"{(numbers + features) or 'clean'}. Review before publishing.")
 
     print(f"saved premium script -> {out}\nRender it: python -m carshorts.rendering.produce "
           f"--script-file {out} --spec {spec_path} --stock")
     return str(out)
+
+
+def write_options(spec_path: str, n: int = 3, persona: str = "", language: str = "english",
+                  provider: str | None = None, video_format: str = "spotlight") -> list[str]:
+    """Generate n DISTINCT option scripts (different angles, no judging) for the
+    portal's script builder, saved as <slug>_opt{k}.script.json and APPENDED after
+    any existing options. Unlike write_premium (which judges + keeps one best),
+    this keeps them all so the owner mixes-and-matches beats."""
+    import json as _json
+    sheet = SpecSheet.model_validate_json(Path(spec_path).read_text())
+    guidance = _apply_extras(sheet)
+    from carshorts.core.learnings import load_learnings_guidance
+    craft = load_learnings_guidance()
+    if craft:
+        guidance = f"{guidance}\n\n{craft}" if guidance else craft
+    fmt = FORMATS.get(video_format, "")
+    if fmt:
+        guidance = f"{guidance}\n\n{fmt}" if guidance else fmt
+    llm = make_llm(provider)
+    slug = _slug(sheet.subject)
+
+    start = 1
+    for p in paths.SCRIPTS.glob(f"{slug}_opt*.script.json"):
+        try:
+            start = max(start, int(p.stem.split("_opt")[-1].split(".")[0]) + 1)
+        except ValueError:
+            pass
+    out_files = []
+    for i in range(n):
+        k = start + i
+        angle = ANGLES[(k - 1) % len(ANGLES)]
+        s = enforce_length(draft_script(sheet, llm, language=language, guidance=guidance,
+                                        persona=persona, angle=angle), sheet, llm)
+        d = _json.loads(s.model_dump_json())
+        d["_angle"] = f"Option {k} — fresh take"
+        out = paths.SCRIPTS / f"{slug}_opt{k}.script.json"
+        out.write_text(_json.dumps(d, indent=2, ensure_ascii=False), encoding="utf-8")
+        out_files.append(str(out))
+        print(f"  wrote {out.name}")
+    return out_files
 
 
 def main() -> None:
@@ -112,8 +152,14 @@ def main() -> None:
                    help="Narrative shell for the video.")
     p.add_argument("--provider", choices=["gemini", "groq", "cerebras", "openrouter", "ollama"],
                    help="LLM backend (or CARSHORTS_LLM). Default gemini.")
+    p.add_argument("--options", type=int, default=0,
+                   help="Generate N option scripts (opt files) for the portal builder, not one best.")
     args = p.parse_args()
 
+    if args.options:
+        write_options(args.spec, n=args.options, persona=args.persona, language=args.language,
+                      provider=args.provider, video_format=args.format)
+        return
     sheet = SpecSheet.model_validate_json(Path(args.spec).read_text())
     out = args.out or str(paths.SCRIPTS / f"{_slug(sheet.subject)}_{args.persona or 'default'}.script.json")
     write_premium(args.spec, out, persona=args.persona, language=args.language,

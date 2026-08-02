@@ -270,7 +270,7 @@ _POP_GAP = 0.15
 # auto-generate an LSS graphic pop — the renderer draws three icons in place
 # of text (thumbs-up / share arrow / bell). Detects any word order-preserving
 # spacing so "like, share, subscribe" and "like share subscribe" both trigger.
-_LSS_RE = re.compile(r"\blike\W+share\W+subscribe\b", re.I)
+_LSS_RE = re.compile(r"\blike\W+(?:and\W+)?share\W+(?:and\W+)?subscribe\b", re.I)
 
 
 def _clip_brightness(path: str) -> float:
@@ -404,16 +404,30 @@ def _word_pops(seg, marks_file: str | None, dur: float,
         if start < dur - 0.5:
             rail.append((start, span_dur, cand["show"], cand["kind"],
                          cand["label"]))
-    # Auto-LSS: if the narration speaks "like, share, subscribe", generate a
-    # graphic pop timed word-exactly to those three words. Renderer draws the
-    # icon strip; the show text is a manifest tag so QA/tests can see it.
+    # Auto-LSS: if the narration speaks "like, share, subscribe" (with optional
+    # "and" between words, as our CTA templates write it), generate THREE icon
+    # pops — LIKE, SHARE, SUBSCRIBE — each timed word-exactly to when its word
+    # is spoken. The renderer draws the strip progressively (thumb, +share,
+    # +bell), so the animation lands exactly on the spoken words. The show text
+    # is a manifest tag so QA/tests can see it; the label carries the icon count.
     if _LSS_RE.search(seg.text):
-        lss_span = _exact_span("like share subscribe", marks_file, (0.0, 0.0))
-        if lss_span is not None:
-            lss_start, _ = lss_span
-            lss_dur = max(0.9, dur - lss_start - 0.2)
-            if lss_start < dur - 0.5:
-                floaters.append((lss_start, lss_dur, "LSS", "lss", ""))
+        lss_words = ("like", "share", "subscribe")
+        starts: list[float] = []
+        for w in lss_words:
+            span = _exact_span(w, marks_file, (0.0, 0.0))
+            if span is None:
+                break
+            starts.append(span[0])
+        if len(starts) == 3:
+            ends = starts[1:] + [dur - 0.2]
+            for k, w in enumerate(lss_words):
+                start = starts[k]
+                # cap at the next word's pop start (no overlap — QA counts
+                # overlapping pops as uncrowded violations) and floor at 0.3s
+                span_dur = max(0.3, min(ends[k] - start, 2.5))
+                if start < dur - 0.5:
+                    floaters.append((start, span_dur, w.upper(), "lss",
+                                     str(k + 1)))
     # the card owns the screen while it counts up (first 2.2s). AFTER the
     # count-up settles, rail pops may run again — the static hold on the
     # final figure isn't a focal-point conflict, so let feature pops fire
@@ -878,6 +892,24 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     llm_ranked = _llm_shot_match(script.segments, pool, provider) if not phrase_ranked else {}
     if llm_ranked:
         print(f"     shot-matcher aligned {len(llm_ranked)} beats to visuals")
+
+    # DETERMINISTIC shot-plan (owner override): shots_file maps a section index to
+    # the exact clip(s) to show there, so a specific clip lands on a specific beat
+    # (the ADAS clip on the driver-assist line, the Thar clip on the Thar mention)
+    # instead of an LLM guess. Values are pool filenames matched by basename.
+    forced_shots: dict[int, list[str]] = {}
+    if shots_file and Path(shots_file).exists():
+        try:
+            raw = json.loads(Path(shots_file).read_text())
+            byname = {Path(a).name: a for a in pool}
+            for k, v in raw.items():
+                got = [byname[n] for n in (v if isinstance(v, list) else [v]) if n in byname]
+                if got:
+                    forced_shots[int(k)] = got
+            if forced_shots:
+                print(f"     shot-plan: {len(forced_shots)} beat(s) pinned to specific clips")
+        except Exception as exc:  # noqa: BLE001 — a bad plan never blocks the render
+            print(f"     shot-plan ignored ({str(exc)[:80]})")
     subject_families = _subject_families(script.subject)
 
     def _is_subject_asset(asset: str) -> bool:
@@ -888,6 +920,10 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     # of the same script opened on different photos). Rank the subject stills
     # by measured stop-power against the rival baseline instead.
     opening_pick = None
+    blocked: set = set()   # vet-blocked assets — excluded EVERYWHERE, not just
+    # the opener: phrase_ranked is computed before the vet runs, so a blocked
+    # photo could otherwise still win a phrase cut (it did once — a plate-visible
+    # still sneaked into a value beat this way).
     try:
         from carshorts.quality.firstframe import load_baseline, rank_opening_stills
         _baseline = load_baseline()
@@ -904,7 +940,6 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
             # and capped, and drop blocking-failed ones before one becomes the
             # thumbnail. Cached verdicts (incl. this pool's seed) cost nothing;
             # quota-dead just means "unvetted", never "blocked".
-            blocked: set = set()
             try:
                 from carshorts.quality.assetvet import vet_paths
                 top = [p for _, p, _ in ranked[:12]]
@@ -992,13 +1027,33 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                 # one never happens, so it must not consume an asset either
                 if timed_cuts and t_off - timed_cuts[-1][0] < 1.1:
                     continue
-                pick = phrase_ranked.get((i, j))
-                # the very first cut is the thumbnail — it is chosen by measured
-                # stop-power, not by whatever the matcher returned this run
-                if i == 0 and not timed_cuts and opening_pick:
+                pick = None
+                forced = False
+                fs = forced_shots.get(i)
+                if fs:                       # owner shot-plan wins outright
+                    # index by cuts ALREADY placed this beat, not by phrase
+                    # number — merged/skipped phrases must not burn a slot, or
+                    # the last pinned clip gets dropped and its predecessor
+                    # loops to fill the gap.
+                    fi = len(timed_cuts)
+                    if fi < len(fs):         # one distinct pinned clip per cut
+                        pick = fs[fi]
+                        forced = True
+                    else:
+                        # beat already covered by its pinned clip(s): don't
+                        # re-cut to the same clip (that reads as a stutter/repeat)
+                        # — let the last pinned clip play on through the beat.
+                        continue
+                if pick is None:
+                    pick = phrase_ranked.get((i, j))
+                # the very first cut is the thumbnail — chosen by measured
+                # stop-power, unless the shot-plan pinned this beat
+                if i == 0 and not timed_cuts and opening_pick and i not in forced_shots:
                     pick = opening_pick
-                if pick is not None and pick in used:
-                    pick = None          # once-only: a used asset can't repeat
+                if pick is not None and pick in blocked:
+                    pick = None
+                elif pick is not None and pick in used and not forced:
+                    pick = None          # once-only for AUTO picks; a pinned clip may repeat
                 if pick is None:
                     # neutral fill: first unused asset not clashing with the
                     # previous cut's look family. On the HOOK and the CTA the
