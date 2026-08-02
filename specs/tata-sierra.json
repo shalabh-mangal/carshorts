@@ -1,0 +1,118 @@
+{
+  "subject": "Tata Sierra",
+  "specs": [
+    {
+      "name": "power_petrol_na",
+      "value": "106 PS",
+      "source_url": "https://www.zigwheels.com/news-features/general-news/tata-sierra-dimensions-and-powertrain-specs-explained/57355/",
+      "source_sentence": "The 1.5-litre naturally-aspirated petrol makes 106 hp and 145 Nm, with a 6-speed manual or 7-speed dual-clutch automatic.",
+      "confidence": 0.8
+    },
+    {
+      "name": "power_petrol_turbo",
+      "value": "160 PS",
+      "source_url": "https://www.zigwheels.com/news-features/general-news/tata-sierra-dimensions-and-powertrain-specs-explained/57355/",
+      "source_sentence": "The 1.5-litre T-GDI Hyperion turbo-petrol makes 160 hp and 255 Nm, paired with a 6-speed torque-converter automatic.",
+      "confidence": 0.8
+    },
+    {
+      "name": "torque_petrol_turbo",
+      "value": "255 Nm",
+      "source_url": "https://www.zigwheels.com/news-features/general-news/tata-sierra-dimensions-and-powertrain-specs-explained/57355/",
+      "source_sentence": "The 1.5 T-GDI turbo-petrol produces 255 Nm of torque.",
+      "confidence": 0.8
+    },
+    {
+      "name": "power_diesel",
+      "value": "118 PS",
+      "source_url": "https://www.cardekho.com/tata/sierra/specs",
+      "source_sentence": "The 1.5-litre Kryojet turbo-diesel makes 116 bhp @ 4000 rpm (about 118 PS).",
+      "confidence": 0.8
+    },
+    {
+      "name": "torque_diesel",
+      "value": "280 Nm (diesel AT)",
+      "source_url": "https://www.cardekho.com/tata/sierra/specs",
+      "source_sentence": "The Kryojet diesel produces 280 Nm @ 1500-2750 rpm in the automatic.",
+      "confidence": 0.85
+    },
+    {
+      "name": "transmission",
+      "value": "6MT / 7-speed DCA / 6-speed AT",
+      "source_url": "https://www.zigwheels.com/news-features/general-news/tata-sierra-dimensions-and-powertrain-specs-explained/57355/",
+      "source_sentence": "Gearboxes include a 6-speed manual, a 7-speed dual-clutch automatic (NA petrol) and a 6-speed torque-converter automatic (turbo-petrol and diesel).",
+      "confidence": 0.8
+    },
+    {
+      "name": "drivetrain",
+      "value": "front-wheel drive (FWD, monocoque)",
+      "source_url": "https://www.cardekho.com/tata/sierra/specs",
+      "source_sentence": "The Tata Sierra is a front-wheel-drive monocoque SUV (no 4x4 option listed).",
+      "confidence": 0.85
+    },
+    {
+      "name": "adas",
+      "value": "Level 2 ADAS (up to L2+, 22 features)",
+      "source_url": "https://www.cardekho.com/tata/sierra/specs",
+      "source_sentence": "Higher variants get Level 2 ADAS (13 features), with an L2+ pack adding blind-spot, ISA and rear cross-traffic alert for 22 features.",
+      "confidence": 0.8
+    },
+    {
+      "name": "sunroof",
+      "value": "panoramic sunroof (voice-assisted)",
+      "source_url": "https://www.cardekho.com/tata/sierra/specs",
+      "source_sentence": "The Sierra offers a voice-assisted panoramic sunroof on higher trims.",
+      "confidence": 0.8
+    },
+    {
+      "name": "touchscreen",
+      "value": "12.3-inch touchscreen",
+      "source_url": "https://www.cardekho.com/tata/sierra/specs",
+      "source_sentence": "The top variant gets a 12.3-inch touchscreen (10.25-inch on mid trims).",
+      "confidence": 0.8
+    },
+    {
+      "name": "audio",
+      "value": "JBL 12-speaker with Dolby Atmos",
+      "source_url": "https://www.cardekho.com/tata/sierra/specs",
+      "source_sentence": "Top variants feature a JBL 12-speaker system with Dolby Atmos.",
+      "confidence": 0.8
+    },
+    {
+      "name": "airbags",
+      "value": "6 airbags (standard)",
+      "source_url": "https://www.cardekho.com/tata/sierra/specs",
+      "source_sentence": "Six airbags are standard across the range.",
+      "confidence": 0.85
+    },
+    {
+      "name": "seating",
+      "value": "5 seats",
+      "source_url": "https://www.cardekho.com/tata/sierra/specs",
+      "source_sentence": "The Sierra is a 5-seater SUV.",
+      "confidence": 0.9
+    },
+    {
+      "name": "boot_space",
+      "value": "622 litres",
+      "source_url": "https://www.cardekho.com/tata/sierra/specs",
+      "source_sentence": "Boot space is 622 litres, expanding to 1257 litres with the rear seat folded.",
+      "confidence": 0.8
+    },
+    {
+      "name": "ground_clearance",
+      "value": "205 mm",
+      "source_url": "https://www.cardekho.com/tata/sierra/specs",
+      "source_sentence": "Ground clearance is 205 mm.",
+      "confidence": 0.8
+    },
+    {
+      "name": "body_type",
+      "value": "monocoque midsize SUV",
+      "source_url": "https://www.cardekho.com/tata/sierra/specs",
+      "source_sentence": "The Sierra is a monocoque midsize SUV (4340 mm long, 2730 mm wheelbase).",
+      "confidence": 0.85
+    }
+  ],
+  "_source_note": "India facts from CarDekho + ZigWheels, 2026 launch. Owner CarDekho-verifies power/price at Gate 1. Sierra is FWD (NOT 4x4) — do not imply four-wheel-drive. Turbo-petrol/diesel outputs quoted in hp at source; PS values are ~equivalent. Claimed mileage (a 29.9 kmpl figure appeared in a Q&A block) is UNVERIFIED — omitted until confirmed."
+}
