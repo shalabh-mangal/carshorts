@@ -987,16 +987,27 @@ class Handler(BaseHTTPRequestHandler):
             # edge fallback. calm→deadpan, natural→default(""), hype→hype.
             _voice2persona = {"calm": "deadpan", "natural": "", "hype": "hype", "bhai": "bhai"}
             _persona = _voice2persona.get(card.get("voice", ""), card.get("persona", "deadpan"))
+            # Footage: if the owner dropped real clips, render from THOSE (own-only)
+            # and honour a hand shot-plan if present — never silently pull stock over
+            # the owner's footage. Only fall back to --stock when there are no clips.
+            from carshorts.core import paths as _pp
+            _ownd = _pp.car_dir(body["slug"]) / "own"
+            _ownclips = list(_ownd.glob("*.mp4")) if _ownd.exists() else []
+            _shotsf = _pp.SCRIPTS / f"{body['slug']}.shots.json"
+            if _ownclips:
+                _foot = ["--no-footage"] + (["--shots", str(_shotsf)] if _shotsf.exists() else [])
+            else:
+                _foot = ["--stock"]
             pf = QUEUE / f"{body['slug']}.progress.json"
             pf.write_text(json.dumps({"step": "rendering your mix (cloned voice, free)…",
                                       "at": datetime.datetime.now().isoformat(timespec="seconds")}))
             draft_out = card.get("draft") or f"out/{body['slug']}_draft.mp4"
             _spawn_worker(body["slug"], (
                 f"r=subprocess.run([sys.executable,'-m','carshorts.rendering.produce',"
-                f"'--script-file',{str(out)!r},'--spec',{card['spec']!r},'--skip-factcheck','--stock',"
+                f"'--script-file',{str(out)!r},'--spec',{card['spec']!r},'--skip-factcheck','--no-humor',"
                 f"'--voice-engine','chatterbox','--language',{card.get('language','english')!r},"
                 f"'--persona',{_persona!r},'--out',{draft_out!r}]"
-                f"+{card.get('render_flags', [])!r},capture_output=True,text=True);"
+                f"+{_foot!r}+{card.get('render_flags', [])!r},capture_output=True,text=True);"
                 f"cp=pathlib.Path({str(card_path)!r});c=json.loads(cp.read_text());"
                 "c['status']='awaiting_approval' if r.returncode==0 else 'rework_failed';"
                 "c['note']=('your mix rendered — watch the draft' if r.returncode==0 "
