@@ -30,6 +30,7 @@ COMMANDS: dict[str, str] = {
     "jokes": "carshorts.adapters.humor",
     "liven": "carshorts.rendering.liven",
     "writescript": "carshorts.writing.writescript",
+    "voices": "carshorts.rendering.voicesamples",
     # quality
     "qa": "carshorts.quality.qa",
     "vqa": "carshorts.quality.vqa",
