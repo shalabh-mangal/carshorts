@@ -3,23 +3,30 @@
   "specs": [
     {
       "name": "power",
-      "value": "130 PS",
+      "value": "115 PS",
       "source_url": "https://en.wikipedia.org/wiki/Hyundai_Creta",
-      "source_sentence": "The only engine option is the 1.6-litre Gamma petrol engine which produces 130 PS (96 kW; 128 hp) and 16.5 kg⋅m (162 N⋅m; 119 lb⋅ft) of torque.",
+      "source_sentence": "The Creta for the Indian market is offered with three engine options, 1.5-litre petrol producing 115 PS (85 kW; 113 hp) and develops 144 N⋅m of torque and a 1.5-litre diesel engine with 115 PS and 250 N⋅m of torque as well as a turbocharged petrol.",
       "confidence": 1.0
     },
     {
       "name": "torque",
-      "value": "162 N⋅m",
+      "value": "144 N⋅m",
       "source_url": "https://en.wikipedia.org/wiki/Hyundai_Creta",
-      "source_sentence": "The only engine option is the 1.6-litre Gamma petrol engine which produces 130 PS (96 kW; 128 hp) and 16.5 kg⋅m (162 N⋅m; 119 lb⋅ft) of torque.",
+      "source_sentence": "1.5-litre petrol producing 115 PS and develops 144 N⋅m (15 kg⋅m; 106 lb⋅ft) of torque.",
       "confidence": 1.0
     },
     {
       "name": "engine_litre",
-      "value": "1.6-litre",
+      "value": "1.5-litre",
       "source_url": "https://en.wikipedia.org/wiki/Hyundai_Creta",
-      "source_sentence": "The only engine option is the 1.6-litre Gamma petrol engine which produces 130 PS (96 kW; 128 hp) and 16.5 kg⋅m (162 N⋅m; 119 lb⋅ft) of torque.",
+      "source_sentence": "The Chinese model (codename: SU2c) is solely powered by the 1.5-litre petrol engine producing 115 PS (85 kW; 113 hp).",
+      "confidence": 1.0
+    },
+    {
+      "name": "diesel_torque",
+      "value": "250 N⋅m",
+      "source_url": "https://en.wikipedia.org/wiki/Hyundai_Creta",
+      "source_sentence": "a 1.5-litre diesel engine with 115 PS (85 kW; 113 hp) and 250 N⋅m (25 kg⋅m; 184 lb⋅ft) of torque.",
       "confidence": 1.0
     }
   ]
