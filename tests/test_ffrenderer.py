@@ -72,6 +72,31 @@ def test_portrait_video_cut_stays_cover_crop():
     assert "crop=1080:1920" in g["filter"]
 
 
+def test_framing_crop_does_subject_aware_offset_not_centre():
+    # adaptive framing: ("crop", fc) -> full-bleed cover-crop centred on the
+    # subject (x offset from fc), no pillarbox blur.
+    cuts = [(0.0, "wide.mp4")]
+    g = build_scene_filter(cuts, total=4.0, framing={"wide.mp4": ("crop", 0.72)})
+    f = g["filter"]
+    assert "boxblur" not in f                      # not pillarboxed
+    assert "iw*0.7200-ow/2" in f                   # crop centred on the subject
+    assert "force_original_aspect_ratio=increase" in f
+
+
+def test_framing_blurpad_via_dict_pillarboxes():
+    cuts = [(0.0, "wide.mp4")]
+    g = build_scene_filter(cuts, total=4.0, framing={"wide.mp4": ("blurpad", None)})
+    assert "boxblur" in g["filter"]                # subject too wide -> keep whole
+
+
+def test_framing_dict_takes_precedence_over_legacy_landscape():
+    cuts = [(0.0, "wide.mp4")]
+    g = build_scene_filter(cuts, total=4.0,
+                           landscape_paths=frozenset({"wide.mp4"}),
+                           framing={"wide.mp4": ("crop", 0.5)})
+    assert "boxblur" not in g["filter"]            # framing decision wins
+
+
 def test_every_third_video_cut_speed_ramps():
     # j==2 is the 3rd cut -> speed ramp in the moviepy path
     cuts = [(0.0, "a.mp4"), (2.0, "b.mp4"), (4.0, "c.mp4"), (6.0, "d.mp4")]
