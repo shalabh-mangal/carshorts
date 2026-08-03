@@ -225,10 +225,17 @@ def render_spec_sheet(spec_sheet) -> str:
 FORMATS = {
     "spotlight": "",   # the default single-car structure defined above
     "vs": (
-        "FORMAT OVERRIDE — VS BATTLE: frame the whole short as CAR A vs CAR B "
-        "decided by exactly 3 numbers. Only compare figures present in the "
-        "sheet(s); never invent the rival's numbers. Verdict beat picks a "
-        "winner per number; CTA asks viewers to defend their pick."
+        "FORMAT OVERRIDE — VS BATTLE: frame the whole short as CAR A vs CAR B, "
+        "reusing the proven 5-role structure so the pipeline/overlays/framing are "
+        "unchanged. Map roles to versus content: HOOK = the matchup + one bold "
+        "contrast (price parity, or the biggest number gap); SPEC = car A's "
+        "standout vs car B; VALUE = car B's counter (its trump features); PEAK = "
+        "the verdict + ask the LIKE; CTA = the rivalry poll 'A or B? comment 1 or "
+        "2'. Facts come from a MERGED, namespaced spec sheet (cara_*, carb_* — one "
+        "--spec file so citations + number-guard cover both cars). Only compare "
+        "figures present in the sheet; NEVER invent the rival's numbers; a car's "
+        "positioning ('the safe best-seller') is allowed only as clear opinion. "
+        "Alternate A/B footage per beat so the visuals sell the head-to-head."
     ),
     "five_things": (
         "FORMAT OVERRIDE — 5 THINGS NOBODY TELLS YOU: five rapid beats, each a "
