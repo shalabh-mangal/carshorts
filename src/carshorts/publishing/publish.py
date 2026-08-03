@@ -47,7 +47,7 @@ def post_comment(video_id: str, text: str) -> str | None:
         ).execute()
         print(f"   poll comment posted (pin it in Studio): {r['id']}")
         return r["id"]
-    except HttpError as exc:  # noqa: BLE001 — never let a comment failure break publish
+    except HttpError as exc:  # never let a comment failure break publish
         print(f"   poll comment NOT posted ({str(exc)[:120]}); re-auth for youtube.force-ssl")
         return None
 

@@ -29,7 +29,7 @@ _PROMPT = ("Cinematic slow dolly push-in on a parked car, smooth steady camera "
 # 73 frames @ 24fps (~3.0s), 40 steps → smooth, stable, no warp. ~2× the lo-fi
 # comedy default, but the REAL car is on-screen for seconds so it earns the cost.
 # Pre-generated once per car (never mid-render), so the minutes are free overnight.
-_HQ = dict(width=448, height=256, frames=73, steps=40)
+_HQ = {"width": 448, "height": 256, "frames": 73, "steps": 40}
 
 
 def _slug(name: str) -> str:
