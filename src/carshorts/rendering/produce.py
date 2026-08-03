@@ -622,7 +622,8 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
             voice_engine: str = "edge", persona: str = "",
             shots_file: str | None = None, kwcaps: bool = True,
             polish_audio: bool = True, plan_only: bool = False,
-            humor: bool | None = None, overlay_theme: str = "auto") -> str:
+            humor: bool | None = None, overlay_theme: str = "auto",
+            footage_slug: str | None = None) -> str:
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
     overlay_theme = _resolve_overlay_theme(overlay_theme)
@@ -694,11 +695,18 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     else:
         print("2/4  no spec sheet given — both gates skipped, video is UNVERIFIED.")
 
+    # Footage lives under one car folder. Normally that's the subject's slug, but
+    # a COMPARISON's card slug ("sierra-vs-creta") differs from the subject slug
+    # ("tata-sierra-vs-hyundai-creta"), and the portal drops/looks-for clips under
+    # the CARD slug — so accept an explicit footage_slug so dropped clips are
+    # actually found (else every comparison silently renders on stock).
+    _fslug = footage_slug or _slug(script.subject)
+
     # --- Car photos: prefer the hand-VETTED local folder; fetch CC photos only
     # when it's empty (fetched images must then be vetted — old-gen/plates).
     images: list[str] = []
     if footage:
-        car_root = paths.car_dir(_slug(script.subject))
+        car_root = paths.car_dir(_fslug)
         img_dir = str(car_root / "images")
         # OFFICIAL PRESS outranks everything among stills (highest quality,
         # correct generation, no plates) — then the vetted image folder.
@@ -756,7 +764,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     stock_videos: list[str] = []
     use_stock = stock if stock is not None else True
     if use_stock:
-        car_stock_dir = paths.car_dir(_slug(script.subject)) / "stock"
+        car_stock_dir = paths.car_dir(_fslug) / "stock"
         car_stock = sorted(str(p) for p in car_stock_dir.glob("*.mp4"))
         generic_stock = sorted(str(p) for p in paths.STOCK.glob("*.mp4"))
         stock_videos = car_stock + generic_stock
@@ -779,7 +787,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     tts = make_tts(engine=voice_engine, persona=persona, voice=voice, language=language)
     print(f"4/5  voicing {len(script.segments)} sections "
           f"(engine={voice_engine}, persona={persona or 'default'})...")
-    ai_dir = paths.car_dir(_slug(script.subject)) / "own"
+    ai_dir = paths.car_dir(_fslug) / "own"
 
     # --- Voice all sections first so we know each duration, then distribute a
     # visual POOL across fast sub-scenes (~2.8s cuts). Every asset is used at
@@ -1275,7 +1283,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     # outranks the persona default: the CAR's personality picks the sound.
     music_path: str | None = None
     sound_profile: dict = {}
-    profile_file = paths.SOUND_PROFILES / f"{_slug(script.subject)}.json"
+    profile_file = paths.SOUND_PROFILES / f"{_fslug}.json"
     if profile_file.exists():
         try:
             sound_profile = json.loads(profile_file.read_text())
@@ -1422,7 +1430,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
 
     lock.unlink(missing_ok=True)
 
-    credits = attribution_lines(f"assets/cars/{_slug(script.subject)}/images") if images else []
+    credits = attribution_lines(f"assets/cars/{_fslug}/images") if images else []
     if credits:
         print("\nImage credits (put these in the YouTube description):")
         for line in credits:
@@ -1469,6 +1477,9 @@ def main() -> None:
                         help="Disable the AI humor layer.")
     parser.add_argument("--overlay-theme", default="auto", choices=["auto", "luxe", "frost"],
                         help="Premium overlay look: luxe (A), frost (B), or auto (alternate A/B).")
+    parser.add_argument("--footage-slug",
+                        help="Car folder for footage (own/stock/images). Defaults to the "
+                             "subject slug; set it for comparisons whose card slug differs.")
     args = parser.parse_args()
 
     stock = True if args.stock else (False if args.no_stock else None)
@@ -1479,7 +1490,8 @@ def main() -> None:
                    voice_engine=args.voice_engine, persona=args.persona,
                    shots_file=args.shots, kwcaps=not args.no_kwcaps,
                    polish_audio=not args.no_polish, plan_only=args.plan_only,
-                   humor=args.humor, overlay_theme=args.overlay_theme)
+                   humor=args.humor, overlay_theme=args.overlay_theme,
+                   footage_slug=args.footage_slug)
     print(f"\nDone -> {path}")
 
 

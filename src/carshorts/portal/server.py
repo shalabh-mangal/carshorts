@@ -1044,7 +1044,7 @@ class Handler(BaseHTTPRequestHandler):
                 f"r=subprocess.run([sys.executable,'-m','carshorts.rendering.produce',"
                 f"'--script-file',{str(out)!r},'--spec',{card['spec']!r},'--skip-factcheck','--no-humor',"
                 f"'--voice-engine','chatterbox','--language',{card.get('language','english')!r},"
-                f"'--persona',{_persona!r},'--out',{draft_out!r}]"
+                f"'--persona',{_persona!r},'--footage-slug',{body['slug']!r},'--out',{draft_out!r}]"
                 f"+{_foot!r}+{card.get('render_flags', [])!r},capture_output=True,text=True);"
                 f"(subprocess.run([sys.executable,'-m','carshorts.agents.critic',{body['slug']!r}],"
                 "capture_output=True) if r.returncode==0 else None);"
