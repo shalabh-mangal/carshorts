@@ -339,9 +339,20 @@ def _pop_candidates(seg, sheet) -> list[dict]:
         if isinstance(c, dict):
             anchor = c.get("anchor", "")
             show = c.get("show", "") or anchor
-            kind = ("card" if c.get("card")
-                    else "reaction" if show.strip().lower() != anchor.strip().lower()
-                    else kind_of(show))
+            custom = show.strip().lower() != anchor.strip().lower()
+            # A spec/feature LABEL ("160 PS TURBO", "PANORAMIC ROOF") must track its
+            # word and STAY on the rail until the next spec — NOT behave like an
+            # editorial reaction (fires late, own upper slot, fixed 1.1s, collides
+            # when several land close together). So only a single-word custom show
+            # ("INSPIRED.", "STEAL!") is a reaction; numbers and multi-word feature
+            # labels go to the rail. Explicit {"reaction": true} forces a reaction.
+            if c.get("card"):
+                kind = "card"
+            elif c.get("reaction") or (custom and not any(ch.isdigit() for ch in show)
+                                       and len(show.split()) == 1):
+                kind = "reaction"
+            else:
+                kind = kind_of(show)
             label = c.get("label", "")
         else:
             anchor, show, kind, label = c, c, kind_of(c), ""
