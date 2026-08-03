@@ -2,17 +2,136 @@
   "car": "Tata Sierra vs Hyundai Creta",
   "slug": "sierra-vs-creta",
   "spec": "specs/sierra-vs-creta.json",
-  "status": "script_review",
+  "status": "awaiting_approval",
   "created": "2026-08-03T16:00:00",
   "language": "english",
   "persona": "deadpan",
   "voice": "calm",
   "format": "vs",
-  "note": "COMPARISON video (our first). Gate 1: pick one of 3 script options + a voice. Then drop CRETA footage in the content area (Sierra clips are ready; expected Creta names: creta_hero, creta_front, creta_side, creta_interior). Verify the Creta TURBO figure on CarDekho before render — it's the one generation-ambiguous spec.",
+  "note": "mix revised per brain critique — re-rendering on Sierra footage (Creta beat pending your clips)",
   "target": {
     "views": 3000,
     "likes": ">15",
     "comments": ">5 (rivalry poll — Sierra or Creta)",
     "subs": "increase"
+  },
+  "script_build": {
+    "hook": {
+      "role": "hook",
+      "text": "India's favourite SUV finally has a real rival — and both cost near eleven lakh. Sierra, or Creta?",
+      "cited_spec_names": [
+        "sierra_price",
+        "creta_price"
+      ],
+      "pops": [
+        {
+          "anchor": "lakh",
+          "show": "~₹11L · EX-SHOWROOM",
+          "card": true
+        }
+      ]
+    },
+    "spec": {
+      "role": "spec",
+      "text": "The Sierra flexes: a hundred-sixty turbo, a panoramic roof, thirteen-speaker JBL.",
+      "cited_spec_names": [
+        "sierra_power_turbo",
+        "sierra_sunroof",
+        "sierra_audio"
+      ],
+      "pops": [
+        {
+          "anchor": "turbo",
+          "show": "160 PS TURBO"
+        },
+        {
+          "anchor": "roof",
+          "show": "PANORAMIC ROOF"
+        },
+        {
+          "anchor": "JBL",
+          "show": "13-SPKR JBL"
+        }
+      ]
+    },
+    "value": {
+      "role": "value",
+      "text": "The Creta counters: ventilated seats, wireless charging, and a bulletproof reputation.",
+      "cited_spec_names": [
+        "creta_value_features"
+      ],
+      "pops": [
+        {
+          "anchor": "seats",
+          "show": "VENTILATED SEATS"
+        },
+        {
+          "anchor": "charging",
+          "show": "WIRELESS CHARGING"
+        }
+      ]
+    },
+    "peak": {
+      "role": "peak",
+      "text": "One's the safe bet, the other turns heads — but which is smarter? Smash like for your pick.",
+      "cited_spec_names": [],
+      "pops": [
+        {
+          "anchor": "like",
+          "show": "LIKE"
+        }
+      ]
+    },
+    "cta": {
+      "role": "cta",
+      "text": "Sierra or Creta? Comment one or two. Like, share, subscribe.",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  },
+  "script": "D:\\Personal Projects\\carshorts\\data\\scripts\\sierra-vs-creta_built.script.json",
+  "script_choice": "custom mix",
+  "critique": {
+    "verdict": "revise",
+    "score": 6,
+    "summary": "The render has some strong moments, but falls short in clip matching, overlay coverage, and tightness.",
+    "strengths": [
+      "The hook effectively uses a curiosity gap and includes a concrete number.",
+      "The overlays are well-designed and easy to read.",
+      "The CTA beat encourages engagement with a binary poll."
+    ],
+    "issues": [
+      {
+        "beat": "hook",
+        "problem": "The 'sierra_hero.mp4' clip repeats due to a 1s mismatch between clip length and playback time.",
+        "fix": "Trim the clip or adjust the playback time to match.",
+        "severity": "low"
+      },
+      {
+        "beat": "spec",
+        "problem": "The clip 'sierra_sand.mp4' does not directly match the narration about the Sierra's features.",
+        "fix": "Replace with a clip that shows the 160 PS turbo or panoramic roof.",
+        "severity": "med"
+      },
+      {
+        "beat": "value",
+        "problem": "The clip 'car_speedometer_closeup_5777431.mp4' is generic stock footage and does not match the narration about the Creta.",
+        "fix": "Use a clip that shows the Creta's ventilated seats or wireless charging.",
+        "severity": "high"
+      },
+      {
+        "beat": "peak",
+        "problem": "The narration does not have a clear bridge to the payoff, feeling like two separate videos.",
+        "fix": "Add a mini-cliffhanger or a transitional phrase to connect the spec and value beats to the peak.",
+        "severity": "med"
+      },
+      {
+        "beat": "cta",
+        "problem": "The 'sierra_lake.mp4' clip repeats due to a 1.2s mismatch between clip length and playback time.",
+        "fix": "Trim the clip or adjust the playback time to match.",
+        "severity": "low"
+      }
+    ],
+    "reviewed_at": "2026-08-03T19:48:28"
   }
 }

@@ -1,8 +1,8 @@
 {
-  "_note": "Versus routing: hook = matchup (Sierra opener, QA opens-on-subject), spec = Sierra (power beat), value = CRETA (counter beat — needs Creta clips dropped), peak = Sierra flourish, cta = both + loop back to Sierra. Drop Creta clips named: creta_hero, creta_front, creta_side, creta_interior.",
+  "_note": "Versus routing (revised). hook=matchup (Sierra opener). spec=Sierra: sand(turbo/driving)+sunroof(panoramic roof line). value=CRETA (needs Creta clips: creta_interior, creta_front). peak=Sierra scenics. cta=Creta+Sierra loop. Distinct Sierra clips to avoid repeats; dash/seats stay free to backfill the Creta beat until real Creta clips are dropped.",
   "0": ["sierra_hero.mp4", "creta_hero.mp4"],
-  "1": ["sierra_sand.mp4", "sierra_grass.mp4"],
+  "1": ["sierra_sand.mp4", "sierra_sunroof.mp4"],
   "2": ["creta_interior.mp4", "creta_front.mp4"],
-  "3": ["sierra_sunroof.mp4", "sierra_sea.mp4"],
-  "4": ["creta_side.mp4", "sierra_hero.mp4"]
+  "3": ["sierra_sea.mp4", "sierra_grass.mp4"],
+  "4": ["creta_side.mp4", "sierra_lake.mp4"]
 }

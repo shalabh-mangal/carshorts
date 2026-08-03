@@ -1,10 +1,10 @@
 {
   "subject": "Tata Sierra vs Hyundai Creta",
-  "_angle": "OPT3 · Same money, different vibe — price parity hook, feature-for-feature, punchy; calm delivery",
+  "_angle": "OPT3 · Same money, different vibe — bold-rival hook, feature-for-feature, punchy cliffhanger; calm delivery (revised per brain critique)",
   "segments": [
     {
       "role": "hook",
-      "text": "Eleven lakh gets you the nation's darling Creta — or the legend reborn, the Sierra.",
+      "text": "India's favourite SUV finally has a real rival — and both cost near eleven lakh. Sierra, or Creta?",
       "cited_spec_names": ["sierra_price", "creta_price"],
       "pops": [{"anchor": "lakh", "show": "~₹11L · EX-SHOWROOM", "card": true}]
     },
@@ -12,23 +12,23 @@
       "role": "spec",
       "text": "The Sierra flexes: a hundred-sixty turbo, a panoramic roof, thirteen-speaker JBL.",
       "cited_spec_names": ["sierra_power_turbo", "sierra_sunroof", "sierra_audio"],
-      "pops": [{"anchor": "turbo", "show": "160 PS TURBO"}, {"anchor": "roof", "show": "PANORAMIC ROOF"}]
+      "pops": [{"anchor": "turbo", "show": "160 PS TURBO"}, {"anchor": "roof", "show": "PANORAMIC ROOF"}, {"anchor": "JBL", "show": "13-SPKR JBL"}]
     },
     {
       "role": "value",
       "text": "The Creta counters: ventilated seats, wireless charging, and a bulletproof reputation.",
       "cited_spec_names": ["creta_value_features"],
-      "pops": [{"anchor": "seats", "show": "VENTILATED SEATS"}]
+      "pops": [{"anchor": "seats", "show": "VENTILATED SEATS"}, {"anchor": "charging", "show": "WIRELESS CHARGING"}]
     },
     {
       "role": "peak",
-      "text": "New-age drama, or safe-bet sense? Smash like for your pick.",
+      "text": "One's the safe bet, the other turns heads — but which is smarter? Smash like for your pick.",
       "cited_spec_names": [],
       "pops": [{"anchor": "like", "show": "LIKE"}]
     },
     {
       "role": "cta",
-      "text": "Sierra or Creta? One or two in the comments. Like, share, and subscribe.",
+      "text": "Sierra or Creta? Comment one or two. Like, share, subscribe.",
       "cited_spec_names": [],
       "pops": []
     }
