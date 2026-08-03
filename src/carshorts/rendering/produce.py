@@ -594,6 +594,26 @@ def _is_quota_error(exc: Exception) -> bool:
     return "429" in text or "quota" in text or "resourceexhausted" in text
 
 
+def _resolve_overlay_theme(name: str) -> str:
+    """Pick the overlay look. Explicit 'luxe'/'frost' pass through; 'auto'
+    alternates A/B across renders (persisted) so both get balanced feed exposure
+    for the owner's A/B test — which look drives better retention."""
+    name = (name or "auto").lower()
+    if name in ("luxe", "frost"):
+        return name
+    state = paths.DATA / "overlay_ab_state.json"
+    try:
+        last = json.loads(state.read_text(encoding="utf-8")).get("last", "")
+    except Exception:  # noqa: BLE001 — missing/bad state just starts the cycle
+        last = ""
+    nxt = "frost" if last == "luxe" else "luxe"   # first render -> luxe (owner's pick)
+    try:
+        state.write_text(json.dumps({"last": nxt}), encoding="utf-8")
+    except OSError:
+        pass
+    return nxt
+
+
 def produce(spec_path: str | None, out_path: str, language: str = "english",
             voice: str | None = None, script_file: str | None = None,
             skip_factcheck: bool = False, provider: str | None = None,
@@ -602,9 +622,10 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
             voice_engine: str = "edge", persona: str = "",
             shots_file: str | None = None, kwcaps: bool = True,
             polish_audio: bool = True, plan_only: bool = False,
-            humor: bool | None = None) -> str:
+            humor: bool | None = None, overlay_theme: str = "auto") -> str:
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
+    overlay_theme = _resolve_overlay_theme(overlay_theme)
     # Humor layer: flash an AI comedy cutaway on the punchline. Defaults ON when
     # the video-gen env is present. NEVER touches the car — see the peak-beat
     # insertion below (mid-video only; the opener/closer stay the real car).
@@ -1227,7 +1248,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         "subject_families": sorted(families),
         "quality_warnings": quality_warnings,
         "render": {"voice_engine": voice_engine, "persona": persona or "default",
-                   "own_available": own_available},
+                   "own_available": own_available, "overlay_theme": overlay_theme},
     }, indent=2, ensure_ascii=False))
     if plan_only:
         print(f"     plan-only: manifest -> {manifest_path}")
@@ -1286,7 +1307,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     if polish_audio:
         voice_only = str(out.with_suffix(".voice.mp4"))
         renderer.render_sections(sections, voice_only, music_path=None,
-                                 draw_captions=captions)
+                                 draw_captions=captions, overlay_theme=overlay_theme)
         boundaries = getattr(renderer, "last_boundaries", [])
         value_start = None
         cursor = 0.0
@@ -1303,10 +1324,10 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         except Exception as exc:  # noqa: BLE001 — fall back to unpolished
             print(f"     polish failed ({exc}); delivering unpolished mix.")
             renderer.render_sections(sections, str(out), music_path=music_path,
-                                     draw_captions=captions)
+                                     draw_captions=captions, overlay_theme=overlay_theme)
     else:
         renderer.render_sections(sections, str(out), music_path=music_path,
-                                 draw_captions=captions)
+                                 draw_captions=captions, overlay_theme=overlay_theme)
 
     # Render manifest: the machine-checkable plan of what SHOULD be on screen
     # when — the QA gate validates the rendered file against it.
@@ -1369,6 +1390,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
             "rendered_at": _dt.datetime.now().isoformat(timespec="seconds"),
             "script_file": script_file or str(out.with_suffix(".script.json")),
             "persona": persona or "default", "voice_engine": voice_engine,
+            "overlay_theme": overlay_theme,
             "language": language, "music": Path(music_path).name if music_path else "none",
             "captions": captions, "word_count": script.approx_word_count(),
             "sections": len(script.segments),
@@ -1433,6 +1455,8 @@ def main() -> None:
                         help="Flash an AI comedy cutaway on the peak beat (default: on if .venv-video exists).")
     parser.add_argument("--no-humor", dest="humor", action="store_false",
                         help="Disable the AI humor layer.")
+    parser.add_argument("--overlay-theme", default="auto", choices=["auto", "luxe", "frost"],
+                        help="Premium overlay look: luxe (A), frost (B), or auto (alternate A/B).")
     args = parser.parse_args()
 
     stock = True if args.stock else (False if args.no_stock else None)
@@ -1443,7 +1467,7 @@ def main() -> None:
                    voice_engine=args.voice_engine, persona=args.persona,
                    shots_file=args.shots, kwcaps=not args.no_kwcaps,
                    polish_audio=not args.no_polish, plan_only=args.plan_only,
-                   humor=args.humor)
+                   humor=args.humor, overlay_theme=args.overlay_theme)
     print(f"\nDone -> {path}")
 
 

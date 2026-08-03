@@ -22,7 +22,7 @@ from __future__ import annotations
 import math
 
 from carshorts.adapters.renderer import (
-    TEXT_WHITE,
+    THEME_LUXE,
     _countup_frames,
     _lss_strip_png,
     _overlay_png,
@@ -82,11 +82,13 @@ def _static_layer(src_png: str, scale: float, top_px: int, size, tdir: str,
     return {"frames": [png], "fps": None, "start": start, "end": end}
 
 
-def build_layers(sections, durations, size, fps: int, tdir: str) -> list[dict]:
+def build_layers(sections, durations, size, fps: int, tdir: str,
+                 theme=THEME_LUXE) -> list[dict]:
     """Bake every word-pop across all sections into full-frame overlay layers.
 
     Mirrors renderer.render_sections' word_pops block exactly (same generators,
     positions, easings, start/dur maths), so the composited result is identical.
+    `theme` selects the premium overlay look (A "luxe" / B "frost").
     """
     _w, h = size
     y_top = int(h * 0.30)
@@ -106,7 +108,7 @@ def build_layers(sections, durations, size, fps: int, tdir: str) -> list[dict]:
             tag = f"{k}_{pi}"
 
             if kind == "card":
-                src = _countup_frames(pop_text, label, tdir, f"card_{tag}")
+                src = _countup_frames(pop_text, label, tdir, f"card_{tag}", theme=theme)
                 seq = _seq_layer(src, 24, y_top, size, tdir, f"card_{tag}", start)
                 layers.append(seq)
                 hold = _static_layer(src[-1], 1.0, y_top, size, tdir,
@@ -115,8 +117,8 @@ def build_layers(sections, durations, size, fps: int, tdir: str) -> list[dict]:
                     layers.append(hold)
             elif kind in ("reaction", "lss"):
                 if kind == "reaction":
-                    src = _overlay_png(pop_text.upper(), 110, TEXT_WHITE,
-                                       f"{tdir}/rx_{tag}.png", fit_one_line=True)
+                    src = _overlay_png(pop_text.upper(), 110, f"{tdir}/rx_{tag}.png",
+                                       theme=theme, kind="reaction", fit_one_line=True)
                 else:
                     src = _lss_strip_png(f"{tdir}/lss_{tag}.png",
                                          active=int(label) if label.isdigit() else 3)
@@ -127,9 +129,8 @@ def build_layers(sections, durations, size, fps: int, tdir: str) -> list[dict]:
                 if hold:
                     layers.append(hold)
             else:  # word / number, on the rail with settle easing
-                src = _overlay_png(pop_text.upper(), 96, TEXT_WHITE,
-                                   f"{tdir}/pop_{tag}.png",
-                                   accent_digits=(kind == "number"))
+                src = _overlay_png(pop_text.upper(), 96, f"{tdir}/pop_{tag}.png",
+                                   theme=theme, kind=kind)
                 layers.append(_anim_layer(src, _settle_scale, SETTLE_DUR, y_rail,
                                           size, fps, tdir, tag, start))
                 hold = _static_layer(src, 1.0, y_rail, size, tdir, tag,
@@ -142,7 +143,7 @@ def build_layers(sections, durations, size, fps: int, tdir: str) -> list[dict]:
                     ph = _I.open(src).height
                     bar_w = min(pw - 90, max(140, pw // 3))
                     bar_top = y_rail + ph - 8
-                    bframes = _wipe_bar_frames(bar_w, tdir, f"bar_{tag}")
+                    bframes = _wipe_bar_frames(bar_w, tdir, f"bar_{tag}", color=theme.accent)
                     wl = _seq_layer(bframes, 34, bar_top, size, tdir, f"bar_{tag}", start)
                     layers.append(wl)
                     bhold = _static_layer(bframes[-1], 1.0, bar_top, size, tdir,
