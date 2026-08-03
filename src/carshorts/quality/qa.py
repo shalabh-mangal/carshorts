@@ -191,10 +191,16 @@ def run_qa(video_path: str, manifest_path: str | None = None,
         loops = [w for w in warns if w.startswith("LOOP")]
         drops = [w for w in warns if w.startswith("DROPPED")]
         stock = [w for w in warns if w.startswith("STOCK")]
+        shotmiss = [w for w in warns if w.startswith("SHOT-PLAN")]
         check("no looped/repeated footage", not loops,
               f"{len(loops)} looping cut(s): {loops[0]}" if loops else "")
         check("no dropped overlays", not drops,
               f"{len(drops)} dropped: {drops[0]}" if drops else "")
+        # shot-plan clips missing from the pool -> a beat used footage that may not
+        # match its narration (e.g. a comparison's Creta beat rendered on Sierra
+        # clips because the Creta footage wasn't dropped yet).
+        check("shot-plan clips all present", not shotmiss,
+              f"{len(shotmiss)} unresolved: {shotmiss[0]}" if shotmiss else "")
         # footage-source + voice self-checks — the mistake classes that shipped a
         # different video than intended (stock over owner clips; edge robot voice
         # instead of the cloned channel voice). produce records both in the manifest.

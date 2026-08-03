@@ -276,6 +276,39 @@ def test_dropped_overlay_is_flagged(fixture_tree, monkeypatch):
     assert any(w.startswith("DROPPED") and "SUNROOF" in w for w in warns), warns
 
 
+def test_shot_plan_missing_clip_is_flagged(fixture_tree, monkeypatch):
+    """A shot-plan beat that names a clip absent from the pool must surface as a
+    'SHOT-PLAN' quality warning — the render silently falls back to other footage
+    (e.g. a comparison's Creta beat rendered on Sierra clips because Creta footage
+    wasn't dropped), so QA must turn red rather than ship a mismatch."""
+    for key in ("GROQ_API_KEY", "PEXELS_API_KEY", "GEMINI_API_KEY", "ELEVENLABS_API_KEY"):
+        monkeypatch.delenv(key, raising=False)
+    monkeypatch.setenv("CARSHORTS_LLM", "ollama")
+    from carshorts.rendering.produce import produce
+
+    script = {
+        "subject": "Test Car",
+        "segments": [
+            {"role": "hook", "text": "Is the Test Car the smart buy this year, or a trap?",
+             "cited_spec_names": [], "pops": []},
+            {"role": "spec", "text": "It makes 100 PS of power, and 200 Nm of torque, which is plenty.",
+             "cited_spec_names": ["power", "torque"], "pops": []},
+            {"role": "cta", "text": "Would you take one home? Say it in the comments, and follow.",
+             "cited_spec_names": [], "pops": []},
+        ],
+    }
+    Path("script_shot.json").write_text(json.dumps(script))
+    Path("shots_missing.json").write_text(json.dumps({"1": ["nonexistent_rival_clip.mp4"]}))
+    manifest_path = produce(
+        spec_path="specs/test-car.json", out_path="out/test_shot.mp4",
+        script_file="script_shot.json", skip_factcheck=True, voice_engine="mock",
+        provider=None, plan_only=True, music="none", stock=False,
+        shots_file="shots_missing.json",
+    )
+    warns = json.loads(Path(manifest_path).read_text()).get("quality_warnings", [])
+    assert any(w.startswith("SHOT-PLAN") for w in warns), warns
+
+
 def test_manifest_records_render_meta(fixture_tree, monkeypatch):
     """produce must record the render's voice engine + footage-source facts in the
     manifest so QA can self-check them (edge-voice / stock-over-own were the
