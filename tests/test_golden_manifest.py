@@ -276,6 +276,25 @@ def test_dropped_overlay_is_flagged(fixture_tree, monkeypatch):
     assert any(w.startswith("DROPPED") and "SUNROOF" in w for w in warns), warns
 
 
+def test_manifest_records_render_meta(fixture_tree, monkeypatch):
+    """produce must record the render's voice engine + footage-source facts in the
+    manifest so QA can self-check them (edge-voice / stock-over-own were the
+    'shipped a different video' mistakes). Locks the recording half of that gate."""
+    for key in ("GROQ_API_KEY", "PEXELS_API_KEY", "GEMINI_API_KEY", "ELEVENLABS_API_KEY"):
+        monkeypatch.delenv(key, raising=False)
+    monkeypatch.setenv("CARSHORTS_LLM", "ollama")
+    from carshorts.rendering.produce import produce
+
+    manifest_path = produce(
+        spec_path="specs/test-car.json", out_path="out/test_meta.mp4",
+        script_file="script.json", skip_factcheck=True, voice_engine="mock",
+        provider=None, plan_only=True, music="none", stock=False,
+    )
+    r = json.loads(Path(manifest_path).read_text()).get("render", {})
+    assert r.get("voice_engine") == "mock"
+    assert "own_available" in r
+
+
 def test_stills_never_flagged_as_loops():
     """Loop detection must ignore stills (a still legitimately fills any cut) —
     only real video clips shorter than their cut count as looped footage. This

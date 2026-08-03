@@ -190,10 +190,19 @@ def run_qa(video_path: str, manifest_path: str | None = None,
         warns = manifest.get("quality_warnings", [])
         loops = [w for w in warns if w.startswith("LOOP")]
         drops = [w for w in warns if w.startswith("DROPPED")]
+        stock = [w for w in warns if w.startswith("STOCK")]
         check("no looped/repeated footage", not loops,
               f"{len(loops)} looping cut(s): {loops[0]}" if loops else "")
         check("no dropped overlays", not drops,
               f"{len(drops)} dropped: {drops[0]}" if drops else "")
+        # footage-source + voice self-checks — the mistake classes that shipped a
+        # different video than intended (stock over owner clips; edge robot voice
+        # instead of the cloned channel voice). produce records both in the manifest.
+        check("owner footage used when available", not stock, stock[0] if stock else "")
+        _rmeta = manifest.get("render", {})
+        _eng = _rmeta.get("voice_engine")
+        check("cloned channel voice (not edge fallback)", _eng != "edge",
+              f"engine={_eng}" if _eng else "")
 
     print("     ── RENDER QA ──")
     for name, ok, det in checks:

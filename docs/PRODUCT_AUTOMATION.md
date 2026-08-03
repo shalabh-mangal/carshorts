@@ -87,6 +87,26 @@ facts into one beat via multiple `pops` instead of adding a second same-role
 beat. (Direct-render scripts like `<slug>_built.script.json` may have more
 beats — this contract is only for builder-facing option files.)
 
+## Automated self-check gate (every render, before the owner sees it)
+The pipeline now verifies its own work — the mistake classes we hit manually are
+QA-**RED**, so a bad render never reaches Gate 2 unflagged. `produce` records the
+facts in the manifest; `quality/qa.py` gates on them:
+- **no looped/repeated footage** (a video cut longer than its clip)
+- **no dropped overlays** (a scripted pop whose anchor wasn't spoken)
+- **no repeated asset** (same clip reused when the pool allowed distinct)
+- **owner footage used when available** (no stock over the owner's own clips)
+- **cloned channel voice, not the edge fallback**
+- opens + closes on the subject car; overlays inside their sections; loudness/duration
+
+All three render paths — **draft lock, final approve (`pipeline.approve`),
+edit-rerender** — now share ONE command contract: cloned voice + the picked
+persona (voice→persona map), the owner's own footage + `<slug>.shots.json` when
+present (else stock), and `--no-humor`. So the **final can't diverge from the
+approved draft** (the bug where "what shipped" ≠ "what was approved").
+
+What deterministic QA still can't judge — is the footage the *right generation*,
+is the joke funny — stays the owner's Gate 1/2 + advisory VQA. That's by design.
+
 ## Working discipline (how we avoid re-iteration)
 - **Staged, per car:** finalize script → voice → then video. Never overwrite a
   locked script.
