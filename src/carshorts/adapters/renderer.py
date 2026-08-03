@@ -16,6 +16,7 @@ from __future__ import annotations
 import os
 import tempfile
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 
 from carshorts.core import paths
 
@@ -139,10 +140,14 @@ _HEAVY_FONTS = [
     r"C:\Windows\Fonts\seguisb.ttf",                         # Windows: Segoe UI Semibold
 ] + _FONT_CANDIDATES
 
-# Overlay palette (research-derived): white base + ONE desaturated-cyan accent
-# on numbers only. Yellow is banned — it pattern-matches to clip-farm content.
+# Overlay palette. White base + ONE restrained metallic accent (champagne) —
+# replaces the old tech-cyan, which read gaming/clip-farm and clashed on bright
+# cars. Yellow stays banned. (ACCENT_CYAN kept for back-compat; no longer used.)
 TEXT_WHITE = (255, 255, 255, 255)
-ACCENT_CYAN = (126, 229, 227, 255)      # #7EE5E3 — the channel accent
+OFFWHITE = (245, 242, 236, 255)
+ACCENT_CYAN = (126, 229, 227, 255)      # legacy — retired 2026-08-03
+ACCENT_CHAMPAGNE = (201, 162, 75, 255)      # #C9A24B — deep metallic
+ACCENT_CHAMPAGNE_LT = (222, 197, 140, 255)  # #DEC58C — legible on dark footage
 STROKE_BLACK = (0, 0, 0, 255)
 
 # Stills are darkened so white overlay text stays readable over any photo.
@@ -156,6 +161,100 @@ DEFAULT_DARKEN = 0.35
 # Pops that fire during the opening cut keep their own ~9% black stroke and
 # blurred shadow, which is what actually carries legibility over busy footage.
 OPENING_DARKEN = 0.0
+
+
+# --- Premium overlay themes (owner picks A/B; we A/B-test which performs) -------
+# Weight -> candidate font files. Prefers bundled Montserrat (repo-portable, added
+# for cross-machine/CI consistency), then the Segoe UI weights present on Windows
+# (the exact faces the owner approved in the style samples), then DejaVu/Arial. So
+# a theme asks for a WEIGHT and gets the best available face with no hard download
+# dependency — if Montserrat isn't bundled yet, local renders still look right.
+_WEIGHT_CANDIDATES = {
+    "light":    [paths.FONTS / "Montserrat-Light.ttf",    r"C:\Windows\Fonts\segoeuil.ttf",
+                 r"C:\Windows\Fonts\arial.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"],
+    "regular":  [paths.FONTS / "Montserrat-Regular.ttf",  r"C:\Windows\Fonts\segoeui.ttf",
+                 r"C:\Windows\Fonts\arial.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"],
+    "medium":   [paths.FONTS / "Montserrat-Medium.ttf",   r"C:\Windows\Fonts\segoeui.ttf",
+                 r"C:\Windows\Fonts\arial.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"],
+    "semibold": [paths.FONTS / "Montserrat-SemiBold.ttf", r"C:\Windows\Fonts\seguisb.ttf",
+                 r"C:\Windows\Fonts\arialbd.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"],
+    "black":    [paths.FONTS / "Montserrat-Black.ttf",    r"C:\Windows\Fonts\ariblk.ttf",
+                 r"C:\Windows\Fonts\arialbd.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"],
+}
+
+
+def _weight_font(weight: str, size: int):
+    from PIL import ImageFont
+    for p in _WEIGHT_CANDIDATES.get(weight, []):
+        try:
+            f = ImageFont.truetype(str(p), size)
+            if "Montserrat" in str(p):
+                try:
+                    f.set_variation_by_name(weight.capitalize())
+                except (OSError, AttributeError):
+                    pass
+            return f
+        except OSError:
+            continue
+    return _load_heavy_font(size)
+
+
+@dataclass(frozen=True)
+class OverlayTheme:
+    """One overlay look. Drives every pop generator so a whole render is coherent."""
+    name: str
+    accent: tuple           # metallic accent
+    base: tuple             # main text colour
+    value_w: str            # weight key for the big count-up number
+    label_w: str            # weight key for the small kicker label
+    chip_w: str             # weight key for rail word/number chips
+    reaction_w: str         # weight key for reaction slams
+    tracking: float         # letter-spacing as a fraction of font size (the premium tell)
+    container: str          # "none" (A, boxless) | "panel" (B, smoked glass)
+    panel_fill: tuple
+    panel_border: tuple
+    stroke_frac: float      # heavy stroke retired; kept configurable, 0 for both
+    shadow_blur: int        # soft shadow (carries legibility for the boxless theme)
+    shadow_alpha: float
+    rule: str               # accent rule under the value: "underline" | "tick" | ""
+    card_value_accent: bool  # True: value=accent,label=base (A); False: value=base,label=accent (B)
+
+
+# A — EDITORIAL LUXE: thin, wide-tracked, boxless, champagne number. Owner's pick.
+THEME_LUXE = OverlayTheme(
+    name="luxe", accent=ACCENT_CHAMPAGNE_LT, base=OFFWHITE,
+    value_w="light", label_w="regular", chip_w="light", reaction_w="regular",
+    tracking=0.16, container="none", panel_fill=(0, 0, 0, 0), panel_border=(0, 0, 0, 0),
+    stroke_frac=0.0, shadow_blur=16, shadow_alpha=0.72, rule="underline",
+    card_value_accent=True)
+
+# B — FROSTED BROADCAST: semibold, smoked-glass panel, white value + champagne rule.
+THEME_FROST = OverlayTheme(
+    name="frost", accent=ACCENT_CHAMPAGNE_LT, base=TEXT_WHITE,
+    value_w="semibold", label_w="semibold", chip_w="semibold", reaction_w="semibold",
+    tracking=0.10, container="panel", panel_fill=(12, 14, 18, 180), panel_border=(255, 255, 255, 60),
+    stroke_frac=0.0, shadow_blur=10, shadow_alpha=0.0, rule="tick",
+    card_value_accent=False)
+
+THEMES = {"luxe": THEME_LUXE, "frost": THEME_FROST}
+
+
+def get_theme(name: str | None) -> OverlayTheme:
+    return THEMES.get((name or "luxe").lower(), THEME_LUXE)
+
+
+def _tracked_len(draw, text: str, font, track: float) -> float:
+    if not text:
+        return 0.0
+    return sum(draw.textlength(c, font=font) + track for c in text) - track
+
+
+def _draw_tracked(draw, x: float, y: float, text: str, font, fill, track: float,
+                  stroke: int = 0, stroke_fill=STROKE_BLACK) -> None:
+    for c in text:
+        draw.text((x, y), c, font=font, fill=fill,
+                  stroke_width=stroke, stroke_fill=stroke_fill)
+        x += draw.textlength(c, font=font) + track
 
 
 def _load_heavy_font(size: int):
@@ -179,75 +278,69 @@ def _numberish(token: str) -> bool:
     return any(c.isdigit() for c in token) or "₹" in token
 
 
-def _overlay_png(text: str, font_size: int, fill, out_path: str,
-                 pill: bool = False, max_width: int = 780,
-                 accent_bar: bool = False, accent_digits: bool = False,
-                 fit_one_line: bool = False) -> str:
-    """Render text to a transparent PNG. Research-derived treatment: heavy
-    face, ~9% black stroke (load-bearing over busy footage), soft blurred
-    shadow, and — for number pops — cyan digits with white unit labels so the
-    single accent color stays reserved for the payload figure.
-    max_width=780 keeps centered text inside the Shorts safe box
-    (x∈[60,930] on 1080w, right 150px reserved for the engagement rail)."""
+def _overlay_png(text: str, font_size: int, out_path: str, *,
+                 theme: OverlayTheme = THEME_LUXE, kind: str = "word",
+                 fit_one_line: bool = False, max_width: int = 820) -> str:
+    """Render a rail/reaction pop to a transparent PNG in the given THEME.
+
+    Premium treatment (both themes): the requested WEIGHT, generous letter-spacing
+    (the amateur->pro tell), no heavy stroke. Number pops accent the figure. Theme
+    "luxe" is boxless with a soft shadow for legibility; "frost" wraps a smoked-
+    glass panel with a hairline border so it reads on any footage."""
     from PIL import Image, ImageDraw, ImageFilter
 
-    font = _load_heavy_font(font_size)   # one face everywhere = coherent look
+    weight = theme.reaction_w if kind == "reaction" else theme.chip_w
+    font = _weight_font(weight, font_size)
     tmp = ImageDraw.Draw(Image.new("RGBA", (10, 10)))
+    track = theme.tracking * font_size
     if fit_one_line:
-        # shrink until the whole text sits on ONE line inside the safe box
-        # (reaction slams scale 1.3x on entry — leave headroom for that too)
-        while font_size > 44 and tmp.textlength(text, font=font) > 560:
+        while font_size > 44 and _tracked_len(tmp, text, font, track) > 620:
             font_size -= 6
-            font = _load_heavy_font(font_size)
+            font = _weight_font(weight, font_size)
+            track = theme.tracking * font_size
     lines = _wrap(tmp, text, font, max_width)
     ascent, descent = font.getmetrics()
     line_h = ascent + descent + 8
-    stroke = max(3, round(font_size * 0.09))
-    width = max(int(tmp.textlength(l, font=font)) for l in lines) + 80 + 2 * stroke
-    height = line_h * len(lines) + 48 + 2 * stroke
+    stroke = max(0, round(font_size * theme.stroke_frac))
+    panel = theme.container == "panel"
+    pad_x, pad_y = (56, 30) if panel else (34, 20)
+    text_w = max(_tracked_len(tmp, ln, font, track) for ln in lines)
+    width = int(text_w) + 2 * pad_x + 2 * stroke
+    height = line_h * len(lines) + 2 * pad_y + 2 * stroke
     img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
-    if pill:
-        draw.rounded_rectangle([0, 0, width - 1, height - 1], radius=26,
-                               fill=(10, 10, 14, 200))
+    if panel:
+        r = min(28, height // 3)
+        draw.rounded_rectangle([0, 0, width - 1, height - 1], radius=r, fill=theme.panel_fill)
+        draw.rounded_rectangle([0, 0, width - 1, height - 1], radius=r,
+                               outline=theme.panel_border, width=2)
 
-    def draw_line(target, line, x, y, with_color):
-        if with_color and accent_digits:
-            # cyan on the figure, white on the unit — sequential segments
-            cx = x
-            for token in line.split(" "):
-                color = ACCENT_CYAN if _numberish(token) else TEXT_WHITE
-                target.text((cx, y), token, font=font, fill=color,
-                            stroke_width=stroke, stroke_fill=STROKE_BLACK)
-                cx += target.textlength(token + " ", font=font)
+    def render_line(target, line, y):
+        x = (width - _tracked_len(target, line, font, track)) / 2
+        if kind == "number":
+            for tok in line.split(" "):
+                col = theme.accent if _numberish(tok) else theme.base
+                _draw_tracked(target, x, y, tok, font, col, track, stroke)
+                x += _tracked_len(target, tok, font, track) + target.textlength(" ", font=font) + track
         else:
-            color = fill if with_color else (0, 0, 0, 255)
-            target.text((x, y), line, font=font, fill=color,
-                        stroke_width=stroke if with_color else 0,
-                        stroke_fill=STROKE_BLACK)
+            _draw_tracked(target, x, y, line, font, theme.base, track, stroke)
 
-    # soft blurred shadow on its own layer (research: offset +3/+5, blur 8)
-    shadow = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-    sdraw = ImageDraw.Draw(shadow)
-    y = 24 + stroke
-    for line in lines:
-        x = (width - tmp.textlength(line, font=font)) // 2
-        draw_line(sdraw, line, x + 3, y + 5, with_color=False)
-        y += line_h
-    shadow = shadow.filter(ImageFilter.GaussianBlur(8))
-    shadow.putalpha(shadow.getchannel("A").point(lambda a: int(a * 0.55)))
-    img.alpha_composite(shadow)
+    if not panel and theme.shadow_alpha > 0:
+        shadow = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+        sdraw = ImageDraw.Draw(shadow)
+        y = pad_y + stroke
+        for line in lines:
+            sx = (width - _tracked_len(sdraw, line, font, track)) / 2
+            _draw_tracked(sdraw, sx + 3, y + 5, line, font, (0, 0, 0, 255), track)
+            y += line_h
+        shadow = shadow.filter(ImageFilter.GaussianBlur(theme.shadow_blur))
+        shadow.putalpha(shadow.getchannel("A").point(lambda a: int(a * theme.shadow_alpha)))
+        img.alpha_composite(shadow)
 
-    y = 24 + stroke
+    y = pad_y + stroke
     for line in lines:
-        x = (width - tmp.textlength(line, font=font)) // 2
-        draw_line(draw, line, x, y, with_color=True)
+        render_line(draw, line, y)
         y += line_h
-    if accent_bar:   # cyan signature bar under the figure
-        bar_w = min(width - 100, max(140, width // 3))
-        bx = (width - bar_w) // 2
-        draw.rounded_rectangle([bx, y + 4, bx + bar_w, y + 14], radius=5,
-                               fill=ACCENT_CYAN)
     img.save(out_path)
     return out_path
 
@@ -269,8 +362,9 @@ def _slam_scale(t: float) -> float:
     return 1.3 - 0.3 * min(t, 0.15) / 0.15 if t < 0.15 else 1.0
 
 
-def _wipe_bar_frames(full_width: int, tdir: str, tag: str) -> list[str]:
-    """12 frames of a cyan marker-bar wiping left->right (ease-out, 0.35s)."""
+def _wipe_bar_frames(full_width: int, tdir: str, tag: str,
+                     color: tuple = ACCENT_CHAMPAGNE_LT) -> list[str]:
+    """12 frames of an accent marker-bar wiping left->right (ease-out, 0.35s)."""
     from PIL import Image, ImageDraw
 
     frames = []
@@ -279,7 +373,7 @@ def _wipe_bar_frames(full_width: int, tdir: str, tag: str) -> list[str]:
         w = max(3, int(full_width * progress))
         img = Image.new("RGBA", (full_width, 14), (0, 0, 0, 0))
         ImageDraw.Draw(img).rounded_rectangle([0, 2, w, 12], radius=5,
-                                              fill=ACCENT_CYAN)
+                                              fill=color)
         path = f"{tdir}/{tag}_f{f}.png"
         img.save(path)
         frames.append(path)
@@ -387,33 +481,49 @@ def _lss_strip_png(out_path: str, icon_size: int = 116,
 
 
 def _countup_frames(final_text: str, label: str, tdir: str, tag: str,
-                    n_frames: int = 34) -> list[str]:
-    """Big-number card count-up: ease-out toward the exact final value, digits
-    in accent cyan at ~300px, static white label below. One per short, for THE
-    payoff stat only."""
+                    n_frames: int = 34, *, theme: OverlayTheme = THEME_LUXE) -> list[str]:
+    """Big-number payoff card, count-up to the exact figure, in the given THEME.
+
+    BUGFIX: a unit label ('₹11.49L · EX-SHOWROOM') used to be crammed INTO the
+    count-up number line, so it couldn't autofit and clipped off both frame edges.
+    We now split it out into the small kicker slot and hard-clamp the value width
+    to the safe box, so it can never clip. One per short, for THE payoff stat."""
     import re as _re
 
-    from PIL import Image, ImageDraw
+    from PIL import Image, ImageDraw, ImageFilter
+
+    if not label and "·" in final_text:
+        head, _, tail = final_text.partition("·")
+        final_text, label = head.strip(), tail.strip()
 
     match = _re.search(r"\d[\d,]*(?:\.\d+)?", final_text)
     final_value = float(match.group(0).replace(",", "")) if match else 0.0
     prefix = final_text[:match.start()] if match else ""
     suffix = final_text[match.end():] if match else final_text
     decimals = len(match.group(0).split(".")[1]) if match and "." in match.group(0) else 0
-    # autofit: THE number should be huge, but never clipped — shrink until the
-    # final text (the widest frame) sits inside the Shorts safe box (<=860px)
-    from PIL import Image as _Img
-    from PIL import ImageDraw as _Draw
-    probe = _Draw.Draw(_Img.new("RGBA", (8, 8)))
+
+    probe = ImageDraw.Draw(Image.new("RGBA", (8, 8)))
+    vweight, vtrack_frac = theme.value_w, theme.tracking * 0.5   # digits already wide
     digit_size = 300
     final_probe = f"{prefix}{final_value:,.{decimals}f}{suffix}".upper()
-    while digit_size > 90 and probe.textlength(
-            final_probe, font=_load_heavy_font(digit_size)) > 860:
+    # hard clamp: shrink until the widest frame fits the safe box — never clip
+    while digit_size > 60 and _tracked_len(
+            probe, final_probe, _weight_font(vweight, digit_size),
+            vtrack_frac * digit_size) > 900:
         digit_size -= 10
-    digit_font = _load_heavy_font(digit_size)
-    label_font = _load_heavy_font(64)
-    stroke = round(digit_size * 0.09)
-    width, height = 1080, digit_size + 320
+    digit_font = _weight_font(vweight, digit_size)
+    dtrack = vtrack_frac * digit_size
+    label_font = _weight_font(theme.label_w, 54)
+    ltrack = theme.tracking * 54
+    value_color = theme.accent if theme.card_value_accent else theme.base
+    label_color = theme.base if theme.card_value_accent else theme.accent
+    stroke = max(0, round(digit_size * theme.stroke_frac))
+
+    panel = theme.container == "panel"
+    label_h = 84 if label else 0
+    value_h = digit_size + 70
+    pad = 48 if panel else 22
+    width, height = 1080, label_h + value_h + 70 + 2 * pad
     frames = []
     for f in range(n_frames):
         progress = 1 - (1 - (f + 1) / n_frames) ** 3     # ease-out, slow landing
@@ -421,13 +531,35 @@ def _countup_frames(final_text: str, label: str, tdir: str, tag: str,
         text = f"{prefix}{value:,.{decimals}f}{suffix}".upper()
         img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
         d = ImageDraw.Draw(img)
-        x = (width - d.textlength(text, font=digit_font)) // 2
-        d.text((x, 60), text, font=digit_font, fill=ACCENT_CYAN,
-               stroke_width=stroke, stroke_fill=STROKE_BLACK)
+        if panel:
+            vw = _tracked_len(d, text, digit_font, dtrack)
+            lw = _tracked_len(d, label.upper(), label_font, ltrack) if label else 0
+            pw = int(max(vw, lw)) + 2 * pad + 48
+            px0 = (width - pw) // 2
+            d.rounded_rectangle([px0, 0, px0 + pw, height - 1], radius=34, fill=theme.panel_fill)
+            d.rounded_rectangle([px0, 0, px0 + pw, height - 1], radius=34,
+                                outline=theme.panel_border, width=2)
+        y = pad
         if label:
-            lx = (width - d.textlength(label.upper(), font=label_font)) // 2
-            d.text((lx, digit_size + 180), label.upper(), font=label_font,
-                   fill=TEXT_WHITE, stroke_width=6, stroke_fill=STROKE_BLACK)
+            lx = (width - _tracked_len(d, label.upper(), label_font, ltrack)) / 2
+            _draw_tracked(d, lx, y, label.upper(), label_font, label_color, ltrack)
+            y += label_h
+        vx = (width - _tracked_len(d, text, digit_font, dtrack)) / 2
+        if not panel and theme.shadow_alpha > 0:
+            sh = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+            _draw_tracked(ImageDraw.Draw(sh), vx + 3, y + 6, text, digit_font,
+                          (0, 0, 0, 255), dtrack)
+            sh = sh.filter(ImageFilter.GaussianBlur(theme.shadow_blur))
+            sh.putalpha(sh.getchannel("A").point(lambda a: int(a * theme.shadow_alpha)))
+            img.alpha_composite(sh)
+        _draw_tracked(d, vx, y, text, digit_font, value_color, dtrack, stroke)
+        y += value_h
+        if theme.rule == "underline":
+            d.rounded_rectangle([width / 2 - 150, y, width / 2 + 150, y + 6],
+                                radius=3, fill=theme.accent)
+        elif theme.rule == "tick":
+            d.rounded_rectangle([width / 2 - 60, y, width / 2 + 60, y + 8],
+                                radius=4, fill=theme.accent)
         path = f"{tdir}/{tag}_f{f}.png"
         img.save(path)
         frames.append(path)
@@ -580,7 +712,8 @@ class MoviePyRenderer(VideoRenderer):
         reps = int(dur / clip.duration) + 1
         return concatenate_videoclips([clip] * reps).subclipped(0, dur)
 
-    def _render_ffmpeg_full(self, sections, out_path, music_path, fps, loop_close):
+    def _render_ffmpeg_full(self, sections, out_path, music_path, fps, loop_close,
+                            theme=THEME_LUXE):
         """Fully ffmpeg path (increment 2): base scene AND overlays composited by
         ffmpeg, so moviepy never touches the full timeline. Overlays are baked
         from the identical PIL generators, so the look is unchanged. Raises on
@@ -612,7 +745,7 @@ class MoviePyRenderer(VideoRenderer):
         render_base_from_cuts(gcuts, video_total, base_path, fps=fps,
                               size=self.size, no_darken=frozenset(no_darken))
 
-        layers = ffoverlay.build_layers(sections, durations, self.size, fps, tdir)
+        layers = ffoverlay.build_layers(sections, durations, self.size, fps, tdir, theme)
 
         # voice is concatenated by ffmpeg from the section audio files (moviepy's
         # audio writer was throwing broken-pipe on Windows)
@@ -632,7 +765,7 @@ class MoviePyRenderer(VideoRenderer):
     def render_sections(self, sections: list[Section], out_path: str,
                         music_path: str | None = None, ken_burns: bool = True,
                         draw_captions: bool = True, fps: int = 24,
-                        loop_close: bool = True) -> str:
+                        loop_close: bool = True, overlay_theme: str = "luxe") -> str:
         """Multi-scene render: each Section becomes a clip whose length equals its
         own audio — so visuals stay in sync with the spoken script, section by
         section. Still photos get motion (alternating slow zoom-in / zoom-out) so
@@ -656,6 +789,7 @@ class MoviePyRenderer(VideoRenderer):
             concatenate_audioclips,
             concatenate_videoclips,
         )
+        theme = get_theme(overlay_theme)
         # Fast path ON by default; set CARSHORTS_FFBASE=0 to force pure moviepy.
         # Requires ffmpeg on PATH (as QA/audiopolish already do); any failure
         # falls back through hybrid to moviepy, so default-on is safe.
@@ -668,8 +802,8 @@ class MoviePyRenderer(VideoRenderer):
         if use_ffbase and _os.environ.get("CARSHORTS_FFOVERLAY", "1") == "1":
             try:
                 return self._render_ffmpeg_full(sections, out_path, music_path,
-                                                 fps, loop_close)
-            except Exception as exc:
+                                                 fps, loop_close, theme)
+            except Exception as exc:  # noqa: BLE001 — any fast-path failure falls back
                 print(f"     [fffull] failed ({str(exc)[:140]}); "
                       f"falling back to hybrid/moviepy")
         video = None
@@ -689,7 +823,7 @@ class MoviePyRenderer(VideoRenderer):
                 video = VideoFileClip(base_path).with_audio(voice)
                 print(f"     [ffbase] base scene via ffmpeg ({len(gcuts)} cuts, "
                       f"{total:.1f}s)")
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001 — fall back to the moviepy base
                 print(f"     [ffbase] failed ({str(exc)[:110]}); moviepy base")
                 video = None
 
@@ -752,7 +886,7 @@ class MoviePyRenderer(VideoRenderer):
                             else min(pop_dur, dur - pop_start))
                 if kind == "card":
                     # big-number payoff card: count-up to the exact figure
-                    frames = _countup_frames(pop_text, label, tdir, f"card_{k}_{pi}")
+                    frames = _countup_frames(pop_text, label, tdir, f"card_{k}_{pi}", theme=theme)
                     countup = (ImageSequenceClip(frames, fps=24)
                                .with_start(start_abs)
                                .with_position(("center", int(height * 0.30))))
@@ -764,8 +898,8 @@ class MoviePyRenderer(VideoRenderer):
                 elif kind == "reaction":
                     # the editor's dry voice, upper third, slams into the
                     # silence beat right after the punchline lands
-                    png = _overlay_png(pop_text.upper(), 110, TEXT_WHITE,
-                                       f"{tdir}/rx_{k}_{pi}.png", fit_one_line=True)
+                    png = _overlay_png(pop_text.upper(), 110, f"{tdir}/rx_{k}_{pi}.png",
+                                       theme=theme, kind="reaction", fit_one_line=True)
                     clip = (ImageClip(png, transparent=True)
                             .with_start(start_abs)
                             .with_duration(show_dur)
@@ -786,9 +920,8 @@ class MoviePyRenderer(VideoRenderer):
                             .with_position(("center", int(height * 0.30))))
                     overlays.append(clip)
                 else:
-                    png = _overlay_png(pop_text.upper(), 96, TEXT_WHITE,
-                                       f"{tdir}/pop_{k}_{pi}.png",
-                                       accent_digits=(kind == "number"))
+                    png = _overlay_png(pop_text.upper(), 96, f"{tdir}/pop_{k}_{pi}.png",
+                                       theme=theme, kind=kind)
                     clip = (ImageClip(png, transparent=True)
                             .with_start(start_abs)
                             .with_duration(show_dur)
@@ -796,12 +929,12 @@ class MoviePyRenderer(VideoRenderer):
                             .with_position(("center", int(height * 0.64))))
                     overlays.append(clip)
                     if kind == "number":
-                        # cyan marker-wipe under the figure (0.35s ease-out)
+                        # accent marker-wipe under the figure (0.35s ease-out)
                         from PIL import Image as _PILImage
                         png_w = _PILImage.open(png).width
                         bar_w = min(png_w - 90, max(140, png_w // 3))
                         bar_y = int(height * 0.64) + _PILImage.open(png).height - 8
-                        frames = _wipe_bar_frames(bar_w, tdir, f"bar_{k}_{pi}")
+                        frames = _wipe_bar_frames(bar_w, tdir, f"bar_{k}_{pi}", color=theme.accent)
                         wipe = (ImageSequenceClip(frames, fps=34)
                                 .with_start(start_abs)
                                 .with_position(("center", bar_y)))
@@ -816,10 +949,10 @@ class MoviePyRenderer(VideoRenderer):
             if section.keyword and not section.timed_callouts:
                 # a keyword AND a callout card together crowd the frame — the
                 # card wins (owner feedback: on-screen text felt mismatched)
-                png = _overlay_png(section.keyword.upper(), 88,
-                                   (255, 214, 10, 255) if any(c.isdigit() for c in section.keyword)
-                                   else (245, 245, 245, 255),
-                                   f"{tdir}/kw_{k}.png", accent_bar=True)
+                png = _overlay_png(section.keyword.upper(), 88, f"{tdir}/kw_{k}.png",
+                                   theme=theme,
+                                   kind=("number" if any(c.isdigit() for c in section.keyword)
+                                         else "word"))
                 if section.keyword_span:   # speech-timed: exactly while its phrase runs
                     kw_start, kw_dur = section.keyword_span
                 else:
@@ -831,8 +964,8 @@ class MoviePyRenderer(VideoRenderer):
                 overlays.append(clip)
             if section.timed_callouts:     # speech-timed lines: appear with their words
                 for li, (st, en, line) in enumerate(section.timed_callouts[:4]):
-                    png = _overlay_png(line, 54, (245, 245, 245, 255),
-                                       f"{tdir}/co_{k}_{li}.png", pill=True)
+                    png = _overlay_png(line, 54, f"{tdir}/co_{k}_{li}.png",
+                                       theme=theme, kind="word")
                     st = min(st, dur - 0.6)
                     clip = (ImageClip(png, transparent=True)
                             .with_start(cursor + st).with_duration(max(0.8, min(en, dur) - st))
@@ -840,8 +973,8 @@ class MoviePyRenderer(VideoRenderer):
                     overlays.append(clip)
             else:
                 for li, line in enumerate(section.callout_lines[:5]):
-                    png = _overlay_png(line, 58, (245, 245, 245, 255),
-                                       f"{tdir}/co_{k}_{li}.png", pill=True)
+                    png = _overlay_png(line, 58, f"{tdir}/co_{k}_{li}.png",
+                                       theme=theme, kind="word")
                     start = cursor + 0.9 + li * min(1.1, max(0.6, (dur - 1.8) / max(1, len(section.callout_lines))))
                     if start >= cursor + dur - 0.6:
                         break
