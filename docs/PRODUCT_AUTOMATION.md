@@ -107,6 +107,24 @@ approved draft** (the bug where "what shipped" ≠ "what was approved").
 What deterministic QA still can't judge — is the footage the *right generation*,
 is the joke funny — stays the owner's Gate 1/2 + advisory VQA. That's by design.
 
+## The brain: pre-Gate LLM critic (taste, not just mechanics)
+Deterministic QA is a rule checker; it can't reason. `agents/critic.py` runs an
+LLM over the finished render (manifest beats + clips + overlays + QA warnings)
+against **TASTE.md + the proven learnings**, and writes a structured critique
+onto the queue card — a demanding second opinion BEFORE the owner's taste gate.
+- **Runs automatically** after every render: the portal draft-lock worker and
+  `pipeline.approve` both invoke it once produce succeeds (advisory — a critic
+  failure never blocks or fails the render).
+- **Writes `card["critique"]`**: `{verdict: ship|revise|block, score, summary,
+  strengths, issues:[{beat, problem, fix, severity}]}`.
+- **Shown in the portal** review panel as a "🧠 Brain critique" card, so the
+  owner sees hook stopping-power, clip↔narration mismatches, tightness, and
+  overlay/voice alignment flagged in plain language before Gate 2.
+- **Proven it works:** on the Sierra final it caught a real defect deterministic
+  QA missed — the value beat narrates "Dolby sound" with no `DOLBY SOUND`
+  overlay. Rules can't see that; the brain can.
+- Manual: `carshorts critic <slug>`. Free provider (groq/gemini fallback).
+
 ## Working discipline (how we avoid re-iteration)
 - **Staged, per car:** finalize script → voice → then video. Never overwrite a
   locked script.
