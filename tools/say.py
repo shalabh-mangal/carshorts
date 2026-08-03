@@ -1,4 +1,4 @@
-"""Generate ONE voiceover clip with the cloned Chatterbox voice — no video.
+r"""Generate ONE voiceover clip with the cloned Chatterbox voice — no video.
 
 A tiny wrapper around carshorts.adapters.tts so you can audition the voice, a
 language, and an energy level from the command line, fast.
@@ -84,7 +84,7 @@ def main() -> None:
             return
         _gen_battery(args.text, tts, out_dir)
         if os.name == "nt":
-            os.startfile(out_dir)  # noqa: S606 - open the folder for quick audition
+            os.startfile(out_dir)  # open the folder for quick audition
         return
 
     os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)

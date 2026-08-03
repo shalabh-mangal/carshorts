@@ -67,7 +67,7 @@ def write_premium(spec_path: str, out_path: str, persona: str = "", language: st
     final = best
     try:
         final = punch_up_script(best, sheet, llm)
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 — editor pass is best-effort; keep the judged best
         print(f"     editor pass failed ({exc}); keeping the judged best.")
 
     # Enforce the Shorts length cap at write-time so a wordy draft can't overshoot
@@ -90,7 +90,7 @@ def write_premium(spec_path: str, out_path: str, persona: str = "", language: st
         report = fact_check(final, sheet, llm)
         print("\n" + render_gate1_report(final, sheet, report,
                                           structural + numbers + features) + "\n")
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 — fact-check is advisory; never blocks the write
         print(f"     fact-check skipped ({exc}); guards: "
               f"{(numbers + features) or 'clean'}. Review before publishing.")
 

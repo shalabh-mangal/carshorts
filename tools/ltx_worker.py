@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """LTX-Video generation worker — RUN WITH THE .venv-video PYTHON, not the main venv.
 
 Kept in its own isolated environment so LTX's newer diffusers/torch can never
@@ -39,9 +38,9 @@ def main() -> None:
 
     os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
     gen = torch.Generator(device="cpu").manual_seed(args.seed)
-    common = dict(prompt=args.prompt, negative_prompt=_NEG, width=args.width,
-                  height=args.height, num_frames=args.frames,
-                  num_inference_steps=args.steps, generator=gen)
+    common = {"prompt": args.prompt, "negative_prompt": _NEG, "width": args.width,
+              "height": args.height, "num_frames": args.frames,
+              "num_inference_steps": args.steps, "generator": gen}
 
     if args.mode == "t2v":
         from diffusers import LTXPipeline

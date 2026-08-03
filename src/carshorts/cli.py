@@ -50,6 +50,7 @@ COMMANDS: dict[str, str] = {
     "retention-watch": "carshorts.intel.retention_watch",
     # agents / publishing / portal
     "agent": "carshorts.agents.agent",
+    "brain": "carshorts.agents.brain",
     "critic": "carshorts.agents.critic",
     "publish": "carshorts.publishing.publish",
     "publishkit": "carshorts.publishing.publishkit",
