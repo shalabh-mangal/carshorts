@@ -34,6 +34,11 @@ SECTIONS (use these roles, in this order — FEWER, TIGHTER beats hold viewers):
           SINGLE BEST NUMBER right into it (the turbo hp, the price, the 0-100).
           Must land in the FIRST 2 SECONDS — viewers swipe away in under 2s on
           mobile; NO wind-up, no greeting. The hero spec lives HERE, not later.
+          FRAME 1 = MOTION: the first visible shot must be the car MOVING or a
+          bold hero exterior — never a static badge/interior/price-card cold-open
+          (a boring frame 1 costs the swipe before a word is heard). Keep the hero
+          number, but lead the line with intrigue then the number ("The reborn
+          Sierra — eleven and a half lakh. Worth it?"), not a bare figure.
 - "spec"  (AT MOST ONE, ~6s, ~15 words): one more killer fact with a funny spin,
           ONLY if it adds something the hook didn't. Our #1 retention leak is the
           spec BLOCK — when we list 3-4 numbers in a row, ~80% of remaining
@@ -42,17 +47,25 @@ SECTIONS (use these roles, in this order — FEWER, TIGHTER beats hold viewers):
 - "value" (~8s, ~18 words) — ONLY if a PRICE and VALUE PICK are given below:
           state the price (an estimate; varies by city) and NAME 1-2 concrete
           features it unlocks (camera, sunroof, ADAS). Tight — no feature dump.
+          BRIDGE THE SEAM: the mid-point (spec->value/verdict handoff) is where
+          ~half the viewers leave. End the beat BEFORE this one on a one-line
+          mini-cliffhanger ("but here's the catch", "the best bit is the price")
+          so value/peak reads as a REVEAL, not a topic switch. Every feature you
+          NAME must carry its own on-screen pop at that word (two features = two
+          pops) — a naked mention wastes the muted viewer's eyes.
 - "peak"  (~7s, ~18 words): the biggest laugh — a hot-take/roast that TIES THE
           NUMBERS TOGETHER ("turbo, five-star, under six lakh — how is this even
           legal?"). This is the DOPAMINE HIGH, so ask for the LIKE right here,
           tied to the payoff ("...smash like if you'd buy it") — never at the start.
           Carry a reaction pop on those words so muted viewers see it:
           {"anchor": "<the exact like words>", "show": "LIKE!"} (plain text, no emoji).
-- "cta"   (~7s, ~18 words): a PROVOCATIVE, side-picking question that begs a reply
-          — a RIVALRY people argue about ("Sonet or Nexon — which wins? Comment 1
-          or 2") — plus a reason to come back ("follow for tomorrow's"), then the
-          spoken words "like, share, subscribe" (renderer auto-draws the icons).
-          Write the LAST line so it flows back into the hook — loop-friendly.
+- "cta"   (TIGHT: <=4s, <=12 words): a PROVOCATIVE, side-picking question that
+          begs a reply — a RIVALRY people argue about, poll kept to <=8 words
+          ("Sonet or Nexon? Comment 1 or 2") — then the spoken words "like, share,
+          subscribe" (renderer auto-draws the icons). A long polite outro is dead
+          air that drags average-view-% and delays the loop; a punchy 3s close
+          beats a 6s one. Write the LAST line so it flows back into the hook —
+          loop-friendly.
 
 If no PRICE/VALUE PICK is provided, omit the "value" section entirely.
 
