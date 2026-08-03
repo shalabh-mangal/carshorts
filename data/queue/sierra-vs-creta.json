@@ -8,7 +8,7 @@
   "persona": "deadpan",
   "voice": "calm",
   "format": "vs",
-  "note": "overlays fixed — on-word, stay till next, no overlap, all specs shown (Creta footage still pending)",
+  "note": "QA-GREEN draft ready — real Creta footage on Creta beats, overlays on-word, no loops. Watch + approve (Gate 2).",
   "target": {
     "views": 3000,
     "likes": ">15",
@@ -93,45 +93,39 @@
   "script_choice": "custom mix",
   "critique": {
     "verdict": "revise",
-    "score": 6,
-    "summary": "The render has some strong moments, but falls short in clip matching, overlay coverage, and tightness.",
+    "score": 7,
+    "summary": "The render is engaging, but has areas for improvement in clip matching, overlay coverage, and tightness.",
     "strengths": [
-      "The hook effectively uses a curiosity gap and includes a concrete number.",
-      "The overlays are well-designed and easy to read.",
-      "The CTA beat encourages engagement with a binary poll."
+      "Clear and concise narration",
+      "Effective use of overlays to highlight key features",
+      "Engaging hook that grabs the viewer's attention"
     ],
     "issues": [
       {
-        "beat": "hook",
-        "problem": "The 'sierra_hero.mp4' clip repeats due to a 1s mismatch between clip length and playback time.",
-        "fix": "Trim the clip or adjust the playback time to match.",
-        "severity": "low"
-      },
-      {
         "beat": "spec",
-        "problem": "The clip 'sierra_sand.mp4' does not directly match the narration about the Sierra's features.",
-        "fix": "Replace with a clip that shows the 160 PS turbo or panoramic roof.",
+        "problem": "Clip 'sierra_sand.mp4' does not match the narration about the panoramic roof and JBL speakers",
+        "fix": "Use a clip that shows the panoramic roof and JBL speakers, such as 'sierra_interior.mp4' or 'sierra_speakers.mp4'",
         "severity": "med"
       },
       {
         "beat": "value",
-        "problem": "The clip 'car_speedometer_closeup_5777431.mp4' is generic stock footage and does not match the narration about the Creta.",
-        "fix": "Use a clip that shows the Creta's ventilated seats or wireless charging.",
-        "severity": "high"
+        "problem": "No overlay for 'bulletproof reputation'",
+        "fix": "Add an overlay for 'bulletproof reputation', such as 'RELIABILITY LEADER'",
+        "severity": "low"
       },
       {
         "beat": "peak",
-        "problem": "The narration does not have a clear bridge to the payoff, feeling like two separate videos.",
-        "fix": "Add a mini-cliffhanger or a transitional phrase to connect the spec and value beats to the peak.",
-        "severity": "med"
+        "problem": "The narration asks viewers to 'smash like' but the overlay only shows 'LIKE'",
+        "fix": "Change the overlay to 'SMASH LIKE' or remove the 'smash' from the narration",
+        "severity": "low"
       },
       {
         "beat": "cta",
-        "problem": "The 'sierra_lake.mp4' clip repeats due to a 1.2s mismatch between clip length and playback time.",
-        "fix": "Trim the clip or adjust the playback time to match.",
+        "problem": "The outro is a bit long and could be tightened up",
+        "fix": "Trim the outro to <=4s and remove any unnecessary words or clips",
         "severity": "low"
       }
     ],
-    "reviewed_at": "2026-08-03T19:48:28"
+    "reviewed_at": "2026-08-03T20:42:48"
   }
 }

@@ -53,3 +53,4 @@ assets/inbox_rejected/
 # Google OAuth secrets — never commit
 client_secret.json
 youtube_token.json
+assets/cars/sierra-vs-creta/own/sierra_*.mp4
