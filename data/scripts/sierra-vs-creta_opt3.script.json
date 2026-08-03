@@ -10,13 +10,13 @@
     },
     {
       "role": "spec",
-      "text": "The Sierra flexes: a hundred-sixty turbo, a panoramic roof, thirteen-speaker JBL.",
+      "text": "The Sierra flexes a hundred-sixty turbo, a panoramic roof up top, and thirteen JBL speakers inside.",
       "cited_spec_names": ["sierra_power_turbo", "sierra_sunroof", "sierra_audio"],
-      "pops": [{"anchor": "turbo", "show": "160 PS TURBO"}, {"anchor": "roof", "show": "PANORAMIC ROOF"}, {"anchor": "JBL", "show": "13-SPKR JBL"}]
+      "pops": [{"anchor": "turbo", "show": "160 PS TURBO"}, {"anchor": "roof", "show": "PANORAMIC ROOF"}, {"anchor": "thirteen", "show": "13-SPKR JBL"}]
     },
     {
       "role": "value",
-      "text": "The Creta counters: ventilated seats, wireless charging, and a bulletproof reputation.",
+      "text": "The Creta counters with ventilated seats up front, wireless charging, and a bulletproof reputation.",
       "cited_spec_names": ["creta_value_features"],
       "pops": [{"anchor": "seats", "show": "VENTILATED SEATS"}, {"anchor": "charging", "show": "WIRELESS CHARGING"}]
     },
