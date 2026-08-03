@@ -172,7 +172,8 @@ def approve(slug: str, privacy: str = "public") -> None:
     if _run([sys.executable, "-m", "carshorts.rendering.produce", "--script-file", card["script"],
              "--spec", card["spec"], "--skip-factcheck", "--no-humor",
              "--voice-engine", _engine, "--language", card.get("language", "english"),
-             "--persona", _persona, "--provider", "groq", "--out", str(final_out)] + _foot) != 0:
+             "--persona", _persona, "--footage-slug", slug, "--provider", "groq",
+             "--out", str(final_out)] + _foot) != 0:
         card["status"] = "final_failed"
         card_path.write_text(json.dumps(card, indent=2))
         _progress(slug, "", done=True)
@@ -180,13 +181,9 @@ def approve(slug: str, privacy: str = "public") -> None:
     _progress(slug, "visual QA on the final…")
     _run([sys.executable, "-m", "carshorts.quality.vqa", str(final_out)])
 
-    _progress(slug, "brain critique (pre-Gate review)…")
-    try:
-        from carshorts.agents.critic import run as _critique
-        _critique(slug)
-        card = json.loads(card_path.read_text())   # critic wrote card['critique']
-    except Exception as exc:  # noqa: BLE001 — critic is advisory, never blocks the render
-        print(f"  (critic skipped: {str(exc)[:100]})")
+    # produce ran a fresh brain critique on this render (centralised there so every
+    # render is re-scored); re-read the card so that critique persists below.
+    card = json.loads(card_path.read_text())
 
     card["status"] = "final_review"
     card["final"] = str(final_out)
