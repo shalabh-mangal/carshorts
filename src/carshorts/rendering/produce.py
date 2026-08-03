@@ -492,6 +492,26 @@ def _word_pops(seg, marks_file: str | None, dur: float,
     return sorted(trimmed + floaters)
 
 
+def _pop_overlaps(word_pops: list) -> list[tuple]:
+    """Pairs of overlays that share a visual slot AND are on screen at once — the
+    owner's "overlays overlap" defect. word_pops entries are
+    (start, dur, text, kind, label). Rail (word/number) and top (reaction/card)
+    are separate slots; LSS is excluded (a cumulative icon strip, meant to build).
+    Returns [(text_a, text_b, slot)] for each collision. Pure — unit-tested."""
+    slot = {"word": "rail", "number": "rail", "reaction": "top", "card": "top"}
+    by_slot: dict[str, list] = {}
+    for p in word_pops:
+        if p[3] in slot:
+            by_slot.setdefault(slot[p[3]], []).append(p)
+    out: list[tuple] = []
+    for sl, ps in by_slot.items():
+        ps = sorted(ps, key=lambda x: x[0])
+        for a, b in zip(ps, ps[1:]):
+            if b[0] < a[0] + a[1] - 0.05:          # next starts before this ends
+                out.append((a[2], b[2], sl))
+    return out
+
+
 def _time_callouts(lines: list[str], sec_phrases: list[tuple[float, str]],
                    dur: float) -> list[tuple[float, float, str]]:
     """Anchor each callout line to the phrase that SPEAKS it (token overlap),
@@ -1184,6 +1204,13 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                     quality_warnings.append(
                         f"DROPPED overlay '{show}' in beat {i} ({seg.role}) — "
                         "anchor not spoken clearly, or lands past the beat end")
+        # OVERLAP GUARD: two overlays sharing a visual slot must never be on screen
+        # at once (the owner's "overlays overlap" defect). The rail karaoke prevents
+        # rail collisions; this catches any regression + top-slot (card/reaction)
+        # collisions. LSS is excluded — it's a cumulative icon strip, meant to build.
+        for _a, _b, _sl in _pop_overlaps(word_pops):
+            quality_warnings.append(
+                f"OVERLAP: '{_a}' and '{_b}' collide in beat {i} ({seg.role}) {_sl} slot")
         # the very last thing on screen must be the subject car
         if i == len(script.segments) - 1 and timed_cuts:
             if not _is_subject_asset(timed_cuts[-1][1]):
@@ -1440,6 +1467,18 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         print(f"     recipe card skipped ({exc})")
 
     lock.unlink(missing_ok=True)
+
+    # FRESH BRAIN CRITIQUE on every render (owner rule: re-score each render).
+    # Reads the queue card + this render's manifest, writes card['critique'].
+    # Advisory — never blocks a render. Skipped for plan-only and when no card
+    # exists (e.g. ad-hoc renders / tests). Centralised here so EVERY path
+    # (CLI, portal, pipeline) gets a current score without its own critic call.
+    if not plan_only and (paths.QUEUE / f"{_fslug}.json").exists():
+        try:
+            from carshorts.agents.critic import run as _critique
+            _critique(_fslug, provider=provider)
+        except Exception as exc:  # noqa: BLE001 — critic is advisory
+            print(f"     (critic skipped: {str(exc)[:100]})")
 
     credits = attribution_lines(f"assets/cars/{_fslug}/images") if images else []
     if credits:

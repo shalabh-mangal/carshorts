@@ -192,10 +192,14 @@ def run_qa(video_path: str, manifest_path: str | None = None,
         drops = [w for w in warns if w.startswith("DROPPED")]
         stock = [w for w in warns if w.startswith("STOCK")]
         shotmiss = [w for w in warns if w.startswith("SHOT-PLAN")]
+        overlaps = [w for w in warns if w.startswith("OVERLAP")]
         check("no looped/repeated footage", not loops,
               f"{len(loops)} looping cut(s): {loops[0]}" if loops else "")
         check("no dropped overlays", not drops,
               f"{len(drops)} dropped: {drops[0]}" if drops else "")
+        # overlays colliding in one slot (the owner's "text overlaps" defect)
+        check("no overlapping overlays", not overlaps,
+              f"{len(overlaps)}: {overlaps[0]}" if overlaps else "")
         # shot-plan clips missing from the pool -> a beat used footage that may not
         # match its narration (e.g. a comparison's Creta beat rendered on Sierra
         # clips because the Creta footage wasn't dropped yet).

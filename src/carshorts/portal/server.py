@@ -1046,8 +1046,6 @@ class Handler(BaseHTTPRequestHandler):
                 f"'--voice-engine','chatterbox','--language',{card.get('language','english')!r},"
                 f"'--persona',{_persona!r},'--footage-slug',{body['slug']!r},'--out',{draft_out!r}]"
                 f"+{_foot!r}+{card.get('render_flags', [])!r},capture_output=True,text=True);"
-                f"(subprocess.run([sys.executable,'-m','carshorts.agents.critic',{body['slug']!r}],"
-                "capture_output=True) if r.returncode==0 else None);"
                 f"cp=pathlib.Path({str(card_path)!r});c=json.loads(cp.read_text());"
                 "c['status']='awaiting_approval' if r.returncode==0 else 'rework_failed';"
                 "c['note']=('your mix rendered — watch the draft' if r.returncode==0 "
