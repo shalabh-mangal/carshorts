@@ -40,6 +40,20 @@ def _cover_scale_crop(w: int, h: int) -> str:
             f"crop={w}:{h}")
 
 
+def _smart_cover_crop(w: int, h: int, fc: float, lift: bool = False) -> str:
+    """Subject-aware cover-crop: scale to cover, then crop the WxH window centred
+    on the subject (fc = subject centre as a fraction of source width, found by a
+    saliency probe) instead of blind centre. Keeps the car in frame and full-bleed.
+    The x expression clamps to the pannable range so it never reads outside the
+    frame; commas are escaped for the filtergraph parser."""
+    x = f"max(0\\,min(iw-ow\\,iw*{fc:.4f}-ow/2))"
+    chain = (f"scale={w}:{h}:force_original_aspect_ratio=increase,"
+             f"crop={w}:{h}:x={x}:y=0,setsar=1")
+    if lift:   # opener exposure/saturation nudge to the feed norm (matches blurpad)
+        chain += ",eq=brightness=0.06:saturation=1.15"
+    return chain
+
+
 def _blurpad_landscape(w: int, h: int, label: str, lift: bool = False) -> str:
     """Landscape footage in a vertical frame: blurred cover-fill background with
     the FULL clip visible, centered. The classic Shorts treatment — cover-crop
@@ -116,18 +130,24 @@ def _video_cut(w: int, h: int, dur: float, speed_ramp: bool,
 def build_scene_filter(cuts: list[tuple[float, str]], total: float,
                        size: tuple[int, int] = VERTICAL, fps: int = 24,
                        no_darken=frozenset({0}),
-                       landscape_paths: frozenset[str] | None = None) -> dict:
+                       landscape_paths: frozenset[str] | None = None,
+                       framing: dict | None = None) -> dict:
     """Build the filter_complex for a base scene from timed cuts.
 
     cuts = [(start_seconds, asset_path), ...] on the GLOBAL timeline; total is
     the video duration. `no_darken` is the set of cut indices to leave at full
     brightness — the opener (0) always, plus the loop-close flash if appended,
-    so the flash matches the opener it loops back to. `landscape_paths` marks
-    clips wider than the frame (e.g. 16:9 phone footage) to be blur-padded
-    instead of cover-cropped. Returns everything the caller needs to run
-    ffmpeg, but runs no ffmpeg.
+    so the flash matches the opener it loops back to.
+
+    `framing` is the ADAPTIVE decision per path (from the saliency probe):
+    {path: ("crop", fc)} for subject-aware full-bleed cover-crop, or
+    {path: ("blurpad", None)} for the clean blurred-pillarbox fallback (subject
+    too wide to fit a 9:16 window without losing relevance). `landscape_paths`
+    is the legacy fallback (all-blurpad) when no framing dict is supplied.
+    Pure function — computes no saliency, runs no ffmpeg.
     """
     landscape = landscape_paths or frozenset()
+    framing = framing or {}
     w, h = size
     if not cuts:
         return {"inputs": [], "filter": "", "map": "", "durations": []}
@@ -146,11 +166,24 @@ def build_scene_filter(cuts: list[tuple[float, str]], total: float,
         if _is_video(path):
             # loop a short clip to fill the cut; trim to exact frames
             inputs.append(path)
-            if path in landscape:
-                graph = f"[{j}:v]"
+            decision = framing.get(path)
+            if decision is None and path in landscape:
+                decision = ("blurpad", None)   # legacy path: all landscape -> blurpad
+            mode = decision[0] if decision else "cover"
+            ct = decision[2] if decision and len(decision) > 2 else 0.0
+            cb = decision[3] if decision and len(decision) > 3 else 0.0
+            # strip baked-in cinematic letterbox before framing (2.39:1 in a 16:9 file)
+            pre = (f"crop=iw:ih*{1 - ct - cb:.4f}:0:ih*{ct:.4f},"
+                   if (ct + cb) > 0.02 else "")
+            if mode == "blurpad":
+                graph = f"[{j}:v]{pre}"
                 graph += _video_cut(w, h, dur, speed_ramp=False,
                                     landscape=True, lift=(j in no_darken))
                 parts.append(f"{graph};[bp]trim=duration={dur:.3f},fps={fps},"
+                             f"setpts=PTS-STARTPTS[v{j}]")
+            elif mode == "crop":
+                chain = _smart_cover_crop(w, h, decision[1], lift=(j in no_darken))
+                parts.append(f"[{j}:v]{pre}{chain},trim=duration={dur:.3f},fps={fps},"
                              f"setpts=PTS-STARTPTS[v{j}]")
             else:
                 chain = _video_cut(w, h, dur, speed_ramp=(j % 3 == 2))
@@ -225,29 +258,97 @@ def global_cuts_from_sections(sections, durations) -> tuple[list, float]:
     return cuts, offset
 
 
-def _probe_landscape(paths_list: list[str], frame_w: int, frame_h: int) -> frozenset[str]:
-    """Return the subset of clip paths wider than the target frame (16:9 phone
-    footage etc.) — those get blur-padded instead of cover-cropped. Probes once
-    per unique video with ffprobe; unknown sources are treated as portrait."""
-    import json
-    import subprocess
+def _probe_framing(paths_list: list[str], frame_w: int, frame_h: int) -> dict:
+    """ADAPTIVE framing decision per landscape clip (subject-aware, from research).
 
-    landscape: set[str] = set()
+    A landscape (16:9-ish) clip can't fill a 9:16 frame without either cropping
+    the sides or shrinking into a pillarbox. We sample a few frames, find the
+    subject by COLOURFULNESS (the vivid car pops against muted sky/sand/road —
+    far more reliable than edges, which textured ground fools), and:
+      - if the subject fits the crop window -> ("crop", fc) subject-aware cover-crop
+        centred on it (full-bleed, keeps the car);
+      - else -> ("blurpad", None) clean pillarbox (keeps the WHOLE car, no clip).
+    One decision per clip (averaged over sampled frames) so the crop never jitters.
+    Any probe failure defaults to blurpad — the safe, never-clips choice."""
+    import subprocess
+    import tempfile
+
+    import numpy as np
+    from PIL import Image
+
+    crop_frac = (frame_w / frame_h) / (16 / 9)   # width kept by a 9:16 cover-crop
+    out: dict = {}
     for p in dict.fromkeys(paths_list):
         if not _is_video(p):
             continue
         try:
-            out = subprocess.run(
+            pr = subprocess.run(
                 ["ffprobe", "-v", "error", "-select_streams", "v:0",
-                 "-show_entries", "stream=width,height",
+                 "-show_entries", "stream=width,height:format=duration",
                  "-of", "json", p], capture_output=True, text=True, timeout=20)
-            st = json.loads(out.stdout).get("streams", [{}])[0]
-            w, h = int(st.get("width", 0)), int(st.get("height", 0))
-            if w and h and w / h > frame_w / frame_h:
-                landscape.add(p)
-        except Exception:
-            continue
-    return frozenset(landscape)
+            import json as _json
+            meta = _json.loads(pr.stdout)
+            st = meta.get("streams", [{}])[0]
+            sw, sh = int(st.get("width", 0)), int(st.get("height", 0))
+            dur = float(meta.get("format", {}).get("duration", 0) or 0)
+            if not (sw and sh and sw / sh > frame_w / frame_h):
+                continue                       # portrait/near-square -> normal cover
+            energy = None
+            bars_top, bars_bot = [], []
+            for ft in (0.15, 0.4, 0.6, 0.85):
+                t = max(0.0, ft * dur)
+                tmp = tempfile.mktemp(suffix=".jpg")
+                subprocess.run(["ffmpeg", "-y", "-ss", f"{t:.2f}", "-i", p,
+                                "-frames:v", "1", "-vf", "scale=480:-1", tmp],
+                               capture_output=True, timeout=20)
+                try:
+                    arr = np.asarray(Image.open(tmp).convert("HSV")).astype(float)
+                except Exception:  # noqa: BLE001 — a missing sample is skipped
+                    continue
+                e = (arr[:, :, 1] / 255.0 * (arr[:, :, 2] / 255.0)).sum(axis=0)
+                energy = e if energy is None else energy + e
+                # baked-in letterbox: rows near-black across the width (cinematic
+                # 2.39:1 content inside a 16:9 file) — measure so we can strip them
+                rowv = arr[:, :, 2].mean(axis=1)
+                hpx = len(rowv)
+                tb = 0
+                while tb < hpx and rowv[tb] < 18:
+                    tb += 1
+                bb = 0
+                while bb < hpx and rowv[hpx - 1 - bb] < 18:
+                    bb += 1
+                bars_top.append(tb / hpx)
+                bars_bot.append(bb / hpx)
+            if energy is None:
+                out[p] = ("blurpad", None, 0.0, 0.0)
+                continue
+            # crop only bars present in EVERY sample (min) so a legitimately dark
+            # frame never causes over-cropping; ignore tiny/huge detections
+            ct = min(bars_top) if bars_top else 0.0
+            cb = min(bars_bot) if bars_bot else 0.0
+            if ct + cb < 0.02 or ct + cb > 0.30:
+                ct = cb = 0.0
+            energy = np.convolve(energy, np.ones(15) / 15, mode="same")
+            # Isolate the SUBJECT: subtract the diffuse background level (warm sand/
+            # sky carry saturation across the whole width and would otherwise read
+            # as "car"). What remains as a peak is the vivid car.
+            strong = np.clip(energy - np.percentile(energy, 60), 0.0, None)
+            if strong.sum() < 1e-6:
+                strong = energy
+            n = len(strong)
+            centroid = float((strong * np.arange(n)).sum() / (strong.sum() + 1e-6))
+            fc = centroid / n
+            win = crop_frac * n                       # crop window width in columns
+            lo = int(max(0, round(centroid - win / 2)))
+            hi = int(min(n, round(centroid + win / 2)))
+            fit = float(strong[lo:hi].sum() / (strong.sum() + 1e-6))
+            # fits when most of the subject sits inside the crop window; else the
+            # car is too wide to crop without losing its nose/tail -> pillarbox
+            mode = "crop" if fit >= 0.80 else "blurpad"
+            out[p] = (mode, fc if mode == "crop" else None, ct, cb)
+        except Exception:  # noqa: BLE001 — never let framing analysis break a render
+            out[p] = ("blurpad", None, 0.0, 0.0)
+    return out
 
 
 def render_base_from_cuts(cuts, total: float, out_path: str, fps: int = 24,
@@ -258,10 +359,9 @@ def render_base_from_cuts(cuts, total: float, out_path: str, fps: int = 24,
     import os
     import subprocess
 
-    landscape = _probe_landscape([p for _, p in cuts], *size)
+    framing = _probe_framing([p for _, p in cuts], *size)
     graph = build_scene_filter(cuts, total, size=size, fps=fps,
-                               no_darken=no_darken,
-                               landscape_paths=landscape)
+                               no_darken=no_darken, framing=framing)
     if not graph["inputs"]:
         raise RuntimeError("no resolvable cuts to render")
     cmd = ["ffmpeg", "-y", *input_args(graph["inputs"]),
