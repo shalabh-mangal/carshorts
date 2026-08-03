@@ -1,0 +1,8 @@
+{
+  "_note": "Versus routing: hook = matchup (Sierra opener, QA opens-on-subject), spec = Sierra (power beat), value = CRETA (counter beat — needs Creta clips dropped), peak = Sierra flourish, cta = both + loop back to Sierra. Drop Creta clips named: creta_hero, creta_front, creta_side, creta_interior.",
+  "0": ["sierra_hero.mp4", "creta_hero.mp4"],
+  "1": ["sierra_sand.mp4", "sierra_grass.mp4"],
+  "2": ["creta_interior.mp4", "creta_front.mp4"],
+  "3": ["sierra_sunroof.mp4", "sierra_side.mp4"],
+  "4": ["creta_side.mp4", "sierra_hero.mp4"]
+}

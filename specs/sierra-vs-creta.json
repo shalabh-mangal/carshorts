@@ -1,0 +1,89 @@
+{
+  "subject": "Tata Sierra vs Hyundai Creta",
+  "specs": [
+    {
+      "name": "sierra_power_turbo",
+      "value": "160 PS",
+      "source_url": "https://cars.tatamotors.com/sierra/ice.html",
+      "source_sentence": "Tata Sierra 1.5 turbo-petrol produces 160 PS.",
+      "confidence": 1.0
+    },
+    {
+      "name": "sierra_torque_turbo",
+      "value": "255 Nm",
+      "source_url": "https://cars.tatamotors.com/sierra/ice.html",
+      "source_sentence": "Tata Sierra turbo-petrol develops 255 Nm.",
+      "confidence": 1.0
+    },
+    {
+      "name": "sierra_sunroof",
+      "value": "panoramic sunroof",
+      "source_url": "https://cars.tatamotors.com/sierra/ice.html",
+      "source_sentence": "Tata Sierra offers a panoramic sunroof (voice-assisted).",
+      "confidence": 1.0
+    },
+    {
+      "name": "sierra_audio",
+      "value": "JBL 13-speaker Dolby Atmos",
+      "source_url": "https://cars.tatamotors.com/sierra/ice.html",
+      "source_sentence": "Tata Sierra: JBL 13-speaker system with Dolby Atmos.",
+      "confidence": 1.0
+    },
+    {
+      "name": "sierra_adas",
+      "value": "Level 2 ADAS",
+      "source_url": "https://cars.tatamotors.com/sierra/ice.html",
+      "source_sentence": "Tata Sierra offers Level 2 ADAS (up to L2+, 22 features).",
+      "confidence": 1.0
+    },
+    {
+      "name": "sierra_boot",
+      "value": "622 litres",
+      "source_url": "https://cars.tatamotors.com/sierra/ice.html",
+      "source_sentence": "Tata Sierra boot space is 622 litres.",
+      "confidence": 1.0
+    },
+    {
+      "name": "creta_power_petrol",
+      "value": "115 PS",
+      "source_url": "https://en.wikipedia.org/wiki/Hyundai_Creta",
+      "source_sentence": "The Creta for the Indian market: 1.5-litre petrol producing 115 PS and 144 N⋅m.",
+      "confidence": 1.0
+    },
+    {
+      "name": "creta_torque_petrol",
+      "value": "144 Nm",
+      "source_url": "https://en.wikipedia.org/wiki/Hyundai_Creta",
+      "source_sentence": "Creta 1.5-litre petrol develops 144 N⋅m of torque.",
+      "confidence": 1.0
+    },
+    {
+      "name": "creta_diesel_torque",
+      "value": "250 Nm",
+      "source_url": "https://en.wikipedia.org/wiki/Hyundai_Creta",
+      "source_sentence": "Creta 1.5-litre diesel: 115 PS and 250 N⋅m of torque.",
+      "confidence": 1.0
+    },
+    {
+      "name": "creta_value_features",
+      "value": "ventilated seats (front), wireless charging, 10.25-inch touchscreen, 6 airbags, rear camera",
+      "source_url": "https://www.cardekho.com/hyundai/creta",
+      "source_sentence": "Creta S(O): wireless charging, ventilated seats (front), a 10.25-inch touchscreen with Android Auto and CarPlay, six airbags standard and a rear camera.",
+      "confidence": 1.0
+    },
+    {
+      "name": "sierra_price",
+      "value": "₹11.49 lakh (ex-showroom, start)",
+      "source_url": "https://www.cardekho.com/tata/sierra",
+      "source_sentence": "Tata Sierra price estimate ₹11.49–21.29 lakh ex-showroom (2026 launch).",
+      "confidence": 0.8
+    },
+    {
+      "name": "creta_price",
+      "value": "₹10.91 lakh (ex-showroom, start)",
+      "source_url": "https://www.cardekho.com/hyundai/creta",
+      "source_sentence": "Hyundai Creta price estimate ₹10.91–20.11 lakh ex-showroom.",
+      "confidence": 0.8
+    }
+  ]
+}

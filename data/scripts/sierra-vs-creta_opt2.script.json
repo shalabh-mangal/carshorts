@@ -1,0 +1,36 @@
+{
+  "subject": "Tata Sierra vs Hyundai Creta",
+  "_angle": "OPT2 · Power play — lead with the 160-vs-115 power gap as the hero contrast; Sierra-leaning, calm delivery",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Same money — but the Sierra's turbo makes a hundred-sixty horses to the Creta's hundred-fifteen.",
+      "cited_spec_names": ["sierra_power_turbo", "creta_power_petrol"],
+      "pops": [{"anchor": "sixty", "show": "160 vs 115 PS", "card": true}]
+    },
+    {
+      "role": "spec",
+      "text": "One-sixty turbo versus one-fifteen — the Sierra simply pulls harder, no contest.",
+      "cited_spec_names": ["sierra_power_turbo", "creta_power_petrol"],
+      "pops": [{"anchor": "turbo", "show": "160 PS TURBO"}]
+    },
+    {
+      "role": "value",
+      "text": "The Creta's trump card? It starts a little cheaper, and it's the proven, resale-friendly favourite.",
+      "cited_spec_names": ["creta_price"],
+      "pops": [{"anchor": "cheaper", "show": "₹10.91L START"}]
+    },
+    {
+      "role": "peak",
+      "text": "For the money, though, the Sierra feels like a lot more car. Smash like if power wins.",
+      "cited_spec_names": [],
+      "pops": [{"anchor": "like", "show": "LIKE"}]
+    },
+    {
+      "role": "cta",
+      "text": "So — Sierra or Creta? Comment one or two. Like, share, and subscribe.",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  ]
+}

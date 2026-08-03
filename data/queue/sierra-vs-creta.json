@@ -1,0 +1,18 @@
+{
+  "car": "Tata Sierra vs Hyundai Creta",
+  "slug": "sierra-vs-creta",
+  "spec": "specs/sierra-vs-creta.json",
+  "status": "script_review",
+  "created": "2026-08-03T16:00:00",
+  "language": "english",
+  "persona": "deadpan",
+  "voice": "calm",
+  "format": "vs",
+  "note": "COMPARISON video (our first). Gate 1: pick one of 3 script options + a voice. Then drop CRETA footage in the content area (Sierra clips are ready; expected Creta names: creta_hero, creta_front, creta_side, creta_interior). Verify the Creta TURBO figure on CarDekho before render — it's the one generation-ambiguous spec.",
+  "target": {
+    "views": 3000,
+    "likes": ">15",
+    "comments": ">5 (rivalry poll — Sierra or Creta)",
+    "subs": "increase"
+  }
+}

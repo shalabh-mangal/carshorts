@@ -1,0 +1,36 @@
+{
+  "subject": "Tata Sierra vs Hyundai Creta",
+  "_angle": "OPT1 · Head vs Heart — safe-bet Creta vs reborn Sierra; balanced round-by-round, calm delivery (proven winner tone)",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Both start near eleven lakh — so, the safe-bet Creta, or the reborn Sierra?",
+      "cited_spec_names": ["sierra_price", "creta_price"],
+      "pops": [{"anchor": "lakh", "show": "~₹11L · EX-SHOWROOM", "card": true}]
+    },
+    {
+      "role": "spec",
+      "text": "The Sierra packs a hundred-sixty turbo horses; the Creta petrol makes a hundred-fifteen.",
+      "cited_spec_names": ["sierra_power_turbo", "creta_power_petrol"],
+      "pops": [{"anchor": "horses", "show": "160 PS TURBO"}, {"anchor": "fifteen", "show": "115 PS"}]
+    },
+    {
+      "role": "value",
+      "text": "But the Creta hits back with ventilated seats, wireless charging, and that comfort-first reputation.",
+      "cited_spec_names": ["creta_value_features"],
+      "pops": [{"anchor": "seats", "show": "VENTILATED SEATS"}]
+    },
+    {
+      "role": "peak",
+      "text": "The Sierra's reply? Panoramic roof, and a thirteen-speaker JBL Dolby system. Smash like for the Sierra.",
+      "cited_spec_names": ["sierra_sunroof", "sierra_audio"],
+      "pops": [{"anchor": "roof", "show": "PANORAMIC ROOF"}, {"anchor": "like", "show": "LIKE"}]
+    },
+    {
+      "role": "cta",
+      "text": "So — head, or heart? Sierra or Creta? Comment one or two. Like, share, and subscribe.",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  ]
+}
