@@ -25,6 +25,7 @@ import re
 import subprocess
 import sys
 import threading
+import time as _time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -784,6 +785,25 @@ def _queue_cards() -> list[dict]:
                 for vp in sorted(paths.VOICE_OPTIONS.glob(f"{card.get('slug','')}_*.mp3")):
                     vopts.append({"file": str(vp), "label": vp.stem.split("_")[-1]})
             card["voice_options"] = vopts
+            # Make the "generating…" placeholder truthful: if a script_review card
+            # has no samples, kick off ONE real generation job (cloned voice). A
+            # portal-owned lock prevents re-spawning on every poll; it's cleared
+            # when samples appear, and treated stale after 10 min so a died job
+            # retries. Free (local Chatterbox) — see rendering/voicesamples.py.
+            _vlock = paths.VOICE_OPTIONS / f".{card.get('slug', '')}.generating"
+            if vopts:
+                _vlock.unlink(missing_ok=True)
+            elif card.get("slug"):
+                _stale = _vlock.exists() and (_time.time() - _vlock.stat().st_mtime > 600)
+                if not _vlock.exists() or _stale:
+                    try:
+                        paths.VOICE_OPTIONS.mkdir(parents=True, exist_ok=True)
+                        _vlock.write_text(str(_time.time()))
+                        _spawn_worker(card["slug"],
+                                      "subprocess.run([sys.executable,'-m',"
+                                      f"'carshorts.rendering.voicesamples',{card['slug']!r}])")
+                    except OSError:
+                        pass
         # owner-dropped footage + notes (content-drop), so the FE can show what's
         # in the pool and the render can use it.
         try:
