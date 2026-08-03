@@ -1007,6 +1007,8 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     sections = []
     manifest_sections: list[dict] = []
     quality_warnings: list[str] = []   # loops + dropped overlays → QA gate
+    own_available = any("own" in Path(p).parts for p in pool)  # owner-dropped footage present?
+    stock_cuts: list[str] = []         # cuts on generic footage despite own clips
     prev_last_bucket = ""
     humor_concepts_used: set[str] = set()   # AI comedy concepts used so far
     _HUMOR_MAX = 3                          # a lively few, not a meme every beat
@@ -1192,6 +1194,8 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
                     quality_warnings.append(
                         f"LOOP: '{Path(a).name}' plays {span:.1f}s in beat {i} "
                         f"({seg.role}) but is only {clen:.1f}s — footage repeats")
+            if own_available and "own" not in Path(a).parts:
+                stock_cuts.append(Path(a).name)   # generic clip while owner clips exist
             cut_rows.append(row)
         manifest_sections.append({
             "index": i, "role": seg.role, "duration": round(durations[i], 3),
@@ -1201,6 +1205,11 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
             "pops": [{"start": round(p[0], 3), "dur": round(p[1], 3),
                       "text": p[2], "kind": p[3]} for p in word_pops],
         })
+
+    if stock_cuts:
+        quality_warnings.append(
+            f"STOCK: {len(stock_cuts)} cut(s) use generic/stock footage though owner "
+            f"clips are available ({', '.join(sorted(set(stock_cuts))[:3])})")
 
     if quality_warnings:
         print("     ⚠ QUALITY WARNINGS (QA will flag these — fix before publish):")
@@ -1217,6 +1226,8 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         "subject": script.subject,
         "subject_families": sorted(families),
         "quality_warnings": quality_warnings,
+        "render": {"voice_engine": voice_engine, "persona": persona or "default",
+                   "own_available": own_available},
     }, indent=2, ensure_ascii=False))
     if plan_only:
         print(f"     plan-only: manifest -> {manifest_path}")
