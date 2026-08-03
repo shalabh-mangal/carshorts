@@ -180,6 +180,14 @@ def approve(slug: str, privacy: str = "public") -> None:
     _progress(slug, "visual QA on the final…")
     _run([sys.executable, "-m", "carshorts.quality.vqa", str(final_out)])
 
+    _progress(slug, "brain critique (pre-Gate review)…")
+    try:
+        from carshorts.agents.critic import run as _critique
+        _critique(slug)
+        card = json.loads(card_path.read_text())   # critic wrote card['critique']
+    except Exception as exc:  # noqa: BLE001 — critic is advisory, never blocks the render
+        print(f"  (critic skipped: {str(exc)[:100]})")
+
     card["status"] = "final_review"
     card["final"] = str(final_out)
     card["note"] = ("PREMIUM FINAL ready (channel voice) — review THIS file; "

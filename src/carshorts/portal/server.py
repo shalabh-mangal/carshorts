@@ -470,13 +470,27 @@ function renderReview(c){
      <span class="lbl"></span>${WINS.map(t=>
      `<span class="chip win" data-beat="${bi}" data-tag="${t}"
         onclick="event.stopPropagation();this.classList.toggle('on')">${t}</span>`).join("")}</div>
-   </div>`).join("")+"</div>"+contentDropHTML(c,"review");
+   </div>`).join("")+"</div>"+critiqueHTML(c)+contentDropHTML(c,"review");
  (c.beats||[]).forEach((b,bi)=>{const el=$("btxt"+bi);if(el)el.textContent=b.text;});
  drawStars();
  const v=$("vid");
  if(v)v.addEventListener("timeupdate",()=>{
   (c.beats||[]).forEach((b,bi)=>{const el=$("beat"+bi);
    if(el)el.classList.toggle("live",v.currentTime>=b.start&&v.currentTime<b.start+b.dur);});});
+}
+/* ============ BRAIN CRITIQUE (pre-Gate LLM review) ============ */
+function critiqueHTML(c){
+ const q=c.critique; if(!q||!q.verdict)return "";
+ const vcol={ship:"#34d399",revise:"#fbbf24",block:"#f87171"}[q.verdict]||"#9aa2b2";
+ const scol={high:"#f87171",med:"#fbbf24",low:"#9aa2b2"};
+ const iss=(q.issues||[]).map(i=>`<li><b style="color:${scol[i.severity]||'#9aa2b2'}">${esc(i.severity||'?')}</b> <b>${esc(i.beat||'')}</b>: ${esc(i.problem||'')} <span class="mut">→ ${esc(i.fix||'')}</span></li>`).join("");
+ const str=(q.strengths||[]).map(s=>`<li>${esc(s)}</li>`).join("");
+ return `<div class="railcard" style="margin-top:12px">
+   <h3>🧠 Brain critique <span style="color:${vcol};font-weight:800">${esc((q.verdict||'').toUpperCase())}${q.score?(" · "+esc(String(q.score))+"/10"):""}</span></h3>
+   <div style="font-size:13px;margin-bottom:8px">${esc(q.summary||"")}</div>
+   ${iss?`<div class="mut" style="font-size:11px;text-transform:uppercase;letter-spacing:.5px">Issues</div><ul style="font-size:12.5px;margin:4px 0 8px;padding-left:16px">${iss}</ul>`:""}
+   ${str?`<div class="mut" style="font-size:11px;text-transform:uppercase;letter-spacing:.5px">What works</div><ul style="font-size:12.5px;margin:4px 0;padding-left:16px">${str}</ul>`:""}
+ </div>`;
 }
 /* ============ CONTENT DROP (owner footage + jokes) ============ */
 function contentDropHTML(c,mode){
@@ -1008,6 +1022,8 @@ class Handler(BaseHTTPRequestHandler):
                 f"'--voice-engine','chatterbox','--language',{card.get('language','english')!r},"
                 f"'--persona',{_persona!r},'--out',{draft_out!r}]"
                 f"+{_foot!r}+{card.get('render_flags', [])!r},capture_output=True,text=True);"
+                f"(subprocess.run([sys.executable,'-m','carshorts.agents.critic',{body['slug']!r}],"
+                "capture_output=True) if r.returncode==0 else None);"
                 f"cp=pathlib.Path({str(card_path)!r});c=json.loads(cp.read_text());"
                 "c['status']='awaiting_approval' if r.returncode==0 else 'rework_failed';"
                 "c['note']=('your mix rendered — watch the draft' if r.returncode==0 "
