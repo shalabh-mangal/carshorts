@@ -948,14 +948,23 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     # (the ADAS clip on the driver-assist line, the Thar clip on the Thar mention)
     # instead of an LLM guess. Values are pool filenames matched by basename.
     forced_shots: dict[int, list[str]] = {}
+    shot_misses: list[str] = []   # beats whose requested clips aren't in the pool
     if shots_file and Path(shots_file).exists():
         try:
             raw = json.loads(Path(shots_file).read_text())
             byname = {Path(a).name: a for a in pool}
             for k, v in raw.items():
-                got = [byname[n] for n in (v if isinstance(v, list) else [v]) if n in byname]
+                if not str(k).isdigit():
+                    continue                       # skip notes/comments in the plan
+                req = v if isinstance(v, list) else [v]
+                got = [byname[n] for n in req if n in byname]
                 if got:
                     forced_shots[int(k)] = got
+                elif req:
+                    # requested clips exist in the plan but NONE are in the pool —
+                    # the beat will silently fall back to other footage (e.g. a
+                    # comparison's Creta beat using Sierra clips). Flag it.
+                    shot_misses.append(f"beat {k} wanted {req} — none in pool")
             if forced_shots:
                 print(f"     shot-plan: {len(forced_shots)} beat(s) pinned to specific clips")
         except Exception as exc:  # noqa: BLE001 — a bad plan never blocks the render
@@ -1028,6 +1037,9 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     sections = []
     manifest_sections: list[dict] = []
     quality_warnings: list[str] = []   # loops + dropped overlays → QA gate
+    for _miss in shot_misses:          # shot-plan clips missing from the pool
+        quality_warnings.append(f"SHOT-PLAN: {_miss} — fell back to other footage "
+                                f"(may not match the narration)")
     own_available = any("own" in Path(p).parts for p in pool)  # owner-dropped footage present?
     stock_cuts: list[str] = []         # cuts on generic footage despite own clips
     prev_last_bucket = ""

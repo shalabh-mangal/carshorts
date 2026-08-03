@@ -795,7 +795,11 @@ def _queue_cards() -> list[dict]:
                 _vlock.unlink(missing_ok=True)
             elif card.get("slug"):
                 _stale = _vlock.exists() and (_time.time() - _vlock.stat().st_mtime > 600)
-                if not _vlock.exists() or _stale:
+                # Never contend for the (8GB) GPU: skip auto voice-gen while ANY
+                # render/generation worker is in flight (its progress file exists).
+                # A second concurrent Chatterbox load would risk an OOM crash.
+                _busy = any(QUEUE.glob("*.progress.json"))
+                if (not _vlock.exists() or _stale) and not _busy:
                     try:
                         paths.VOICE_OPTIONS.mkdir(parents=True, exist_ok=True)
                         _vlock.write_text(str(_time.time()))
