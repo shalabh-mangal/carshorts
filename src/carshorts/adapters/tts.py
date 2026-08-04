@@ -17,12 +17,27 @@ import ssl
 from abc import ABC, abstractmethod
 from pathlib import Path
 
-# Speech normalization — scripts stay clean ("82 PS", "₹5.79 lakh") but TTS
-# mispronounces acronym units and the ₹ glyph. Fix at synthesis time so every
-# voiceover (edge AND ElevenLabs) sounds right without hand-editing scripts.
+# Speech normalization — scripts stay CLEAN and punchy on-screen ("160 PS",
+# "₹11.49L", "622L boot", "13-speaker") but TTS mispronounces units, the ₹ glyph,
+# and shorthand. We fix it ONLY at synthesis time (and on the timing anchor), so
+# the overlays keep the punchy written form while every voiceover (edge AND
+# ElevenLabs) sounds right — no hand-editing, and zero extra LLM calls. ORDER
+# MATTERS: currency-context L resolves before the bare rupee glyph is dropped, and
+# the price/capacity L split runs before generic number rules.
 _SPEECH_SUBS = [
+    # --- currency & Indian number words -----------------------------------
+    # ₹/Rs + number + L is unambiguously a price in lakh: "₹11.49L" -> "11.49 lakh".
+    (re.compile(r"(?:₹|\bRs\.?)\s?(\d+(?:\.\d+)?)\s*L\b"), r"\1 lakh"),
     (re.compile(r"₹\s?"), ""),                       # drop rupee glyph: "₹5.79 lakh" -> "5.79 lakh"
     (re.compile(r"\bRs\.?\s?"), ""),                 # drop "Rs"
+    (re.compile(r"\b(\d+(?:\.\d+)?)\s*Cr\b"), r"\1 crore"),   # "₹1.2 Cr" -> "1.2 crore"
+    # A DECIMAL before L is a price in lakh ("11.49L"); a 2–4 digit INTEGER before
+    # L is a capacity in litres ("622L" boot, "45L" tank). In our spec sheets prices
+    # are always decimals and capacities integers, so this split is safe here.
+    (re.compile(r"\b(\d{1,2}\.\d{1,2})\s*L\b"), r"\1 lakh"),
+    (re.compile(r"\b(\d{2,4})\s*L\b"), r"\1 litres"),
+    (re.compile(r"\b(\d+)k\b"), r"\1 thousand"),     # "58k more" -> "58 thousand more"
+    # --- units the clone / edge mispronounce ------------------------------
     (re.compile(r"N[⋅·]?m\b", re.I), "N-m"),         # torque Nm / N⋅m / N·m -> spoken "N M"
     (re.compile(r"\bPS\b"), "P-S"),                  # metric horsepower
     (re.compile(r"\bbhp\b", re.I), "B-H-P"),
@@ -32,6 +47,12 @@ _SPEECH_SUBS = [
     (re.compile(r"\bDCT\b"), "D-C-T"),               # gearbox acronym
     (re.compile(r"\biMT\b"), "i-M-T"),               # clutchless manual acronym
     (re.compile(r"\bADAS\b"), "driver assist"),      # spoken plain — clone mangles the acronym
+    # --- readability symbols & shorthand ----------------------------------
+    (re.compile(r"\bvs\.?\b", re.I), "versus"),      # "Sierra vs Creta" -> "... versus ..."
+    (re.compile(r"\s*&\s*"), " and "),
+    (re.compile(r"(\d)\s*%"), r"\1 percent"),
+    (re.compile(r"(\d)\s*\+"), r"\1 plus"),          # "160+" -> "160 plus"
+    (re.compile(r"(\d)-([A-Za-z])"), r"\1 \2"),      # "13-speaker" -> "13 speaker" (no "dash")
     # Indian trim codes (ZXi, VXi, LXi, ZXi+ ...) — spell the letters so TTS
     # doesn't mangle them ("ZXi" -> "Z-X-i").
     (re.compile(r"\b([A-Z])(X)(i)(\+?)\b"),
@@ -40,7 +61,9 @@ _SPEECH_SUBS = [
 
 
 def normalize_for_speech(text: str) -> str:
-    """Make text TTS-friendly (acronym units spelled out, ₹ dropped)."""
+    """Make text TTS-friendly (units spelled out, ₹ dropped, L resolved to
+    lakh/litres, shorthand expanded). Display/overlay text is never touched —
+    this runs only on the audio + its timing anchor."""
     for pattern, repl in _SPEECH_SUBS:
         text = pattern.sub(repl, text)
     return text

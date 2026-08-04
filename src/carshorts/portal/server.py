@@ -870,6 +870,28 @@ def _spawn_worker(slug: str, python_code: str) -> None:
         subprocess.Popen([sys.executable, "-c", code], start_new_session=True)
 
 
+def _claim_render(slug: str) -> bool:
+    """Cross-process render lock: atomically claim <slug>.progress.json with an
+    EXCLUSIVE create. Returns False when a render is ALREADY in flight — this
+    portal, a second portal, or a double-clicked Lock — so the caller refuses to
+    spawn a DUPLICATE render racing the same draft + voice cache (the bug that let
+    two identical renders run at once). The render worker deletes the file when it
+    finishes; a lock older than 30 min is treated as a died job and reclaimed."""
+    pf = QUEUE / f"{slug}.progress.json"
+    try:
+        if pf.exists() and (_time.time() - pf.stat().st_mtime > 1800):
+            pf.unlink(missing_ok=True)
+        fd = os.open(str(pf), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    except FileExistsError:
+        return False
+    except OSError:
+        return True   # can't create the lock for another reason — don't block the render
+    with os.fdopen(fd, "w") as fh:
+        fh.write(json.dumps({"step": "starting render…",
+                             "at": datetime.datetime.now().isoformat(timespec="seconds")}))
+    return True
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, *args):  # quiet
         pass
@@ -1033,6 +1055,11 @@ class Handler(BaseHTTPRequestHandler):
                                          and build.get("cta", {}).get("text", "").strip()):
                     self._send(400, b'{"error":"hook + cta and at least 4 beats required"}')
                     return
+                # Idempotency: never spawn a second render onto the same draft +
+                # voice cache (two portals / double-click / retry all hit this).
+                if not _claim_render(body["slug"]):
+                    self._send(409, b'{"error":"a render is already in flight for this draft"}')
+                    return
                 from carshorts.core import paths as _p
                 out = _p.SCRIPTS / f"{body['slug']}_built.script.json"
                 out.write_text(json.dumps({"subject": card.get("car", ""), "segments": segs},
@@ -1060,9 +1087,7 @@ class Handler(BaseHTTPRequestHandler):
                 _foot = ["--no-footage"] + (["--shots", str(_shotsf)] if _shotsf.exists() else [])
             else:
                 _foot = ["--stock"]
-            pf = QUEUE / f"{body['slug']}.progress.json"
-            pf.write_text(json.dumps({"step": "rendering your mix (cloned voice, free)…",
-                                      "at": datetime.datetime.now().isoformat(timespec="seconds")}))
+            pf = QUEUE / f"{body['slug']}.progress.json"   # already claimed above
             draft_out = card.get("draft") or f"out/{body['slug']}_draft.mp4"
             _spawn_worker(body["slug"], (
                 f"r=subprocess.run([sys.executable,'-m','carshorts.rendering.produce',"
@@ -1108,7 +1133,8 @@ class Handler(BaseHTTPRequestHandler):
             _spawn_worker(body["slug"], (
                 f"r=subprocess.run([sys.executable,'-m','carshorts.writing.writescript',"
                 f"'--spec',{card['spec']!r},'--persona',{card.get('persona','deadpan')!r},"
-                f"'--options','3'],capture_output=True,text=True);"
+                f"'--format',{card.get('format', 'spotlight')!r},"
+                f"'--out-slug',{body['slug']!r},'--options','3'],capture_output=True,text=True);"
                 f"pathlib.Path({str(pf)!r}).unlink(missing_ok=True);"
                 "sys.stderr.write('--- scripts/more stdout ---\\n'+(r.stdout or '')[-1500:]);"
                 "sys.stderr.write('--- stderr ---\\n'+(r.stderr or '')[-1500:])"))
@@ -1135,9 +1161,11 @@ class Handler(BaseHTTPRequestHandler):
                 card["status"] = "reworking"
                 card["note"] = "script edited in portal — re-rendering"
                 _write_card(card_path, card)
-            pf = QUEUE / f"{body['slug']}.progress.json"
-            pf.write_text(json.dumps({"step": "re-rendering your edited script",
-                                      "at": datetime.datetime.now().isoformat(timespec='seconds')}))
+            # Idempotency: refuse a duplicate re-render onto the same draft.
+            if not _claim_render(body["slug"]):
+                self._send(409, b'{"error":"a render is already in flight for this draft"}')
+                return
+            pf = QUEUE / f"{body['slug']}.progress.json"   # already claimed above
             # same render contract as lock/final: cloned voice + picked persona,
             # own footage + shot-plan when present, no injected humor.
             _v2p = {"calm": "deadpan", "natural": "", "hype": "hype", "bhai": "bhai"}
@@ -1196,7 +1224,17 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main() -> None:
+    import socket
     port = 8787
+    # Refuse to start a SECOND portal on this port. ThreadingHTTPServer inherits
+    # allow_reuse_address=True, so on Windows two instances silently coexist under
+    # SO_REUSEADDR — and then BOTH react to one Lock and spawn duplicate renders.
+    # A quick connect-probe makes the double-start fail loudly instead.
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
+        probe.settimeout(0.4)
+        if probe.connect_ex(("127.0.0.1", port)) == 0:
+            raise SystemExit(f"a review station is already running on {port} — stop it "
+                             f"first (only one portal at a time, or you get double renders).")
     print(f"review station -> http://localhost:{port}   (Ctrl-C to stop)")
     ThreadingHTTPServer(("127.0.0.1", port), Handler).serve_forever()
 
