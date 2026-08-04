@@ -444,30 +444,22 @@ def _word_pops(seg, marks_file: str | None, dur: float,
         if start < dur - 0.5:
             rail.append((start, span_dur, cand["show"], cand["kind"],
                          cand["label"]))
-    # Auto-LSS: if the narration speaks "like, share, subscribe" (with optional
-    # "and" between words, as our CTA templates write it), generate THREE icon
-    # pops — LIKE, SHARE, SUBSCRIBE — each timed word-exactly to when its word
-    # is spoken. The renderer draws the strip progressively (thumb, +share,
-    # +bell), so the animation lands exactly on the spoken words. The show text
-    # is a manifest tag so QA/tests can see it; the label carries the icon count.
+    # Auto-SUBSCRIBE: the CTA voiceover already asks like/share/subscribe, so on
+    # screen we run ONE premium micro-interaction instead of three competing icons
+    # — a champagne SUBSCRIBE pill that gets tapped and flips to SUBSCRIBED ✓ with
+    # a bell ring (research: a single clear ask + a satisfying state-change is what
+    # converts, and it re-watches well on the Shorts loop). Timed to the spoken
+    # word "subscribe"; the renderer plays the animated sequence + holds.
     if _LSS_RE.search(seg.text):
-        lss_words = ("like", "share", "subscribe")
-        starts: list[float] = []
-        for w in lss_words:
-            span = _exact_span(w, marks_file, (0.0, 0.0))
-            if span is None:
-                break
-            starts.append(span[0])
-        if len(starts) == 3:
-            ends = starts[1:] + [dur - 0.2]
-            for k, w in enumerate(lss_words):
-                start = starts[k]
-                # cap at the next word's pop start (no overlap — QA counts
-                # overlapping pops as uncrowded violations) and floor at 0.3s
-                span_dur = max(0.3, min(ends[k] - start, 2.5))
-                if start < dur - 0.5:
-                    floaters.append((start, span_dur, w.upper(), "lss",
-                                     str(k + 1)))
+        span = _exact_span("subscribe", marks_file, (0.0, 0.0))
+        if span is not None:
+            anim = 1.9                               # the micro-interaction length
+            # anchor to the spoken word, but pull earlier if needed so the whole
+            # animation completes before the beat ends (the CTA graphic must finish
+            # even when 'subscribe' is the last word of the line)
+            start = max(0.0, min(span[0], dur - anim - 0.05))
+            span_dur = max(anim, dur - start - 0.05)
+            floaters.append((start, span_dur, "SUBSCRIBE", "subscribe", ""))
     # the card owns the screen while it counts up (first 2.2s). AFTER the
     # count-up settles, rail pops may run again — the static hold on the
     # final figure isn't a focal-point conflict, so let feature pops fire

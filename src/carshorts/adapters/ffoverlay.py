@@ -28,6 +28,7 @@ from carshorts.adapters.renderer import (
     _overlay_png,
     _settle_scale,
     _slam_scale,
+    _subscribe_frames,
     _wipe_bar_frames,
 )
 
@@ -115,13 +116,24 @@ def build_layers(sections, durations, size, fps: int, tdir: str,
                                      f"card_{tag}", seq["end"], max(seq["end"] + 0.7, end))
                 if hold:
                     layers.append(hold)
+            elif kind == "subscribe":
+                # premium subscribe micro-interaction, lower-centre (CTA zone)
+                y_sub = int(h * 0.54)
+                src = _subscribe_frames(tdir, f"sub_{tag}", theme=theme)
+                seq = _seq_layer(src, 24, y_sub, size, tdir, f"sub_{tag}", start)
+                layers.append(seq)
+                hold = _static_layer(src[-1], 1.0, y_sub, size, tdir,
+                                     f"sub_{tag}", seq["end"], max(seq["end"], end))
+                if hold:
+                    layers.append(hold)
             elif kind in ("reaction", "lss"):
                 if kind == "reaction":
                     src = _overlay_png(pop_text.upper(), 110, f"{tdir}/rx_{tag}.png",
                                        theme=theme, kind="reaction", fit_one_line=True)
                 else:
                     src = _lss_strip_png(f"{tdir}/lss_{tag}.png",
-                                         active=int(label) if label.isdigit() else 3)
+                                         active=int(label) if label.isdigit() else 3,
+                                         theme=theme)
                 layers.append(_anim_layer(src, _slam_scale, SLAM_DUR, y_top,
                                           size, fps, tdir, tag, start))
                 hold = _static_layer(src, 1.0, y_top, size, tdir, tag,
