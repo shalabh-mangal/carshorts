@@ -58,6 +58,43 @@ def _taste() -> str:
     return ""
 
 
+def mine_angles(sheet: SpecSheet, context: str = "", provider: str | None = None,
+                n: int = 3) -> list[dict]:
+    """ANGLE MINER — dig into the sourced data + news + learnings and surface the n
+    STRONGEST, DISTINCT angles for a Short. Each = {format, hook, usp, verdict, why}.
+    This is where creativity starts: it reasons about what's genuinely surprising or
+    argument-worthy in THIS car's data (a price that undercuts a rival, a spec gap,
+    a reborn-icon story, a facelift-worth-it question) and picks the best FORMAT per
+    angle. Returns [] on failure (caller falls back to generic angles)."""
+    system = (
+        "You are the ANGLE MINER — a viral short-form strategist for an Indian car "
+        "channel. From the car's SOURCED data + news below, find the "
+        f"{n} STRONGEST, DISTINCT angles for a YouTube Short. For each, choose the best "
+        "FORMAT from [" + ", ".join(FORMAT_RUBRICS) + "], a scroll-stopping HOOK, the ONE "
+        "USP, the DECISIVE verdict it lands, and WHY it can go viral. Reason about what's "
+        "genuinely surprising or argument-worthy — never a generic template. Prefer DISTINCT "
+        "formats across the angles. Ground every choice in the proven learnings.\n\n"
+        "PROVEN LEARNINGS:\n" + load_learnings_guidance(14)
+    )
+    user = (
+        render_spec_sheet(sheet) + (("\n\n" + context) if context else "")
+        + f"\n\nReturn ONLY JSON with up to {n} angles:\n"
+        '{"angles":[{"format":"...","hook":"...","usp":"...","verdict":"...","why":"..."}]}'
+    )
+    try:
+        data = make_llm(provider).complete_json(system, user)
+        angles = data.get("angles", []) if isinstance(data, dict) else data
+        out: list[dict] = []
+        for a in (angles or [])[:n]:
+            if not isinstance(a, dict):
+                continue
+            a["format"] = a["format"] if a.get("format") in FORMAT_RUBRICS else "spotlight"
+            out.append(a)
+        return out
+    except Exception:  # noqa: BLE001 — mining is best-effort; caller uses generic angles
+        return []
+
+
 def _summary(script: Script) -> str:
     return json.dumps({
         "subject": script.subject,

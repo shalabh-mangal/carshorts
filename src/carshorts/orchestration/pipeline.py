@@ -173,6 +173,8 @@ def approve(slug: str, privacy: str = "public") -> None:
              "--spec", card["spec"], "--skip-factcheck", "--no-humor",
              "--voice-engine", _engine, "--language", card.get("language", "english"),
              "--persona", _persona, "--footage-slug", slug, "--provider", "groq",
+             "--script-format", card.get("script_format", "mix"),
+             "--script-usp", card.get("script_usp", ""),
              "--out", str(final_out)] + _foot) != 0:
         card["status"] = "final_failed"
         card_path.write_text(json.dumps(card, indent=2))

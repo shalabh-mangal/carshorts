@@ -109,16 +109,18 @@ def write_options(spec_path: str, n: int = 3, persona: str = "", language: str =
     this keeps them all so the owner mixes-and-matches beats."""
     import json as _json
     sheet = SpecSheet.model_validate_json(Path(spec_path).read_text())
-    guidance = _apply_extras(sheet)
+    base = _apply_extras(sheet)              # sourced price + value-pick (the data context)
     from carshorts.core.learnings import load_learnings_guidance
     craft = load_learnings_guidance()
     if craft:
-        guidance = f"{guidance}\n\n{craft}" if guidance else craft
-    fmt = FORMATS.get(video_format, "")
-    if fmt:
-        guidance = f"{guidance}\n\n{fmt}" if guidance else fmt
+        base = f"{base}\n\n{craft}" if base else craft
     llm = make_llm(provider)
     slug = _slug(sheet.subject)
+
+    # ANGLE MINER: pick the n strongest DISTINCT angles (format + hook + USP +
+    # verdict) from the data; each option is then drafted + auto-revised to ITS
+    # format's bar. Falls back to the generic angle rotation if mining is empty.
+    mined = scriptbrain.mine_angles(sheet, base, provider=provider, n=n)
 
     start = 1
     for p in paths.SCRIPTS.glob(f"{slug}_opt*.script.json"):
@@ -129,12 +131,21 @@ def write_options(spec_path: str, n: int = 3, persona: str = "", language: str =
     out_files = []
     for i in range(n):
         k = start + i
-        angle = ANGLES[(k - 1) % len(ANGLES)]
+        a = mined[i] if i < len(mined) else {}
+        fmt_key = a.get("format", video_format)
+        ang_lines = [x for x in (
+            (f"HOOK ANGLE: {a['hook']}" if a.get("hook") else ""),
+            (f"THE ONE USP: {a['usp']}" if a.get("usp") else ""),
+            (f"LAND THIS VERDICT: {a['verdict']}" if a.get("verdict") else ""),
+        ) if x]
+        angle = "\n".join(ang_lines) if ang_lines else ANGLES[(k - 1) % len(ANGLES)]
+        fmt_shell = FORMATS.get(fmt_key, "")
+        guidance = f"{base}\n\n{fmt_shell}" if fmt_shell else base
         s = draft_script(sheet, llm, language=language, guidance=guidance,
                          persona=persona, angle=angle)
         # Script Brain: auto-revise this option to its format bar (clear USP +
         # decisive verdict), then keep its critique for the owner's Gate-1 pick.
-        s, crit = scriptbrain.studio_pass(s, sheet, fmt=video_format, provider=provider)
+        s, crit = scriptbrain.studio_pass(s, sheet, fmt=fmt_key, provider=provider)
         s = enforce_length(s, sheet, llm)
         d = _json.loads(s.model_dump_json())
         usp = (crit.get("usp") or "").strip()
@@ -142,6 +153,7 @@ def write_options(spec_path: str, n: int = 3, persona: str = "", language: str =
         label = usp if usp and usp.upper() != "NONE" else "fresh take"
         d["_angle"] = f"Opt {k} · {label}" + (f" · {score}/10" if score else "")
         d["_critique"] = crit          # surfaced per-option in the portal (Gate 1)
+        d["_format"] = fmt_key         # tag for the learning loop (angle/format perf)
         out = paths.SCRIPTS / f"{slug}_opt{k}.script.json"
         out.write_text(_json.dumps(d, indent=2, ensure_ascii=False), encoding="utf-8")
         out_files.append(str(out))

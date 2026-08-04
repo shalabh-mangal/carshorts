@@ -49,6 +49,7 @@ COMMANDS: dict[str, str] = {
     "experiments": "carshorts.intel.experiments",
     "comments": "carshorts.intel.comments",
     "retention-watch": "carshorts.intel.retention_watch",
+    "anglelab": "carshorts.intel.anglelab",
     # agents / publishing / portal
     "agent": "carshorts.agents.agent",
     "brain": "carshorts.agents.brain",

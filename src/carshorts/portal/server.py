@@ -435,6 +435,8 @@ function cancelEdit(){editing=null;renderBuilder(cards[sel]);}
 function useWhole(oi){
  const c=cards[sel];editing=null;
  c.options[oi].beats.forEach(b=>{build[b.role]={role:b.role,text:b.text,cited_spec_names:b.cited_spec_names||[],pops:b.pops||[]};});
+ c.script_format=c.options[oi].fmt||"spotlight";           // tag for the learning loop
+ c.script_usp=(c.options[oi].critique||{}).usp||"";
  Object.keys(build).forEach(r=>persistBuild(r));renderBuilder(c);toast("OPT "+(oi+1)+" loaded into your mix ✓");
 }
 function editMix(role){editing="mix:"+role;renderBuilder(cards[sel]);const ta=$("mx-"+role);if(ta)ta.focus();}
@@ -451,7 +453,7 @@ function moreOpts(){
 function lockScript(){
  const c=cards[sel];const st=fillState();if(!st.canLock()){toast("lock needs Hook + CTA + at least 4 beats");return;}
  fetch("/api/build/lock",{method:"POST",headers:{"Content-Type":"application/json"},
-  body:JSON.stringify({slug:c.slug,build})})
+  body:JSON.stringify({slug:c.slug,build,script_format:c.script_format||"mix",script_usp:c.script_usp||""})})
   .then(r=>{if(!r.ok)throw 0;toast("mix locked — producing the free draft ⟳");})
   .catch(()=>toast("lock failed — see portal.log"));
 }
@@ -794,6 +796,7 @@ def _queue_cards() -> list[dict]:
                     continue
                 opts.append({"file": str(sp), "label": d.get("_angle", sp.stem),
                              "critique": d.get("_critique", {}),
+                             "fmt": d.get("_format", "spotlight"),
                              "beats": [{"role": s.get("role", ""), "text": s.get("text", ""),
                                         "cited_spec_names": s.get("cited_spec_names", []),
                                         "pops": s.get("pops", [])}
@@ -1036,6 +1039,8 @@ class Handler(BaseHTTPRequestHandler):
                                           indent=2, ensure_ascii=False), encoding="utf-8")
                 card["script"] = str(out)
                 card["script_choice"] = "custom mix"
+                card["script_format"] = body.get("script_format") or "mix"   # learning-loop tag
+                card["script_usp"] = body.get("script_usp") or ""
                 card["status"] = "rendering"
                 card["note"] = "your mix locked — producing the free draft"
                 _write_card(card_path, card)
@@ -1063,7 +1068,9 @@ class Handler(BaseHTTPRequestHandler):
                 f"r=subprocess.run([sys.executable,'-m','carshorts.rendering.produce',"
                 f"'--script-file',{str(out)!r},'--spec',{card['spec']!r},'--skip-factcheck','--no-humor',"
                 f"'--voice-engine','chatterbox','--language',{card.get('language','english')!r},"
-                f"'--persona',{_persona!r},'--footage-slug',{body['slug']!r},'--out',{draft_out!r}]"
+                f"'--persona',{_persona!r},'--footage-slug',{body['slug']!r},"
+                f"'--script-format',{card.get('script_format', 'mix')!r},"
+                f"'--script-usp',{card.get('script_usp', '')!r},'--out',{draft_out!r}]"
                 f"+{_foot!r}+{card.get('render_flags', [])!r},capture_output=True,text=True);"
                 f"cp=pathlib.Path({str(card_path)!r});c=json.loads(cp.read_text());"
                 "c['status']='awaiting_approval' if r.returncode==0 else 'rework_failed';"
