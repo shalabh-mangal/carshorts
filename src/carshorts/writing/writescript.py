@@ -23,12 +23,12 @@ from carshorts.adapters.llm import make_llm
 from carshorts.core import paths
 from carshorts.core.models import SpecSheet
 from carshorts.rendering.produce import _apply_extras, _slug
+from carshorts.writing import scriptbrain
 from carshorts.writing.draft import (
     draft_script,
     enforce_length,
     fact_check,
     judge_scripts,
-    punch_up_script,
     structural_citation_check,
     unsourced_features_check,
     unsourced_numbers_check,
@@ -63,12 +63,14 @@ def write_premium(spec_path: str, out_path: str, persona: str = "", language: st
     best = candidates[best_index]
     print(f"     picked variant {best_index} — {why}")
 
-    print("3/4  punch-up editor pass...")
+    print("3/4  script brain: critique -> revise loop (format-aware)...")
     final = best
     try:
-        final = punch_up_script(best, sheet, llm)
-    except Exception as exc:  # noqa: BLE001 — editor pass is best-effort; keep the judged best
-        print(f"     editor pass failed ({exc}); keeping the judged best.")
+        final, crit = scriptbrain.studio_pass(best, sheet, fmt=video_format, provider=provider)
+        print(f"     script brain: {crit.get('verdict')} {crit.get('score')}/10 — "
+              f"USP: {crit.get('usp')} | verdict: {crit.get('verdict_line')}")
+    except Exception as exc:  # noqa: BLE001 — the brain is best-effort; keep the judged best
+        print(f"     script brain pass failed ({exc}); keeping the judged best.")
 
     # Enforce the Shorts length cap at write-time so a wordy draft can't overshoot
     # 60s and fail the render's length QA (a Punch draft came out ~196 words).
@@ -128,14 +130,22 @@ def write_options(spec_path: str, n: int = 3, persona: str = "", language: str =
     for i in range(n):
         k = start + i
         angle = ANGLES[(k - 1) % len(ANGLES)]
-        s = enforce_length(draft_script(sheet, llm, language=language, guidance=guidance,
-                                        persona=persona, angle=angle), sheet, llm)
+        s = draft_script(sheet, llm, language=language, guidance=guidance,
+                         persona=persona, angle=angle)
+        # Script Brain: auto-revise this option to its format bar (clear USP +
+        # decisive verdict), then keep its critique for the owner's Gate-1 pick.
+        s, crit = scriptbrain.studio_pass(s, sheet, fmt=video_format, provider=provider)
+        s = enforce_length(s, sheet, llm)
         d = _json.loads(s.model_dump_json())
-        d["_angle"] = f"Option {k} — fresh take"
+        usp = (crit.get("usp") or "").strip()
+        score = crit.get("score")
+        label = usp if usp and usp.upper() != "NONE" else "fresh take"
+        d["_angle"] = f"Opt {k} · {label}" + (f" · {score}/10" if score else "")
+        d["_critique"] = crit          # surfaced per-option in the portal (Gate 1)
         out = paths.SCRIPTS / f"{slug}_opt{k}.script.json"
         out.write_text(_json.dumps(d, indent=2, ensure_ascii=False), encoding="utf-8")
         out_files.append(str(out))
-        print(f"  wrote {out.name}")
+        print(f"  wrote {out.name}  score={score} usp={usp[:40]}")
     return out_files
 
 
