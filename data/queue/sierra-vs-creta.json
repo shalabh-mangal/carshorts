@@ -8,7 +8,7 @@
   "persona": "deadpan",
   "voice": "calm",
   "format": "vs",
-  "note": "QA-GREEN draft ready — real Creta footage on Creta beats, overlays on-word, no loops. Watch + approve (Gate 2).",
+  "note": "premium SUBSCRIBE micro-interaction (single ask) + QA-green",
   "target": {
     "views": 3000,
     "likes": ">15",
@@ -84,7 +84,7 @@
     },
     "cta": {
       "role": "cta",
-      "text": "Sierra or Creta? Comment one or two. Like, share, subscribe.",
+      "text": "Like, share, subscribe — then tell me: Sierra or Creta? Comment one or two.",
       "cited_spec_names": [],
       "pops": []
     }
@@ -94,38 +94,38 @@
   "critique": {
     "verdict": "revise",
     "score": 7,
-    "summary": "The render is engaging, but has areas for improvement in clip matching, overlay coverage, and tightness.",
+    "summary": "The render effectively compares the Tata Sierra and Hyundai Creta, but has some issues with clip matching and overlay coverage.",
     "strengths": [
-      "Clear and concise narration",
-      "Effective use of overlays to highlight key features",
-      "Engaging hook that grabs the viewer's attention"
+      "The hook is attention-grabbing and includes a relevant price point.",
+      "The spec and value beats provide clear comparisons between the two cars.",
+      "The use of overlays effectively highlights key features."
     ],
     "issues": [
       {
         "beat": "spec",
-        "problem": "Clip 'sierra_sand.mp4' does not match the narration about the panoramic roof and JBL speakers",
-        "fix": "Use a clip that shows the panoramic roof and JBL speakers, such as 'sierra_interior.mp4' or 'sierra_speakers.mp4'",
+        "problem": "The clip 'sierra_sand.mp4' does not directly match the narration about the panoramic roof or JBL speakers.",
+        "fix": "Use a clip that shows the panoramic roof or JBL speakers in the Sierra.",
         "severity": "med"
       },
       {
         "beat": "value",
-        "problem": "No overlay for 'bulletproof reputation'",
-        "fix": "Add an overlay for 'bulletproof reputation', such as 'RELIABILITY LEADER'",
-        "severity": "low"
+        "problem": "The clip 'creta_screen.mp4' does not directly relate to the narration about ventilated seats or wireless charging.",
+        "fix": "Use a clip that shows the ventilated seats or wireless charging feature in the Creta.",
+        "severity": "med"
       },
       {
         "beat": "peak",
-        "problem": "The narration asks viewers to 'smash like' but the overlay only shows 'LIKE'",
-        "fix": "Change the overlay to 'SMASH LIKE' or remove the 'smash' from the narration",
-        "severity": "low"
+        "problem": "The narration mentions 'smarter' but does not provide a clear comparison or verdict.",
+        "fix": "Provide a clear comparison or verdict in the peak beat to satisfy the viewer's curiosity.",
+        "severity": "high"
       },
       {
         "beat": "cta",
-        "problem": "The outro is a bit long and could be tightened up",
-        "fix": "Trim the outro to <=4s and remove any unnecessary words or clips",
+        "problem": "The CTA beat is a bit long and the narration could be tighter.",
+        "fix": "Trim the CTA beat to make it more concise and effective.",
         "severity": "low"
       }
     ],
-    "reviewed_at": "2026-08-03T20:42:48"
+    "reviewed_at": "2026-08-04T05:47:23"
   }
 }
