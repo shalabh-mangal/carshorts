@@ -125,6 +125,50 @@ onto the queue card — a demanding second opinion BEFORE the owner's taste gate
   overlay. Rules can't see that; the brain can.
 - Manual: `carshorts critic <slug>`. Free provider (groq/gemini fallback).
 
+## Script Studio — the format-aware writing brain (design, 2026-08-04)
+The render critic catches a weak script too late (post-render). The weakness the
+owner flagged — no clear USP, no decisive verdict, not distinctive — is a SCRIPT
+problem, so we bring the brain UPSTREAM and make it FORMAT-ADAPTIVE: the "engaging"
+bar depends on the video type, so grade each script against ITS OWN format's bar
+and push every script to be out-of-the-box. All free (groq/gemini + the crawl +
+learnings). Owner decision: auto-revise to the bar, then the owner picks at Gate 1.
+
+Pipeline:
+1. **Angle miner (dig into the data).** From the sourced specs + specs_extras +
+   news (crawl) + proven learnings + past performance, surface 2–3 candidate
+   ANGLES, each = {format, hook idea, the ONE USP, the verdict it lands, why it can
+   go viral}. Reasons about what's genuinely surprising/argument-worthy in THIS
+   car's data (a price that undercuts a rival, a spec gap, a reborn-icon story) —
+   not a template. Recommends the strongest.
+2. **Format rubrics.** Each format in `prompts.FORMATS` gets an explicit "what
+   makes THIS format engaging" rubric the critique grades on — spotlight (hero
+   number · ONE USP · hot-take verdict); vs (bold contrast · fair head-to-head ·
+   DECISIVE winner · rivalry poll); five_things (tease #5 · escalate · #5 is the
+   payoff); mythbust (held belief · surprising sourced reveal · what to do
+   instead); facelift/base_vs_top/upcoming (is the change/upgrade/wait worth it?).
+3. **Self-critique write loop (the Script Brain).** draft(format, angle) →
+   `script_critique(script, sheet, format)` → {score, usp_clarity, verdict_clarity,
+   hook, tightness, comment_bait, issues[fix]} → if below bar, revise with the
+   fixes → repeat (≤3) → converge. Enforces a clear USP + decisive verdict every
+   time. Replaces the one-shot judge+punch-up with a critique-driven loop.
+4. **Gate 1.** The 2–3 options presented are the top ANGLES (distinct
+   formats/USPs), each auto-revised to its bar, each shown with its score + why +
+   the USP/verdict it lands. Owner picks the strongest.
+5. **Learning loop.** Post-publish performance → which angles/formats/hooks won →
+   feeds the angle-miner's priors + rubric weights (via the analytics→learnings
+   loop). The brain gets better at choosing angles over time.
+
+Reuses `writing/draft.py` (draft/judge/punch_up/enforce_length + guards),
+`prompts.FORMATS/ANGLES/DRAFT_SYSTEM`, `core/learnings`, the crawl, and the
+post-render `agents/critic.py` (final gate). New: a SCRIPT-level critique (over
+text + format rubric, not a render manifest), the angle miner, and the revise
+loop, surfaced at Gate 1.
+
+Build order: **P1** reusable `script_critique` + draft→critique→revise loop in
+writescript (biggest lever). **P2** surface the critique per option at Gate 1 in
+the portal. **P3** angle miner (data→angles/format) feeding generation. **P4**
+close the learning loop (angle/format performance → priors).
+
 ## Working discipline (how we avoid re-iteration)
 - **Staged, per car:** finalize script → voice → then video. Never overwrite a
   locked script.
