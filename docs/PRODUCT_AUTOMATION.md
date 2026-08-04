@@ -164,10 +164,14 @@ post-render `agents/critic.py` (final gate). New: a SCRIPT-level critique (over
 text + format rubric, not a render manifest), the angle miner, and the revise
 loop, surfaced at Gate 1.
 
-Build order: **P1** reusable `script_critique` + draft→critique→revise loop in
-writescript (biggest lever). **P2** surface the critique per option at Gate 1 in
-the portal. **P3** angle miner (data→angles/format) feeding generation. **P4**
-close the learning loop (angle/format performance → priors).
+Build order — ALL SHIPPED (2026-08-04): **P1** `writing/scriptbrain.py` critique +
+`studio_pass` draft→critique→revise loop (in writescript). **P2** each Gate-1
+option shows its score/USP/verdict/top-fix in the portal builder. **P3**
+`scriptbrain.mine_angles` drives write_options (each option = a distinct mined
+angle+format, auto-revised to its bar). **P4** produce tags renders with
+script_format+USP; `intel/anglelab` ranks formats by performance into an
+[angle-lab] learning the miner reads as a prior (daily metrics job; no-ops on a
+thin sample).
 
 ## Working discipline (how we avoid re-iteration)
 - **Staged, per car:** finalize script → voice → then video. Never overwrite a
