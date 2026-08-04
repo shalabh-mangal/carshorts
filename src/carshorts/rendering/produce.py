@@ -1498,7 +1498,7 @@ def main() -> None:
     parser.add_argument("--voice", help="Override the edge-tts voice.")
     parser.add_argument("--skip-factcheck", action="store_true",
                         help="Skip the skeptic pass (renders UNVERIFIED).")
-    parser.add_argument("--provider", choices=["gemini", "groq", "cerebras", "openrouter", "ollama"],
+    parser.add_argument("--provider", choices=["deepseek", "gemini", "groq", "cerebras", "openrouter", "ollama"],
                         help="LLM backend (or set CARSHORTS_LLM). Default gemini.")
     parser.add_argument("--no-footage", action="store_true", help="Skip CC photo fetch (plain cards).")
     parser.add_argument("--captions", action="store_true", help="Burn captions on screen (default off).")

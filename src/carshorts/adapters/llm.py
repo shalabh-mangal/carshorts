@@ -386,9 +386,13 @@ def _min_interval(provider: str, default: float) -> float:
 def make_llm(provider: str | None = None, model: str | None = None) -> LLMClient:
     """Pick an LLM backend by name (or the CARSHORTS_LLM env var).
 
+    deepseek — PAID but ~₹free: V3.2 at $0.14/$0.28 per M (~$0.0006/call, <₹150/mo
+               at 3 videos/day). High limits, strong instructions/JSON — the text
+               workhorse. Needs DEEPSEEK_API_KEY; leads the chain when present.
     Free-tier ceilings are SMALL and are the real constraint (measured 2026-08):
     gemini   — 2.5 Flash FREE: 5 RPM / 250K TPM / **20 req/DAY** (billing -> Tier 1
                lifts this ~100x). Strong instructions/JSON. Needs GEMINI_API_KEY.
+               NOTE: vision (VQA/asset-vet/first-frame) always uses Gemini directly.
     groq     — FREE: 30 RPM but only **6k tokens/MINUTE** / 14.4k req/day, fast
                Llama 3.3 70B (needs GROQ_API_KEY). Low TPM -> our big prompts throttle.
     cerebras — FREE: ~1M tokens/day but an 8k context cap (needs CEREBRAS_API_KEY).
@@ -400,11 +404,13 @@ def make_llm(provider: str | None = None, model: str | None = None) -> LLMClient
     """
     if provider is None and not os.environ.get("CARSHORTS_LLM"):
         # no explicit choice -> resilient chain from whatever keys exist.
-        # Order = quality-first with graceful degradation: Gemini (best
-        # instructions, tiny daily quota) -> Groq (fast, TPM-throttled) ->
-        # local Ollama (unlimited, weaker). The circuit breaker means once a
-        # cloud tier is daily-exhausted we fall through to Ollama for free.
+        # Order = quality-first with graceful degradation: DeepSeek (paid, best
+        # value + high limits) -> Gemini (free, strong, tiny daily quota) -> Groq
+        # (fast, TPM-throttled) -> local Ollama (unlimited, weaker). The circuit
+        # breaker means once a cloud tier is daily-exhausted we fall through for free.
         chain: list[tuple[str, LLMClient]] = []
+        if os.environ.get("DEEPSEEK_API_KEY"):
+            chain.append(("deepseek", make_llm("deepseek", model)))
         if os.environ.get("GEMINI_API_KEY"):
             chain.append(("gemini", make_llm("gemini", model)))
         if os.environ.get("GROQ_API_KEY"):
@@ -413,6 +419,14 @@ def make_llm(provider: str | None = None, model: str | None = None) -> LLMClient
         if len(chain) > 1:
             return FallbackLLMClient(chain)
     provider = (provider or os.environ.get("CARSHORTS_LLM", "gemini")).lower()
+    if provider == "deepseek":
+        # Paid, high limits — a small 1s spacing is plenty (env override to 0).
+        return OpenAICompatLLMClient(
+            "https://api.deepseek.com/v1",
+            model or os.environ.get("DEEPSEEK_MODEL", "deepseek-chat"),
+            api_key=os.environ.get("DEEPSEEK_API_KEY"),
+            min_interval=_min_interval("deepseek", 1.0),
+        )
     if provider == "gemini":
         # 5 RPM free -> ~13s between calls keeps us under the per-minute ceiling.
         return GeminiLLMClient(model=model or "gemini-2.5-flash",
