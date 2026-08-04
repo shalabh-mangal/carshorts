@@ -186,8 +186,18 @@ PAGE = """<!doctype html><meta charset="utf-8">
  .bscore .big{font-size:26px;font-weight:900;
    background:linear-gradient(92deg,var(--acc),var(--cyan));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
  .bscore span{display:block;color:var(--mut);font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;margin-top:2px}
- .optstrip{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+ .optstrip{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
  .optstrip .mini{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+ .optcard{flex:1;min-width:210px;background:var(--panel2);border:1px solid var(--line);
+   border-radius:12px;padding:9px 11px}
+ .optcard .ohd{display:flex;align-items:center;gap:8px;font-size:13px}
+ .optcard .ohd .mini{margin-left:auto;padding:3px 9px;font-size:11px}
+ .oscore{font-weight:800;font-size:12px;padding:1px 8px;border-radius:20px}
+ .oscore.hi{background:#123b2a;color:#5fe0a6}.oscore.mid{background:#3a3413;color:#e9cf6a}
+ .oscore.lo{background:#3d1a1a;color:#f0908a}
+ .ometa{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;font-size:11.5px}
+ .ousp{color:#dec58c}.ovl{color:var(--mut)}
+ .ofix{margin-top:5px;font-size:11px;color:var(--mut);line-height:1.4}
  .stepbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px}
  .stepbar i{color:#ffffff1a;font-style:normal}
  .step{padding:6px 14px;border-radius:20px;border:1px solid var(--line);color:var(--mut);
@@ -352,7 +362,15 @@ function renderBuilder(c){
   <div class="bhead">
    <div><h1>${esc(c.car)} <span class="pill ${c.status}">${c.status.replace(/_/g," ")}</span></h1>
     <div class="bsub">${esc(c.persona)} · ${esc(c.language)}${c.target?` · 🎯 ${esc(String(c.target.views??""))} views / ${esc(String(c.target.likes??""))} likes${c.target.comments?` / ${esc(String(c.target.comments))} cmts`:""}`:""}</div>
-    ${opts.length?`<div class="optstrip">${opts.map((o,oi)=>`<button class="mini" onclick="useWhole(${oi})">Use OPT ${oi+1} as-is</button>`).join("")}</div>`:""}</div>
+    ${opts.length?`<div class="optstrip">${opts.map((o,oi)=>{
+      const q=o.critique||{};
+      const sc=(q.score!=null)?`<span class="oscore ${q.score>=8?"hi":q.score>=6?"mid":"lo"}">${esc(String(q.score))}/10</span>`:"";
+      const usp=(q.usp&&q.usp.toUpperCase()!=="NONE")?`<span class="ousp">USP · ${esc(q.usp)}</span>`:"";
+      const vl=(q.verdict_line&&q.verdict_line.toUpperCase()!=="NONE")?`<span class="ovl">➜ ${esc(q.verdict_line)}</span>`:"";
+      const fix=(q.issues&&q.issues[0])?`<div class="ofix">✎ ${esc(q.issues[0].fix||q.issues[0].problem||"")}</div>`:"";
+      return `<div class="optcard o${oi%6}">
+       <div class="ohd"><b>OPT ${oi+1}</b>${sc}<button class="mini" onclick="useWhole(${oi})">Use as-is ↗</button></div>
+       ${(usp||vl)?`<div class="ometa">${usp}${vl}</div>`:""}${fix}</div>`;}).join("")}</div>`:""}</div>
    <div class="bscore"><span class="big">${both}/2</span><span>script + voice</span></div>
   </div>
   ${c.progress?`<div class="progbar"><span class="spin"></span>${esc(c.progress.step)}</div>`:""}
@@ -775,6 +793,7 @@ def _queue_cards() -> list[dict]:
                 except Exception:  # noqa: BLE001 — skip an unreadable option file
                     continue
                 opts.append({"file": str(sp), "label": d.get("_angle", sp.stem),
+                             "critique": d.get("_critique", {}),
                              "beats": [{"role": s.get("role", ""), "text": s.get("text", ""),
                                         "cited_spec_names": s.get("cited_spec_names", []),
                                         "pops": s.get("pops", [])}
