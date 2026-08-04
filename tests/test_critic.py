@@ -86,3 +86,25 @@ def test_critic_noops_without_a_render(tmp_path, monkeypatch):
 
     monkeypatch.setattr(critic, "make_llm", _boom)
     assert critic.run("tata-sierra") == {}
+
+
+def test_overlay_coverage_is_deterministic():
+    # the LLM once called three COVERED features 'naked mentions'; coverage is now
+    # computed in Python so the critic can't hallucinate a missing overlay.
+    text = "Creta fights back: ventilated seats, wireless charging, bigger touchscreen."
+    assert critic._uncovered_features(text, ["VENTILATED SEATS", "WIRELESS CHARGING", "TOUCHSCREEN"]) == []
+    # a genuinely naked feature IS caught
+    assert critic._uncovered_features("It adds a panoramic sunroof and six airbags.",
+                                      ["SUNROOF"]) == ["airbags"]
+
+
+def test_summary_exposes_ground_truth_overlays():
+    manifest = {"sections": [{
+        "role": "value", "text": "ventilated seats and wireless charging",
+        "cuts": [{"asset": "creta_interior_slow.mp4"}],
+        "pops": [{"text": "VENTILATED SEATS"}, {"text": "WIRELESS CHARGING"}],
+        "duration": 4.7,
+    }]}
+    beat = critic._summary({"car": "X"}, manifest)["beats"][0]
+    assert beat["overlays_on_screen"] == ["VENTILATED SEATS", "WIRELESS CHARGING"]
+    assert beat["uncovered_features"] == []      # both named features are covered

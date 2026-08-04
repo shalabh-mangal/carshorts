@@ -39,16 +39,46 @@ def _latest_manifest(slug: str) -> dict:
     return {}
 
 
+# Feature cues we expect an on-screen overlay for when NAMED in the narration.
+# Used to compute overlay coverage DETERMINISTICALLY — the LLM miscounts when it
+# has to cross-reference the narration against the overlay list itself (it once
+# called three covered features "naked mentions"), so we hand it the answer.
+_FEATURE_CUES = (
+    "sunroof", "ventilated seats", "cooled seats", "wireless charging", "touchscreen",
+    "adas", "driver assist", "airbags", "camera", "360", "speakers", "jbl", "dolby",
+    "boot", "cruise control", "connected", "ncap", "sunroof", "led", "digital cluster",
+)
+
+
+def _uncovered_features(text: str, pop_texts: list[str]) -> list[str]:
+    """Feature cues NAMED in the narration that have NO matching on-screen overlay.
+    Deterministic ground truth for the critic's overlay-coverage check: a cue is
+    COVERED if a distinctive word of it appears in any of the beat's pops."""
+    t = (text or "").lower()
+    pops = " ".join(pop_texts).lower()
+    out: list[str] = []
+    for cue in _FEATURE_CUES:
+        if cue in t:
+            key = cue.split()[-1]           # 'seats', 'charging', 'touchscreen', ...
+            if key not in pops and cue not in pops and cue not in out:
+                out.append(cue)
+    return out
+
+
 def _summary(card: dict, manifest: dict) -> dict:
     """Compact, LLM-readable picture of the actual render."""
     secs = manifest.get("sections", [])
-    beats = [{
-        "role": s.get("role"),
-        "narration": s.get("text"),
-        "clips": [c.get("asset") for c in s.get("cuts", [])],
-        "overlays": [p.get("text") for p in s.get("pops", [])],
-        "seconds": round(s.get("duration", 0), 1),
-    } for s in secs]
+    beats = []
+    for s in secs:
+        overlays = [p.get("text") for p in s.get("pops", [])]
+        beats.append({
+            "role": s.get("role"),
+            "narration": s.get("text"),
+            "clips": [c.get("asset") for c in s.get("cuts", [])],
+            "overlays_on_screen": overlays,                 # GROUND TRUTH — these DO render
+            "uncovered_features": _uncovered_features(s.get("text", ""), overlays),
+            "seconds": round(s.get("duration", 0), 1),
+        })
     return {
         "car": card.get("car"),
         "voice": card.get("voice"),
@@ -81,18 +111,21 @@ def run(slug: str, provider: str | None = None) -> dict:
         "curiosity gap wins. FRAME 1 must be MOTION or a bold hero shot: if the first "
         "beat's opening clip looks static/interior/badge, flag it (a boring frame 1 costs "
         "the swipe before a word is heard).\n"
-        "2. Does each beat's CLIPS actually MATCH its narration? (filenames hint at content; "
-        "flag mismatches, wrong-generation or off-topic footage, or an interior clip on an "
-        "exterior line).\n"
+        "2. Does each beat's CLIPS actually MATCH its narration? Filenames only HINT at "
+        "content — flag a mismatch only when the filename clearly contradicts the line "
+        "(e.g. an 'exterior'/'sand'/'grass' clip on an interior-feature line). Do NOT "
+        "speculate about a clip you cannot infer from its name.\n"
         "3. MID-POINT cliff: ~half of viewers leave at the spec->value/verdict handoff. Is "
         "there a bridge / mini-cliffhanger into the payoff, or does it read as two videos "
         "stapled together? Flag a hard topic-switch with no bridge.\n"
         "4. TIGHTNESS — proven winner is ~90 words / ~30s. Flag a long OUTRO especially: the "
         "CTA beat should be <=4s / <=12 words; a polite 5-6s tail is dead air that drags "
         "average-view-% and delays the loop.\n"
-        "5. OVERLAY COVERAGE: every feature NAMED in the narration must have its own synced "
-        "on-screen pop at that word (two features named = two pops). Flag any naked feature "
-        "mention (e.g. narration says 'Dolby sound' but no audio overlay renders).\n"
+        "5. OVERLAY COVERAGE: each beat gives `overlays_on_screen` (GROUND TRUTH — exactly "
+        "what renders) and `uncovered_features` (features named in narration with NO overlay, "
+        "computed for you). Flag ONLY the items in `uncovered_features`; if it is empty, "
+        "coverage is COMPLETE — never claim an overlay is missing when it is in "
+        "`overlays_on_screen`.\n"
         "6. Engagement levers (like-at-peak, a binary rivalry poll), loop-friendliness, and "
         "any TASTE or accuracy risk.\n"
         "Be specific and honest, but also name what genuinely works. Ground every point in the "
