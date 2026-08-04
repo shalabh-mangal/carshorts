@@ -24,8 +24,34 @@ from carshorts.writing.draft import (
 )
 from carshorts.writing.prompts import render_spec_sheet
 
-BAR = 8          # score (1-10) a script must clear to stop revising
-MAX_ITER = 3     # revise attempts before we ship the best we have
+BAR = 8            # score (1-10) a script must clear to stop revising
+MAX_ITER = 3       # revise attempts before we ship the best we have
+REQUIRED_ROLES = ["hook", "spec", "value", "peak", "cta"]
+MIN_WORDS = 55     # a real ~30s narration; thinner reads as captions, not a script
+
+
+def _structural_issues(script: Script) -> list[dict]:
+    """Deterministic completeness checks the LLM critique can miss — a script MUST
+    be a full 5-beat, ~30s narration with the like/share/subscribe CTA. Returns
+    issue dicts (empty = structurally sound)."""
+    issues: list[dict] = []
+    roles = [s.role for s in script.segments]
+    missing = [r for r in REQUIRED_ROLES if r not in roles]
+    if missing:
+        issues.append({"beat": "structure",
+                       "problem": f"missing beats: {', '.join(missing)}",
+                       "fix": "write ALL five beats — hook, spec, value, peak, cta"})
+    wc = script.approx_word_count()
+    if wc < MIN_WORDS:
+        issues.append({"beat": "length",
+                       "problem": f"only {wc} words — too thin for ~30s (reads as captions)",
+                       "fix": "expand to ~70-90 words with vivid, specific spoken lines"})
+    cta = next((s.text.lower() for s in script.segments if s.role == "cta"), "")
+    if "subscribe" not in cta:
+        issues.append({"beat": "cta",
+                       "problem": "CTA is missing the like/share/subscribe ask",
+                       "fix": "end the CTA with 'like, share, subscribe' plus a rivalry poll"})
+    return issues
 
 # What makes THIS format engaging — the adaptive bar the critique grades on.
 FORMAT_RUBRICS = {
@@ -134,7 +160,17 @@ def critique(script: Script, sheet: SpecSheet | None = None,
         c = {"verdict": "revise", "score": None,
              "summary": f"script brain unavailable ({str(exc)[:80]})",
              "strengths": [], "issues": []}
-    return c if isinstance(c, dict) else {}
+    if not isinstance(c, dict):
+        c = {}
+    # deterministic completeness overrides: a thin/incomplete script can never
+    # "ship", no matter what the LLM said — fold the structural fixes in and cap
+    # the score so the studio loop keeps revising until it's whole.
+    struct = _structural_issues(script)
+    if struct:
+        c["issues"] = struct + (c.get("issues") or [])
+        c["verdict"] = "revise"
+        c["score"] = min(c.get("score") or 0, 4)
+    return c
 
 
 def revise(script: Script, sheet: SpecSheet, crit: dict,
@@ -147,12 +183,14 @@ def revise(script: Script, sheet: SpecSheet, crit: dict,
     system = (
         "You are a script doctor for car YouTube Shorts. Rewrite the SCRIPT to fix the "
         "listed ISSUES and hit this format's bar:\n" + rubric_for(fmt) + "\n"
-        "Sharpen to ONE clear USP and a DECISIVE verdict; keep the same section roles and "
-        "language; keep it tight (~90 words). CRITICAL: introduce NO number, price, spec, or "
-        "named feature/equipment that is not in the SPEC SHEET, and keep each beat's "
-        "cited_spec_names. Opinions and verdicts are encouraged but must read as clearly "
-        "subjective. Return ONLY JSON:\n"
-        '{"subject":"...","segments":[{"role":"...","text":"...","cited_spec_names":["..."]}]}'
+        "Sharpen to ONE clear USP and a DECISIVE verdict. REQUIRED structure: write ALL FIVE "
+        "beats — hook, spec, value, peak, cta — as full spoken lines totalling ~70-90 words "
+        "(never terse captions), and the CTA MUST include the exact words 'like, share, "
+        "subscribe' plus a rivalry poll ('X or Y? comment 1 or 2'). Keep the language. "
+        "CRITICAL: introduce NO number, price, spec, or named feature/equipment that is not in "
+        "the SPEC SHEET, and keep each beat's cited_spec_names. Verdicts/opinions are encouraged "
+        "but must read as clearly subjective. Return ONLY JSON:\n"
+        '{"subject":"...","segments":[{"role":"hook|spec|value|peak|cta","text":"...","cited_spec_names":["..."]}]}'
     )
     user = (
         render_spec_sheet(sheet) + "\n\nISSUES TO FIX:\n" + (fixes or "sharpen the USP and the verdict")

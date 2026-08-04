@@ -43,13 +43,9 @@ def _dur(path: Path) -> float:
 
 def _classify(files: list[Path]) -> list[dict]:
     """One batched vision call over sample frames from every file."""
-    import os
-
-    import google.generativeai as genai
     from PIL import Image
 
-    genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
-    model = genai.GenerativeModel("gemini-2.5-flash")
+    from carshorts.adapters.llm import gemini_vision
 
     tdir = Path(tempfile.mkdtemp(prefix="ingest_"))
     parts = ["You vet raw footage for a car YouTube channel. For EACH numbered "
@@ -74,9 +70,7 @@ def _classify(files: list[Path]) -> list[dict]:
         else:
             parts.append(Image.open(f).copy().convert("RGB").resize((320, 320)))
 
-    raw = model.generate_content(parts,
-                                 generation_config={"response_mime_type": "application/json"})
-    return json.loads(raw.text)
+    return json.loads(gemini_vision(parts))
 
 
 def run(car: str, dry: bool = False) -> None:

@@ -102,7 +102,7 @@ def run(provider: str | None = None) -> None:
     if fj.exists():
         failures = [json.loads(l) for l in fj.read_text().splitlines() if l.strip()][-20:]
 
-    llm = make_llm(provider or "groq")
+    llm = make_llm(provider)  # None -> Gemini-first chain
     system = (
         "You are the channel analyst for a car-Shorts factory. Given recipe "
         "cards (creative choices) with their YouTube metrics, plus recent QA "

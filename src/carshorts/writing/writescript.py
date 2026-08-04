@@ -102,7 +102,8 @@ def write_premium(spec_path: str, out_path: str, persona: str = "", language: st
 
 
 def write_options(spec_path: str, n: int = 3, persona: str = "", language: str = "english",
-                  provider: str | None = None, video_format: str = "spotlight") -> list[str]:
+                  provider: str | None = None, video_format: str = "spotlight",
+                  out_slug: str | None = None) -> list[str]:
     """Generate n DISTINCT option scripts (different angles, no judging) for the
     portal's script builder, saved as <slug>_opt{k}.script.json and APPENDED after
     any existing options. Unlike write_premium (which judges + keeps one best),
@@ -115,7 +116,10 @@ def write_options(spec_path: str, n: int = 3, persona: str = "", language: str =
     if craft:
         base = f"{base}\n\n{craft}" if base else craft
     llm = make_llm(provider)
-    slug = _slug(sheet.subject)
+    # Option filenames use the CARD slug when given (a comparison's card slug,
+    # e.g. "sierra-vs-creta", differs from the subject slug — the portal globs the
+    # card slug), else the subject slug.
+    slug = out_slug or _slug(sheet.subject)
 
     # ANGLE MINER: pick the n strongest DISTINCT angles (format + hook + USP +
     # verdict) from the data; each option is then drafted + auto-revised to ITS
@@ -151,8 +155,12 @@ def write_options(spec_path: str, n: int = 3, persona: str = "", language: str =
         usp = (crit.get("usp") or "").strip()
         score = crit.get("score")
         label = usp if usp and usp.upper() != "NONE" else "fresh take"
-        d["_angle"] = f"Opt {k} · {label}" + (f" · {score}/10" if score else "")
+        # A None score means the critique never ran (all providers rate-limited).
+        # Surface that honestly — never let a blank score read as a silent pass;
+        # the portal shows "score pending" and the option is flagged for re-score.
+        d["_angle"] = f"Opt {k} · {label} · " + (f"{score}/10" if score else "score pending")
         d["_critique"] = crit          # surfaced per-option in the portal (Gate 1)
+        d["_critique_status"] = "ok" if score is not None else "unavailable"
         d["_format"] = fmt_key         # tag for the learning loop (angle/format perf)
         out = paths.SCRIPTS / f"{slug}_opt{k}.script.json"
         out.write_text(_json.dumps(d, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -176,11 +184,13 @@ def main() -> None:
                    help="LLM backend (or CARSHORTS_LLM). Default gemini.")
     p.add_argument("--options", type=int, default=0,
                    help="Generate N option scripts (opt files) for the portal builder, not one best.")
+    p.add_argument("--out-slug", help="Filename slug for option files (default: subject slug). "
+                   "Set to the card slug for comparisons whose card slug differs from the subject.")
     args = p.parse_args()
 
     if args.options:
         write_options(args.spec, n=args.options, persona=args.persona, language=args.language,
-                      provider=args.provider, video_format=args.format)
+                      provider=args.provider, video_format=args.format, out_slug=args.out_slug)
         return
     sheet = SpecSheet.model_validate_json(Path(args.spec).read_text())
     out = args.out or str(paths.SCRIPTS / f"{_slug(sheet.subject)}_{args.persona or 'default'}.script.json")

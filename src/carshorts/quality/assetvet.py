@@ -137,13 +137,10 @@ def _gemini_vet(paths: list[Path], subject: str, generation: str = "") -> str:
 
     NOTE: google.generativeai is end-of-life upstream (migrate to google.genai).
     """
-    import os
-
-    import google.generativeai as genai
     from PIL import Image
 
-    genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
-    model = genai.GenerativeModel("gemini-2.5-flash")
+    from carshorts.adapters.llm import gemini_vision
+
     target = (f"SUBJECT NAMEPLATE: {subject}\n"
               + (f"TARGET GENERATION: {generation}\n" if generation else
                  "TARGET GENERATION: any generation is acceptable\n"))
@@ -155,9 +152,8 @@ def _gemini_vet(paths: list[Path], subject: str, generation: str = "") -> str:
         # WinError 32 ("file in use by another process").
         with Image.open(p) as _im:
             parts.append(_im.convert("RGB").copy())
-    resp = model.generate_content(
-        parts, generation_config={"response_mime_type": "application/json"})
-    return resp.text
+    # paced + retried + quota-aware (shared with the text path's daily budget)
+    return gemini_vision(parts)
 
 
 def vet_folder(folder: str | Path, subject: str, apply: bool = False,

@@ -35,7 +35,7 @@ def build(script_path: str, spec_path: str | None, provider: str | None) -> str:
         sheet = SpecSheet.model_validate_json(Path(spec_path).read_text())
         _apply_extras(sheet)
 
-    llm = make_llm(provider or "groq")
+    llm = make_llm(provider)  # None -> Gemini-first chain
     data_rows = llm.complete_json(SYSTEM, f"SCRIPT:\n{script.full_text}")
     data = data_rows[0] if isinstance(data_rows, list) and data_rows else data_rows
 
