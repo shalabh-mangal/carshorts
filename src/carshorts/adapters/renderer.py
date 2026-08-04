@@ -381,29 +381,30 @@ def _wipe_bar_frames(full_width: int, tdir: str, tag: str,
 
 
 def _lss_strip_png(out_path: str, icon_size: int = 116,
-                   strip_width: int = 640, active: int = 3) -> str:
-    """Like/Share/Subscribe strip — filled white icons with a dilated
-    black outline (same visual language as the text stroke) + small labels.
-    `active` draws only the first N icons (1 = thumb, 2 = +share, 3 = +bell)
-    at FIXED positions, so the three word-synced pops in a render form one
-    cumulative reveal: each word adds its icon without shifting the others.
-    Drawn procedurally with Pillow; no emoji fonts, no downloads."""
+                   strip_width: int = 640, active: int = 3, *,
+                   theme: OverlayTheme = THEME_LUXE) -> str:
+    """Like/Share/Subscribe strip, PREMIUM treatment in the given THEME: clean
+    icons in the theme's base colour, a HAIRLINE edge + soft shadow for legibility
+    (not the old thick meme outline), and small letter-spaced labels — matching the
+    overlay type. `active` draws only the first N icons (1 = thumb, 2 = +share,
+    3 = +bell) at FIXED positions, so the three word-synced pops form one cumulative
+    reveal. Drawn procedurally with Pillow; no emoji fonts, no downloads."""
     from PIL import Image, ImageDraw, ImageFilter
 
-    stroke = max(4, round(icon_size * 0.08))
-    label_font = _load_heavy_font(30)
-    pad = 40
-    label_h = 52
+    label_font = _weight_font(theme.label_w, 30)
+    track = theme.tracking * 30
+    pad = 44
+    label_h = 56
     canvas_w = strip_width + 2 * pad
     canvas_h = icon_size + label_h + 2 * pad
     cell = strip_width // 3
     centers = [pad + cell // 2 + i * cell for i in range(3)]
     cy = pad + icon_size // 2
 
-    # white silhouettes first — outline and shadow derive from their alpha
+    # icons in the theme base colour; edge + shadow derive from their alpha
     white = Image.new("RGBA", (canvas_w, canvas_h), (0, 0, 0, 0))
     d = ImageDraw.Draw(white)
-    W = (255, 255, 255, 255)
+    W = theme.base
 
     def thumb(cx):
         s_ = icon_size
@@ -458,26 +459,145 @@ def _lss_strip_png(out_path: str, icon_size: int = 116,
     for draw_icon, cx in zip((thumb, share, bell)[:active], centers[:active]):
         draw_icon(cx)
     for label, cx in zip(("LIKE", "SHARE", "SUBSCRIBE")[:active], centers[:active]):
-        lw = d.textlength(label, font=label_font)
-        d.text((cx - lw / 2, pad + icon_size + 14), label,
-               font=label_font, fill=W)
+        lw = _tracked_len(d, label, label_font, track)
+        _draw_tracked(d, cx - lw / 2, pad + icon_size + 16, label, label_font, W, track)
 
-    # outline: dilate the white alpha, fill black, sit it underneath
+    # HAIRLINE edge (a crisp ~2px rim, not the old thick meme outline) so the
+    # light icons stay legible over bright skies, plus a soft blurred shadow for
+    # depth — the same restrained legibility language as the premium text pops.
     alpha = white.getchannel("A")
-    outline_mask = alpha.filter(ImageFilter.MaxFilter(stroke * 2 + 1))
-    outline = Image.new("RGBA", white.size, (0, 0, 0, 0))
-    outline.paste((0, 0, 0, 255), mask=outline_mask)
-    # soft shadow from the outline's silhouette
+    edge_mask = alpha.filter(ImageFilter.MaxFilter(5))       # ~2px each side
+    edge = Image.new("RGBA", white.size, (0, 0, 0, 0))
+    edge.paste((0, 0, 0, 150), mask=edge_mask)
     shadow = Image.new("RGBA", white.size, (0, 0, 0, 0))
-    shadow.paste((0, 0, 0, 140), mask=outline_mask)
-    shadow = shadow.filter(ImageFilter.GaussianBlur(8))
+    shadow.paste((0, 0, 0, 255), mask=edge_mask)
+    shadow = shadow.filter(ImageFilter.GaussianBlur(10))
+    shadow.putalpha(shadow.getchannel("A").point(lambda a: int(a * 0.55)))
 
     img = Image.new("RGBA", white.size, (0, 0, 0, 0))
-    img.alpha_composite(shadow, (3, 5))
-    img.alpha_composite(outline)
+    img.alpha_composite(shadow, (2, 5))
+    img.alpha_composite(edge)
     img.alpha_composite(white)
     img.save(out_path)
     return out_path
+
+
+def _ease_out(x: float) -> float:
+    return 1 - (1 - max(0.0, min(1.0, x))) ** 3
+
+
+def _clamp01(x: float) -> float:
+    return max(0.0, min(1.0, x))
+
+
+def _draw_bell(d, cx, cy, s, col):
+    d.pieslice([cx - s * .30, cy - s * .44, cx + s * .30, cy + s * .36], 180, 360, fill=col)
+    d.rectangle([cx - s * .30, cy - s * .04, cx + s * .30, cy + s * .22], fill=col)
+    d.rounded_rectangle([cx - s * .38, cy + s * .18, cx + s * .38, cy + s * .30], radius=s * .06, fill=col)
+    d.ellipse([cx - s * .08, cy + s * .32, cx + s * .08, cy + s * .48], fill=col)
+    d.ellipse([cx - s * .06, cy - s * .52, cx + s * .06, cy - s * .40], fill=col)
+
+
+def _draw_cursor(d, x, y, sc=1.0):
+    p = [(x, y), (x, y + 46), (x + 12, y + 34), (x + 22, y + 54),
+         (x + 31, y + 50), (x + 21, y + 30), (x + 37, y + 30)]
+    p = [(x + (px - x) * sc, y + (py - y) * sc) for px, py in p]
+    d.polygon(p, fill=(255, 255, 255, 255), outline=(0, 0, 0, 170))
+
+
+def _subscribe_frames(tdir: str, tag: str, n_frames: int = 46, *,
+                      theme: OverlayTheme = THEME_LUXE) -> list[str]:
+    """PREMIUM single-ask SUBSCRIBE micro-interaction (no like/share — the owner
+    already asks those in the voiceover). A champagne pill slams in, a cursor taps
+    it (ripple + press), it flips to SUBSCRIBED ✓ with a bell ring, then holds.
+    Research: one clear ask + a satisfying state-change converts and re-watches
+    well on the Shorts loop. Returns a full-frame-width sequence of PNG paths."""
+    import math
+
+    from PIL import Image, ImageDraw, ImageFilter
+
+    cw, ch = 1080, 460
+    cx, cy = cw // 2, ch // 2
+    accent = theme.accent
+    ink = (16, 14, 10, 255)
+    label_f = _weight_font("semibold", 52)
+    tr = 0.10 * 52
+    frames: list[str] = []
+    for f in range(n_frames):
+        t = f / (n_frames - 1)
+        tapped = t >= 0.44
+        img = Image.new("RGBA", (cw, ch), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+
+        # appear overshoot, then a quick press dip on tap
+        if t < 0.14:
+            sc = 0.85 + 0.20 * _ease_out(t / 0.14)
+        elif 0.36 <= t < 0.46:
+            sc = 0.965
+        else:
+            sc = 1.0
+
+        text = "SUBSCRIBED" if tapped else "SUBSCRIBE"
+        tw = _tracked_len(d, text, label_f, tr)
+        bell_w, check_w, pad_x = 78, (60 if tapped else 0), 58
+        pw = (tw + bell_w + check_w + 2 * pad_x) * sc
+        ph = 112 * sc
+        x0, y0 = cx - pw / 2, cy - ph / 2
+
+        shadow = Image.new("RGBA", (cw, ch), (0, 0, 0, 0))
+        ImageDraw.Draw(shadow).rounded_rectangle([x0, y0, x0 + pw, y0 + ph],
+                                                 radius=ph / 2, fill=(0, 0, 0, 255))
+        shadow = shadow.filter(ImageFilter.GaussianBlur(16))
+        shadow.putalpha(shadow.getchannel("A").point(lambda a: int(a * 0.45)))
+        img.alpha_composite(shadow, (2, 8))
+
+        if tapped:
+            d.rounded_rectangle([x0, y0, x0 + pw, y0 + ph], radius=ph / 2, fill=accent)
+            txt_col = ink
+            bell_col = ink
+        else:
+            d.rounded_rectangle([x0, y0, x0 + pw, y0 + ph], radius=ph / 2, fill=(10, 12, 16, 110))
+            d.rounded_rectangle([x0, y0, x0 + pw, y0 + ph], radius=ph / 2,
+                                outline=accent, width=max(3, int(4 * sc)))
+            txt_col = accent
+            bell_col = accent
+
+        inner = x0 + pad_x * sc
+        _draw_bell(d, inner + 26 * sc, cy, 42 * sc, bell_col)
+        if tapped and t < 0.66:                      # ring lines burst
+            for a in (28, 4, -22):
+                rx = inner + 26 * sc + math.cos(math.radians(a)) * 60 * sc
+                ry = cy - 6 * sc - math.sin(math.radians(a)) * 60 * sc
+                d.ellipse([rx - 4, ry - 4, rx + 4, ry + 4], fill=accent)
+        tx = inner + bell_w * sc
+        if tapped:
+            ccx = tx + 24 * sc
+            d.ellipse([ccx - 24 * sc, cy - 24 * sc, ccx + 24 * sc, cy + 24 * sc], fill=ink)
+            d.line([(ccx - 10 * sc, cy), (ccx - 2 * sc, cy + 10 * sc), (ccx + 12 * sc, cy - 11 * sc)],
+                   fill=accent, width=max(3, int(5 * sc)))
+            tx += check_w * sc
+        asc, desc = label_f.getmetrics()
+        _draw_tracked(d, tx, cy - (asc + desc) / 2 * sc, text, label_f, txt_col, tr)
+
+        # tap ripple + cursor
+        if 0.36 <= t <= 0.74:
+            rp = (t - 0.36) / 0.38
+            for base_r in (34, 74):
+                rr = base_r + rp * 140
+                al = int(150 * (1 - rp))
+                if al > 0:
+                    d.ellipse([cx - rr, cy - rr, cx + rr, cy + rr],
+                              outline=(255, 255, 255, al), width=3)
+        if 0.14 <= t <= 0.54:
+            cp = _clamp01((t - 0.14) / 0.26)
+            curx = cx + 190 - cp * 165
+            cury = cy + 165 - cp * 130
+            _draw_cursor(d, curx, cury)
+
+        path = f"{tdir}/{tag}_f{f:03d}.png"
+        img.save(path)
+        frames.append(path)
+    return frames
 
 
 def _countup_frames(final_text: str, label: str, tdir: str, tag: str,
@@ -895,6 +1015,19 @@ class MoviePyRenderer(VideoRenderer):
                             .with_duration(max(0.7, show_dur - countup.duration))
                             .with_position(("center", int(height * 0.30))))
                     overlays.extend([countup, hold])
+                elif kind == "subscribe":
+                    # premium subscribe micro-interaction (pill -> tap -> SUBSCRIBED),
+                    # lower-centre CTA zone; animated sequence then holds.
+                    frames = _subscribe_frames(tdir, f"sub_{k}_{pi}", theme=theme)
+                    y_sub = int(height * 0.54)
+                    seq = (ImageSequenceClip(frames, fps=24)
+                           .with_start(start_abs)
+                           .with_position(("center", y_sub)))
+                    hold = (ImageClip(frames[-1], transparent=True)
+                            .with_start(start_abs + seq.duration)
+                            .with_duration(max(0.1, show_dur - seq.duration))
+                            .with_position(("center", y_sub)))
+                    overlays.extend([seq, hold])
                 elif kind == "reaction":
                     # the editor's dry voice, upper third, slams into the
                     # silence beat right after the punchline lands
@@ -912,7 +1045,8 @@ class MoviePyRenderer(VideoRenderer):
                     # pop (label = how many are active). Slams in like a
                     # reaction, own slot at y=0.30, holds through the beat.
                     png = _lss_strip_png(f"{tdir}/lss_{k}_{pi}.png",
-                                         active=int(label) if label.isdigit() else 3)
+                                         active=int(label) if label.isdigit() else 3,
+                                         theme=theme)
                     clip = (ImageClip(png, transparent=True)
                             .with_start(start_abs)
                             .with_duration(show_dur)

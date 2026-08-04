@@ -150,7 +150,7 @@ def test_plan_manifest_invariants(fixture_tree, monkeypatch):
         section_words = {w.strip('.,?!—').lower() for w in sec["text"].split()}
         prev_end = -1.0
         for pop in pops:
-            own_slot = pop["kind"] in ("reaction", "card", "lss")
+            own_slot = pop["kind"] in ("reaction", "card", "lss", "subscribe")
             if not own_slot:
                 assert pop["start"] >= prev_end + 0.04, f"pops crowd sec {sec['index']}"
             assert 0 <= pop["start"] < sec["duration"] - 0.3
@@ -160,9 +160,9 @@ def test_plan_manifest_invariants(fixture_tree, monkeypatch):
                 prev_end = pop["start"] + pop["dur"]
                 continue
             assert pop["start"] + pop["dur"] <= sec["duration"] + 0.6
-            # lss + card pops carry synthetic tags ('LSS', figures) rather
-            # than transcript words — skip the word-source check for them
-            if pop["kind"] not in ("lss", "card"):
+            # lss/subscribe + card pops carry synthetic tags rather than
+            # transcript words — skip the word-source check for them
+            if pop["kind"] not in ("lss", "card", "subscribe"):
                 for w in pop["text"].split():
                     assert w.strip('.,?!—').lower() in section_words
             prev_end = pop["start"] + pop["dur"]
@@ -178,9 +178,10 @@ def test_plan_manifest_invariants(fixture_tree, monkeypatch):
 
 
 def test_lss_graphic_generated_from_cta(fixture_tree, monkeypatch):
-    """CTA narration containing 'like, share, subscribe' (any punctuation)
-    auto-generates a pop with kind='lss'. The renderer draws the three-icon
-    graphic strip in place of transcript text — no text pop needed."""
+    """CTA narration containing 'like, share, subscribe' auto-generates ONE
+    premium SUBSCRIBE pop (kind='subscribe') — the renderer plays the animated
+    pill -> SUBSCRIBED micro-interaction. Like/share are asked in the voiceover
+    only; no on-screen duplication (owner rule: single clear ask)."""
     for key in ("GROQ_API_KEY", "PEXELS_API_KEY", "GEMINI_API_KEY", "ELEVENLABS_API_KEY"):
         monkeypatch.delenv(key, raising=False)
     monkeypatch.setenv("CARSHORTS_LLM", "ollama")
@@ -210,15 +211,14 @@ def test_lss_graphic_generated_from_cta(fixture_tree, monkeypatch):
     sections = json.loads(Path(manifest_path).read_text())["sections"]
     cta_pops = sections[-1]["pops"]
     kinds = [p["kind"] for p in cta_pops]
-    assert "lss" in kinds, f"lss pop missing from CTA — got {cta_pops}"
-    lss = [p for p in cta_pops if p["kind"] == "lss"]
-    # the strip is revealed word-by-word: LIKE -> SHARE -> SUBSCRIBE pops,
-    # each timed to its spoken word, later starts strictly after earlier ones
-    assert [p["text"] for p in lss] == ["LIKE", "SHARE", "SUBSCRIBE"], lss
-    starts = [p["start"] for p in lss]
-    assert starts == sorted(starts) and len(set(starts)) == 3
-    assert lss[0]["start"] > 0.0
-    assert all(p["dur"] >= 0.3 for p in lss)
+    assert "subscribe" in kinds, f"subscribe pop missing from CTA — got {cta_pops}"
+    sub = [p for p in cta_pops if p["kind"] == "subscribe"]
+    # ONE subscribe micro-interaction, timed to the spoken word, no like/share icons
+    assert len(sub) == 1, sub
+    assert sub[0]["text"] == "SUBSCRIBE"
+    assert sub[0]["start"] > 0.0
+    assert sub[0]["dur"] >= 1.0
+    assert "lss" not in kinds and "LIKE" not in [p["text"] for p in cta_pops]
 
 
 def test_plan_manifest_no_kwcaps(fixture_tree, monkeypatch):
