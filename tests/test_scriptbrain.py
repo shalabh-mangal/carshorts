@@ -76,3 +76,22 @@ def test_studio_pass_rejects_unsourced_revision(monkeypatch):
 def test_rubric_for_falls_back():
     assert scriptbrain.rubric_for("vs") == scriptbrain.FORMAT_RUBRICS["vs"]
     assert scriptbrain.rubric_for("nonsense") == scriptbrain.FORMAT_RUBRICS["spotlight"]
+
+
+def test_mine_angles_validates_format(monkeypatch):
+    _use(monkeypatch, [{"angles": [
+        {"format": "vs", "hook": "h", "usp": "u", "verdict": "v", "why": "w"},
+        {"format": "bogus", "hook": "h2", "usp": "u2"},        # invalid -> spotlight
+    ]}])
+    angles = scriptbrain.mine_angles(SHEET, "context", n=3)
+    assert len(angles) == 2
+    assert angles[0]["format"] == "vs"
+    assert angles[1]["format"] == "spotlight"
+
+
+def test_mine_angles_empty_on_error(monkeypatch):
+    class _Boom:
+        def complete_json(self, *_a, **_k):
+            raise RuntimeError("provider down")
+    monkeypatch.setattr(scriptbrain, "make_llm", lambda *_a, **_k: _Boom())
+    assert scriptbrain.mine_angles(SHEET) == []

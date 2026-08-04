@@ -646,7 +646,8 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
             shots_file: str | None = None, kwcaps: bool = True,
             polish_audio: bool = True, plan_only: bool = False,
             humor: bool | None = None, overlay_theme: str = "auto",
-            footage_slug: str | None = None) -> str:
+            footage_slug: str | None = None, script_format: str | None = None,
+            script_usp: str | None = None) -> str:
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
     overlay_theme = _resolve_overlay_theme(overlay_theme)
@@ -1298,7 +1299,8 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         "subject_families": sorted(families),
         "quality_warnings": quality_warnings,
         "render": {"voice_engine": voice_engine, "persona": persona or "default",
-                   "own_available": own_available, "overlay_theme": overlay_theme},
+                   "own_available": own_available, "overlay_theme": overlay_theme,
+                   "script_format": script_format, "script_usp": script_usp},
     }, indent=2, ensure_ascii=False))
     if plan_only:
         print(f"     plan-only: manifest -> {manifest_path}")
@@ -1441,6 +1443,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
             "script_file": script_file or str(out.with_suffix(".script.json")),
             "persona": persona or "default", "voice_engine": voice_engine,
             "overlay_theme": overlay_theme,
+            "script_format": script_format, "script_usp": script_usp,
             "language": language, "music": Path(music_path).name if music_path else "none",
             "captions": captions, "word_count": script.approx_word_count(),
             "sections": len(script.segments),
@@ -1522,6 +1525,8 @@ def main() -> None:
     parser.add_argument("--footage-slug",
                         help="Car folder for footage (own/stock/images). Defaults to the "
                              "subject slug; set it for comparisons whose card slug differs.")
+    parser.add_argument("--script-format", help="Format tag for the learning loop (spotlight/vs/…/mix).")
+    parser.add_argument("--script-usp", help="The script's one-line USP, tagged for the learning loop.")
     args = parser.parse_args()
 
     stock = True if args.stock else (False if args.no_stock else None)
@@ -1533,7 +1538,8 @@ def main() -> None:
                    shots_file=args.shots, kwcaps=not args.no_kwcaps,
                    polish_audio=not args.no_polish, plan_only=args.plan_only,
                    humor=args.humor, overlay_theme=args.overlay_theme,
-                   footage_slug=args.footage_slug)
+                   footage_slug=args.footage_slug, script_format=args.script_format,
+                   script_usp=args.script_usp)
     print(f"\nDone -> {path}")
 
 
