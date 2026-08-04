@@ -71,13 +71,9 @@ def run_vqa(video_path: str, manifest_path: str | None = None,
         print("     VQA: no frames extracted")
         return True
 
-    import os
-
-    import google.generativeai as genai
-    genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
-    model = genai.GenerativeModel("gemini-2.5-flash")
-
     from PIL import Image
+
+    from carshorts.adapters.llm import gemini_vision
     parts = ["You are the visual QA for a car YouTube Short. For EACH numbered "
              "frame below, given the narration phrase playing over it, judge:\n"
              "- match: does the visual plausibly fit the phrase (a generic but "
@@ -89,9 +85,7 @@ def run_vqa(video_path: str, manifest_path: str | None = None,
         parts.append(f'Frame {i}: narration = "{sm["phrase"]}" (asset {sm["asset"]})')
         parts.append(Image.open(fp))
 
-    raw = model.generate_content(parts,
-                                 generation_config={"response_mime_type": "application/json"})
-    verdicts = json.loads(raw.text)
+    verdicts = json.loads(gemini_vision(parts))
 
     fails = []
     print("     ── VISUAL QA ──")

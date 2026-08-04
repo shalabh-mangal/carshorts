@@ -53,3 +53,5 @@ assets/inbox_rejected/
 # Google OAuth secrets — never commit
 client_secret.json
 youtube_token.json
+youtube_token.*.json
+youtube_token*.json

@@ -58,7 +58,7 @@ def run(provider: str | None = None) -> None:
         print("no comments yet — audience still growing; re-run later")
         return
 
-    llm = make_llm(provider or "groq")
+    llm = make_llm(provider)  # None -> Gemini-first chain
     system = (
         "You mine YouTube comments for a car-Shorts channel. Given comments "
         "(with their video), output ONLY JSON:\n"

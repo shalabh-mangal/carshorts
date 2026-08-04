@@ -47,7 +47,7 @@ def draft(car: str, persona: str = "deadpan", language: str = "english",
         print(f"no spec sheet for {car} — researching the web (Wikipedia + price)…")
         try:
             from carshorts.sourcing.webresearch import research
-            sheet = research(car, provider="groq")
+            sheet = research(car)   # default LLM chain (Gemini-first, Groq fallback)
         except Exception as exc:  # noqa: BLE001
             sys.exit(f"auto-research failed ({exc}) — run `carshorts research \"{car}\"` "
                      f"by hand, then verify against CarDekho.")
@@ -97,13 +97,13 @@ def draft(car: str, persona: str = "deadpan", language: str = "english",
                      f"(see specs_extras/mahindra-thar.json as template).")
         if _run([sys.executable, "-m", "carshorts.writing.writescript", "--spec", str(spec),
                  "--persona", persona, "--language", language, "--format", video_format,
-                 "--variants", "3", "--provider", "groq", "--out", str(script)]) != 0:
+                 "--variants", "3", "--out", str(script)]) != 0:
             sys.exit("script stage failed")
 
     draft_out = paths.OUT / f"{slug}_draft.mp4"
     if _run([sys.executable, "-m", "carshorts.rendering.produce", "--script-file", str(script),
              "--spec", str(spec), "--skip-factcheck", "--persona", persona,
-             "--provider", "groq", "--out", str(draft_out)]) != 0:
+             "--out", str(draft_out)]) != 0:
         sys.exit("draft render failed")
     _run([sys.executable, "-m", "carshorts.quality.vqa", str(draft_out)])
 
@@ -172,7 +172,7 @@ def approve(slug: str, privacy: str = "public") -> None:
     if _run([sys.executable, "-m", "carshorts.rendering.produce", "--script-file", card["script"],
              "--spec", card["spec"], "--skip-factcheck", "--no-humor",
              "--voice-engine", _engine, "--language", card.get("language", "english"),
-             "--persona", _persona, "--footage-slug", slug, "--provider", "groq",
+             "--persona", _persona, "--footage-slug", slug,
              "--script-format", card.get("script_format", "mix"),
              "--script-usp", card.get("script_usp", ""),
              "--out", str(final_out)] + _foot) != 0:
@@ -210,7 +210,7 @@ def publish(slug: str, privacy: str = "unlisted") -> None:
         sys.exit("no final file — approve the draft first")
     _progress(slug, "writing title/description kit…")
     _run([sys.executable, "-m", "carshorts.publishing.publishkit", "--script", card["script"],
-          "--spec", card["spec"], "--provider", "groq"])
+          "--spec", card["spec"]])
     kit = paths.OUT / (Path(card["script"]).stem.replace(".script", "") + ".publish.md")
     title, desc_lines, in_desc = "", [], False
     for line in kit.read_text().splitlines():
@@ -231,7 +231,7 @@ def publish(slug: str, privacy: str = "unlisted") -> None:
     poll = None
     try:
         from carshorts.adapters.llm import make_llm
-        poll = make_llm("groq").complete(
+        poll = make_llm().complete(
             "Write ONE short, FUNNY YouTube poll comment (max 140 chars) to pin under a "
             "car Short for an Indian audience. A cheeky either-or rivalry that makes people "
             "reply with their pick (end with 'Comment 1 or 2'). 1-2 emoji max, no hashtags, "

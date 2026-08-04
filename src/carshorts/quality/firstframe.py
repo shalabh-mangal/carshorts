@@ -169,13 +169,10 @@ def _aggregate(stats: list[dict]) -> dict:
 
 
 def _vision_read(image: Path, subject: str) -> str:
-    import os
-
-    import google.generativeai as genai
     from PIL import Image as PILImage
 
-    genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
-    model = genai.GenerativeModel("gemini-2.5-flash")
+    from carshorts.adapters.llm import gemini_vision
+
     prompt = (
         "This is the FIRST FRAME of a YouTube Short about "
         f"{subject}. On Shorts the first frame is the thumbnail and gets about "
@@ -186,9 +183,7 @@ def _vision_read(image: Path, subject: str) -> str:
         "problems may include: subject_too_small, cluttered_background, "
         "low_contrast, dull_colour, awkward_crop, nothing_happening."
     )
-    resp = model.generate_content([prompt, PILImage.open(image)],
-                                  generation_config={"response_mime_type": "application/json"})
-    return resp.text
+    return gemini_vision([prompt, PILImage.open(image)])
 
 
 def audit(video: str | Path, subject: str = "", vision: bool = False) -> dict:

@@ -541,7 +541,7 @@ def _llm_phrase_match(entries: list[tuple[int, int, str]], pool: list[str],
         return {}
     try:
         from carshorts.writing.draft import _rows
-        llm = make_llm(provider or "groq")
+        llm = make_llm(provider)  # None -> Gemini-first chain
         names = [Path(a).name for a in pool]
         listing = "\n".join(f"{si}.{pi}: {txt}" for si, pi, txt in entries)
         assets = "\n".join(f"- {n}" for n in names)
@@ -586,7 +586,7 @@ def _llm_shot_match(segments, pool: list[str], provider: str | None) -> dict[int
         return {}
     try:
         from carshorts.writing.draft import _rows  # tolerant JSON row coercion
-        llm = make_llm(provider or "groq")
+        llm = make_llm(provider)  # None -> Gemini-first chain
         names = [Path(a).name for a in pool]
         beats = "\n".join(f"{i}. [{seg.role}] {seg.text}" for i, seg in enumerate(segments))
         assets = "\n".join(f"- {n}" for n in names)

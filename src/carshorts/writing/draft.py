@@ -129,6 +129,12 @@ def punch_up_script(script: Script, spec_sheet: SpecSheet, llm: LLMClient) -> Sc
     return _script_from_data(data, script.subject)
 
 
+# A trim that leaves fewer than this many words has gutted the script, not
+# shortened it — reject it (matches scriptbrain.MIN_WORDS, kept local to avoid a
+# circular import: scriptbrain imports draft).
+_MIN_TRIM_WORDS = 55
+
+
 def enforce_length(script: Script, spec_sheet: SpecSheet, llm: LLMClient,
                    max_words: int = 80, tries: int = 2) -> Script:
     """Keep a script under the Shorts word cap. We now TARGET ~35s (~80 words):
@@ -144,12 +150,21 @@ def enforce_length(script: Script, spec_sheet: SpecSheet, llm: LLMClient,
         user = (f"{render_spec_sheet(spec_sheet)}\n\n"
                 f"SCRIPT ({result.approx_word_count()} words; target <= {max_words}):\n"
                 f"{result.model_dump_json()}\n\n"
-                f"Trim it to at most {max_words} words now.")
+                f"Trim it to at most {max_words} words now. Keep ALL of the beats "
+                f"(roles) that are present — shorten wording, never drop a beat.")
         try:
             trimmed = _script_from_data(llm.complete_json(TRIM_SYSTEM, user), result.subject)
         except Exception:  # noqa: BLE001 — the render's length QA still guards
             break
-        if trimmed.segments and 0 < trimmed.approx_word_count() < result.approx_word_count():
+        # Accept a trim only if it's genuinely shorter AND still whole. A weak model
+        # will "trim" by gutting the script to a 2-beat stub (drops beats / collapses
+        # to ~15 words); accepting that silently ships a broken script whose critique
+        # was scored on the pre-trim version. Reject any trim that loses a beat or
+        # falls below the min-narration floor — keep the last good script instead.
+        roles_before = {s.role for s in result.segments}
+        roles_after = {s.role for s in trimmed.segments}
+        whole = roles_after >= roles_before and trimmed.approx_word_count() >= _MIN_TRIM_WORDS
+        if whole and 0 < trimmed.approx_word_count() < result.approx_word_count():
             result = trimmed
         else:
             break

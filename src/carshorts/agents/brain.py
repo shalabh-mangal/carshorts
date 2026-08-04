@@ -64,14 +64,12 @@ def triage(provider: str | None = None) -> None:
 
 def vet(asset: str, provider: str | None = None) -> None:
     """Second opinion on one asset via vision (advisory, journaled)."""
-    import os
     import subprocess
     import tempfile
 
-    import google.generativeai as genai
     from PIL import Image
-    genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
-    model = genai.GenerativeModel("gemini-2.5-flash")
+
+    from carshorts.adapters.llm import gemini_vision
     tdir = tempfile.mkdtemp()
     frames = []
     if asset.lower().endswith((".mp4", ".mov")):
@@ -83,13 +81,12 @@ def vet(asset: str, provider: str | None = None) -> None:
                 frames.append(Image.open(fp))
     else:
         frames.append(Image.open(asset))
-    raw = model.generate_content(
+    raw = gemini_vision(
         ["Vet this asset for a car channel. Constitution rules: no readable "
          "plates, no third-party watermarks, correct vehicle for the subject, "
          "decent quality. Output ONLY JSON: "
-         '{"usable": bool, "issues": [], "note": ""}', *frames],
-        generation_config={"response_mime_type": "application/json"})
-    verdict = json.loads(raw.text)
+         '{"usable": bool, "issues": [], "note": ""}', *frames])
+    verdict = json.loads(raw)
     print(json.dumps(verdict, indent=2))
     _journal("vet", {"asset": asset, **verdict})
 
