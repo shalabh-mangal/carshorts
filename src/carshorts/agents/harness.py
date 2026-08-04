@@ -188,7 +188,7 @@ def main() -> None:
                         help="Seconds to wait after a 429 before retrying a sheet.")
     parser.add_argument("--report", default="harness_report.json",
                         help="Where to write the full per-sheet report (default: harness_report.json).")
-    parser.add_argument("--provider", choices=["gemini", "groq", "cerebras", "openrouter", "ollama"],
+    parser.add_argument("--provider", choices=["deepseek", "gemini", "groq", "cerebras", "openrouter", "ollama"],
                         help="LLM backend (or set CARSHORTS_LLM). Default gemini.")
     args = parser.parse_args()
 

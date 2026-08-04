@@ -187,7 +187,7 @@ def research(car: str, provider: str | None = None, want_price: bool = True) -> 
 def main() -> None:
     ap = argparse.ArgumentParser(description="Autonomous web fact + price research into spec sheets.")
     ap.add_argument("car", help='Car name, e.g. "Tata Punch".')
-    ap.add_argument("--provider", choices=["gemini", "groq", "cerebras", "openrouter", "ollama"],
+    ap.add_argument("--provider", choices=["deepseek", "gemini", "groq", "cerebras", "openrouter", "ollama"],
                     help="LLM backend for extraction (or CARSHORTS_LLM). Default gemini.")
     ap.add_argument("--no-price", action="store_true", help="Skip the web price search.")
     args = ap.parse_args()

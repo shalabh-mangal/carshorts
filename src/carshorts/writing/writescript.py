@@ -180,7 +180,7 @@ def main() -> None:
     p.add_argument("--format", default="spotlight",
                    choices=["spotlight", "vs", "five_things", "mythbust", "base_vs_top"],
                    help="Narrative shell for the video.")
-    p.add_argument("--provider", choices=["gemini", "groq", "cerebras", "openrouter", "ollama"],
+    p.add_argument("--provider", choices=["deepseek", "gemini", "groq", "cerebras", "openrouter", "ollama"],
                    help="LLM backend (or CARSHORTS_LLM). Default gemini.")
     p.add_argument("--options", type=int, default=0,
                    help="Generate N option scripts (opt files) for the portal builder, not one best.")
