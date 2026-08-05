@@ -76,9 +76,10 @@ def assert_channel(youtube, expected: str | None = None) -> tuple[str, str]:
 
     A wrong-channel token once published a Short to the wrong account, publicly.
     `expected` is a channel id ('UC…') OR a case-insensitive name substring;
-    it defaults to the CARSHORTS_CHANNEL env var, then to 'carshort'. Returns
-    (id, title) on match; raises RuntimeError otherwise so the upload aborts."""
-    expected = (expected or os.environ.get("CARSHORTS_CHANNEL") or "carshort").strip()
+    it defaults to the CARSHORTS_CHANNEL env var (pin the exact id there — the
+    channel's display name is 'carsInShorts'), then to the 'carsinshort' substring.
+    Returns (id, title) on match; raises RuntimeError otherwise so upload aborts."""
+    expected = (expected or os.environ.get("CARSHORTS_CHANNEL") or "carsinshort").strip()
     cid, title = channel_identity(youtube)
     if expected == cid or expected.lower() in (title or "").lower():
         return cid, title
