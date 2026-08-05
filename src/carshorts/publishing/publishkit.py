@@ -25,7 +25,35 @@ Given the SCRIPT, produce ONLY JSON:
 - 3 titles <70 chars: one curiosity-gap, one number-led, one search-keyword-led.
   Every title must contain the car name.
 - description_intro: 2 punchy lines summarising the video, no invented facts.
-- 8-12 hashtags: car name, brand, #Shorts, #CarShorts, India car tags."""
+- 8-12 hashtags: ONLY the car(s)/brand(s) ACTUALLY in this video, plus #Shorts,
+  #CarShorts, generic India car tags. NEVER hashtag a brand not in the video."""
+
+# Known Indian-market car brands — used to strip a brand hashtag that names a
+# marque NOT in this video (the LLM once emitted #Kia on a Tata-vs-Hyundai clip,
+# which shipped a wrong brand tag). Deterministic guard, independent of the model.
+_CAR_BRANDS = {
+    "tata", "hyundai", "maruti", "suzuki", "mahindra", "kia", "toyota", "honda",
+    "renault", "nissan", "volkswagen", "skoda", "mg", "citroen", "jeep", "ford",
+    "bmw", "mercedes", "audi", "byd", "force", "lexus", "volvo",
+}
+
+
+def _clean_hashtags(tags: list[str], subject: str, script_text: str) -> list[str]:
+    """Drop brand hashtags for brands NOT in the video, and make sure every brand
+    that IS in the subject has a tag. Model-independent so a stray #Kia can't ship."""
+    hay = f"{subject} {script_text}".lower()
+    out, seen = [], set()
+    for t in tags:
+        tag = t if t.startswith("#") else f"#{t}"
+        low = tag.lstrip("#").lower()
+        if low in _CAR_BRANDS and low not in hay:
+            continue                       # a brand not in this video — drop it
+        if low not in seen:
+            out.append(tag); seen.add(low)
+    for brand in _CAR_BRANDS:              # ensure the video's OWN brands are tagged
+        if brand in hay and brand not in seen:
+            out.insert(0, f"#{brand.capitalize()}"); seen.add(brand)
+    return out
 
 
 def build(script_path: str, spec_path: str | None, provider: str | None) -> str:
@@ -100,7 +128,8 @@ def build(script_path: str, spec_path: str | None, provider: str | None) -> str:
     for c in credits:
         lines.append(f"• {c}")
     lines.append("• B-roll: Pexels • Music: YouTube Audio Library • SFX: original")
-    lines += ["", "## Hashtags", " ".join(data.get("hashtags", []))]
+    hashtags = _clean_hashtags(data.get("hashtags", []), script.subject, script.full_text)
+    lines += ["", "## Hashtags", " ".join(hashtags)]
 
     out = paths.OUT / f"{Path(script_path).stem.replace('.script','')}.publish.md"
     out.write_text("\n".join(lines))
