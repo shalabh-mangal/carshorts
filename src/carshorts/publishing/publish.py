@@ -59,7 +59,13 @@ def upload(video_path: str, title: str, description: str = "", tags=None,
     """Upload a video; return the new video id. category 2 = Autos & Vehicles."""
     from googleapiclient.http import MediaFileUpload
 
+    from carshorts.publishing.ytauth import assert_channel
+
     service = _yt_service("youtube", "v3")
+    # HARD STOP if we're authed to the wrong channel (a Short once went public on
+    # the wrong account). Aborts before the irreversible upload.
+    _cid, _title = assert_channel(service)
+    print(f"   channel guard OK — uploading as {_title!r}")
     body = {
         "snippet": {
             "title": title[:100],
@@ -112,6 +118,7 @@ def main() -> None:
     p.add_argument("--description-file", help="Read description from a file (overrides --description).")
     p.add_argument("--tags", default="", help="Comma-separated tags.")
     p.add_argument("--privacy", default="private", choices=["private", "unlisted", "public"])
+    p.add_argument("--category-id", default="2", help="YouTube category id (default: 2, Autos & Vehicles).")
     p.add_argument("--made-for-kids", action="store_true")
     p.add_argument("--thumbnail", help="PNG/JPG to set as the video thumbnail.")
     p.add_argument("--poll-comment", help="Auto-post this comment on the upload (seed engagement).")
@@ -125,6 +132,7 @@ def main() -> None:
     description = description.replace("<", "(").replace(">", ")")  # forbidden chars
     tags = [t.strip() for t in args.tags.split(",") if t.strip()]
     upload(args.video, args.title, description, tags, args.privacy, args.made_for_kids,
+           category_id=args.category_id,
            thumbnail=args.thumbnail, poll_comment=args.poll_comment)
 
 

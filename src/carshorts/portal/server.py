@@ -478,7 +478,8 @@ function renderReview(c){
    ${!isFinal?`<button class="mini" onclick="reopen()">← Change script / voice</button>`:""}
    <button class="rework" onclick="send('rework')">⟳ Needs rework</button>
    ${isFinal?`<button class="publish" onclick="send('publish')">🚀 Publish to YouTube</button>`
-            :`<button class="approve" onclick="send('approve')">✓ Approve → premium final</button>`}</div>`;
+            :`<button class="approve" onclick="send('approve')">✓ Approve → premium final</button>
+              <button class="publish" onclick="publishDirect()" title="Upload THIS draft to YouTube now (skip the premium final)">🚀 Publish to YouTube</button>`}</div>`;
  $("beats").innerHTML=`<div class="railcard"><h3>Beats — click to seek · ✎ to rewrite · tag red (fix) / green (keep)</h3>`+
   (c.beats||[]).map((b,bi)=>`<div class="beat" id="beat${bi}" onclick="seek(${b.start})">
     <span class="t">${fmt(b.start)}</span>
@@ -613,6 +614,18 @@ async function send(verdict){
  toast(verdict==="approve"?"Approved — premium final rendering, it comes back here for a last look ✓"
       :verdict==="publish"?"Publishing to YouTube 🚀"
       :"Feedback saved — rework queued ⟳");
+ sel=null;$("stage").innerHTML='<div class="empty">Select a draft ←</div>';$("beats").innerHTML="";load();
+}
+async function publishDirect(){
+ if(sel===null)return;const c=cards[sel];
+ if(BUSY(c.status)){toast("Hold on — a render is in flight for this draft");return;}
+ let p=prompt("Publish “"+(c.car||c.slug)+"” to YouTube.\nPrivacy — type: public / unlisted / private","unlisted");
+ if(!p)return; p=p.trim().toLowerCase();
+ if(!["public","unlisted","private"].includes(p)){toast("privacy must be public, unlisted or private");return;}
+ if(!confirm("Upload the CURRENT DRAFT of “"+(c.car||c.slug)+"” to YouTube as "+p.toUpperCase()+"?\nThis is a live action on your channel."))return;
+ await fetch("/api/publish-draft",{method:"POST",headers:{"Content-Type":"application/json"},
+  body:JSON.stringify({slug:c.slug,privacy:p})});
+ toast("Publishing to YouTube 🚀 ("+p+")");
  sel=null;$("stage").innerHTML='<div class="empty">Select a draft ←</div>';$("beats").innerHTML="";load();
 }
 document.addEventListener("keydown",e=>{
@@ -1193,6 +1206,35 @@ class Handler(BaseHTTPRequestHandler):
                 f"pathlib.Path({str(pf)!r}).unlink(missing_ok=True);"
                 "sys.stderr.write('--- script edit stdout ---\\n'+(r.stdout or '')[-2000:]);"
                 "sys.stderr.write('--- stderr ---\\n'+(r.stderr or '')[-2000:])"))
+            self._send(200, b'{"ok": true}')
+            return
+        if self.path.startswith("/api/publish-draft"):
+            # Publish the CURRENT draft (or an existing final) straight to YouTube —
+            # the owner's Gate-2 sign-off, one click from the draft screen. Reuses
+            # the tested pipeline publish path (kit + poll comment + upload), which
+            # writes status=published / final_review and the URL to out/portal.log.
+            body = read_json()
+            if not body:
+                self._send(400, b'{"error":"bad json"}'); return
+            slug = body.get("slug", "")
+            priv = body.get("privacy", "unlisted")
+            if priv not in ("public", "unlisted", "private"):
+                priv = "unlisted"
+            card_path = QUEUE / f"{slug}.json"
+            if not card_path.exists():
+                self._send(404, b'{"error":"no card"}'); return
+            with _card_lock(slug):
+                card = json.loads(card_path.read_text())
+                video = card.get("final") or card.get("draft") or f"out/{slug}_draft.mp4"
+                if not Path(video).exists():
+                    self._send(400, b'{"error":"no rendered video to publish"}'); return
+                card["final"] = video          # publish the approved draft as-is
+                card["status"] = "publishing"
+                card["note"] = f"uploading to YouTube ({priv})…"
+                _write_card(card_path, card)
+            _spawn_worker(slug, (
+                f"subprocess.run([sys.executable,'-m','carshorts.orchestration.pipeline',"
+                f"'--publish',{slug!r},'--privacy',{priv!r}])"))
             self._send(200, b'{"ok": true}')
             return
         if not self.path.startswith("/api/feedback"):

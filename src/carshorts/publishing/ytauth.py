@@ -6,6 +6,7 @@ consent (see the setup steps in publish.py) powers both `publish` and
 """
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 SCOPES = [
@@ -61,3 +62,27 @@ def service(api: str, version: str):
     from googleapiclient.discovery import build
 
     return build(api, version, credentials=credentials())
+
+
+def channel_identity(youtube) -> tuple[str, str]:
+    """(channel_id, title) of the currently authed channel."""
+    r = youtube.channels().list(part="snippet", mine=True).execute()
+    it = (r.get("items") or [{}])[0]
+    return it.get("id", ""), (it.get("snippet") or {}).get("title", "")
+
+
+def assert_channel(youtube, expected: str | None = None) -> tuple[str, str]:
+    """Refuse to act unless the authed channel is the EXPECTED one.
+
+    A wrong-channel token once published a Short to the wrong account, publicly.
+    `expected` is a channel id ('UC…') OR a case-insensitive name substring;
+    it defaults to the CARSHORTS_CHANNEL env var, then to 'carshort'. Returns
+    (id, title) on match; raises RuntimeError otherwise so the upload aborts."""
+    expected = (expected or os.environ.get("CARSHORTS_CHANNEL") or "carshort").strip()
+    cid, title = channel_identity(youtube)
+    if expected == cid or expected.lower() in (title or "").lower():
+        return cid, title
+    raise RuntimeError(
+        f"CHANNEL GUARD: authed as {title!r} ({cid}), but expected {expected!r}. "
+        "Refusing to upload to the wrong channel — re-auth to carshorts (delete "
+        "youtube_token.json and re-run) or set CARSHORTS_CHANNEL to the right id/name.")
