@@ -213,10 +213,25 @@ Output ONLY the trimmed script in the SAME JSON shape as the input."""
 
 
 def render_spec_sheet(spec_sheet) -> str:
-    """Human/LLM-readable rendering of a SpecSheet for prompt injection."""
+    """Human/LLM-readable rendering of a SpecSheet for prompt injection.
+
+    Specs with confidence < 0.7 are UNCONFIRMED (pre-launch/claimed, e.g. an
+    unreleased car with no official spec page). They're marked [CLAIMED] and a
+    note tells the writer to ATTRIBUTE them ('the maker claims', 'reportedly',
+    'expected') and never state them as fact — the accuracy discipline we apply
+    by hand, now enforced on every draft/revise/angle-mine that renders a sheet."""
     lines = [f"SUBJECT: {spec_sheet.subject}", "SPECS:"]
+    any_claimed = False
     for s in spec_sheet.specs:
-        lines.append(f'- name="{s.name}" value="{s.value}" (source: {s.source_url})')
+        claimed = (getattr(s, "confidence", 1.0) or 1.0) < 0.7
+        any_claimed = any_claimed or claimed
+        tag = "  [CLAIMED — attribute, do NOT state as fact]" if claimed else ""
+        lines.append(f'- name="{s.name}" value="{s.value}" (source: {s.source_url}){tag}')
+    if any_claimed:
+        lines.append(
+            "ACCURACY RULE: every [CLAIMED] spec is unconfirmed/pre-launch — the "
+            "script MUST attribute it ('the maker claims', 'reportedly', 'expected'), "
+            "NEVER as confirmed fact. Prefer the 'upcoming' framing.")
     return "\n".join(lines)
 
 
