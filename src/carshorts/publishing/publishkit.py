@@ -46,13 +46,16 @@ def _clean_hashtags(tags: list[str], subject: str, script_text: str) -> list[str
     for t in tags:
         tag = t if t.startswith("#") else f"#{t}"
         low = tag.lstrip("#").lower()
-        if low in _CAR_BRANDS and low not in hay:
-            continue                       # a brand not in this video — drop it
+        # a tag NAMES a brand if it equals one OR starts with one (compound tags
+        # like 'HondaElevate', 'KiaSeltos') — drop it when that brand isn't here.
+        brand = next((b for b in _CAR_BRANDS if low == b or low.startswith(b)), None)
+        if brand and brand not in hay:
+            continue
         if low not in seen:
             out.append(tag); seen.add(low)
     for brand in _CAR_BRANDS:              # ensure the video's OWN brands are tagged
-        if brand in hay and brand not in seen:
-            out.insert(0, f"#{brand.capitalize()}"); seen.add(brand)
+        if brand in hay and not any(h.lstrip("#").lower().startswith(brand) for h in out):
+            out.insert(0, f"#{brand.capitalize()}")
     return out
 
 

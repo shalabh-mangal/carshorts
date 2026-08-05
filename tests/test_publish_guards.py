@@ -49,9 +49,10 @@ def test_channel_guard_honours_env_channel_id(monkeypatch):
 
 
 def test_hashtags_drop_wrong_brand():
-    tags = ["#Sierra", "#Creta", "#Hyundai", "#Kia", "#Shorts", "#CarShorts"]
+    tags = ["#Sierra", "#Creta", "#Hyundai", "#Kia", "#HondaElevate", "#Shorts", "#CarShorts"]
     out = _clean_hashtags(tags, "Tata Sierra vs Hyundai Creta", "sierra creta turbo")
-    assert "#Kia" not in out               # Kia isn't in the video — dropped
+    assert "#Kia" not in out               # exact wrong-brand tag dropped
+    assert "#HondaElevate" not in out      # COMPOUND wrong-brand tag dropped too
     assert "#Hyundai" in out and "#Shorts" in out
     assert "#Tata" in out                  # subject brand injected even if the model missed it
 

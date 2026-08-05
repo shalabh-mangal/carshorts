@@ -69,8 +69,11 @@ def run(provider: str | None = None) -> None:
     # which section was playing when viewers left.
     for r in recipes:
         curve = (r.get("metrics") or {}).get("retention_curve")
-        manifest_path = Path(r.get("out", "")).with_suffix(".manifest.json")
-        if not curve or not manifest_path.exists():
+        out = r.get("out") or ""          # a freshly-published recipe may have no 'out' yet
+        if not curve or not out:
+            continue
+        manifest_path = Path(out).with_suffix(".manifest.json")
+        if not manifest_path.exists():
             continue
         manifest = json.loads(manifest_path.read_text())
         total = sum(sec["duration"] for sec in manifest.get("sections", []))
