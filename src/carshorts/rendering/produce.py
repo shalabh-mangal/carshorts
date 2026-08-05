@@ -240,7 +240,13 @@ def _exact_span(frag: str, marks_file: str | None, fallback: tuple) -> tuple | N
         # keep interior dots (decimals like 10.25) but drop sentence-final ones
         return re.sub(r"\.+$", "", re.sub(r"[^a-z0-9.]", "", word.lower()))
 
-    want = [norm(w) for w in frag.split() if norm(w)]
+    # Match against the SPOKEN form. The TTS marks come from normalize_for_speech
+    # ('13-speaker' is voiced '13 speaker', '₹11.49L' as '11.49 lakh', 'PS' as
+    # 'P-S'), so the anchor must be normalized the SAME way — otherwise a
+    # hyphenated/unit anchor never matches and its overlay is silently DROPPED
+    # (this is what killed '13-SPKR JBL' and 'PANORAMIC ROOF').
+    from carshorts.adapters.tts import normalize_for_speech
+    want_full = [norm(w) for w in normalize_for_speech(frag).split() if norm(w)]
     # a single TTS mark can carry MULTIPLE words ("Level 2" arrives as one
     # boundary) — flatten to word granularity, remembering each word's mark
     have: list[str] = []
@@ -251,16 +257,22 @@ def _exact_span(frag: str, marks_file: str | None, fallback: tuple) -> tuple | N
             if n:
                 have.append(n)
                 mark_of.append(mi)
-    if not want or not have:
+    if not want_full or not have:
         return None
-    for i in range(len(have) - len(want) + 1):
-        if have[i:i + len(want)] == want:
-            first_mark = mark_of[i]
-            last_mark = mark_of[i + len(want) - 1]
-            start = max(0.0, marks[first_mark]["t"] - 0.05)
-            end = (marks[last_mark + 1]["t"] if last_mark + 1 < len(marks)
-                   else marks[last_mark]["t"] + 0.8)
-            return (start, max(1.2, end - start + 0.35))
+    # Try the full phrase, then progressively shorter PREFIXES — a partly-unspoken
+    # anchor ('panoramic roof' when the line actually says 'panoramic sunroof')
+    # still fires on the words that ARE spoken, at the right moment, instead of
+    # vanishing entirely. Timing anchors to where the phrase STARTS.
+    for length in range(len(want_full), 0, -1):
+        want = want_full[:length]
+        for i in range(len(have) - len(want) + 1):
+            if have[i:i + len(want)] == want:
+                first_mark = mark_of[i]
+                last_mark = mark_of[i + len(want) - 1]
+                start = max(0.0, marks[first_mark]["t"] - 0.05)
+                end = (marks[last_mark + 1]["t"] if last_mark + 1 < len(marks)
+                       else marks[last_mark]["t"] + 0.8)
+                return (start, max(1.2, end - start + 0.35))
     return None              # words not found -> perfectly timed or absent
 
 
