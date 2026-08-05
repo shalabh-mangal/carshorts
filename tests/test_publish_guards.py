@@ -29,8 +29,9 @@ class _FakeYT:
 
 def test_channel_guard_passes_for_carshorts(monkeypatch):
     monkeypatch.delenv("CARSHORTS_CHANNEL", raising=False)
-    cid, title = ytauth.assert_channel(_FakeYT("UC_car_123", "CarShorts"))
-    assert cid == "UC_car_123" and title == "CarShorts"   # 'carshort' substring matches
+    # the real channel's display name is 'carsInShorts' — the default substring matches it
+    cid, title = ytauth.assert_channel(_FakeYT("UC_car_123", "carsInShorts"))
+    assert cid == "UC_car_123" and title == "carsInShorts"
 
 
 def test_channel_guard_blocks_wrong_channel(monkeypatch):
