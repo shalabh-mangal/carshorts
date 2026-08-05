@@ -1,36 +1,102 @@
 {
   "subject": "Tata Sierra vs Hyundai Creta",
-  "_angle": "OPT2 · Power play — lead with the 160-vs-115 power gap as the hero contrast; Sierra-leaning, calm delivery",
   "segments": [
     {
       "role": "hook",
-      "text": "Same money — but the Sierra's turbo makes a hundred-sixty horses to the Creta's hundred-fifteen.",
-      "cited_spec_names": ["sierra_power_turbo", "creta_power_petrol"],
-      "pops": [{"anchor": "sixty", "show": "160 vs 115 PS", "card": true}]
+      "text": "Five features the Creta can't touch — number 5 changes the price math.",
+      "cited_spec_names": [],
+      "pops": []
     },
     {
       "role": "spec",
-      "text": "One-sixty turbo versus one-fifteen — the Sierra simply pulls harder, no contest.",
-      "cited_spec_names": ["sierra_power_turbo", "creta_power_petrol"],
-      "pops": [{"anchor": "turbo", "show": "160 PS TURBO"}]
+      "text": "First, 160 PS turbo vs 115 petrol.",
+      "cited_spec_names": [
+        "sierra_power_turbo",
+        "creta_power_petrol"
+      ],
+      "pops": []
+    },
+    {
+      "role": "spec",
+      "text": "Second, 622L boot.",
+      "cited_spec_names": [
+        "sierra_boot"
+      ],
+      "pops": []
+    },
+    {
+      "role": "spec",
+      "text": "Third, panoramic sunroof, 13-speaker JBL Dolby Atmos.",
+      "cited_spec_names": [
+        "sierra_sunroof",
+        "sierra_audio"
+      ],
+      "pops": []
     },
     {
       "role": "value",
-      "text": "The Creta's trump card? It starts a little cheaper, and it's the proven, resale-friendly favourite.",
-      "cited_spec_names": ["creta_price"],
-      "pops": [{"anchor": "cheaper", "show": "₹10.91L START"}]
+      "text": "Fourth, Level 2 ADAS. Sierra 11.49L, Creta 10.91L — you pay more, get more.",
+      "cited_spec_names": [
+        "sierra_adas",
+        "sierra_price",
+        "creta_price"
+      ],
+      "pops": []
     },
     {
       "role": "peak",
-      "text": "For the money, though, the Sierra feels like a lot more car. Smash like if power wins.",
+      "text": "Number five: more car per rupee. Creta sells on name, Sierra on features.",
       "cited_spec_names": [],
-      "pops": [{"anchor": "like", "show": "LIKE"}]
+      "pops": []
     },
     {
       "role": "cta",
-      "text": "So — Sierra or Creta? Comment one or two. Like, share, and subscribe.",
+      "text": "Sierra or Creta? Comment 1 or 2. Like, share, subscribe.",
       "cited_spec_names": [],
       "pops": []
     }
-  ]
+  ],
+  "_angle": "Opt 2 · Sierra packs more features per rupee than Creta · 6/10",
+  "_critique": {
+    "verdict": "revise",
+    "score": 6,
+    "usp": "Sierra packs more features per rupee than Creta",
+    "verdict_line": "Sierra wins on value, Creta on name",
+    "summary": "The script has a clear USP and number-driven hook, but the #5 payoff is weak and the humor is recycled, plus it exceeds the word count.",
+    "strengths": [
+      "Hook is specific and teases number 5 with a curiosity gap.",
+      "Good use of concrete numbers (160 PS, 622L, prices) to back claims.",
+      "Comment-bait CTA is clear and binary.",
+      "Structure follows the five-things format with escalating items."
+    ],
+    "issues": [
+      {
+        "beat": "peak",
+        "problem": "Number 5 is not the strongest payoff; it's just a vague value statement, and the 'thali' joke is a bit overused.",
+        "fix": "Make #5 a concrete feature or stat that is genuinely surprising, e.g., 'a 10.25-inch touchscreen with wireless Android Auto' or '360-degree camera' — something the Creta lacks. Rewrite the punchline to be more specific and fresh."
+      },
+      {
+        "beat": "hook",
+        "problem": "Hook is good but could be more immediate; 'Five features...' is a bit generic.",
+        "fix": "Start with a stronger pattern interrupt: 'The Creta can't touch these five — number 5 changes the price math.' (keeps the tease but more punch)."
+      },
+      {
+        "beat": "value",
+        "problem": "Price comparison is a bit confusing: says Sierra starts at 11.49 lakh, Creta at 10.91 — but then says 'you pay a bit more' — that's clear, but the line 'get way more' is vague.",
+        "fix": "Quantify the value: 'For just 58,000 more, you get 45 more horses and a bigger boot.'"
+      },
+      {
+        "beat": "cta",
+        "problem": "The CTA is fine but could be more engaging with a rivalry angle.",
+        "fix": "Add a playful jab: 'Tata fans vs Hyundai fans — settle it in the comments: 1 or 2?'"
+      },
+      {
+        "beat": "all",
+        "problem": "Word count is 150, exceeding the ~90-word target for this format.",
+        "fix": "Cut filler: trim the third feature's description, shorten the fourth, and condense the peak. Aim for under 100 words."
+      }
+    ]
+  },
+  "_critique_status": "ok",
+  "_format": "five_things"
 }

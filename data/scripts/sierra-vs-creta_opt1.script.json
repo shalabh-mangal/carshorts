@@ -1,36 +1,71 @@
 {
   "subject": "Tata Sierra vs Hyundai Creta",
-  "_angle": "OPT1 · Head vs Heart — safe-bet Creta vs reborn Sierra; balanced round-by-round, calm delivery (proven winner tone)",
   "segments": [
     {
       "role": "hook",
-      "text": "Both start near eleven lakh — so, the safe-bet Creta, or the reborn Sierra?",
-      "cited_spec_names": ["sierra_price", "creta_price"],
-      "pops": [{"anchor": "lakh", "show": "~₹11L · EX-SHOWROOM", "card": true}]
+      "text": "Sierra costs 58k more, but 45 more horses. Worth it?",
+      "cited_spec_names": [
+        "sierra_power_turbo",
+        "creta_power_petrol",
+        "sierra_price",
+        "creta_price"
+      ],
+      "pops": []
     },
     {
       "role": "spec",
-      "text": "The Sierra packs a hundred-sixty turbo horses; the Creta petrol makes a hundred-fifteen.",
-      "cited_spec_names": ["sierra_power_turbo", "creta_power_petrol"],
-      "pops": [{"anchor": "horses", "show": "160 PS TURBO"}, {"anchor": "fifteen", "show": "115 PS"}]
+      "text": "Sierra's 160 PS laughs at Creta's 115. Plus panoramic sunroof? Creta can't dream.",
+      "cited_spec_names": [
+        "sierra_power_turbo",
+        "creta_power_petrol",
+        "sierra_sunroof"
+      ],
+      "pops": []
     },
     {
       "role": "value",
-      "text": "But the Creta hits back with ventilated seats, wireless charging, and that comfort-first reputation.",
-      "cited_spec_names": ["creta_value_features"],
-      "pops": [{"anchor": "seats", "show": "VENTILATED SEATS"}]
+      "text": "Creta fights back: ventilated seats, wireless charging, bigger touchscreen. For less cash.",
+      "cited_spec_names": [
+        "creta_value_features",
+        "creta_price"
+      ],
+      "pops": []
     },
     {
       "role": "peak",
-      "text": "The Sierra's reply? Panoramic roof, and a thirteen-speaker JBL Dolby system. Smash like for the Sierra.",
-      "cited_spec_names": ["sierra_sunroof", "sierra_audio"],
-      "pops": [{"anchor": "roof", "show": "PANORAMIC ROOF"}, {"anchor": "like", "show": "LIKE"}]
+      "text": "Sierra worth extra? Love power, yes. Family? Creta's smarter. Like if you'd take Sierra.",
+      "cited_spec_names": [],
+      "pops": []
     },
     {
       "role": "cta",
-      "text": "So — head, or heart? Sierra or Creta? Comment one or two. Like, share, and subscribe.",
+      "text": "Sierra or Creta? Comment 1 or 2. Like, share, subscribe.",
       "cited_spec_names": [],
       "pops": []
     }
-  ]
+  ],
+  "_angle": "Opt 1 · Sierra: 45 more hp for 58k · 8/10",
+  "_critique": {
+    "verdict": "ship",
+    "score": 8,
+    "usp": "Sierra: 45 more hp for 58k",
+    "verdict_line": "Sierra for power, Creta for value.",
+    "summary": "Strong hook with concrete numbers, clear head-to-head, decisive verdict, and a rivalry poll CTA—just needs a tighter, more decisive peak.",
+    "strengths": [
+      "Hook has a concrete number and a bold question within 2 seconds.",
+      "Fair head-to-head on power, features, and price.",
+      "Decisive verdict: power vs. family value.",
+      "Rivalry poll CTA with comment bait.",
+      "Word count is tight at 90."
+    ],
+    "issues": [
+      {
+        "beat": "peak",
+        "problem": "Verdict is fence-sitting: 'If you love power, yes. For the family? The Creta's the smarter pick.' This hedges and weakens the decisive verdict.",
+        "fix": "Commit to one winner. Example: 'Sierra wins for enthusiasts, but for most families, Creta is the smarter buy. I'd take Sierra—comment if you agree.'"
+      }
+    ]
+  },
+  "_critique_status": "ok",
+  "_format": "vs"
 }
