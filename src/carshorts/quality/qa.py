@@ -193,8 +193,13 @@ def run_qa(video_path: str, manifest_path: str | None = None,
         stock = [w for w in warns if w.startswith("STOCK")]
         shotmiss = [w for w in warns if w.startswith("SHOT-PLAN")]
         overlaps = [w for w in warns if w.startswith("OVERLAP")]
+        repeats = [w for w in warns if w.startswith("REPEAT")]
         check("no looped/repeated footage", not loops,
               f"{len(loops)} looping cut(s): {loops[0]}" if loops else "")
+        # the owner's #1 rule: the SAME clip must not appear in two cuts (a thin
+        # pool forces this; LOOP alone doesn't catch it).
+        check("no clip reused across cuts", not repeats,
+              f"{len(repeats)} repeated: {repeats[0]}" if repeats else "")
         check("no dropped overlays", not drops,
               f"{len(drops)} dropped: {drops[0]}" if drops else "")
         # overlays colliding in one slot (the owner's "text overlaps" defect)

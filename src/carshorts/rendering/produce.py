@@ -388,6 +388,18 @@ _VID_DUR_CACHE: dict[str, float | None] = {}
 _VIDEO_EXTS = (".mp4", ".mov", ".m4v", ".webm", ".mkv")
 
 
+def _repeated_video_clips(sections: list[dict]) -> dict[str, int]:
+    """VIDEO clips reused across cuts anywhere in the video → {name: count} for
+    any used more than once. The owner's #1 rule is no repeated footage; stills
+    may legitimately fill multiple gaps, so only real video files are counted."""
+    from collections import Counter
+    uses = Counter(
+        Path(c["asset"]).name
+        for sec in sections for c in sec.get("cuts", [])
+        if str(c.get("asset", "")).lower().endswith(_VIDEO_EXTS))
+    return {name: n for name, n in uses.items() if n > 1}
+
+
 def _video_duration(path: str) -> float | None:
     """Native duration of a VIDEO clip (None for stills / probe errors).
 
@@ -1294,6 +1306,14 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         quality_warnings.append(
             f"STOCK: {len(stock_cuts)} cut(s) use generic/stock footage though owner "
             f"clips are available ({', '.join(sorted(set(stock_cuts))[:3])})")
+
+    # REPEAT GUARD — the owner's #1 rule: never reuse a video clip. The LOOP check
+    # only catches a single cut playing past its clip length; it misses the SAME
+    # clip reused across two different cuts (a thin pool forces this).
+    for _name, _n in _repeated_video_clips(manifest_sections).items():
+        quality_warnings.append(
+            f"REPEAT: '{_name}' is used in {_n} cuts — the owner's #1 rule is no "
+            f"repeated footage. Add a distinct clip or widen the pool.")
 
     if quality_warnings:
         print("     ⚠ QUALITY WARNINGS (QA will flag these — fix before publish):")
