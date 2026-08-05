@@ -619,10 +619,10 @@ async function send(verdict){
 async function publishDirect(){
  if(sel===null)return;const c=cards[sel];
  if(BUSY(c.status)){toast("Hold on — a render is in flight for this draft");return;}
- let p=prompt("Publish “"+(c.car||c.slug)+"” to YouTube.\nPrivacy — type: public / unlisted / private","unlisted");
+ let p=prompt("Publish “"+(c.car||c.slug)+"” to YouTube. Privacy — type: public / unlisted / private","unlisted");
  if(!p)return; p=p.trim().toLowerCase();
  if(!["public","unlisted","private"].includes(p)){toast("privacy must be public, unlisted or private");return;}
- if(!confirm("Upload the CURRENT DRAFT of “"+(c.car||c.slug)+"” to YouTube as "+p.toUpperCase()+"?\nThis is a live action on your channel."))return;
+ if(!confirm("Upload the CURRENT DRAFT of “"+(c.car||c.slug)+"” to YouTube as "+p.toUpperCase()+"? This is a live action on your channel."))return;
  await fetch("/api/publish-draft",{method:"POST",headers:{"Content-Type":"application/json"},
   body:JSON.stringify({slug:c.slug,privacy:p})});
  toast("Publishing to YouTube 🚀 ("+p+")");

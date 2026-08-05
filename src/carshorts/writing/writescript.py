@@ -178,8 +178,9 @@ def main() -> None:
     p.add_argument("--language", default="english", choices=["english", "hinglish", "hindi"])
     p.add_argument("--variants", type=int, default=3, help="How many candidates to generate.")
     p.add_argument("--format", default="spotlight",
-                   choices=["spotlight", "vs", "five_things", "mythbust", "base_vs_top"],
-                   help="Narrative shell for the video.")
+                   choices=list(scriptbrain.FORMAT_RUBRICS),   # stay in sync with the rubric
+                   help="Narrative shell for the video (spotlight/vs/five_things/mythbust/"
+                        "base_vs_top/facelift/upcoming).")
     p.add_argument("--provider", choices=["deepseek", "gemini", "groq", "cerebras", "openrouter", "ollama"],
                    help="LLM backend (or CARSHORTS_LLM). Default gemini.")
     p.add_argument("--options", type=int, default=0,

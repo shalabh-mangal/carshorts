@@ -283,8 +283,8 @@ def main() -> None:
     ap.add_argument("car", nargs="?", help="Car name to draft (e.g. 'Hyundai Creta').")
     ap.add_argument("--persona", default="deadpan", choices=["deadpan", "hype", "bhai"])
     ap.add_argument("--language", default="english", choices=["english", "hinglish", "hindi"])
-    ap.add_argument("--format", default="spotlight",
-                    choices=["spotlight", "vs", "five_things", "mythbust", "base_vs_top"])
+    from carshorts.writing.scriptbrain import FORMAT_RUBRICS
+    ap.add_argument("--format", default="spotlight", choices=list(FORMAT_RUBRICS))
     ap.add_argument("--approve", metavar="SLUG",
                     help="Approve a queued draft -> premium final -> back to portal for 2nd approval.")
     ap.add_argument("--publish", metavar="SLUG",
