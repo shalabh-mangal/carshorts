@@ -142,8 +142,12 @@ def critique(script: Script, sheet: SpecSheet | None = None,
         "comment? A script that hedges or feature-dumps fails. Grade against THIS video's "
         "format bar:\n" + rubric_for(fmt) + "\n\n"
         "Also weigh: hook stopping-power in the first 2s, tightness (~90 words / ~30s), FRESH "
-        "non-recycled humor, and a comment-bait rivalry CTA. Be specific and honest, and name "
-        "what genuinely works.\n\nPROVEN LEARNINGS:\n" + load_learnings_guidance(16)
+        "non-recycled humor, and a comment-bait rivalry CTA. CRITICAL RETENTION TEST — the SPEC "
+        "beat is the channel's #1 drop-off (55-81% of viewers leave there): the spec must BRIDGE "
+        "and ESCALATE the hook's tension and land as a PAYOFF ('here's the crazy part…'), in ONE "
+        "tight line — not a flat number recital or fact-dump. Flag a spec beat that deflates the "
+        "hook. Be specific and honest, and name what genuinely works.\n\nPROVEN LEARNINGS:\n"
+        + load_learnings_guidance(16)
     )
     user = (
         "SCRIPT:\n" + _summary(script) + "\n\nReturn ONLY JSON:\n"
@@ -186,7 +190,10 @@ def revise(script: Script, sheet: SpecSheet, crit: dict,
         "Sharpen to ONE clear USP and a DECISIVE verdict. REQUIRED structure: write ALL FIVE "
         "beats — hook, spec, value, peak, cta — as full spoken lines totalling ~70-90 words "
         "(never terse captions), and the CTA MUST include the exact words 'like, share, "
-        "subscribe' plus a rivalry poll ('X or Y? comment 1 or 2'). Keep the language. "
+        "subscribe' plus a rivalry poll ('X or Y? comment 1 or 2'). RETENTION-CRITICAL: the "
+        "SPEC beat is where most viewers leave — it MUST bridge and ESCALATE the hook's tension "
+        "and read as the payoff (open with the surprise, e.g. 'here's the crazy part…', then the "
+        "number), ONE tight line, never a flat fact-dump. Keep the language. "
         "CRITICAL: introduce NO number, price, spec, or named feature/equipment that is not in "
         "the SPEC SHEET, and keep each beat's cited_spec_names. Verdicts/opinions are encouraged "
         "but must read as clearly subjective. Return ONLY JSON:\n"
