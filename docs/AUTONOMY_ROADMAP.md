@@ -21,8 +21,8 @@ into one of these:
 ## Priorities (highest leverage first)
 | # | Introduce | Fixes | Status |
 |---|---|---|---|
-| 1 | **Vision QA as a hard gate** (multimodal, every render) | Blindness — plates, wrong/rival vehicle, clip↔narration, dull frame 1 | **IN PROGRESS** — VQA exists (`quality/vqa.py`), wiring it *gated* into `produce` |
-| 2 | **RAG over trusted sources** (CarDekho/official press kits/spec PDFs) + confidence | Fact grounding; auto `[CLAIMED]`; kills the "1.5L Fronx" class | planned |
+| 1 | **Vision QA as a hard gate** (multimodal, every render) | Blindness — plates, wrong/rival vehicle, clip↔narration, dull frame 1 | **✅ SHIPPED** — `produce` runs VQA, `qa.py` gates on "no blocking vision defects" |
+| 2 | **RAG over trusted sources** (CarDekho/official/Autocar/CarWale) + confidence | Fact grounding; auto `[CLAIMED]`; kills the "1.5L Fronx" class | **✅ SHIPPED** — `webresearch.ground_specs` + `merge_and_score` (ranked sources, corroboration → real confidence) |
 | 3 | **Close the agent loops** (research→verify→script→critique→**revise**→footage→**vet**→render→QA→**re-render if red**) | Removes "human at every seam" | planned |
 | 4 | **Real footage pipeline** (owner press-kit ingest, licensed-clip APIs) | The true ceiling on quality (non-AI) | planned |
 | 5 | **Skills** — each workflow codified/invokable | Consistency (playbook charter = skill #1) | started |
