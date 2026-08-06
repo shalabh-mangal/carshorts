@@ -388,6 +388,13 @@ _VID_DUR_CACHE: dict[str, float | None] = {}
 _VIDEO_EXTS = (".mp4", ".mov", ".m4v", ".webm", ".mkv")
 
 
+def _stock_default(explicit: bool | None, own_present: bool) -> bool:
+    """Whether to pull generic stock b-roll. An explicit --stock/--no-stock wins;
+    otherwise use stock ONLY when the owner has NO real clips — never leak unvetted
+    global stock over owner footage (the owner's 'own footage, not stock' rule)."""
+    return explicit if explicit is not None else (not own_present)
+
+
 def _repeated_video_clips(sections: list[dict]) -> dict[str, int]:
     """VIDEO clips reused across cuts anywhere in the video → {name: count} for
     any used more than once. The owner's #1 rule is no repeated footage; stills
@@ -810,7 +817,14 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
     # motion — dashboards, road POV — safe for any car). Subject-scoped comes
     # first so the pool leans into car-appropriate motion.
     stock_videos: list[str] = []
-    use_stock = stock if stock is not None else True
+    # Default: pull generic stock ONLY when the owner has NO real clips for this
+    # car. With own footage present, never leak unvetted global stock over it
+    # (an own-footage render kept re-fetching a rejected clip into assets/stock/
+    # and pooling it — the owner's #1 "own footage, not stock" rule). Explicit
+    # --stock / --no-stock still win.
+    _own_present = (paths.car_dir(_fslug) / "own").exists() and \
+        any((paths.car_dir(_fslug) / "own").glob("*.mp4"))
+    use_stock = _stock_default(stock, _own_present)
     if use_stock:
         car_stock_dir = paths.car_dir(_fslug) / "stock"
         car_stock = sorted(str(p) for p in car_stock_dir.glob("*.mp4"))
