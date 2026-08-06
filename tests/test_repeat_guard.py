@@ -27,3 +27,17 @@ def test_stills_may_repeat():
     # images legitimately fill multiple gaps — only VIDEO reuse is a violation
     sections = [_sec("still.jpg"), _sec("still.jpg"), _sec("clip.mp4")]
     assert _repeated_video_clips(sections) == {}
+
+
+# --- stock-leak guard: own footage present -> no generic stock unless forced ---
+from carshorts.rendering.produce import _stock_default
+
+
+def test_stock_off_by_default_when_owner_has_clips():
+    assert _stock_default(None, own_present=True) is False   # never leak stock over own
+    assert _stock_default(None, own_present=False) is True   # no own clips -> stock ok
+
+
+def test_explicit_stock_flag_wins():
+    assert _stock_default(True, own_present=True) is True     # --stock forces it
+    assert _stock_default(False, own_present=False) is False  # --no-stock forces off
