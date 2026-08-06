@@ -1,0 +1,46 @@
+{
+  "subject": "Tata Sierra",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Can an eleven-and-a-half-lakh SUV, ex-showroom, really pack 160 PS of turbo power?",
+      "cited_spec_names": [
+        "price_estimate",
+        "power_petrol_turbo"
+      ],
+      "pops": []
+    },
+    {
+      "role": "spec",
+      "text": "That's right, the Tata Sierra's turbo-petrol variant",
+      "cited_spec_names": [
+        "power_petrol_turbo"
+      ],
+      "pops": []
+    },
+    {
+      "role": "value",
+      "text": "For around twenty lakh ex-showroom, you get the top Accomplished Plus trim with a panoramic sunroof and 12.3-inch touchscreen",
+      "cited_spec_names": [
+        "price_estimate",
+        "value_variant",
+        "sunroof",
+        "touchscreen"
+      ],
+      "pops": []
+    },
+    {
+      "role": "peak",
+      "text": "Smash like if you'd buy it, this turbo-petrol Sierra is a steal",
+      "cited_spec_names": [],
+      "pops": []
+    },
+    {
+      "role": "cta",
+      "text": "Nexon or Sierra — which midsize SUV wins? Comment 1 or 2, like, share, subscribe for tomorrow's verdict",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  ],
+  "_angle": "Option 4 — fresh take"
+}

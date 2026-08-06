@@ -1,0 +1,55 @@
+{
+  "subject": "MG Hector Hawk",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "MG claims a thousand kilometres on one tank and charge. Diesel owners — nervous yet?",
+      "cited_spec_names": [
+        "combined_range"
+      ],
+      "pops": [
+        {
+          "anchor": "thousand kilometres",
+          "show": "~1,000 KM",
+          "kind": "number"
+        }
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "Here's the trick — it's a plug-in hybrid: 125 km on pure electric, so your daily drive burns zero petrol.",
+      "cited_spec_names": [
+        "ev_only_range",
+        "phev_battery"
+      ],
+      "pops": []
+    },
+    {
+      "role": "value",
+      "text": "Expected price? Around 25 to 35 lakh — and it seats seven.",
+      "cited_spec_names": [
+        "price_estimate",
+        "seating"
+      ],
+      "pops": []
+    },
+    {
+      "role": "peak",
+      "text": "If the numbers hold, it's the ultimate highway cruiser — no diesel guilt, no range anxiety. Like this if you'd pick it over diesel.",
+      "cited_spec_names": [],
+      "pops": [
+        {
+          "anchor": "ultimate highway cruiser",
+          "show": "HIGHWAY CRUISER",
+          "kind": "word"
+        }
+      ]
+    },
+    {
+      "role": "cta",
+      "text": "Hawk or diesel — 1 or 2. Like, share, subscribe.",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  ]
+}

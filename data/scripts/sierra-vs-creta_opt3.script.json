@@ -1,0 +1,73 @@
+{
+  "subject": "Tata Sierra vs Hyundai Creta",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Think petrol can't match diesel torque? Sierra's 255 Nm says otherwise.",
+      "cited_spec_names": [
+        "sierra_torque_turbo"
+      ],
+      "pops": []
+    },
+    {
+      "role": "spec",
+      "text": "That's diesel-level punch from a petrol engine, with 160 PS to Creta's 115 PS.",
+      "cited_spec_names": [
+        "sierra_power_turbo",
+        "creta_power_petrol"
+      ],
+      "pops": []
+    },
+    {
+      "role": "value",
+      "text": "At ₹11.49 lakh with a sunroof and Dolby Atmos, it's a steal.",
+      "cited_spec_names": [
+        "sierra_price",
+        "sierra_sunroof",
+        "sierra_audio"
+      ],
+      "pops": []
+    },
+    {
+      "role": "peak",
+      "text": "Creta diesel who? Sierra petrol just stole your torque.",
+      "cited_spec_names": [],
+      "pops": []
+    },
+    {
+      "role": "cta",
+      "text": "Sierra or Creta — 1 or 2? Comment now. And like, share, subscribe.",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  ],
+  "_angle": "Opt 3 · Petrol matches diesel torque · 8/10",
+  "_critique": {
+    "verdict": "ship",
+    "score": 8,
+    "usp": "Petrol matches diesel torque",
+    "verdict_line": "Sierra's petrol beats Creta's diesel",
+    "summary": "Strong myth-bust hook, clear USP, and decisive verdict in a tight script.",
+    "strengths": [
+      "Hook is surprising and specific, with a number.",
+      "Clear USP: petrol torque matches diesel.",
+      "Decisive verdict in peak beat.",
+      "Comment-bait CTA with binary poll.",
+      "Concise and within word count."
+    ],
+    "issues": [
+      {
+        "beat": "value",
+        "problem": "Price may be misaligned if it's a full-lineup range.",
+        "fix": "Clarify the price is for the petrol variant, not the entire lineup."
+      },
+      {
+        "beat": "peak",
+        "problem": "Slight recycle of 'stole your torque' might feel familiar.",
+        "fix": "Consider a fresher twist, e.g., 'Creta diesel who? Sierra petrol just ate your lunch.'"
+      }
+    ]
+  },
+  "_critique_status": "ok",
+  "_format": "mythbust"
+}

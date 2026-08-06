@@ -1,0 +1,54 @@
+{
+  "subject": "Tata Sierra vs Hyundai Creta",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Sierra costs 58k more, but 45 more horses. Worth it?",
+      "cited_spec_names": [
+        "sierra_power_turbo",
+        "creta_power_petrol",
+        "sierra_price",
+        "creta_price"
+      ],
+      "pops": [
+        {"anchor": "58 thousand", "show": "₹58K MORE"},
+        {"anchor": "45", "show": "+45 PS"}
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "Sierra's 160 PS laughs at Creta's 115. Plus panoramic sunroof? Creta can't dream.",
+      "cited_spec_names": [
+        "sierra_power_turbo",
+        "creta_power_petrol",
+        "sierra_sunroof"
+      ],
+      "pops": []
+    },
+    {
+      "role": "value",
+      "text": "Creta fights back: ventilated seats, wireless charging, bigger touchscreen. For less cash.",
+      "cited_spec_names": [
+        "creta_value_features",
+        "creta_price"
+      ],
+      "pops": [
+        {"anchor": "ventilated seats", "show": "VENTILATED SEATS"},
+        {"anchor": "wireless charging", "show": "WIRELESS CHARGING"},
+        {"anchor": "bigger touchscreen", "show": "TOUCHSCREEN"}
+      ]
+    },
+    {
+      "role": "peak",
+      "text": "Sierra worth extra? Love power, yes. Family? Creta's smarter. Like if you'd take Sierra.",
+      "cited_spec_names": [],
+      "pops": []
+    },
+    {
+      "role": "cta",
+      "text": "Sierra or Creta? 1 or 2. Like, share, subscribe.",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  ]
+}

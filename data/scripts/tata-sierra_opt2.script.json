@@ -1,0 +1,36 @@
+{
+  "subject": "Tata Sierra",
+  "_angle": "Feature Bomb (value-forward)",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Eleven and a half lakh, ex-showroom — for an SUV with a panoramic sunroof and a Dolby sound system?",
+      "cited_spec_names": ["price_estimate"],
+      "pops": [{"anchor": "lakh", "show": "₹11.49L · EX-SHOWROOM", "card": true}]
+    },
+    {
+      "role": "spec",
+      "text": "You choose a one-sixty horsepower turbo-petrol, or a diesel making two-eighty newtons of torque.",
+      "cited_spec_names": ["power_petrol_turbo", "torque_diesel"],
+      "pops": [{"anchor": "horsepower", "show": "160 PS TURBO"}, {"anchor": "torque", "show": "280 NM DIESEL"}]
+    },
+    {
+      "role": "value",
+      "text": "Inside — a twelve-point-three-inch screen, thirteen speakers, and Level-two driver assist that reads the road for you.",
+      "cited_spec_names": ["touchscreen", "audio", "adas"],
+      "pops": [{"anchor": "screen", "show": "12.3-INCH SCREEN"}, {"anchor": "speakers", "show": "13 JBL SPEAKERS"}, {"anchor": "assist", "show": "LEVEL 2 ADAS"}]
+    },
+    {
+      "role": "peak",
+      "text": "Six airbags, a six-twenty-litre boot, and that iconic look — at this price, honestly, it's a steal.",
+      "cited_spec_names": ["airbags", "boot_space"],
+      "pops": [{"anchor": "airbags", "show": "6 AIRBAGS"}, {"anchor": "boot", "show": "622L BOOT"}, {"anchor": "steal", "show": "STEAL!"}]
+    },
+    {
+      "role": "cta",
+      "text": "One catch — it's front-wheel drive, not an off-roader. Sierra or Creta? Comment one or two, then like, share, and subscribe.",
+      "cited_spec_names": ["drivetrain"],
+      "pops": [{"anchor": "drive", "show": "FWD — NOT 4X4"}]
+    }
+  ]
+}

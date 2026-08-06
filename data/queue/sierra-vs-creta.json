@@ -1,0 +1,97 @@
+{
+  "car": "Tata Sierra vs Hyundai Creta",
+  "slug": "sierra-vs-creta",
+  "spec": "specs/sierra-vs-creta.json",
+  "status": "awaiting_approval",
+  "created": "2026-08-03T16:00:00",
+  "language": "english",
+  "persona": "deadpan",
+  "voice": "calm",
+  "format": "vs",
+  "note": "NOT published — upload went to wrong channel (Secret Lives Studio); re-auth to carshorts, then re-publish",
+  "target": {
+    "views": 3000,
+    "likes": ">15",
+    "comments": ">5 (rivalry poll — Sierra or Creta)",
+    "subs": "increase"
+  },
+  "script_build": {
+    "hook": {
+      "role": "hook",
+      "text": "Sierra costs 58k more, but 45 more horses. Worth it?",
+      "cited_spec_names": [
+        "sierra_power_turbo",
+        "creta_power_petrol",
+        "sierra_price",
+        "creta_price"
+      ],
+      "pops": []
+    },
+    "spec": {
+      "role": "spec",
+      "text": "Sierra's 160 PS laughs at Creta's 115. Plus panoramic sunroof? Creta can't dream.",
+      "cited_spec_names": [
+        "sierra_power_turbo",
+        "creta_power_petrol",
+        "sierra_sunroof"
+      ],
+      "pops": []
+    },
+    "value": {
+      "role": "value",
+      "text": "Creta fights back: ventilated seats, wireless charging, bigger touchscreen. For less cash.",
+      "cited_spec_names": [
+        "creta_value_features",
+        "creta_price"
+      ],
+      "pops": []
+    },
+    "peak": {
+      "role": "peak",
+      "text": "Sierra worth extra? Love power, yes. Family? Creta's smarter. Like if you'd take Sierra.",
+      "cited_spec_names": [],
+      "pops": []
+    },
+    "cta": {
+      "role": "cta",
+      "text": "Sierra or Creta? Comment 1 or 2. Like, share, subscribe.",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  },
+  "script": "D:\\Personal Projects\\carshorts\\data\\scripts\\sierra-vs-creta_built.script.json",
+  "script_choice": "custom mix",
+  "critique": {
+    "verdict": "ship",
+    "score": 8,
+    "summary": "Strong hook, tight pacing, and complete overlay coverage — a solid, on-brand Short.",
+    "strengths": [
+      "Hook is immediate and curiosity-driven with a concrete number (58k more) within 2 seconds.",
+      "Mid-point has a clear bridge: 'Creta fights back' smoothly transitions from Sierra's advantages to Creta's counterpunch.",
+      "Tight script at 58 words and 23.8s, with a CTA beat that's concise and includes the binary poll and subscribe ask.",
+      "Overlay coverage is complete; all named features are on screen, and uncovered_features is empty for every beat."
+    ],
+    "issues": [
+      {
+        "beat": "hook",
+        "problem": "First clip 'sierra_hero.mp4' may be a static hero shot, not motion — could cost the swipe in the first second.",
+        "fix": "Ensure the first frame is dynamic (e.g., clip starting with a pan or drive-by) or add a quick zoom/ken-burns effect to create motion.",
+        "severity": "med"
+      },
+      {
+        "beat": "spec",
+        "problem": "Clip 'sierra_sand.mp4' on a spec beat about power/sunroof — filename suggests off-road, which may clash with the urban SUV character.",
+        "fix": "Swap to a clip showing acceleration or highway driving to match the power narrative, or keep sand only if it's a brief, character-consistent moment.",
+        "severity": "low"
+      },
+      {
+        "beat": "peak",
+        "problem": "No overlay on the verdict beat — a visual cue like 'SIERRA? 1' or 'CRETA? 2' could reinforce the binary choice and boost engagement.",
+        "fix": "Add a text pop with the binary options (e.g., '1' and '2') during the 'Love power, yes. Family? Creta's smarter.' line to prime the comment poll.",
+        "severity": "low"
+      }
+    ],
+    "reviewed_at": "2026-08-04T18:20:59"
+  },
+  "voice_file": "D:\\Personal Projects\\carshorts\\out\\voice_options\\sierra-vs-creta_calm.mp3"
+}

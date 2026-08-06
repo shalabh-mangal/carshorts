@@ -1,0 +1,71 @@
+{
+  "subject": "Tata Sierra vs Hyundai Creta",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Sierra costs 58k more, but 45 more horses. Worth it?",
+      "cited_spec_names": [
+        "sierra_power_turbo",
+        "creta_power_petrol",
+        "sierra_price",
+        "creta_price"
+      ],
+      "pops": []
+    },
+    {
+      "role": "spec",
+      "text": "Sierra's 160 PS laughs at Creta's 115. Plus panoramic sunroof? Creta can't dream.",
+      "cited_spec_names": [
+        "sierra_power_turbo",
+        "creta_power_petrol",
+        "sierra_sunroof"
+      ],
+      "pops": []
+    },
+    {
+      "role": "value",
+      "text": "Creta fights back: ventilated seats, wireless charging, bigger touchscreen. For less cash.",
+      "cited_spec_names": [
+        "creta_value_features",
+        "creta_price"
+      ],
+      "pops": []
+    },
+    {
+      "role": "peak",
+      "text": "Sierra worth extra? Love power, yes. Family? Creta's smarter. Like if you'd take Sierra.",
+      "cited_spec_names": [],
+      "pops": []
+    },
+    {
+      "role": "cta",
+      "text": "Sierra or Creta? Comment 1 or 2. Like, share, subscribe.",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  ],
+  "_angle": "Opt 1 · Sierra: 45 more hp for 58k · 8/10",
+  "_critique": {
+    "verdict": "ship",
+    "score": 8,
+    "usp": "Sierra: 45 more hp for 58k",
+    "verdict_line": "Sierra for power, Creta for value.",
+    "summary": "Strong hook with concrete numbers, clear head-to-head, decisive verdict, and a rivalry poll CTA—just needs a tighter, more decisive peak.",
+    "strengths": [
+      "Hook has a concrete number and a bold question within 2 seconds.",
+      "Fair head-to-head on power, features, and price.",
+      "Decisive verdict: power vs. family value.",
+      "Rivalry poll CTA with comment bait.",
+      "Word count is tight at 90."
+    ],
+    "issues": [
+      {
+        "beat": "peak",
+        "problem": "Verdict is fence-sitting: 'If you love power, yes. For the family? The Creta's the smarter pick.' This hedges and weakens the decisive verdict.",
+        "fix": "Commit to one winner. Example: 'Sierra wins for enthusiasts, but for most families, Creta is the smarter buy. I'd take Sierra—comment if you agree.'"
+      }
+    ]
+  },
+  "_critique_status": "ok",
+  "_format": "vs"
+}

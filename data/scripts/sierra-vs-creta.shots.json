@@ -1,0 +1,8 @@
+{
+  "_note": "Versus routing with real Creta footage. hook=Sierra hero + Creta hero (matchup). spec=Sierra (turbo/driving + panoramic-roof clip). value=Creta WIDE CABIN (creta_interior_slow, 4.96s) as ONE clip — shows seats + console + screen so the ventilated-seats/wireless-charging/touchscreen labels all have a matching visual; single clip because the beat's 2nd phrase lands at ~4.4s (longer than any raw Creta clip) and a 2nd cut looped. peak=Sierra dynamic + Creta seats (verdict, both cars). cta=Creta side + Sierra, loop. All clips distinct (no repeats); Creta clips slow-mo'd to fit their slots (no loops).",
+  "0": ["sierra_hero.mp4", "creta_hero.mp4"],
+  "1": ["sierra_sand.mp4", "sierra_sunroof.mp4", "sierra_dash.mp4"],
+  "2": ["creta_interior_slow.mp4"],
+  "3": ["sierra_grass.mp4", "creta_front.mp4"],
+  "4": ["creta_side.mp4", "sierra_lake.mp4"]
+}

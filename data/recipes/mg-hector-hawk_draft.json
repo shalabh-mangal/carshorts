@@ -1,0 +1,26 @@
+{
+  "out": "out\\mg-hector-hawk_draft.mp4",
+  "subject": "MG Hector Hawk",
+  "rendered_at": "2026-08-06T09:50:21",
+  "script_file": "data/scripts/mg-hector-hawk_built.script.json",
+  "persona": "deadpan",
+  "voice_engine": "chatterbox",
+  "overlay_theme": "frost",
+  "script_format": "upcoming",
+  "script_usp": null,
+  "language": "english",
+  "music": "Balearic Slide - Jeremy Black.mp3",
+  "captions": false,
+  "word_count": 81,
+  "sections": 5,
+  "hook_text": "MG claims a thousand kilometres on one tank and charge. Diesel owners — nervous yet?",
+  "hook_type": "question",
+  "pool": {
+    "own": 13,
+    "stock": 0,
+    "stills": 0
+  },
+  "cut_target_s": 2.3,
+  "video_id": "G3NgnFzAH9E",
+  "metrics": null
+}

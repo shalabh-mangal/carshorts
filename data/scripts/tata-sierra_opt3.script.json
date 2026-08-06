@@ -1,0 +1,36 @@
+{
+  "subject": "Tata Sierra",
+  "_angle": "Honest Take (skeptic hook vs rivals)",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Everyone's hyping the Tata Sierra's comeback. At eleven and a half lakh, ex-showroom, is it actually worth it?",
+      "cited_spec_names": ["price_estimate"],
+      "pops": [{"anchor": "lakh", "show": "₹11.49L · EX-SHOWROOM", "card": true}]
+    },
+    {
+      "role": "spec",
+      "text": "First, the honest bit — it's front-wheel drive, not the rugged off-roader the old Sierra was.",
+      "cited_spec_names": ["drivetrain"],
+      "pops": [{"anchor": "drive", "show": "FWD — NOT 4X4"}]
+    },
+    {
+      "role": "value",
+      "text": "But it flies on road — a one-sixty horsepower turbo-petrol, Level-two driver assist, and a panoramic sunroof.",
+      "cited_spec_names": ["power_petrol_turbo", "adas", "sunroof"],
+      "pops": [{"anchor": "horsepower", "show": "160 PS TURBO"}, {"anchor": "assist", "show": "LEVEL 2 ADAS"}, {"anchor": "sunroof", "show": "PANORAMIC SUNROOF"}]
+    },
+    {
+      "role": "peak",
+      "text": "Add six airbags, a thirteen-speaker Dolby system, and a six-twenty-litre boot — that's genuinely loaded.",
+      "cited_spec_names": ["airbags", "audio", "boot_space"],
+      "pops": [{"anchor": "airbags", "show": "6 AIRBAGS"}, {"anchor": "Dolby", "show": "13-SPKR DOLBY"}, {"anchor": "boot", "show": "622L BOOT"}]
+    },
+    {
+      "role": "cta",
+      "text": "So — genuinely, the icon is a seriously smart buy. Sierra or Creta? Comment one or two, then like, share, and subscribe.",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  ]
+}

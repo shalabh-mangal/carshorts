@@ -1,0 +1,97 @@
+{
+  "car": "MG Hector Hawk",
+  "slug": "mg-hector-hawk",
+  "spec": "specs/mg-hector-hawk.json",
+  "status": "published",
+  "created": "2026-08-05T20:02:59",
+  "language": "english",
+  "persona": "deadpan",
+  "voice": "calm",
+  "format": "upcoming",
+  "note": "your mix rendered \u2014 watch the draft",
+  "target": {
+    "views": 2000,
+    "likes": ">12",
+    "comments": ">5 (Hawk or diesel poll)",
+    "subs": "increase"
+  },
+  "script_build": {
+    "hook": {
+      "role": "hook",
+      "text": "A thousand km on one tank? MG's Hector Hawk just made diesel owners question everything.",
+      "cited_spec_names": [
+        "combined_range"
+      ],
+      "pops": []
+    },
+    "spec": {
+      "role": "spec",
+      "text": "It's a PHEV with 125 km pure EV range\u2014your commute burns zero fuel.",
+      "cited_spec_names": [
+        "ev_only_range"
+      ],
+      "pops": []
+    },
+    "value": {
+      "role": "value",
+      "text": "Expected price? \u20b925\u201335 lakh. It's a 7-seater, but worth the wait.",
+      "cited_spec_names": [
+        "price_estimate",
+        "seating"
+      ],
+      "pops": []
+    },
+    "peak": {
+      "role": "peak",
+      "text": "If real, it's the ultimate highway cruiser\u2014no diesel guilt, no charging panic. Like if you'd take this over a diesel SUV.",
+      "cited_spec_names": [],
+      "pops": []
+    },
+    "cta": {
+      "role": "cta",
+      "text": "Hawk or diesel? Comment 1 or 2. Like, share, subscribe for more.",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  },
+  "script": "D:\\Personal Projects\\carshorts\\data\\scripts\\mg-hector-hawk_built.script.json",
+  "script_choice": "custom mix",
+  "script_format": "mix",
+  "script_usp": "",
+  "critique": {
+    "verdict": "revise",
+    "score": 7,
+    "summary": "Strong hook and tight structure, but the spec beat risks deflating the hook's tension and the CTA is slightly long.",
+    "strengths": [
+      "Hook is immediate and curiosity-driven with a bold number (1,000 km) and a rivalry tease.",
+      "Clear escalation from hook to spec with 'Here's the trick' bridging the seam.",
+      "Value beat lands early with price and a seating surprise (seven seats).",
+      "Engagement levers are present: rivalry poll (1 or 2) and like-at-peak.",
+      "Loop-friendly closer (Hawk or diesel) feeds back to the hook's diesel rivalry.",
+      "Tight word count (81) and runtime (29s) within proven limits."
+    ],
+    "issues": [
+      {
+        "beat": "spec",
+        "problem": "Spec beat runs 7.7s and covers two features (125 km EV range, zero petrol daily) without a clear payoff; risk of the spec-beat cliff.",
+        "fix": "Trim to one core spec (125 km EV) and land it as a payoff: '125 km on electric \u2014 your daily drive, no petrol.' Cut the second clause or move it to the value beat.",
+        "severity": "high"
+      },
+      {
+        "beat": "cta",
+        "problem": "CTA is 4.4s, slightly over the 4s target, and the last line 'Hawk or diesel \u2014 1 or 2' may not loop cleanly into the hook's 'Diesel owners \u2014 nervous yet?'.",
+        "fix": "Shorten to 'Hawk or diesel? 1 or 2. Like, share, subscribe.' and ensure the final word 'subscribe' visually/audibly leads back to the hook's diesel tease.",
+        "severity": "med"
+      },
+      {
+        "beat": "hook",
+        "problem": "The hook clip filename 'cut_84a1d3833b4e.mp4' gives no hint of content; if it's not the car moving or a bold exterior, frame 1 may fail the motion rule.",
+        "fix": "Verify the first frame shows the MG Hector in motion or a hero exterior; if not, swap the clip.",
+        "severity": "med"
+      }
+    ],
+    "reviewed_at": "2026-08-06T09:50:27"
+  },
+  "final": "out/mg-hector-hawk_draft.mp4",
+  "published_at": "2026-08-06T10:01:09"
+}

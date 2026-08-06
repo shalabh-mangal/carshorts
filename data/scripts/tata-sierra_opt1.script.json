@@ -1,0 +1,36 @@
+{
+  "subject": "Tata Sierra",
+  "_angle": "The Legend Returns (nostalgia + hype)",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "The nineties icon is back — the Tata Sierra, starting at just eleven and a half lakh, ex-showroom.",
+      "cited_spec_names": ["price_estimate"],
+      "pops": [{"anchor": "lakh", "show": "₹11.49L · EX-SHOWROOM", "card": true}]
+    },
+    {
+      "role": "spec",
+      "text": "Under the bonnet — a one-sixty horsepower turbo-petrol with two-fifty-five newtons of torque, or a punchy diesel.",
+      "cited_spec_names": ["power_petrol_turbo", "torque_petrol_turbo", "power_diesel"],
+      "pops": [{"anchor": "horsepower", "show": "160 PS TURBO"}, {"anchor": "torque", "show": "255 NM"}]
+    },
+    {
+      "role": "value",
+      "text": "Top trims add Level-two driver assist with twenty-two features, a panoramic sunroof, and a thirteen-speaker Dolby system.",
+      "cited_spec_names": ["adas", "sunroof", "audio"],
+      "pops": [{"anchor": "assist", "show": "LEVEL 2 ADAS"}, {"anchor": "sunroof", "show": "PANORAMIC SUNROOF"}, {"anchor": "Dolby", "show": "13-SPKR DOLBY"}]
+    },
+    {
+      "role": "peak",
+      "text": "Six airbags, a huge six-twenty-litre boot, a twelve-point-three-inch screen — the icon properly grew up.",
+      "cited_spec_names": ["airbags", "boot_space", "touchscreen"],
+      "pops": [{"anchor": "airbags", "show": "6 AIRBAGS"}, {"anchor": "boot", "show": "622L BOOT"}]
+    },
+    {
+      "role": "cta",
+      "text": "But remember, it's front-wheel drive, not a hardcore off-roader. Sierra or Creta? Comment one or two, then like, share, and subscribe.",
+      "cited_spec_names": ["drivetrain"],
+      "pops": [{"anchor": "drive", "show": "FWD — NOT 4X4"}]
+    }
+  ]
+}
