@@ -43,6 +43,8 @@ _SPEECH_SUBS = [
     (re.compile(r"\bbhp\b", re.I), "B-H-P"),
     (re.compile(r"\bkW\b"), "k-W"),
     (re.compile(r"\bSUV\b"), "S-U-V"),               # clone reads "SUV" as "surf"
+    (re.compile(r"\bMG\b"), "M-G"),                  # the brand — clone mumbles "MG"
+    (re.compile(r"\bMPV\b"), "M-P-V"),
     (re.compile(r"\bNCAP\b", re.I), "N-cap"),        # safety body, spoken "en-cap"
     (re.compile(r"\bDCT\b"), "D-C-T"),               # gearbox acronym
     (re.compile(r"\biMT\b"), "i-M-T"),               # clutchless manual acronym

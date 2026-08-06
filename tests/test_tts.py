@@ -24,6 +24,11 @@ def test_resolves_lakh_and_litres():
     assert normalize_for_speech("45L tank") == "45 litres tank"
 
 
+def test_spells_out_brand_and_body_acronyms():
+    assert normalize_for_speech("The MG Hector Hawk") == "The M-G Hector Hawk"
+    assert normalize_for_speech("a 7-seat MPV") == "a 7 seat M-P-V"
+
+
 def test_expands_shorthand_for_voice():
     assert normalize_for_speech("costs 58k more") == "costs 58 thousand more"
     assert normalize_for_speech("Sierra vs Creta") == "Sierra versus Creta"
