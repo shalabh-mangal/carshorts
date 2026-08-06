@@ -101,7 +101,7 @@ def test_fallback_raises_when_all_exhausted():
     a = _Client(LLMQuotaExhausted("a gone"))
     b = _Client(LLMQuotaExhausted("b gone"))
     chain = FallbackLLMClient([("a", a), ("b", b)])
-    with pytest.raises(Exception):
+    with pytest.raises(LLMQuotaExhausted):   # last provider's hard-cap error propagates
         chain.complete("s", "u")
     # both now dead -> a further call finds nothing to try and still raises
     with pytest.raises(RuntimeError):
