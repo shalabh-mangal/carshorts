@@ -23,7 +23,7 @@ into one of these:
 |---|---|---|---|
 | 1 | **Vision QA as a hard gate** (multimodal, every render) | Blindness — plates, wrong/rival vehicle, clip↔narration, dull frame 1 | **✅ SHIPPED** — `produce` runs VQA, `qa.py` gates on "no blocking vision defects" |
 | 2 | **RAG over trusted sources** (CarDekho/official/Autocar/CarWale) + confidence | Fact grounding; auto `[CLAIMED]`; kills the "1.5L Fronx" class | **✅ SHIPPED** — `webresearch.ground_specs` + `merge_and_score` (ranked sources, corroboration → real confidence) |
-| 3 | **Close the agent loops** (research→verify→script→critique→**revise**→footage→**vet**→render→QA→**re-render if red**) | Removes "human at every seam" | planned |
+| 3 | **Close the agent loops** (render→assess→auto-fix→re-render until ship/owner) | Removes "human at every seam" | **✅ SHIPPED** — `agents/autoloop.py` (`carshorts autoloop <slug>`): quarantines vision-blocked clips + revises weak scripts, re-renders, surfaces footage gaps |
 | 4 | **Real footage pipeline** (owner press-kit ingest, licensed-clip APIs) | The true ceiling on quality (non-AI) | planned |
 | 5 | **Skills** — each workflow codified/invokable | Consistency (playbook charter = skill #1) | started |
 | 6 | **SLM (local)** for cheap high-volume classify/tag | Cost + offline resilience (optimization, not quality) | later |

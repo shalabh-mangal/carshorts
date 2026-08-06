@@ -54,6 +54,7 @@ COMMANDS: dict[str, str] = {
     "agent": "carshorts.agents.agent",
     "brain": "carshorts.agents.brain",
     "critic": "carshorts.agents.critic",
+    "autoloop": "carshorts.agents.autoloop",
     "publish": "carshorts.publishing.publish",
     "publishkit": "carshorts.publishing.publishkit",
     "portal": "carshorts.portal.server",
