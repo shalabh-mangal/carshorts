@@ -388,6 +388,17 @@ _VID_DUR_CACHE: dict[str, float | None] = {}
 _VIDEO_EXTS = (".mp4", ".mov", ".m4v", ".webm", ".mkv")
 
 
+def _vision_warning(vq: dict) -> str | None:
+    """A vision-QA result -> a BLOCKING quality warning string, or None when the
+    render is vision-clean. Only the hard defects (readable plate / wrong or rival
+    vehicle / watermark) gate; clutter/dark are advisory and ignored here."""
+    if not vq.get("blocking"):
+        return None
+    issues = sorted({i for d in vq.get("blocking_detail", []) for i in d.get("issues", [])})
+    return (f"VISION: {vq['blocking']} frame(s) with {', '.join(issues)} — a readable "
+            "plate / wrong-vehicle / watermark the ruleset can't see")
+
+
 def _stock_default(explicit: bool | None, own_present: bool) -> bool:
     """Whether to pull generic stock b-roll. An explicit --stock/--no-stock wins;
     otherwise use stock ONLY when the owner has NO real clips — never leak unvetted
@@ -678,7 +689,7 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
             polish_audio: bool = True, plan_only: bool = False,
             humor: bool | None = None, overlay_theme: str = "auto",
             footage_slug: str | None = None, script_format: str | None = None,
-            script_usp: str | None = None) -> str:
+            script_usp: str | None = None, vqa: bool = True) -> str:
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
     overlay_theme = _resolve_overlay_theme(overlay_theme)
@@ -1427,6 +1438,27 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         renderer.render_sections(sections, str(out), music_path=music_path,
                                  draw_captions=captions, overlay_theme=overlay_theme)
 
+    # VISION GATE — the system finally SEES its own render. Deterministic QA can't
+    # judge a readable PLATE, a WRONG/RIVAL vehicle, or a clip that doesn't match the
+    # narration (a stock 'highway' clip once put plated Mercedes G-Wagons in the hook
+    # and QA passed it). A vision pass over sampled frames catches those; blocking
+    # defects become quality_warnings so QA gates on them. Best-effort: silently
+    # skipped when there's no vision key or the daily quota is exhausted.
+    if vqa and not plan_only:
+        try:
+            from carshorts.quality.vqa import run_vqa
+            run_vqa(str(out), str(manifest_path))
+            _vqp = out.with_suffix(".vqa.json")
+            if _vqp.exists():
+                _vw = _vision_warning(json.loads(_vqp.read_text()))
+                if _vw:
+                    quality_warnings.append(_vw)
+                    _m = json.loads(manifest_path.read_text())
+                    _m["quality_warnings"] = quality_warnings
+                    manifest_path.write_text(json.dumps(_m, indent=2))
+        except Exception as exc:  # noqa: BLE001 — vision is best-effort; never crash a render
+            print(f"     (vision QA skipped: {str(exc)[:90]})")
+
     # Render manifest: the machine-checkable plan of what SHOULD be on screen
     # when — the QA gate validates the rendered file against it.
     # --- Self-correcting QA loop: known failure classes map to fixes that are
@@ -1547,6 +1579,9 @@ def main() -> None:
     parser.add_argument("--provider", choices=["deepseek", "gemini", "groq", "cerebras", "openrouter", "ollama"],
                         help="LLM backend (or set CARSHORTS_LLM). Default gemini.")
     parser.add_argument("--no-footage", action="store_true", help="Skip CC photo fetch (plain cards).")
+    parser.add_argument("--no-vqa", action="store_true",
+                        help="Skip the vision QA gate (plates/wrong-vehicle check). "
+                             "Off = faster/cheaper drafts; keep it ON for anything you'll publish.")
     parser.add_argument("--captions", action="store_true", help="Burn captions on screen (default off).")
     parser.add_argument("--music", default="auto",
                         help="'auto' (generate a beat, default), 'none', or a path to a track.")
@@ -1585,7 +1620,7 @@ def main() -> None:
                    polish_audio=not args.no_polish, plan_only=args.plan_only,
                    humor=args.humor, overlay_theme=args.overlay_theme,
                    footage_slug=args.footage_slug, script_format=args.script_format,
-                   script_usp=args.script_usp)
+                   script_usp=args.script_usp, vqa=not args.no_vqa)
     print(f"\nDone -> {path}")
 
 

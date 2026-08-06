@@ -194,6 +194,11 @@ def run_qa(video_path: str, manifest_path: str | None = None,
         shotmiss = [w for w in warns if w.startswith("SHOT-PLAN")]
         overlaps = [w for w in warns if w.startswith("OVERLAP")]
         repeats = [w for w in warns if w.startswith("REPEAT")]
+        vision = [w for w in warns if w.startswith("VISION")]
+        # the system SEES its render: blocking vision defects (readable plate,
+        # wrong/rival vehicle, watermark) the deterministic checks can't catch.
+        check("no blocking vision defects (plates/wrong-vehicle)", not vision,
+              f"{len(vision)}: {vision[0]}" if vision else "")
         check("no looped/repeated footage", not loops,
               f"{len(loops)} looping cut(s): {loops[0]}" if loops else "")
         # the owner's #1 rule: the SAME clip must not appear in two cuts (a thin

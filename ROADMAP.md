@@ -3,6 +3,11 @@
 Goal: a self-correcting, continuously-learning Shorts factory where the human
 does taste (script approval, final watch, footage) and the system does the rest.
 
+> **Autonomy plan** (why it still needs a human, and the tech that closes the gaps —
+> vision QA, RAG, agent loops, footage pipeline): see
+> [docs/AUTONOMY_ROADMAP.md](docs/AUTONOMY_ROADMAP.md). Step 1 (vision QA gate) is
+> shipped — every render now SEES itself and blocks on plates / wrong-vehicle.
+
 ## 2026-07-28 — free stack + voice leap (moving to the new laptop)
 The whole pipeline now runs **$0**: GROQ/Gemini free LLMs, free stills
 (Wikimedia broadened+throttled + Openverse), Gemini-free vetting, edge or the
