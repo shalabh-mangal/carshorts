@@ -1,0 +1,72 @@
+{
+  "subject": "MG Hector Hawk",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Think PHEVs are useless in India? The Hector Hawk proves it wrong — 125 km of pure EV range.",
+      "cited_spec_names": [
+        "ev_only_range"
+      ],
+      "pops": []
+    },
+    {
+      "role": "spec",
+      "text": "That 20.5 kWh battery covers your daily commute — a week without petrol.",
+      "cited_spec_names": [
+        "phev_battery"
+      ],
+      "pops": []
+    },
+    {
+      "role": "value",
+      "text": "Expected price? ₹25–35 lakh. Under 30? Smartest city buy.",
+      "cited_spec_names": [
+        "price_estimate"
+      ],
+      "pops": []
+    },
+    {
+      "role": "peak",
+      "text": "1,000 km combined range? Marketing magic — expect 800. City EV with safety net. Like if you'd buy.",
+      "cited_spec_names": [
+        "combined_range"
+      ],
+      "pops": []
+    },
+    {
+      "role": "cta",
+      "text": "Hector Hawk or XUV700? Comment 1 or 2. Like, share, subscribe.",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  ],
+  "_angle": "Opt 3 · 125 km real EV range in a PHEV · 8/10",
+  "_critique": {
+    "verdict": "ship",
+    "score": 8,
+    "usp": "125 km real EV range in a PHEV",
+    "verdict_line": "Best city PHEV, if priced right",
+    "summary": "Strong myth-bust hook with a concrete number, a spec that bridges and escalates, and a clear value proposition, though the peak could tighten and the CTA could be more loop-friendly.",
+    "strengths": [
+      "Hook is immediate, myth-busting, and includes a concrete number (125 km) that stops the scroll.",
+      "Spec beat bridges the hook's tension by showing the battery covers daily commute, escalating to 'week without petrol'.",
+      "Value beat delivers the price and a decisive verdict ('smartest buy for city folks') by the midpoint.",
+      "Peak reveals the real-world range as a surprise, maintaining the myth-busting theme.",
+      "Comment-bait rivalry CTA is clear and simple."
+    ],
+    "issues": [
+      {
+        "beat": "peak",
+        "problem": "The peak is slightly wordy and the 'marketing magic' line could be sharper; the transition from value to peak could use a mini-cliffhanger to bridge the seam.",
+        "fix": "Shorten to: 'But that 1,000 km combined? Real world, closer to 800. Still, a city EV with a safety net. Smash like if you'd buy it.'"
+      },
+      {
+        "beat": "cta",
+        "problem": "The CTA is not loop-friendly; the last line doesn't feed back to the hook.",
+        "fix": "End with a loop-friendly line like 'Could the Hector Hawk be India's smartest PHEV? Comment 1 or 2.'"
+      }
+    ]
+  },
+  "_critique_status": "ok",
+  "_format": "mythbust"
+}

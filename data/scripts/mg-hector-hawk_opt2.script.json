@@ -1,0 +1,79 @@
+{
+  "subject": "MG Hector Hawk vs Innova Hycross",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "MG's Hector Hawk claims 1,000 km on one tank. Innova Hycross sips 25 km/l. Which for your family?",
+      "cited_spec_names": [
+        "combined_range"
+      ],
+      "pops": []
+    },
+    {
+      "role": "spec",
+      "text": "A full charge covers 125 km — the daily grind, free. Tank for weekends.",
+      "cited_spec_names": [
+        "ev_only_range"
+      ],
+      "pops": []
+    },
+    {
+      "role": "value",
+      "text": "Expected ₹25–35 lakh for a 7-seater skipping petrol for a week. Real deal.",
+      "cited_spec_names": [
+        "price_estimate",
+        "seating"
+      ],
+      "pops": []
+    },
+    {
+      "role": "peak",
+      "text": "City dweller? Hawk wins. Innova's a workhorse, Hawk's the leap. Hawk for bold.",
+      "cited_spec_names": [
+        "ev_only_range"
+      ],
+      "pops": []
+    },
+    {
+      "role": "cta",
+      "text": "Hawk or Hycross? Comment 1 or 2. Like, share, subscribe. 1000-km answer yours.",
+      "cited_spec_names": [
+        "combined_range"
+      ],
+      "pops": []
+    }
+  ],
+  "_angle": "Opt 2 · 1000-km range on one tank · 7/10",
+  "_critique": {
+    "verdict": "revise",
+    "score": 7,
+    "usp": "1000-km range on one tank",
+    "verdict_line": "Hawk for the bold city family",
+    "summary": "Strong hook and clear winner, but value beat mislabels price, spec beat misses the bridge, and humor is absent.",
+    "strengths": [
+      "Hook is bold and specific with a concrete number (1000 km) that creates a curiosity gap.",
+      "Clear decisive winner (Hawk) with a memorable verdict line.",
+      "Rivalry CTA with comment bait is effective.",
+      "Spec beat includes a mini-cliffhanger ('here's the crazy part') that bridges to the value beat."
+    ],
+    "issues": [
+      {
+        "beat": "value",
+        "problem": "Price range 25-35 lakh is mislabeled as 'the price' for a 7-seater, but it likely covers the full lineup, not the specific variant. This violates fact accuracy.",
+        "fix": "Clarify the range: 'Expect 25 to 35 lakh depending on variant' or specify the exact variant's price if sourced."
+      },
+      {
+        "beat": "spec",
+        "problem": "The spec beat (125 km EV range) doesn't directly escalate the hook's tension. It introduces a new feature without tying it back to the 1000-km claim.",
+        "fix": "Bridge: 'But here's the crazy part — the Hawk can do 125 km on pure electric, so that 1000 km is mostly free fuel. The tank just sits there for weekends.'"
+      },
+      {
+        "beat": "hook",
+        "problem": "Humor is completely absent, and the script feels dry. Every video needs fresh, Indian-relatable humor to stand out.",
+        "fix": "Add a light roast or relatable analogy: 'The Innova sips fuel at 25 kmpl — like a frugal uncle who reuses tea bags. But the Hawk? One tank, and you'll forget the pump exists.'"
+      }
+    ]
+  },
+  "_critique_status": "ok",
+  "_format": "vs"
+}

@@ -1,0 +1,83 @@
+{
+  "subject": "MG Hector Hawk",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "MG claims a thousand kilometres on one tank and charge. Diesel owners — nervous yet?",
+      "cited_spec_names": [
+        "combined_range"
+      ],
+      "pops": [
+        {
+          "anchor": "thousand kilometres",
+          "show": "~1,000 KM",
+          "kind": "number"
+        }
+      ]
+    },
+    {
+      "role": "spec",
+      "text": "Here's the trick — it's a plug-in hybrid: 125 km on pure electric, so your daily drive burns zero petrol.",
+      "cited_spec_names": [
+        "ev_only_range",
+        "phev_battery"
+      ],
+      "pops": []
+    },
+    {
+      "role": "value",
+      "text": "Expected price? Around 25 to 35 lakh — and it seats seven.",
+      "cited_spec_names": [
+        "price_estimate",
+        "seating"
+      ],
+      "pops": []
+    },
+    {
+      "role": "peak",
+      "text": "If the numbers hold, it's the ultimate highway cruiser — no diesel guilt, no range anxiety. Like this if you'd pick it over diesel.",
+      "cited_spec_names": [],
+      "pops": [
+        {
+          "anchor": "ultimate highway cruiser",
+          "show": "HIGHWAY CRUISER",
+          "kind": "word"
+        }
+      ]
+    },
+    {
+      "role": "cta",
+      "text": "Hawk or diesel — 1 or 2. Like, share, subscribe.",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  ],
+  "_angle": "Opt 1 · A plug-in hybrid SUV with 1000 km range · 8/10",
+  "_critique": {
+    "verdict": "ship",
+    "score": 8,
+    "usp": "A plug-in hybrid SUV with 1000 km range",
+    "verdict_line": "Wait for the Hawk if the price holds.",
+    "summary": "Strong hook, tight script, and a clear verdict; a few minor polish items keep it from a 9.",
+    "strengths": [
+      "Hook opens with a bold, concrete number (1000 km) and a relatable roast of diesel owners.",
+      "Spec beat delivers the 'crazy part' payoff that escalates the hook's tension.",
+      "Value beat front-loads the price and gives a clear 'wait' verdict.",
+      "CTA is a tight rivalry poll with the required spoken words."
+    ],
+    "issues": [
+      {
+        "beat": "value",
+        "problem": "Price range '25-35 lakh' is wide; could be misread as the full-lineup range.",
+        "fix": "Tighten to 'expected' range or specify it's for the top hybrid trim."
+      },
+      {
+        "beat": "cta",
+        "problem": "Last line 'for more' is generic and doesn't loop back to the hook.",
+        "fix": "Replace with a loop-friendly line like 'Because that 1000 km is just the start.'"
+      }
+    ]
+  },
+  "_critique_status": "ok",
+  "_format": "upcoming"
+}

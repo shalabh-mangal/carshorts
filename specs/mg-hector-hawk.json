@@ -1,0 +1,48 @@
+{
+  "subject": "MG Hector Hawk",
+  "specs": [
+    {
+      "name": "combined_range",
+      "value": "up to 1,000 km",
+      "source_url": "https://www.cardekho.com/india-car-news/jsw-mgs-upcoming-phev-could-be-called-hector-hawk-heres-what-we-know-36293.htm",
+      "source_sentence": "MG reportedly claims the Hector Hawk PHEV can do up to 1,000 km on a full tank and battery charge (media-reported, pre-launch, unconfirmed by MG).",
+      "confidence": 0.5
+    },
+    {
+      "name": "power",
+      "value": "195 hp",
+      "source_url": "https://www.cardekho.com/india-car-news/jsw-mgs-upcoming-phev-could-be-called-hector-hawk-heres-what-we-know-36293.htm",
+      "source_sentence": "The Hector Hawk PHEV is reported to make a combined 195 hp and 230 Nm from a 1.5-litre petrol engine plus electric motor (claimed).",
+      "confidence": 0.5
+    },
+    {
+      "name": "torque",
+      "value": "230 Nm",
+      "source_url": "https://www.cardekho.com/india-car-news/jsw-mgs-upcoming-phev-could-be-called-hector-hawk-heres-what-we-know-36293.htm",
+      "source_sentence": "Reported combined output of 195 hp and 230 Nm for the PHEV (claimed).",
+      "confidence": 0.5
+    },
+    {
+      "name": "ev_only_range",
+      "value": "125 km",
+      "source_url": "https://www.autocarindia.com/cars/mg/hector-hawk",
+      "source_sentence": "The PHEV reportedly offers about 125 km of all-electric range from a 20.5 kWh battery (claimed).",
+      "confidence": 0.5
+    },
+    {
+      "name": "phev_battery",
+      "value": "20.5 kWh",
+      "source_url": "https://www.autocarindia.com/cars/mg/hector-hawk",
+      "source_sentence": "The PHEV is reported to use a 20.5 kWh battery pack (claimed).",
+      "confidence": 0.5
+    },
+    {
+      "name": "seating",
+      "value": "7-seater",
+      "source_url": "https://www.cardekho.com/india-car-news/jsw-mgs-upcoming-phev-could-be-called-hector-hawk-heres-what-we-know-36293.htm",
+      "source_sentence": "Patent filings reportedly reveal 5- and 7-seat configurations (claimed).",
+      "confidence": 0.5
+    }
+  ],
+  "_source_note": "PRE-LAUNCH (Aug 2026): MG has NOT published official Hector Hawk specs — it is not on mgmotor.co.in (only the existing Hector/Hector Plus are). EVERY figure here is a MEDIA-REPORTED CLAIM (CarDekho/Autocar) and is flagged low-confidence (0.5). The script MUST frame each number as a claim ('MG claims', 'reportedly'), never as confirmed fact. Verify + upgrade once official specs land."
+}

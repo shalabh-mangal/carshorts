@@ -56,3 +56,7 @@ youtube_token.json
 youtube_token.*.json
 youtube_token*.json
 assets/cars/sierra-vs-creta/own/sierra_*.mp4
+
+# large footage pools — data (scripts/cards/specs) is tracked, clips stay local
+assets/cars/mg-hector-hawk/own/
+assets/cars/mg-hector-hawk/stock/
