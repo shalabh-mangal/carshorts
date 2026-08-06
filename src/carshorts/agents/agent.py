@@ -63,14 +63,34 @@ def _journal(entry: dict) -> None:
         fh.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
-def run_agent(role: str, task: str, max_turns: int = MAX_TURNS) -> dict:
+def _apply_skill(task: str, skill: str | None) -> tuple[str, str | None]:
+    """Prepend a codified skill's canonical steps to the task. If `skill` is None,
+    auto-route by the task's trigger keywords. Returns (task_text, skill_name).
+    Best-effort — a missing/unmatched skill just leaves the task on its charter."""
+    try:
+        from carshorts.agents import skills as skl
+        chosen = skl.load_skill(skill) if skill else skl.route(task, skl.list_skills())
+        if chosen:
+            return skl.compose_prompt(chosen, task), chosen.name
+    except Exception:  # noqa: BLE001 — skills are an aid, never a hard dependency
+        pass
+    return task, None
+
+
+def run_agent(role: str, task: str, max_turns: int = MAX_TURNS,
+              skill: str | None = None) -> dict:
     """Run one headless agent session. Returns {ok, result, ...}; never raises
     on agent failure (journals and reports instead) — callers stay resilient.
+
+    A codified SKILL (charters/skills/<name>.md) is injected ahead of the task so
+    the agent follows the canonical steps: pass `skill=` to pin one, else it is
+    auto-routed from the task's trigger keywords.
     """
     role_file = CHARTERS_DIR / f"{role}.md"
     if not role_file.exists():
         return {"ok": False, "result": f"unknown role {role!r}"}
     started = datetime.datetime.now().isoformat(timespec="seconds")
+    task, skill_used = _apply_skill(task, skill)
     try:
         run_no = _budget_check_and_increment()
     except BudgetExhausted as exc:
@@ -118,8 +138,8 @@ def run_agent(role: str, task: str, max_turns: int = MAX_TURNS) -> dict:
             pass
         result_text = payload.get("result") or (proc.stdout or proc.stderr)[-2000:]
         ok = proc.returncode == 0 and not payload.get("is_error", False)
-        entry = {"at": started, "role": role, "run_no": run_no, "ok": ok,
-                 "turns": payload.get("num_turns"),
+        entry = {"at": started, "role": role, "skill": skill_used, "run_no": run_no,
+                 "ok": ok, "turns": payload.get("num_turns"),
                  "cost_usd": payload.get("total_cost_usd"),
                  "duration_ms": payload.get("duration_ms"),
                  "task": task[:400], "result": (result_text or "")[:1500]}
@@ -148,8 +168,11 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="Run a system agent by role.")
     ap.add_argument("role", help="charters/<role>.md charter to use")
     ap.add_argument("task", help="Task text for the agent.")
+    ap.add_argument("--skill", default=None,
+                    help="pin a charters/skills/<name>.md workflow (default: "
+                         "auto-route from the task keywords)")
     args = ap.parse_args()
-    out = run_agent(args.role, args.task)
+    out = run_agent(args.role, args.task, skill=args.skill)
     print(("OK " if out["ok"] else "FAIL ") + str(out["result"])[:800])
 
 
