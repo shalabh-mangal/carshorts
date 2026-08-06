@@ -107,6 +107,98 @@ def extract_specs(car: str, text: str, source_url: str, provider: str | None) ->
     return specs
 
 
+# --- RAG grounding: rank sources, corroborate, score real confidence ----------
+# India spec authorities + official-maker domains = tier 1 (trust); Wikipedia =
+# tier 2; anything else = tier 3. A fact's confidence then comes from WHERE it
+# came from and WHETHER sources agree — not a flat stamp.
+_AUTHORITATIVE = ("cardekho.com", "carwale.com", "zigwheels.com", "autocarindia.com",
+                  "overdrive.in", "team-bhp.com", "mgmotor.co.in", "marutisuzuki",
+                  "tatamotors", "hyundai.co.in", "mahindra", "kia.com")
+
+
+def _tier(url: str) -> int:
+    host = urllib.parse.urlparse(url).netloc.lower()
+    if any(d in host for d in _AUTHORITATIVE):
+        return 1
+    if "wikipedia.org" in host:
+        return 2
+    return 3
+
+
+def _norm_value(v: str) -> str:
+    """Normalize a spec value for agreement checks: '160 PS' ~ '160ps'."""
+    return re.sub(r"[^a-z0-9.]", "", (v or "").lower())
+
+
+def merge_and_score(per_source: list[tuple]) -> list[Spec]:
+    """Merge specs extracted across sources and set REAL confidence.
+
+    per_source items: (name, value, source_url, source_sentence, tier). For each
+    spec: pick the value backed by the most sources (tiebreak: best tier), then
+    score — corroborated by >=2 agreeing sources -> 0.9; a single AUTHORITATIVE
+    (tier-1) source -> 0.8; a single weak source OR sources that DISAGREE -> 0.5
+    (which render_spec_sheet flags [CLAIMED] so the writer attributes it). Pure +
+    unit-tested — the retrieval around it is best-effort I/O."""
+    from collections import defaultdict
+    by_name: dict[str, list[tuple]] = defaultdict(list)
+    for name, value, url, sent, tier in per_source:
+        by_name[name].append((value, url, sent, tier))
+    out: list[Spec] = []
+    for name, entries in by_name.items():
+        groups: dict[str, list[tuple]] = defaultdict(list)
+        for e in entries:
+            groups[_norm_value(e[0])].append(e)
+        # winning value: most sources, then best (lowest) tier
+        best = max(groups.values(),
+                   key=lambda g: (len(g), -min(t for *_, t in g)))
+        conflict = len(groups) > 1
+        best_tier = min(t for *_, t in best)
+        if len(best) >= 2 and not conflict:
+            conf = 0.9
+        elif best_tier == 1 and not conflict:
+            conf = 0.8
+        else:
+            conf = 0.5
+        value, url, sent, _tr = sorted(best, key=lambda x: x[3])[0]   # cite the best source
+        try:
+            out.append(Spec(name=name, value=value, source_url=url,
+                            source_sentence=sent or f"{name}: {value}.", confidence=conf))
+        except Exception:  # noqa: BLE001 — skip a malformed merged row
+            continue
+    return out
+
+
+def ground_specs(car: str, provider: str | None, max_sources: int = 4) -> list[Spec]:
+    """Retrieve ranked trusted sources, extract each grounded in its own text, and
+    merge with corroboration-based confidence. Falls back gracefully to whatever
+    sources are reachable (Wikipedia alone -> single tier-2 -> 0.5 [CLAIMED])."""
+    sources: list[tuple[str, str, int]] = []
+    wtext, wurl = wikipedia_text(car)
+    if wtext:
+        sources.append((wurl, wtext, 2))
+    seen_hosts = {urllib.parse.urlparse(wurl).netloc} if wurl else set()
+    for url in ddg_search(f"{car} specifications India", limit=10):
+        if _tier(url) > 2 or "price" in url.lower():   # trusted spec pages only, no price pages
+            continue
+        host = urllib.parse.urlparse(url).netloc
+        if host in seen_hosts:
+            continue
+        try:
+            sources.append((url, _html_to_text(_get(url)), _tier(url)))
+            seen_hosts.add(host)
+        except Exception:  # noqa: BLE001 — one bad page shouldn't stop grounding
+            continue
+        if len(sources) >= max_sources:
+            break
+    per_source: list[tuple] = []
+    for url, text, tier in sources:
+        for s in extract_specs(car, text, url, provider):
+            per_source.append((s.name, s.value, s.source_url, s.source_sentence, tier))
+    print(f"  grounding: {len(sources)} source(s), "
+          f"{len({p[0] for p in per_source})} distinct specs")
+    return merge_and_score(per_source)
+
+
 def ddg_search(query: str, limit: int = 5) -> list[str]:
     """Best-effort free web search (DuckDuckGo HTML). Returns result URLs, or []
     if it's blocked/unavailable — callers must not depend on it."""
@@ -153,11 +245,14 @@ def research_price(car: str, provider: str | None) -> dict:
 
 def research(car: str, provider: str | None = None, want_price: bool = True) -> SpecSheet:
     slug = _slug(car)
-    text, url = wikipedia_text(car)
-    specs = extract_specs(car, text, url or f"https://en.wikipedia.org/wiki/{slug}", provider)
+    # RAG grounding: multiple ranked trusted sources, corroborated, with REAL
+    # per-spec confidence (a lone Wikipedia fact now scores 0.5 -> [CLAIMED], so
+    # a wrong one — the '1.5L Fronx' class — no longer ships looking verified).
+    specs = ground_specs(car, provider)
     sheet = SpecSheet(subject=car, specs=specs)
-    print(f"research: {len(specs)} sourced specs for {car}"
-          + (f" (from {url})" if url else " (no Wikipedia article found)"))
+    _claimed = sum(1 for s in specs if (s.confidence or 1.0) < 0.7)
+    print(f"research: {len(specs)} sourced specs for {car} "
+          f"({_claimed} low-confidence -> [CLAIMED], verify on CarDekho)")
 
     out = paths.SPECS / f"{slug}.json"
     out.parent.mkdir(parents=True, exist_ok=True)
