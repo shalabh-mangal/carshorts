@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-05",
+  "updated": "2026-08-06",
   "craft_playbook": [
     "Deliver the hook inside 2.5 seconds; viewers decide in under 2 on mobile.",
     "Open with a pattern interrupt or curiosity gap; NEVER context/build-up or greetings.",
@@ -15,6 +15,8 @@
     "Write for the SPOKEN voiceover: say 'driver-assist' not ADAS, 'four-wheel-drive' not 4XPLOR, 'low-range' not 4-Low, 'Newton-metres' not Nm. Short, easy-to-pronounce, easy-to-understand lines — no dense technical strings. Acronyms/short forms belong ONLY in on-screen pops (read, not spoken)."
   ],
   "data_learnings": [
+    "[high][process][step4-2026-08] Before rendering a car, run `carshorts footage <slug>` (footageplan): it reports clean distinct clips vs cuts (one clip per cut — the no-repeat rule), a per-angle histogram, missing essential angles (front/side/rear/interior/action), and any clip with NO cleared source in footage_sources.json/attributions.json. A footage-blocked render must surface this shopping list — not a vague 'needs footage'. The Tata Sierra proved it: after the vision gate pulled 4 plated/watermarked ad clips, only 4 clean clips remained (missing side+rear), all with unverified provenance.",
+    "[high][process][step4-2026-08] Provenance is a hard licensing gate, not paperwork: never let clips with unknown source sit in a car's own/ pool. `ingest` records source+licence to footage_sources.json; ripped/watermarked ad footage (readable plates, burned-in 'creative representation only' disclaimers — e.g. the Tata Sierra promo) is refused. Two free, no-attribution stock-video APIs (Pexels + Pixabay) via build_video_source() give resilience without paid spend.",
     "[high][process][mg-hawk-2026-08] LEAD with real/press footage; concept stock (especially of OTHER cars) must NEVER lead a video — a stock \"highway\" clip put plated Mercedes G-Wagons in an MG hook. Vet fetched stock at FULL-RES for readable PLATES and RIVAL BADGES (a small thumbnail grid hid both). For an unreleased car with no real footage, pin the owner clips to hook/spec/value via a shot plan and let concept b-roll fill only peak/cta.",
     "[high][data][sierra-2026-08-03] FRAME 1 = MOTION, not a static card. Sierra's swipe-away was high (only ~23% stayed when it hit the feed). The hero number STAYS in the hook (proven winner), but the FIRST visible frame must be the car MOVING or a bold hero exterior — never a static badge/interior/price-card cold-open. A boring frame 1 loses the swipe before a single word is heard. The price belongs in the spoken line + an overlay punch, not as the opening image.",
     "[high][data][sierra-2026-08-03] MID-POINT is the cliff. Sierra held ~48% (12s of 25s) with the drop at the spec->verdict handoff. Bridge that seam with a one-beat mini-cliffhanger BEFORE the value/peak ('but here's the catch', 'the best bit is the price') so the payoff beat reads as a reveal, not a topic switch. Never let 'specs' and 'the deal' feel like two separate videos stapled together.",

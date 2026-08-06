@@ -98,6 +98,19 @@ def _assess(slug: str, out_path: str) -> tuple[bool, bool, int | None]:
     return vision_blocked, footage_qa_red, score
 
 
+def _surface_footage_gap(slug: str) -> None:
+    """When the loop hands back to the owner on a footage red, print the precise
+    coverage/provenance shopping list — not just 'needs footage'. Best-effort:
+    a missing pool never masks the real surface reason."""
+    try:
+        from carshorts.sourcing import footageplan
+        print("     ── FOOTAGE NEEDED ──")
+        for line in footageplan.shopping_list(footageplan.assess(slug)):
+            print(f"       • {line}")
+    except Exception as exc:  # noqa: BLE001
+        print(f"     (footage plan unavailable: {str(exc)[:80]})")
+
+
 def auto_improve(slug: str, out_path: str, render_fn, revise_fn,
                  max_iter: int = MAX_ITER, bar: int = BAR) -> str:
     """Render, assess, auto-fix, repeat. `render_fn()` performs one render (of the
@@ -114,6 +127,7 @@ def auto_improve(slug: str, out_path: str, render_fn, revise_fn,
         if action == "ship":
             return "shipped"
         if action == "surface":
+            _surface_footage_gap(slug)
             return "needs_owner"
         if action == "fix_vision":
             moved = quarantine_flagged(slug, Path(out_path).with_suffix(".vqa.json"))

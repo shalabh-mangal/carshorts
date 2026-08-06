@@ -29,7 +29,7 @@ from carshorts.adapters.footage import WikimediaImageSource, attribution_lines
 from carshorts.adapters.llm import make_llm
 from carshorts.adapters.music import generate_beat
 from carshorts.adapters.renderer import MoviePyRenderer, Section
-from carshorts.adapters.stock import PexelsVideoSource
+from carshorts.adapters.stock import build_video_source
 from carshorts.adapters.tts import make_tts
 from carshorts.core import paths
 from carshorts.core.models import Script, Spec, SpecSheet
@@ -844,10 +844,10 @@ def produce(spec_path: str | None, out_path: str, language: str = "english",
         if stock_videos:
             print(f"     using {len(car_stock)} car-scoped + {len(generic_stock)} "
                   f"generic vetted stock clips")
-        elif os.environ.get("PEXELS_API_KEY"):
-            print("     fetching stock car b-roll (Pexels) for motion...")
+        elif (_stock_src := build_video_source()) is not None:
+            print(f"     fetching stock car b-roll ({type(_stock_src).__name__}) for motion...")
             try:
-                stock_videos = PexelsVideoSource().fetch(str(paths.STOCK), limit=4)
+                stock_videos = _stock_src.fetch(str(paths.STOCK), limit=4)
                 print(f"     {len(stock_videos)} stock clips (VET THESE — check each)")
             except Exception as exc:  # noqa: BLE001 — fall back to stills
                 print(f"     stock fetch failed ({exc}); stills only.")

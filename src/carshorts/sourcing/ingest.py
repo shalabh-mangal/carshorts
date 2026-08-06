@@ -73,7 +73,28 @@ def _classify(files: list[Path]) -> list[dict]:
     return json.loads(gemini_vision(parts))
 
 
-def run(car: str, dry: bool = False) -> None:
+def _record_source(slug: str, filename: str, source: str, license_: str) -> None:
+    """Append a provenance row for a filed asset to the car's footage_sources.json,
+    de-duped by basename. This is the licensing paper trail Step 4 adds — the
+    footage cockpit flags any own/ clip with no row here as UNVERIFIED, so ripped
+    ad footage (readable plates / burned-in disclaimers) can't sit in the pool
+    unnoticed. `source`/`license_` come from the owner at ingest time."""
+    from datetime import date
+    path = paths.car_dir(slug) / "footage_sources.json"
+    rows: dict[str, dict] = {}
+    if path.exists():
+        try:
+            for r in json.loads(path.read_text(encoding="utf-8")):
+                rows[r["file"]] = r
+        except Exception:  # noqa: BLE001 — a bad file just gets rewritten cleanly
+            rows = {}
+    rows[filename] = {"file": filename, "source": source,
+                      "license": license_, "added": date.today().isoformat()}
+    path.write_text(json.dumps(list(rows.values()), indent=2), encoding="utf-8")
+
+
+def run(car: str, dry: bool = False, source: str = "owner-supplied",
+        license_: str = "unverified") -> None:
     slug = _slug(car)
     files = sorted(p for p in INBOX.iterdir()
                    if p.is_file() and p.suffix.lower() in VIDEO_EXT | IMAGE_EXT) if INBOX.exists() else []
@@ -103,7 +124,9 @@ def run(car: str, dry: bool = False) -> None:
             (review / (f.name + ".reason.txt")).write_text(json.dumps(v, indent=2))
             continue
         if f.suffix.lower() in IMAGE_EXT:
-            shutil.move(str(f), img_dir / f"{slug}_{label}_{i}{f.suffix.lower()}")
+            dest_name = f"{slug}_{label}_{i}{f.suffix.lower()}"
+            shutil.move(str(f), img_dir / dest_name)
+            _record_source(slug, dest_name, source, license_)
             continue
         # video: grade + cut into ~3s vertical segments named by content
         duration = _dur(f)
@@ -117,6 +140,7 @@ def run(car: str, dry: bool = False) -> None:
             subprocess.run(["ffmpeg", "-y", "-ss", f"{start:.2f}", "-t", f"{seg_len}",
                             "-i", str(f), "-vf", f"{fit},{grade}", "-an", str(out_seg)],
                            capture_output=True)
+            _record_source(slug, out_seg.name, source, license_)
             n += 1
             start += seg_len
         shutil.move(str(f), INBOX / "review" / ("USED_" + f.name))
@@ -129,8 +153,13 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--car", required=True)
     ap.add_argument("--dry", action="store_true")
+    ap.add_argument("--source", default="owner-supplied",
+                    help="where this footage came from (owner shoot, press kit URL, "
+                         "licence purchase) — recorded to footage_sources.json")
+    ap.add_argument("--license", dest="license_", default="unverified",
+                    help="licence status: owned | press-kit | CC-BY | licensed | unverified")
     args = ap.parse_args()
-    run(args.car, dry=args.dry)
+    run(args.car, dry=args.dry, source=args.source, license_=args.license_)
 
 
 if __name__ == "__main__":

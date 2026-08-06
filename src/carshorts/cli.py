@@ -41,6 +41,7 @@ COMMANDS: dict[str, str] = {
     "research": "carshorts.sourcing.webresearch",
     "newscrawl": "carshorts.sourcing.newscrawl",
     "ingest": "carshorts.sourcing.ingest",
+    "footage": "carshorts.sourcing.footageplan",
     # intel
     "analytics": "carshorts.intel.analytics",
     "analyze": "carshorts.intel.analyze",
