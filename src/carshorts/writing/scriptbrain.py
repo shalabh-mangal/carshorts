@@ -97,7 +97,10 @@ def mine_angles(sheet: SpecSheet, context: str = "", provider: str | None = None
         "channel. From the car's SOURCED data + news below, find the "
         f"{n} STRONGEST, DISTINCT angles for a YouTube Short. For each, choose the best "
         "FORMAT from [" + ", ".join(FORMAT_RUBRICS) + "], a scroll-stopping HOOK, the ONE "
-        "USP, the DECISIVE verdict it lands, and WHY it can go viral. Reason about what's "
+        "USP, the DECISIVE verdict it lands, and WHY it can go viral. PREFER a QUESTION / "
+        "curiosity-gap hook (ideally carrying a hero number): across 12 published videos "
+        "question hooks massively out-viewed news/price-hike hooks (Sonet 1557, Swift 478 vs "
+        "Brezza 40, Thar 118) — avoid a flat news or price-hike opener. Reason about what's "
         "genuinely surprising or argument-worthy — never a generic template. Prefer DISTINCT "
         "formats across the angles. Ground every choice in the proven learnings.\n\n"
         "PROVEN LEARNINGS:\n" + load_learnings_guidance(14)

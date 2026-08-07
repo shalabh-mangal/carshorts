@@ -2,18 +2,46 @@
   "subject": "Maruti Suzuki Brezza",
   "specs": [
     {
-      "name": "power",
-      "value": "109 hp",
+      "name": "safety_airbags",
+      "value": "6 airbags",
       "source_url": "https://en.wikipedia.org/wiki/Suzuki_Brezza",
-      "source_sentence": "On 24th July 2026, Maruti Suzuki launched the Facelifted version of Brezza with a new 1.0 Turbo BoosterJet Engine producing 109 hp and 170 nm torque.",
-      "confidence": 1.0
+      "source_sentence": "Electronic Stability Program (ESP) and Hill-Start Assist (HSA) are standard across the lineup, with six airbags also standard for all the variant grades.",
+      "confidence": 0.5
     },
     {
-      "name": "torque",
-      "value": "170 nm",
+      "name": "engine",
+      "value": "K15C Dualjet petrol unit with dual injectors",
       "source_url": "https://en.wikipedia.org/wiki/Suzuki_Brezza",
-      "source_sentence": "On 24th July 2026, Maruti Suzuki launched the Facelifted version of Brezza with a new 1.0 Turbo BoosterJet Engine producing 109 hp and 170 nm torque.",
-      "confidence": 1.0
+      "source_sentence": "The engine is replaced by the K15C Dualjet petrol unit with dual injectors, mated to either 5-speed manual or a 6-speed automatic transmission option replacing the old 4-speed unit.",
+      "confidence": 0.5
+    },
+    {
+      "name": "transmission",
+      "value": "5-speed manual or a 6-speed automatic",
+      "source_url": "https://en.wikipedia.org/wiki/Suzuki_Brezza",
+      "source_sentence": "The engine is replaced by the K15C Dualjet petrol unit with dual injectors, mated to either 5-speed manual or a 6-speed automatic transmission option replacing the old 4-speed unit.",
+      "confidence": 0.5
+    },
+    {
+      "name": "mild_hybrid",
+      "value": "12 V SHVS mild hybrid system",
+      "source_url": "https://en.wikipedia.org/wiki/Suzuki_Brezza",
+      "source_sentence": "The 12 V SHVS mild hybrid system is also carried over.",
+      "confidence": 0.5
+    },
+    {
+      "name": "body_type",
+      "value": "subcompact crossover SUV",
+      "source_url": "https://en.wikipedia.org/wiki/Suzuki_Brezza",
+      "source_sentence": "The Suzuki Brezza (known as Vitara Brezza for the first generation) is a subcompact crossover SUV from Suzuki and manufactured by Maruti Suzuki in India.",
+      "confidence": 0.5
+    },
+    {
+      "name": "height_increase",
+      "value": "45 mm (1.8 in)",
+      "source_url": "https://en.wikipedia.org/wiki/Suzuki_Brezza",
+      "source_sentence": "The dimensions are also nearly identical to the outgoing model, except for the 45 mm (1.8 in) height increase due to the shark fin antenna.",
+      "confidence": 0.5
     }
   ]
 }

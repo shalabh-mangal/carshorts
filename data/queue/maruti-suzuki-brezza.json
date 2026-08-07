@@ -3,12 +3,9 @@
   "slug": "maruti-suzuki-brezza",
   "persona": "hype",
   "language": "english",
-  "script": "D:\\Personal Projects\\carshorts\\data\\scripts\\maruti-suzuki-brezza_hype.script.json",
-  "spec": "specs\\maruti-suzuki-brezza.json",
-  "draft": "out/maruti-suzuki-brezza_draft.mp4",
-  "created": "2026-07-25T14:55:39",
-  "status": "published",
-  "final": "out\\maruti-suzuki-brezza_final.mp4",
-  "note": "PREMIUM FINAL ready (channel voice) \u2014 review THIS file; Publish ships it to YouTube untouched.",
-  "published_at": "2026-07-27T10:05:39"
+  "script": "",
+  "spec": "D:\\Personal Projects\\carshorts\\specs\\maruti-suzuki-brezza.json",
+  "created": "2026-08-06T10:27:27",
+  "status": "archived",
+  "cleanup_note": "Retired 2026-08-07: draft had fabricated facts (a turbo the Brezza has never had; 109hp/170Nm confused with a Nexon) + orphaned \"number 5\" clickbait. Brezza already published once; not re-producing. Specs re-grounded via RAG (K15C NA + mild hybrid, all [CLAIMED]). Broken script moved to data/scripts/_rejected/."
 }
