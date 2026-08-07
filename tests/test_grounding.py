@@ -1,14 +1,23 @@
 """RAG fact-grounding: confidence must reflect WHERE a fact came from and whether
-sources agree — so a lone Wikipedia fact (the '1.5L Fronx' class) scores low and
-gets flagged [CLAIMED], while two trusted sources agreeing score high."""
+sources agree. Wikipedia is REMOVED as a fact source (the '1.5L Fronx' class of
+wrong India spec), so it is a BLOCKED tier and never grounds a fact; a lone weak
+source scores low ([CLAIMED]) while two trusted sources agreeing score high."""
 from carshorts.sourcing.webresearch import _norm_value, _tier, merge_and_score
 
 
 def test_source_tiers():
     assert _tier("https://www.cardekho.com/mg/hector") == 1        # spec authority
     assert _tier("https://www.mgmotor.co.in/x") == 1               # official maker
-    assert _tier("https://en.wikipedia.org/wiki/MG_Hector") == 2   # wikipedia
+    assert _tier("https://www.nexaexperience.com/fronx") == 1      # official Nexa
     assert _tier("https://randomblog.example/car") == 3            # unknown
+
+
+def test_wikipedia_is_blocked_not_trusted():
+    # Wikipedia (and mirrors) must never rank as a usable source; grounding uses
+    # tier-1 only, so tier 9 keeps it out entirely.
+    assert _tier("https://en.wikipedia.org/wiki/MG_Hector") == 9
+    assert _tier("https://www.wikiwand.com/en/MG_Hector") == 9
+    assert _tier("https://en.wikipedia.org/wiki/MG_Hector") != 1
 
 
 def test_value_normalization():
@@ -27,14 +36,14 @@ def test_single_authoritative_source_medium_high():
     assert specs[0].confidence == 0.8      # trusted but uncorroborated
 
 
-def test_lone_wikipedia_fact_is_flagged_claimed():
-    specs = merge_and_score([("engine", "1.5-litre", "https://en.wikipedia.org/wiki/x", "s", 2)])
+def test_lone_weak_source_is_flagged_claimed():
+    specs = merge_and_score([("engine", "1.5-litre", "https://randomblog.example/x", "s", 3)])
     assert specs[0].confidence == 0.5      # < 0.7 -> render_spec_sheet marks it [CLAIMED]
 
 
 def test_conflicting_sources_take_authoritative_but_flag():
     per = [("power", "160 PS", "https://cardekho.com/x", "s", 1),
-           ("power", "150 PS", "https://en.wikipedia.org/wiki/x", "s", 2)]
+           ("power", "150 PS", "https://randomblog.example/x", "s", 3)]
     sp = merge_and_score(per)[0]
     assert sp.value == "160 PS"            # surface the authoritative value
     assert sp.confidence == 0.5            # but flag it — sources disagree

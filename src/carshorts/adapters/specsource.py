@@ -8,12 +8,11 @@ that: extraction lifts the literal sentence, then re-checks that the value is a
 substring of the sentence and the sentence is a substring of the fetched page.
 Anything that fails is dropped, never guessed.
 
-Why Wikipedia first: it is CC-licensed and explicitly allows programmatic
-access (unlike most manufacturer/news sites, whose ToS forbid scraping), its
-car articles carry real prose sentences we can quote verbatim, and its
-structure is stable across many cars. It is the right source for *measuring*
-the model's hallucination rate. Production discovery from licensed, time-
-sensitive sources is a separate, later problem.
+Wikipedia was the original source but has been REMOVED — it repeatedly returned
+wrong India-market specs (the "1.5L Fronx" / wrong-Brezza class) that presented
+as verified fact. Facts now come only from tier-1 spec authorities and official
+maker sites, grounded via carshorts.sourcing.webresearch. The deterministic
+extractor here stays source-agnostic and reusable.
 
 No LLM is involved here on purpose. If a model extracted the "source sentence"
 it could invent one, which would poison the very ground truth the harness
@@ -22,27 +21,10 @@ under test, never the thing that builds the answer key.
 """
 from __future__ import annotations
 
-import json
 import re
-import ssl
-import time
-import urllib.error
-import urllib.parse
-import urllib.request
 from abc import ABC, abstractmethod
 
 from carshorts.core.models import Spec, SpecSheet
-
-# macOS python.org builds don't wire the system CA store into Python's default
-# SSL context, so HTTPS verification fails with CERTIFICATE_VERIFY_FAILED. Point
-# at certifi's bundle when available. Verification stays ON — we never fall back
-# to an unverified context, that would defeat TLS.
-try:
-    import certifi
-
-    _SSL_CONTEXT: ssl.SSLContext = ssl.create_default_context(cafile=certifi.where())
-except ImportError:  # certifi absent -> use the platform default, still verified
-    _SSL_CONTEXT = ssl.create_default_context()
 
 
 class SpecSource(ABC):
@@ -187,70 +169,8 @@ def scope_to_current_generation(text: str) -> str:
         return text
     gens.sort(key=lambda g: (g[0], g[1]), reverse=True)   # 'present' first, then newest
     return lead + "\n" + body_of(gens[0][2])
-
-
-# ---------------------------------------------------------------------------
-# Wikipedia implementation
-# ---------------------------------------------------------------------------
-class WikipediaSpecSource(SpecSource):
-    """Fetches a car's plain-text article from Wikipedia and extracts
-    source-bound specs. Network fetch and extraction are separated so the
-    extractor can be unit-tested offline."""
-
-    API = "https://en.wikipedia.org/w/api.php"
-    _USER_AGENT = "carshorts/0.1 (spec-accuracy-harness; contact via project owner)"
-
-    def __init__(self, lang: str = "en"):
-        self.API = f"https://{lang}.wikipedia.org/w/api.php"
-        self._wiki_base = f"https://{lang}.wikipedia.org/wiki/"
-
-    def _fetch_extract(self, subject: str) -> tuple[str, str]:
-        """Return (plain_text, canonical_article_url) for `subject`.
-
-        Uses redirects=1 so "Tata Nexon" resolves to the real article title.
-        Raises LookupError if the article is missing.
-        """
-        params = {
-            "action": "query",
-            "prop": "extracts",
-            "explaintext": "1",
-            "exsectionformat": "wiki",   # keep "== Heading ==" so we can find sections
-            "redirects": "1",
-            "format": "json",
-            "titles": subject,
-        }
-        url = f"{self.API}?{urllib.parse.urlencode(params)}"
-        req = urllib.request.Request(url, headers={"User-Agent": self._USER_AGENT})
-        data = None
-        for attempt in range(4):
-            try:
-                with urllib.request.urlopen(req, timeout=20, context=_SSL_CONTEXT) as resp:
-                    data = json.load(resp)
-                break
-            except urllib.error.HTTPError as exc:
-                # Be a polite API citizen: on 429 honour Retry-After and back off.
-                if exc.code == 429 and attempt < 3:
-                    retry_after = exc.headers.get("Retry-After", "3")
-                    wait = min(max(int(retry_after) if retry_after.isdigit() else 3, 2), 30)
-                    time.sleep(wait)
-                    continue
-                raise
-        if data is None:
-            raise LookupError(f"Rate-limited fetching {subject!r} after retries")
-        pages = data.get("query", {}).get("pages", {})
-        for page in pages.values():
-            if "missing" in page:
-                raise LookupError(f"No Wikipedia article for {subject!r}")
-            title = page.get("title", subject)
-            text = page.get("extract", "")
-            article_url = self._wiki_base + urllib.parse.quote(title.replace(" ", "_"))
-            return text, article_url
-        raise LookupError(f"No Wikipedia page returned for {subject!r}")
-
-    def fetch(self, subject: str) -> SpecSheet:
-        text, article_url = self._fetch_extract(subject)
-        scoped = scope_to_current_generation(text)
-        specs = extract_specs(scoped, article_url)
-        if len(specs) < 2:   # scoped section too thin — fall back to the full article
-            specs = extract_specs(text, article_url)
-        return SpecSheet(subject=subject, specs=specs)
+# NOTE: Wikipedia has been REMOVED as a fact source (it repeatedly shipped wrong
+# India-market specs — the "1.5L Fronx" / wrong-Brezza class). The deterministic
+# extractor below (extract_specs / scope_to_current_generation) is source-agnostic
+# and is now driven by trusted tier-1 pages via carshorts.sourcing.webresearch.
+# A future manufacturer/spec-authority SpecSource can subclass SpecSource here.

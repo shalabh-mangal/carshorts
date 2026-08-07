@@ -1,26 +1,55 @@
 {
   "subject": "Maruti Suzuki Fronx",
+  "generation": "2023- (facelift lineup, current on-sale)",
   "specs": [
     {
-      "name": "power",
-      "value": "100 bhp",
-      "source_url": "https://en.wikipedia.org/wiki/Suzuki_Fronx",
-      "source_sentence": "The Alpha and Zeta trims are exclusively powered by the 1.0-litre turbocharged mild hybrid K10C three-cylinder petrol engine producing 100 bhp and 143 Nm of torque while Sigma and Delta trims use the 1.2-litre naturally aspirated  K12N four-cylinder petrol engine producing 90 bhp and 113 Nm of torque.",
-      "confidence": 1.0
+      "name": "engine_turbo",
+      "value": "1.0L Turbo Boosterjet petrol",
+      "source_url": "https://www.nexaexperience.com/fronx",
+      "source_sentence": "1.0L K-Series Turbo Boosterjet Engine. Turbo variants: Delta+ MT, Zeta MT, Zeta AT, Alpha MT, Alpha AT.",
+      "confidence": 0.85
     },
     {
-      "name": "torque",
-      "value": "143 Nm",
-      "source_url": "https://en.wikipedia.org/wiki/Suzuki_Fronx",
-      "source_sentence": "The Alpha and Zeta trims are exclusively powered by the 1.0-litre turbocharged mild hybrid K10C three-cylinder petrol engine producing 100 bhp and 143 Nm of torque while Sigma and Delta trims use the 1.2-litre naturally aspirated  K12N four-cylinder petrol engine producing 90 bhp and 113 Nm of torque.",
-      "confidence": 1.0
+      "name": "engine_petrol",
+      "value": "1.2L Dual Jet Dual VVT with Smart Hybrid",
+      "source_url": "https://www.nexaexperience.com/fronx",
+      "source_sentence": "Advanced 1.2L K-Series Dual Jet, Dual VVT Engine. Smart Hybrid.",
+      "confidence": 0.85
     },
     {
-      "name": "engine_litre",
-      "value": "1.5-litre",
-      "source_url": "https://en.wikipedia.org/wiki/Suzuki_Fronx",
-      "source_sentence": "For export markets, the 1.5-litre K15C four-cylinder engine with the Smart Hybrid system is available.",
-      "confidence": 1.0
+      "name": "mileage_petrol",
+      "value": "up to 22.89 km/l (1.2 AT)",
+      "source_url": "https://www.nexaexperience.com/fronx",
+      "source_sentence": "FRONX manual 1.2-litre delivers 21.79 Km/l, automatic 22.89 Km/l.",
+      "confidence": 0.9
+    },
+    {
+      "name": "mileage_cng",
+      "value": "28.51 km/kg",
+      "source_url": "https://www.nexaexperience.com/fronx",
+      "source_sentence": "The FRONX CNG mileage is claimed to be 28.51 km/kg.",
+      "confidence": 0.9
+    },
+    {
+      "name": "safety_airbags",
+      "value": "6 airbags (standard)",
+      "source_url": "https://www.nexaexperience.com/fronx",
+      "source_sentence": "FRONX Safety Features: HEARTECT Platform Framework, 6 Airbags, Hill-Hold Assist, ABS, EBD and ESP.",
+      "confidence": 0.9
+    },
+    {
+      "name": "head_up_display",
+      "value": "Head-Up Display",
+      "source_url": "https://www.nexaexperience.com/fronx",
+      "source_sentence": "Technology That Drives the Future: Head Up Display, 360 Degree View Camera, Wireless Charging, SmartPlay Pro+ Infotainment.",
+      "confidence": 0.9
+    },
+    {
+      "name": "camera_360",
+      "value": "360-degree view camera",
+      "source_url": "https://www.nexaexperience.com/fronx",
+      "source_sentence": "360 Degree View Camera. SmartPlay Pro+ Infotainment System. Wireless Charging. Cruise Control.",
+      "confidence": 0.9
     }
   ]
 }

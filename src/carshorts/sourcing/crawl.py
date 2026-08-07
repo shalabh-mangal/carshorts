@@ -1,72 +1,41 @@
-"""Crawl real car specs into JSON files the harness can replay.
+"""Crawl real car specs into JSON sheets — now a thin alias for trusted-source research.
 
-  python -m carshorts.sourcing.crawl "Tata Nexon" "Mahindra Thar" "Maruti Suzuki Fronx"
-  python -m carshorts.sourcing.crawl --out specs --min-specs 2 "Hyundai Creta"
+  python -m carshorts.sourcing.crawl "Tata Nexon" "Maruti Suzuki Fronx"
 
-Each car becomes specs/<slug>.json — a serialized SpecSheet. A car that yields
-fewer than --min-specs source-bound facts is skipped and reported, not written
-(an empty sheet would give the harness nothing to test).
+Historically this read Wikipedia's infobox directly. Wikipedia has been REMOVED
+as a fact source — it repeatedly shipped wrong India-market specs (the "1.5L
+Fronx" / wrong-Brezza class) that presented as verified fact. `crawl` now
+delegates to `webresearch.research`, which grounds facts in tier-1 sources only
+(CarDekho / CarWale / Autocar / official maker sites) with corroboration-based
+confidence, and flags anything unverified as [CLAIMED] for the owner's CarDekho
+check. Kept as a command so existing scripts/skills keep working.
 
-This is deliberately a SEPARATE step from the harness: crawl once (network,
-slow), then measure many times offline against the saved sheets. It keeps the
-expensive/rate-limited model runs decoupled from fetching.
+Price is never crawled here (--no-price by default); it stays the owner's one-off
+CarDekho/official lookup (CLAUDE.md).
 """
 from __future__ import annotations
 
 import argparse
-import re
-import time
-from pathlib import Path
 
-from carshorts.adapters.specsource import WikipediaSpecSource
-
-
-def _slug(name: str) -> str:
-    return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+from carshorts.sourcing.webresearch import research
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Crawl car specs into JSON sheets.")
+    parser = argparse.ArgumentParser(
+        description="Crawl car specs into JSON sheets (trusted-source research; "
+                    "Wikipedia removed).")
     parser.add_argument("cars", nargs="+", help="Car names, e.g. \"Tata Nexon\".")
-    parser.add_argument("--out", default="specs", help="Output dir (default: specs).")
-    parser.add_argument("--min-specs", type=int, default=2,
-                        help="Skip cars yielding fewer than this many source-bound specs.")
-    parser.add_argument("--delay", type=float, default=1.5,
-                        help="Seconds between requests (polite to Wikipedia; default 1.5).")
+    parser.add_argument("--price", action="store_true",
+                        help="Also attempt a web price (owner still verifies). Off by default.")
     args = parser.parse_args()
 
-    out_dir = Path(args.out)
-    out_dir.mkdir(parents=True, exist_ok=True)
-    source = WikipediaSpecSource()
-
-    written, skipped = 0, 0
-    for idx, car in enumerate(args.cars):
-        if idx > 0 and args.delay > 0:
-            time.sleep(args.delay)
-        try:
-            sheet = source.fetch(car)
-        except LookupError as exc:
-            print(f"[skip] {car}: {exc}")
-            skipped += 1
-            continue
-        except Exception as exc:  # noqa: BLE001 — network/parse failure: report, keep going
-            print(f"[error] {car}: {exc}")
-            skipped += 1
-            continue
-
-        if len(sheet.specs) < args.min_specs:
-            print(f"[skip] {car}: only {len(sheet.specs)} spec(s) found "
-                  f"(need {args.min_specs}).")
-            skipped += 1
-            continue
-
-        path = out_dir / f"{_slug(car)}.json"
-        path.write_text(sheet.model_dump_json(indent=2))
-        names = ", ".join(s.name for s in sheet.specs)
-        print(f"[ok]   {car}: {len(sheet.specs)} specs [{names}] -> {path}")
-        written += 1
-
-    print(f"\nDone. {written} sheet(s) written to {out_dir}/, {skipped} skipped.")
+    print("note: `crawl` now uses trusted-source research (Wikipedia removed).")
+    written = 0
+    for car in args.cars:
+        sheet = research(car, want_price=args.price)
+        if sheet.specs:
+            written += 1
+    print(f"\nDone. {written}/{len(args.cars)} sheet(s) with grounded specs.")
 
 
 if __name__ == "__main__":

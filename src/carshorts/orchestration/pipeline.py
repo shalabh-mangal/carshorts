@@ -40,11 +40,11 @@ def draft(car: str, persona: str = "deadpan", language: str = "english",
     spec = paths.SPECS / f"{slug}.json"
     extras = paths.SPECS_EXTRAS / f"{slug}.json"
     if not spec.exists():
-        # SELF-SERVE facts: research the web (rich Wikipedia extraction + a
-        # best-effort price) instead of stopping, so the daily heartbeat can
-        # start a brand-new car on its own. The owner still verifies at Gate 1
-        # (accuracy rule: facts sourced, then CarDekho-checked before publish).
-        print(f"no spec sheet for {car} — researching the web (Wikipedia + price)…")
+        # SELF-SERVE facts: research trusted sources (tier-1 spec authorities +
+        # official maker sites; Wikipedia excluded) instead of stopping, so the
+        # daily heartbeat can start a brand-new car on its own. The owner still
+        # verifies at Gate 1 (accuracy rule: facts sourced, then CarDekho-checked).
+        print(f"no spec sheet for {car} — researching trusted sources (Wikipedia excluded)…")
         try:
             from carshorts.sourcing.webresearch import research
             sheet = research(car)   # default LLM chain (Gemini-first, Groq fallback)

@@ -1,18 +1,18 @@
-"""Autonomous fact + price research — the replacement for the thin Wikipedia crawl.
+"""Autonomous fact + price research — grounded in TRUSTED sources only.
 
-The old `crawl` only read Wikipedia's structured infobox and under-delivered
-(Tata Punch came back with 2 specs, one of them the EV's battery mis-read as
-"power"). This module instead pulls the FULL article text and lets a free LLM
-(GROQ) extract a rich, sourced spec sheet — every fact carries the exact sentence
-it came from, so the owner's CarDekho verification stays a 2-minute check, not a
-re-research. Price + fresh-model facts come from a best-effort web search, since
-they aren't on Wikipedia (prices stay owner-verified — CLAUDE.md).
+Facts come exclusively from tier-1 India spec authorities (CarDekho, CarWale,
+ZigWheels, Autocar) and official maker sites (Nexa, etc.). Wikipedia is
+DELIBERATELY excluded: it repeatedly shipped wrong India-market specs (the "1.5L
+Fronx" and wrong-Brezza class) that then presented as verified fact. A free LLM
+extracts each spec grounded in its own source sentence, and confidence comes from
+corroboration across sources; the owner's CarDekho verification stays a 2-minute
+check. Price stays owner-verified (CLAUDE.md — never auto-scraped).
 
   carshorts research "Tata Punch"                 # -> specs/tata-punch.json (+ price in extras)
   carshorts research "Tata Punch" --no-price      # specs only
 
-Everything degrades gracefully: no search, no LLM, or a bad page never crashes a
-run — it just yields fewer sourced facts and reports the gap.
+Everything degrades gracefully: no trusted source reachable yields an honest
+empty/thin sheet the owner fills in — never a confident wrong fact.
 """
 from __future__ import annotations
 
@@ -44,28 +44,6 @@ def _html_to_text(html: str) -> str:
     text = re.sub(r"(?s)<[^>]+>", " ", html)
     text = re.sub(r"&[a-z#0-9]+;", " ", text)
     return re.sub(r"\s+", " ", text).strip()
-
-
-def wikipedia_text(subject: str) -> tuple[str, str]:
-    """Full plain-text extract of the best-matching Wikipedia article, plus its
-    canonical URL. Returns ("", "") if nothing is found."""
-    api = "https://en.wikipedia.org/w/api.php?" + urllib.parse.urlencode({
-        "action": "query", "list": "search", "srsearch": subject,
-        "format": "json", "srlimit": "1"})
-    try:
-        hits = json.loads(_get(api)).get("query", {}).get("search", [])
-        if not hits:
-            return "", ""
-        title = hits[0]["title"]
-        ext = "https://en.wikipedia.org/w/api.php?" + urllib.parse.urlencode({
-            "action": "query", "prop": "extracts", "explaintext": "1",
-            "titles": title, "format": "json", "redirects": "1"})
-        pages = json.loads(_get(ext)).get("query", {}).get("pages", {})
-        page = next(iter(pages.values()), {})
-        url = "https://en.wikipedia.org/wiki/" + urllib.parse.quote(title.replace(" ", "_"))
-        return page.get("extract", ""), url
-    except Exception:  # noqa: BLE001 — no article just means fewer facts
-        return "", ""
 
 
 _SPEC_SYSTEM = (
@@ -108,20 +86,24 @@ def extract_specs(car: str, text: str, source_url: str, provider: str | None) ->
 
 
 # --- RAG grounding: rank sources, corroborate, score real confidence ----------
-# India spec authorities + official-maker domains = tier 1 (trust); Wikipedia =
-# tier 2; anything else = tier 3. A fact's confidence then comes from WHERE it
-# came from and WHETHER sources agree — not a flat stamp.
+# India spec authorities + official-maker domains = tier 1 (the ONLY trusted tier
+# for facts); anything else = tier 3 (untrusted). Wikipedia is DELIBERATELY not
+# trusted — it repeatedly shipped wrong India-market specs (the "1.5L Fronx" /
+# wrong-Brezza class), so it is excluded from grounding entirely. A fact's
+# confidence comes from WHERE it came from and WHETHER sources agree.
 _AUTHORITATIVE = ("cardekho.com", "carwale.com", "zigwheels.com", "autocarindia.com",
                   "overdrive.in", "team-bhp.com", "mgmotor.co.in", "marutisuzuki",
-                  "tatamotors", "hyundai.co.in", "mahindra", "kia.com")
+                  "nexaexperience.com", "tatamotors", "hyundai.co.in", "mahindra", "kia.com")
+# Domains that must NEVER be used as a fact source, even if a search surfaces them.
+_BLOCKED_SOURCES = ("wikipedia.org", "wikiwand.com", "dbpedia.org")
 
 
 def _tier(url: str) -> int:
     host = urllib.parse.urlparse(url).netloc.lower()
+    if any(d in host for d in _BLOCKED_SOURCES):
+        return 9              # blocked — never a fact source
     if any(d in host for d in _AUTHORITATIVE):
         return 1
-    if "wikipedia.org" in host:
-        return 2
     return 3
 
 
@@ -169,22 +151,22 @@ def merge_and_score(per_source: list[tuple]) -> list[Spec]:
 
 
 def ground_specs(car: str, provider: str | None, max_sources: int = 4) -> list[Spec]:
-    """Retrieve ranked trusted sources, extract each grounded in its own text, and
-    merge with corroboration-based confidence. Falls back gracefully to whatever
-    sources are reachable (Wikipedia alone -> single tier-2 -> 0.5 [CLAIMED])."""
+    """Retrieve ranked TRUSTED sources (tier-1 spec authorities + official maker
+    sites ONLY — Wikipedia is deliberately excluded after repeatedly shipping wrong
+    India-market specs), extract each grounded in its own text, and merge with
+    corroboration-based confidence. Returns [] when no trusted source is reachable
+    — an honest gap the owner fills from CarDekho / the official site beats a
+    confident wrong fact."""
     sources: list[tuple[str, str, int]] = []
-    wtext, wurl = wikipedia_text(car)
-    if wtext:
-        sources.append((wurl, wtext, 2))
-    seen_hosts = {urllib.parse.urlparse(wurl).netloc} if wurl else set()
-    for url in ddg_search(f"{car} specifications India", limit=10):
-        if _tier(url) > 2 or "price" in url.lower():   # trusted spec pages only, no price pages
+    seen_hosts: set[str] = set()
+    for url in ddg_search(f"{car} specifications India", limit=12):
+        if _tier(url) != 1 or "price" in url.lower():   # tier-1 spec authorities only
             continue
         host = urllib.parse.urlparse(url).netloc
         if host in seen_hosts:
             continue
         try:
-            sources.append((url, _html_to_text(_get(url)), _tier(url)))
+            sources.append((url, _html_to_text(_get(url)), 1))
             seen_hosts.add(host)
         except Exception:  # noqa: BLE001 — one bad page shouldn't stop grounding
             continue
@@ -194,7 +176,7 @@ def ground_specs(car: str, provider: str | None, max_sources: int = 4) -> list[S
     for url, text, tier in sources:
         for s in extract_specs(car, text, url, provider):
             per_source.append((s.name, s.value, s.source_url, s.source_sentence, tier))
-    print(f"  grounding: {len(sources)} source(s), "
+    print(f"  grounding: {len(sources)} trusted source(s), "
           f"{len({p[0] for p in per_source})} distinct specs")
     return merge_and_score(per_source)
 
@@ -245,9 +227,10 @@ def research_price(car: str, provider: str | None) -> dict:
 
 def research(car: str, provider: str | None = None, want_price: bool = True) -> SpecSheet:
     slug = _slug(car)
-    # RAG grounding: multiple ranked trusted sources, corroborated, with REAL
-    # per-spec confidence (a lone Wikipedia fact now scores 0.5 -> [CLAIMED], so
-    # a wrong one — the '1.5L Fronx' class — no longer ships looking verified).
+    # RAG grounding: multiple ranked TRUSTED sources (tier-1 only; Wikipedia
+    # excluded), corroborated, with REAL per-spec confidence. A single tier-1
+    # source scores 0.8; corroboration by >=2 -> 0.9; the '1.5L Fronx' class of
+    # wrong Wikipedia fact can no longer enter the sheet at all.
     specs = ground_specs(car, provider)
     sheet = SpecSheet(subject=car, specs=specs)
     _claimed = sum(1 for s in specs if (s.confidence or 1.0) < 0.7)
