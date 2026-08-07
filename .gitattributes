@@ -1,0 +1,4 @@
+# Shell scripts and git hooks MUST keep LF endings — a CRLF shebang (`#!/bin/sh\r`)
+# fails on checkout with "bad interpreter" on a fresh Windows clone (autocrlf=true).
+.githooks/** text eol=lf
+*.sh text eol=lf
