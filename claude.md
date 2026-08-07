@@ -18,7 +18,9 @@ ROADMAP.md = what's next. Channel: carshorts (Nexon, Swift, Thar live).
 - Verify by rendering + reading frames (grids via ffmpeg tile), not by assuming.
 - New stock/CC fetches get a visual vet grid before entering the pool.
 - specs come from `crawl` (generation-scoped) then VERIFIED against CarDekho.
-- Run `pytest` (offline, 31 tests) before committing; CI runs it on push.
+- Before pushing run `make check` (= `ruff check .` + `pytest`, offline) — the
+  same two steps CI runs. A pre-push hook enforces it: `git config core.hooksPath
+  .githooks` (or `make install-hooks`) once; bypass a single push with `--no-verify`.
 
 ## Package structure (src/carshorts/, domain subpackages)
 - `cli.py` — unified entrypoint: `carshorts <command>` (or `python -m carshorts <command>`); chdirs to the project root so paths resolve from anywhere

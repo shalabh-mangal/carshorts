@@ -22,11 +22,42 @@ from pathlib import Path
 
 from carshorts.core import paths
 
-# Vision issues split by severity. BLOCKING ones are objective, hard-rule
-# breaches (a legible plate, someone else's logo, the WRONG car) that no amount
-# of owner taste can excuse; the rest (clutter, dark/blur) are judgment calls
-# left advisory so a single vision false-positive never holds a good draft.
-BLOCKING_ISSUES = {"readable_plate", "watermark_or_logo_overlay", "wrong_vehicle_type"}
+# Vision issues split by severity — and, within blocking, by how trustworthy a
+# SINGLE-frame flag is:
+#   HARD_BLOCKING — objective, hard-rule breaches (a legible plate, someone else's
+#     logo). One frame is enough: the owner rule is plates blurred/excluded and
+#     never watermarked/ripped content, so these are never softened.
+#   CORROBORATED_BLOCKING — real but false-positive-prone. wrong_vehicle_type fires
+#     on a car glimpsed in ONE sampled frame — a vehicle passing in the background,
+#     a reflection, an aircraft through a sunroof — which must NOT quarantine a clip
+#     that is otherwise on-subject. It blocks only when >= CORROBORATION_MIN frames
+#     OF THE SAME CLIP agree (a genuinely wrong clip shows the wrong car throughout).
+# Everything else (clutter, dark/blur, a lone mismatch) stays advisory.
+HARD_BLOCKING = {"readable_plate", "watermark_or_logo_overlay"}
+CORROBORATED_BLOCKING = {"wrong_vehicle_type"}
+BLOCKING_ISSUES = HARD_BLOCKING | CORROBORATED_BLOCKING  # kept for callers/tests
+CORROBORATION_MIN = 2   # frames of one clip that must agree before wrong_vehicle blocks
+
+
+def blocking_fails(fails: list[dict], corroboration_min: int = CORROBORATION_MIN) -> list[dict]:
+    """Filter flagged frames down to the BLOCKING ones, tiered: any HARD issue
+    blocks its frame outright; a CORROBORATED issue (wrong_vehicle_type) blocks
+    only if that clip has >= corroboration_min frames carrying it. Pure — the
+    quarantine/gate decisions all flow from this, so it is unit-tested directly."""
+    corro_counts: dict[str, int] = {}
+    for f in fails:
+        if set(f.get("issues", [])) & CORROBORATED_BLOCKING:
+            asset = f.get("asset", "")
+            corro_counts[asset] = corro_counts.get(asset, 0) + 1
+    out = []
+    for f in fails:
+        issues = set(f.get("issues", []))
+        hard = bool(issues & HARD_BLOCKING)
+        corroborated = bool(issues & CORROBORATED_BLOCKING) and \
+            corro_counts.get(f.get("asset", ""), 0) >= corroboration_min
+        if hard or corroborated:
+            out.append(f)
+    return out
 
 
 def _extract_frame(video: str, t: float, out_path: str) -> bool:
@@ -102,7 +133,7 @@ def run_vqa(video_path: str, manifest_path: str | None = None,
             fails.append({"t": sm["t"], "asset": sm["asset"], "phrase": sm["phrase"],
                           "issues": v.get("issues", []), "match": v.get("match", True)})
 
-    blocking = [f for f in fails if set(f["issues"]) & BLOCKING_ISSUES]
+    blocking = blocking_fails(fails)
     # A machine-readable verdict beside the video so callers (the pipeline) can
     # gate on it without re-parsing stdout.
     Path(video_path).with_suffix(".vqa.json").write_text(json.dumps({

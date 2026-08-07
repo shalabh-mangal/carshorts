@@ -1,0 +1,28 @@
+#!/bin/sh
+# Pre-push guard — run the SAME checks CI runs, before code leaves the machine.
+# CI has gone red twice on things a local run would have caught (a ruff B017, an
+# import-order slip) because `ruff check .` scans the WHOLE repo while ad-hoc runs
+# checked only the touched files. This closes that gap: no push unless ruff + the
+# full pytest suite are green, exactly as .github/workflows runs them.
+#
+# Install once:  git config core.hooksPath .githooks   (or: make install-hooks)
+# Bypass in a pinch (use sparingly, CI still gates the PR):  git push --no-verify
+set -e
+
+# Prefer the repo venv's Python so ruff/pytest resolve to the pinned versions,
+# not whatever is on PATH. Falls back to system python.
+if [ -x ".venv/Scripts/python.exe" ]; then
+  PY=".venv/Scripts/python.exe"      # Windows
+elif [ -x ".venv/bin/python" ]; then
+  PY=".venv/bin/python"              # POSIX
+else
+  PY="python"
+fi
+
+echo "pre-push: ruff check . (whole repo, as CI does)"
+"$PY" -m ruff check .
+
+echo "pre-push: pytest -q"
+"$PY" -m pytest -q
+
+echo "pre-push: green — pushing."
