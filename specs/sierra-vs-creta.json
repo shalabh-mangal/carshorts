@@ -48,21 +48,24 @@
       "value": "115 PS",
       "source_url": "https://en.wikipedia.org/wiki/Hyundai_Creta",
       "source_sentence": "The Creta for the Indian market: 1.5-litre petrol producing 115 PS and 144 N⋅m.",
-      "confidence": 1.0
+      "confidence": 0.5,
+      "needs_reverify": "Wikipedia removed as a source — re-verify on CarDekho/official before reuse"
     },
     {
       "name": "creta_torque_petrol",
       "value": "144 Nm",
       "source_url": "https://en.wikipedia.org/wiki/Hyundai_Creta",
       "source_sentence": "Creta 1.5-litre petrol develops 144 N⋅m of torque.",
-      "confidence": 1.0
+      "confidence": 0.5,
+      "needs_reverify": "Wikipedia removed as a source — re-verify on CarDekho/official before reuse"
     },
     {
       "name": "creta_diesel_torque",
       "value": "250 Nm",
       "source_url": "https://en.wikipedia.org/wiki/Hyundai_Creta",
       "source_sentence": "Creta 1.5-litre diesel: 115 PS and 250 N⋅m of torque.",
-      "confidence": 1.0
+      "confidence": 0.5,
+      "needs_reverify": "Wikipedia removed as a source — re-verify on CarDekho/official before reuse"
     },
     {
       "name": "creta_value_features",

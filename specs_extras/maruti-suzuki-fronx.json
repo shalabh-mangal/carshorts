@@ -1,8 +1,10 @@
 {
   "price_estimate": "₹6.85 lakh to ₹11.98 lakh",
-  "price_note": "ex-showroom; official Nexa listing (owner-provided source). On-road varies by city.",
-  "price_source": "https://www.nexaexperience.com/fronx",
-  "value_variant": "Delta+ / Zeta (turbo)",
-  "value_features": "1.0L Boosterjet turbo, 6-speed AT with paddle shifters, wireless charging, cruise control; Head-Up Display and 360-degree camera on higher trims",
+  "price_note": "Ex-showroom, ₹6.85–11.98L. Base = petrol Sigma ₹6.85L. TURBO trims (Delta+ Turbo and up) are the UPPER half of the range — do NOT attribute the ₹6.85L base to a turbo variant. CNG sits mid-range. On-road ~13% higher. Sources: CarDekho (Aug 2026) + official Nexa.",
+  "price_source": "https://www.cardekho.com/maruti/fronx/price-in-new-delhi",
+  "price_base_petrol": "₹6.85 lakh (Sigma petrol, ex-showroom)",
+  "price_turbo_note": "turbo trims occupy the upper half of the range (Delta+ Turbo onward)",
+  "value_variant": "Delta+ (turbo)",
+  "value_features": "1.0 Boosterjet turbo, 6-speed AT with paddle shifters, wireless charging, cruise control; Head-Up Display + 360 camera on higher trims",
   "value_source": "https://www.nexaexperience.com/fronx"
 }

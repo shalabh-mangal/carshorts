@@ -1,0 +1,81 @@
+{
+  "subject": "Maruti Suzuki Fronx",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Six airbags standard, plus an available head-up display and 360 camera — and it starts at 6.85 lakh. Why isn't the Fronx everywhere?",
+      "cited_spec_names": [
+        "head_up_display",
+        "camera_360",
+        "safety_airbags",
+        "price_estimate"
+      ],
+      "pops": []
+    },
+    {
+      "role": "spec",
+      "text": "The 1.0 Boosterjet turbo is genuinely quick, and the petrol automatic sips 22.89 km per litre.",
+      "cited_spec_names": [
+        "safety_airbags",
+        "engine_turbo",
+        "mileage_petrol"
+      ],
+      "pops": []
+    },
+    {
+      "role": "value",
+      "text": "Delta Plus is the sweet spot — around nine lakh: paddle shifters, wireless charging, cruise control.",
+      "cited_spec_names": [
+        "value_variant",
+        "value_features",
+        "price_estimate"
+      ],
+      "pops": []
+    },
+    {
+      "role": "peak",
+      "text": "Under ten lakh, little else protects and pampers like this. The smart buy — like if you are in.",
+      "cited_spec_names": [],
+      "pops": []
+    },
+    {
+      "role": "cta",
+      "text": "Fronx or Sonet? Comment 1 or 2. Like, share, subscribe.",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  ],
+  "_angle": "Opt 2 · Six airbags under seven lakh · 6/10",
+  "_critique": {
+    "verdict": "revise",
+    "score": 6,
+    "usp": "Six airbags under seven lakh",
+    "verdict_line": "Smartest family buy under ten lakh",
+    "summary": "Strong hook with a concrete number and clear USP, but the spec beat deflates the tension by reciting numbers, and the value beat introduces a second variant that muddies the decisive verdict.",
+    "strengths": [
+      "Hook delivers a concrete number and curiosity gap within 2.5 seconds.",
+      "Clear USP: six airbags under seven lakh.",
+      "Comment-bait CTA with rivalry (Fronx vs Sonet) and explicit like/share/subscribe.",
+      "Fresh humor with the neighbour angle, not recycled."
+    ],
+    "issues": [
+      {
+        "beat": "spec",
+        "problem": "The spec beat is a flat number recital (six airbags, 22.89 km/l) that doesn't bridge the hook's tension or escalate it. It deflates the 'crazy part' instead of paying it off.",
+        "fix": "Reframe: 'Here's the crazy part: you get six airbags for the price of a hatchback. And the turbo still sips fuel at 22.89 km/l — so you're not paying for safety with your mileage.'"
+      },
+      {
+        "beat": "value",
+        "problem": "Introduces a second variant (Delta+) and a new price point (~9 lakh), which muddies the decisive verdict and risks confusing the viewer after the hook's 7-lakh focus.",
+        "fix": "Either drop the variant talk and reinforce the 7-lakh USP, or clearly position it as 'if you want more, Delta+' — but keep the verdict on the base model."
+      },
+      {
+        "beat": "peak",
+        "problem": "'Under ten lakh' contradicts the hook's 7-lakh focus, weakening the decisive verdict. Also, 'smash like if you're in' is a weak call-to-action that doesn't drive comments.",
+        "fix": "Reconcile the price range: say 'Under seven lakh, nothing protects your family like this' or 'Under ten lakh, this is the safest bet.' Replace 'smash like' with a comment prompt."
+      }
+    ]
+  },
+  "_critique_status": "ok",
+  "_format": "five_things"
+}

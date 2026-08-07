@@ -1,0 +1,68 @@
+{
+  "subject": "Maruti Suzuki Fronx",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Think Maruti's unsafe? This ₹7-lakh Fronx flips that. Six airbags standard on every variant.",
+      "cited_spec_names": [
+        "safety_airbags",
+        "price_estimate"
+      ],
+      "pops": []
+    },
+    {
+      "role": "spec",
+      "text": "It sips fuel—up to 22.89 km/l on the automatic.",
+      "cited_spec_names": [
+        "mileage_petrol"
+      ],
+      "pops": []
+    },
+    {
+      "role": "value",
+      "text": "Delta+ turbo, ~9 lakh, gets Boosterjet, paddle shifters, wireless charging, cruise control. Sweet spot.",
+      "cited_spec_names": [
+        "value_variant",
+        "value_features",
+        "price_estimate"
+      ],
+      "pops": []
+    },
+    {
+      "role": "peak",
+      "text": "Safe cars that don't drain your bank. Smash like if you'd buy one.",
+      "cited_spec_names": [],
+      "pops": []
+    },
+    {
+      "role": "cta",
+      "text": "Fronx or Sonet? Comment 1 or 2. Like, share, subscribe.",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  ],
+  "_angle": "Opt 3 · Safe Maruti, affordable, fuel-sipping. · 8/10",
+  "_critique": {
+    "verdict": "ship",
+    "score": 8,
+    "usp": "Safe Maruti, affordable, fuel-sipping.",
+    "verdict_line": "Maruti is now safe and cheap.",
+    "summary": "Strong hook, clear USP, and a decisive verdict, but the spec beat could bridge better to the hook.",
+    "strengths": [
+      "Hook is strong: opens with a myth, a specific price, and a surprising safety stat.",
+      "Clear USP: Maruti is now safe and affordable.",
+      "Decisive verdict: busts the myth and tells you what to do.",
+      "Fresh humor: 'sips fuel like a miser' is specific and Indian-relatable.",
+      "Good CTA: asks for comment and includes the spoken subscribe."
+    ],
+    "issues": [
+      {
+        "beat": "spec",
+        "problem": "The spec beat shifts to mileage, which doesn't bridge the safety hook or escalate the tension. It feels like a new topic.",
+        "fix": "Bridge from safety to mileage: 'And it doesn't stop there—this safe car also sips fuel like a miser, up to 22.89 km per litre.'"
+      }
+    ]
+  },
+  "_critique_status": "ok",
+  "_format": "mythbust"
+}

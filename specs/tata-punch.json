@@ -27,7 +27,8 @@
       "value": "5-star Global NCAP",
       "source_url": "https://en.wikipedia.org/wiki/Tata_Punch",
       "source_sentence": "The Tata Punch scored 5 stars for adult occupant protection and 4 stars for child occupant protection in Global NCAP crash tests.",
-      "confidence": 1.0
+      "confidence": 0.5,
+      "needs_reverify": "Wikipedia removed as a source — re-verify on CarDekho/official before reuse"
     },
     {
       "name": "mileage",
@@ -55,21 +56,24 @@
       "value": "sub-4-metre",
       "source_url": "https://en.wikipedia.org/wiki/Tata_Punch",
       "source_sentence": "The Tata Punch is a sub-4-metre micro-SUV, around 3,857 mm long, 1,742 mm wide and 1,615 mm tall.",
-      "confidence": 0.85
+      "confidence": 0.5,
+      "needs_reverify": "Wikipedia removed as a source — re-verify on CarDekho/official before reuse"
     },
     {
       "name": "wheelbase",
       "value": "2,445 mm",
       "source_url": "https://en.wikipedia.org/wiki/Tata_Punch",
       "source_sentence": "The Tata Punch has a wheelbase of 2,445 mm.",
-      "confidence": 1.0
+      "confidence": 0.5,
+      "needs_reverify": "Wikipedia removed as a source — re-verify on CarDekho/official before reuse"
     },
     {
       "name": "body_type",
       "value": "micro-SUV",
       "source_url": "https://en.wikipedia.org/wiki/Tata_Punch",
       "source_sentence": "The Tata Punch is a sub-4-metre, 5-door micro-SUV in the A-segment.",
-      "confidence": 1.0
+      "confidence": 0.5,
+      "needs_reverify": "Wikipedia removed as a source — re-verify on CarDekho/official before reuse"
     }
   ]
 }

@@ -6,28 +6,32 @@
       "value": "115 PS",
       "source_url": "https://en.wikipedia.org/wiki/Hyundai_Creta",
       "source_sentence": "The Creta for the Indian market is offered with three engine options, 1.5-litre petrol producing 115 PS (85 kW; 113 hp) and develops 144 N⋅m of torque and a 1.5-litre diesel engine with 115 PS and 250 N⋅m of torque as well as a turbocharged petrol.",
-      "confidence": 1.0
+      "confidence": 0.5,
+      "needs_reverify": "Wikipedia removed as a source — re-verify on CarDekho/official before reuse"
     },
     {
       "name": "torque",
       "value": "144 N⋅m",
       "source_url": "https://en.wikipedia.org/wiki/Hyundai_Creta",
       "source_sentence": "1.5-litre petrol producing 115 PS and develops 144 N⋅m (15 kg⋅m; 106 lb⋅ft) of torque.",
-      "confidence": 1.0
+      "confidence": 0.5,
+      "needs_reverify": "Wikipedia removed as a source — re-verify on CarDekho/official before reuse"
     },
     {
       "name": "engine_litre",
       "value": "1.5-litre",
       "source_url": "https://en.wikipedia.org/wiki/Hyundai_Creta",
       "source_sentence": "The Chinese model (codename: SU2c) is solely powered by the 1.5-litre petrol engine producing 115 PS (85 kW; 113 hp).",
-      "confidence": 1.0
+      "confidence": 0.5,
+      "needs_reverify": "Wikipedia removed as a source — re-verify on CarDekho/official before reuse"
     },
     {
       "name": "diesel_torque",
       "value": "250 N⋅m",
       "source_url": "https://en.wikipedia.org/wiki/Hyundai_Creta",
       "source_sentence": "a 1.5-litre diesel engine with 115 PS (85 kW; 113 hp) and 250 N⋅m (25 kg⋅m; 184 lb⋅ft) of torque.",
-      "confidence": 1.0
+      "confidence": 0.5,
+      "needs_reverify": "Wikipedia removed as a source — re-verify on CarDekho/official before reuse"
     }
   ]
 }

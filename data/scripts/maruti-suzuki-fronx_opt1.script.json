@@ -1,0 +1,73 @@
+{
+  "subject": "Maruti Suzuki Fronx",
+  "segments": [
+    {
+      "role": "hook",
+      "text": "Six airbags, 22.89 km per litre, and up to two lakh less than a loaded Brezza. Why is everyone sleeping on the Fronx?",
+      "cited_spec_names": [
+        "safety_airbags",
+        "mileage_petrol"
+      ],
+      "pops": []
+    },
+    {
+      "role": "spec",
+      "text": "Delta+ Turbo: 1.0 Boosterjet, paddle shifters—under ten lakh. More kit than Brezza for less.",
+      "cited_spec_names": [
+        "value_variant",
+        "engine_turbo",
+        "value_features",
+        "price_estimate"
+      ],
+      "pops": []
+    },
+    {
+      "role": "value",
+      "text": "Up to two lakh less than Brezza's top trim — tech without the badge tax.",
+      "cited_spec_names": [
+        "price_estimate"
+      ],
+      "pops": []
+    },
+    {
+      "role": "peak",
+      "text": "Why queue for Brezza? They're not reading the spec sheet. Fronx is smarter. Smash like if you'd take it.",
+      "cited_spec_names": [],
+      "pops": []
+    },
+    {
+      "role": "cta",
+      "text": "Fronx or Brezza? Comment 1 or 2. Like, share, subscribe. Or keep overpaying.",
+      "cited_spec_names": [],
+      "pops": []
+    }
+  ],
+  "_angle": "Opt 1 · More kit, less cash, better mileage · 9/10",
+  "_critique": {
+    "verdict": "ship",
+    "score": 9,
+    "usp": "More kit, less cash, better mileage",
+    "verdict_line": "Fronx is the smarter buy, period.",
+    "summary": "A sharp, well-structured script that lands a clear USP and a decisive verdict, with a strong hook and effective CTA.",
+    "strengths": [
+      "Hook is immediate with concrete numbers and a curiosity gap.",
+      "Spec beat escalates the hook with the 'crazy part' payoff.",
+      "Clear, decisive verdict with a fresh, specific roast.",
+      "CTA is comment-bait with a rivalry poll and clear call to action."
+    ],
+    "issues": [
+      {
+        "beat": "hook",
+        "problem": "Hook is slightly over 2.5 seconds if spoken slowly; also 'everyone sleeping' is a common trope.",
+        "fix": "Tighten to 'Six airbags, 22.89 kmpl, and two lakh cheaper than the Brezza. Why is everyone sleeping on the Fronx?'"
+      },
+      {
+        "beat": "spec",
+        "problem": "Spec beat has a minor factual risk: 'under ten lakh' may not be accurate for Delta+ Turbo on-road; also 'more kit than the Brezza' is a claim that needs sourcing.",
+        "fix": "Verify price and feature comparison with tier-1 sources; if needed, say 'priced under ten lakh ex-showroom' and specify which Brezza trim."
+      }
+    ]
+  },
+  "_critique_status": "ok",
+  "_format": "vs"
+}

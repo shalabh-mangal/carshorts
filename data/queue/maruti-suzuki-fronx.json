@@ -1,0 +1,11 @@
+{
+  "car": "Maruti Suzuki Fronx",
+  "slug": "maruti-suzuki-fronx",
+  "status": "script_review",
+  "spec": "specs/maruti-suzuki-fronx.json",
+  "language": "english",
+  "persona": "deadpan",
+  "script_format": "spotlight",
+  "created": "2026-08-07T10:12:53",
+  "note": "Mass-appeal pick. Turbo + HUD + 360-cam surprise (Sonet-shape hook). Specs official Nexa-sourced. Pick/mix a script, then footage -> render."
+}

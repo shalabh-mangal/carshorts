@@ -6,28 +6,32 @@
       "value": "81 kW",
       "source_url": "https://en.wikipedia.org/wiki/Tata_Nexon",
       "source_sentence": "The new vehicle is equipped with a Bharat Stage 6-compliant 1.5-litre turbocharged Revotorq diesel engine producing 81 kW (109 hp; 110 PS) and a 1.2-litre turbocharged Revotron petrol engine with 88 kW (118 hp; 120 PS).",
-      "confidence": 1.0
+      "confidence": 0.5,
+      "needs_reverify": "Wikipedia removed as a source — re-verify on CarDekho/official before reuse"
     },
     {
       "name": "torque",
       "value": "245 N⋅m",
       "source_url": "https://en.wikipedia.org/wiki/Tata_Nexon",
       "source_sentence": "The electric motor produces 94.7 kW (127 hp; 129 PS) and 245 N⋅m (181 lbf⋅ft) of torque and 0 - 100 under 9.9 seconds.",
-      "confidence": 1.0
+      "confidence": 0.5,
+      "needs_reverify": "Wikipedia removed as a source — re-verify on CarDekho/official before reuse"
     },
     {
       "name": "engine_litre",
       "value": "1.5-litre",
       "source_url": "https://en.wikipedia.org/wiki/Tata_Nexon",
       "source_sentence": "The new vehicle is equipped with a Bharat Stage 6-compliant 1.5-litre turbocharged Revotorq diesel engine producing 81 kW (109 hp; 110 PS) and a 1.2-litre turbocharged Revotron petrol engine with 88 kW (118 hp; 120 PS).",
-      "confidence": 1.0
+      "confidence": 0.5,
+      "needs_reverify": "Wikipedia removed as a source — re-verify on CarDekho/official before reuse"
     },
     {
       "name": "acceleration",
       "value": "9.9 seconds",
       "source_url": "https://en.wikipedia.org/wiki/Tata_Nexon",
       "source_sentence": "The electric motor produces 94.7 kW (127 hp; 129 PS) and 245 N⋅m (181 lbf⋅ft) of torque and 0 - 100 under 9.9 seconds.",
-      "confidence": 1.0
+      "confidence": 0.5,
+      "needs_reverify": "Wikipedia removed as a source — re-verify on CarDekho/official before reuse"
     }
   ]
 }
